@@ -3,7 +3,8 @@ param(
     [string]$Environment,
     [string]$Backup,
     [double]$Seconds = 15,
-    [switch]$Reset
+    [switch]$Reset,
+    [string]$ApprovalRecord
 )
 $ErrorActionPreference = 'Stop'
 Write-Output ('Windows interface host PowerShell: ' + $PSVersionTable.PSVersion.ToString())
@@ -12,5 +13,6 @@ $tfArguments = @((Join-Path $PSScriptRoot 'tf_software_trials.py'), $Action, '--
 if ($Environment) { $tfArguments += @('--env', $Environment) }
 if ($Backup) { $tfArguments += @('--backup', $Backup) }
 if ($Reset) { $tfArguments += '--reset' }
+if ($ApprovalRecord) { $tfArguments += @('--approval-record', $ApprovalRecord) }
 & 'C:\Users\acer\.platformio\penv\Scripts\python.exe' @tfArguments
 exit $LASTEXITCODE

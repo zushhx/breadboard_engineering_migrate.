@@ -3155,6 +3155,11 @@
   "authorized_edits": {
     "AGENTS.md": "Project operating entry and canonical context order",
     "面包板样机_固件/platformio.ini": "Add explicit legacy-upload guard; preserve existing business configuration",
-    "面包板样机_固件/diagnostics/tf_idf_probe/platformio.ini": "Add generic upload guard; frozen baseline source remains unchanged"
+    "面包板样机_固件/diagnostics/tf_idf_probe/platformio.ini": "Add generic upload guard; frozen baseline source remains unchanged",
+    ".shell-tools/build_tf_idf_probe_pwsh7.ps1": "Approved engineering-baseline operation/build guards; no firmware business logic edits",
+    ".shell-tools/run_tf_software_trials_pwsh7.ps1": "Approved engineering-baseline operation/build guards; no firmware business logic edits",
+    ".shell-tools/tf_software_trials.py": "Approved engineering-baseline operation/build guards; no firmware business logic edits",
+    "面包板样机_固件/platformio.tf_protocol_probe.ini": "Approved engineering-baseline operation/build guards; no firmware business logic edits",
+    "面包板样机_固件/platformio.tf_software_probe.ini": "Approved engineering-baseline operation/build guards; no firmware business logic edits"
   }
 }

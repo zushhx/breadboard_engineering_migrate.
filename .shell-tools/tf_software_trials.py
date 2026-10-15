@@ -49,7 +49,25 @@ def main():
     parser.add_argument("--backup", type=Path)
     parser.add_argument("--seconds", type=float, default=15)
     parser.add_argument("--reset", action="store_true", help="One MCU EN reset before a capture; does not cut TF power")
+    parser.add_argument("--approval-record", type=Path, help="Reviewed local approval record for a specific hardware operation")
     args = parser.parse_args()
+    if args.action in {"backup", "flash", "restore"} or args.reset:
+        sys.path.insert(0, str(ROOT / "tools"))
+        from operation_gate import require_approval
+        inputs = []
+        if args.action in {"flash", "restore"}:
+            if not args.backup:
+                raise RuntimeError("Hardware operation requires --backup before device discovery")
+            inputs.append(args.backup)
+        if args.action == "flash":
+            if not args.env:
+                raise RuntimeError("flash requires --env before device discovery")
+            build_root = ".pio/tf_idf_probe" if args.env in IDF_ENVS else (".pio/tf_protocol_probe" if args.env in PROTOCOL_ENVS else ".pio/tf_software_probe")
+            build = PROJECT / build_root / args.env
+            inputs += [build / "partitions.bin", build / "firmware.bin", BOOT_APP0]
+            if args.env in IDF_ENVS:
+                inputs.append(build / "bootloader.bin")
+        require_approval(ROOT, args.approval_record, "reset" if args.action == "capture" else args.action, EXPECTED_MAC, inputs)
     tag = stamp()
     log_path = PROJECT / "logs" / f"tf_software_{args.action}_{args.env or 'controller'}_{tag}.log"
     log_path.parent.mkdir(exist_ok=True)

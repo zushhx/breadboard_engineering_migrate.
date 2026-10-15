@@ -1,0 +1,8 @@
+#!/bin/sh
+set -eu
+while read -r local_ref local_sha remote_ref remote_sha; do
+  if [ "$remote_ref" = refs/heads/main ]; then
+    echo "Direct main push blocked. Use the reviewed PR process." >&2
+    exit 1
+  fi
+done

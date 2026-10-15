@@ -1,0 +1,11 @@
+#!/bin/sh
+set -eu
+branch=$(git symbolic-ref --short HEAD)
+if [ "$branch" = main ]; then
+  echo "Direct commits on main are blocked. Use a task branch and reviewed merge." >&2
+  exit 1
+fi
+if command -v python3 >/dev/null 2>&1; then
+  exec python3 tools/project_check.py
+fi
+exec python tools/project_check.py
