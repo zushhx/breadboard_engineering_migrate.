@@ -1,0 +1,134 @@
+{
+  "date": "2026-10-15",
+  "firmware_source": "7994b9d57854a2a0b702a8eed083c478b5d75590",
+  "controller_mac": "44:1b:f6:81:91:10",
+  "read_only": true,
+  "reference_received_during_capture": true,
+  "capture_completed": true,
+  "accuracy_accepted": false,
+  "current_reference_tested": false,
+  "reference": {
+    "instrument_user_model": "UT890C+",
+    "reported_value": 3.22,
+    "unit": "V",
+    "user_stability": "稳定",
+    "readings_provided": 1,
+    "user_reply_reference": "call_ebf4c86e06494f45be70bf0fbd6d66ba: 3.22稳定",
+    "requested_points": "INA module own VBS metal contact to same module own GND metal contact, no USB/wiring changes",
+    "meter_photo_observations": "UT890C+ marking; selector 6V DC; display DC; red in voltage socket, black COM; no REL/HOLD/MAX/MIN indications observed",
+    "received_utc": "2026-10-15T13:50:12.8233831+00:00",
+    "note": "Timestamp is receipt, not exact DMM ADC sample; operator reports stable reading and was asked to keep probes several seconds after reply"
+  },
+  "all_sample_count": 114,
+  "near_reply_window": {
+    "selection": "query start UTC within +/-5 seconds of user reference receipt",
+    "samples": [
+      {
+        "utc": "2026-10-15T13:50:07.983784+00:00",
+        "elapsed_s": 108.73399999999674,
+        "bus_V": 3.3975,
+        "shunt_uV": 115.0,
+        "current_mA": 1.15,
+        "power_mW": 4.375
+      },
+      {
+        "utc": "2026-10-15T13:50:09.010425+00:00",
+        "elapsed_s": 109.73399999999674,
+        "bus_V": 3.38875,
+        "shunt_uV": 130.0,
+        "current_mA": 1.3,
+        "power_mW": 5.0
+      },
+      {
+        "utc": "2026-10-15T13:50:10.013317+00:00",
+        "elapsed_s": 110.75,
+        "bus_V": 3.39625,
+        "shunt_uV": 112.5,
+        "current_mA": 1.125,
+        "power_mW": 4.375
+      },
+      {
+        "utc": "2026-10-15T13:50:11.034836+00:00",
+        "elapsed_s": 111.76499999999942,
+        "bus_V": 3.38875,
+        "shunt_uV": 132.5,
+        "current_mA": 1.325,
+        "power_mW": 5.0
+      },
+      {
+        "utc": "2026-10-15T13:50:12.043851+00:00",
+        "elapsed_s": 112.76499999999942,
+        "bus_V": 3.39625,
+        "shunt_uV": 112.5,
+        "current_mA": 1.125,
+        "power_mW": 4.375
+      },
+      {
+        "utc": "2026-10-15T13:50:13.049608+00:00",
+        "elapsed_s": 113.7960000000021,
+        "bus_V": 3.39,
+        "shunt_uV": 130.0,
+        "current_mA": 1.3,
+        "power_mW": 5.0
+      },
+      {
+        "utc": "2026-10-15T13:50:14.069361+00:00",
+        "elapsed_s": 114.81200000000536,
+        "bus_V": 3.38625,
+        "shunt_uV": 135.0,
+        "current_mA": 1.35,
+        "power_mW": 5.0
+      },
+      {
+        "utc": "2026-10-15T13:50:15.083713+00:00",
+        "elapsed_s": 115.81200000000536,
+        "bus_V": 3.385,
+        "shunt_uV": 137.5,
+        "current_mA": 1.375,
+        "power_mW": 5.0
+      }
+    ],
+    "count": 8,
+    "bus_V_min": 3.385,
+    "bus_V_max": 3.3975,
+    "bus_V_mean": 3.39109375,
+    "mean_minus_user_V": 0.17109374999999982,
+    "relative_difference_percent": 5.313470496894404
+  },
+  "meter_photo": {
+    "file_name": "3c3197ebbdc8099a00d53d08d390fa9f.jpg",
+    "sha256": "39cb984a23b8819871f7d1993f6ad81712c06027ea91cc2862860994f35fda81",
+    "observed": [
+      "UT890C+ marking",
+      "6 V DC selector",
+      "DC indication and 0.000 V at photo time",
+      "red in voltage input and black in COM",
+      "no REL/HOLD/MAX/MIN indicator observed"
+    ],
+    "limit": "Photo does not show board probe endpoints or represent the measurement moment"
+  },
+  "files": [
+    {
+      "path": "local-data/hardware/precision-voltage/20261015_reference_2/hardware.log",
+      "bytes": 68391,
+      "sha256": "5f28928e540bf76d7c94df914f26865ad0f7dac2ad3406396f125baa6b787745"
+    },
+    {
+      "path": "local-data/hardware/precision-voltage/20261015_reference_2/result.json",
+      "bytes": 24419,
+      "sha256": "054281788c8753f3a0634135e36166798e568d4c375ff875cf4681f55e1203d9"
+    },
+    {
+      "path": "local-data/hardware/precision-voltage/20261015_reference_2/user_reference.json",
+      "bytes": 705,
+      "sha256": "c727665e795f23d30f559b54c83cf4c77e0cb4cf1ff24c009ec0fbd4d6ee7843"
+    }
+  ],
+  "limits": [
+    "DMM stable value is operator reported, exact ADC time not synchronized",
+    "Observed setup narrows range/mode uncertainty; official UT890C+ error specifications and calibration remain unverified",
+    "Board probe endpoints and VBS-to-INminus connection not visually verified",
+    "Disagreement does not identify which instrument or connection is responsible",
+    "No scale correction, reset, initialization, flash, TF write or current-series rewiring"
+  ]
+}
