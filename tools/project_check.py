@@ -59,7 +59,10 @@ def check(local=False):
                  'docs/history/README.md', 'docs/hardware/README.md', 'docs/reports/README.md',
                  '面包板样机_固件/README.md', 'baselines/tf-readonly-20261015/README.md',
                  'docs/plans/TF_WRITE_DIAGNOSTIC_20261015.md',
-                 '面包板样机_固件/diagnostics/tf_write_probe/README.md']
+                 '面包板样机_固件/diagnostics/tf_write_probe/README.md',
+                 'docs/plans/SENSOR_MONITOR_BRINGUP_20261015.md',
+                 'docs/hardware/wiring/传感器与电流监测接入_2026-10-15.md',
+                 '面包板样机_固件/diagnostics/sensor_monitor_probe/README.md']
     for name in documents:
         path = ROOT / name
         if not path.is_file():
@@ -89,7 +92,8 @@ def check(local=False):
             errors.append('Credential pattern in Git index: ' + name)
     checks.append('git_index_frozen_hashes_paths_size_and_credential_patterns')
     for name in ['platformio.ini', 'platformio.tf_protocol_probe.ini', 'platformio.tf_software_probe.ini',
-                 'diagnostics/tf_idf_probe/platformio.ini', 'diagnostics/tf_write_probe/platformio.ini']:
+                 'diagnostics/tf_idf_probe/platformio.ini', 'diagnostics/tf_write_probe/platformio.ini',
+                 'diagnostics/sensor_monitor_probe/platformio.ini']:
         text = (ROOT / '面包板样机_固件' / name).read_text(encoding='utf-8-sig')
         if 'block_implicit_upload.py' not in text:
             errors.append('Missing upload guard: ' + name)
