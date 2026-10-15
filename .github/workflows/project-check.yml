@@ -2,7 +2,10 @@ name: project-check
 on:
   pull_request:
   push:
-    branches: [main, 'chore/**', 'fix/**', 'feat/**']
+    branches: [main]
+concurrency:
+  group: project-check-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
 permissions:
   contents: read
 jobs:
