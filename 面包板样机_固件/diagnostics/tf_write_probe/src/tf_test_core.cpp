@@ -97,7 +97,7 @@ struct GateScope {
 Result Runner::run(Store& store, const Request& request, uint32_t serial, uint64_t capacity) {
   GateScope gate(store);
   Result out;
-  uint8_t block[kBlockBytes];
+  auto& block = block_;
   const bool priorLock = locked_;
   bool writing = request.kind == Kind::Write;
   if (!writing && request.kind != Kind::Verify) { out.phase = "command"; return out; }

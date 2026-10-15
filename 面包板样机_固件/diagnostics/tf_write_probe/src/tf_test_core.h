@@ -57,6 +57,8 @@ class Runner {
   bool locked() const { return locked_; }
  private:
   bool locked_ = false;
+  // Runner is static in firmware. Avoid placing 4 KiB on the 8 KiB app task stack.
+  uint8_t block_[kBlockBytes] = {};
 };
 bool cardStatusError(uint32_t status);
 bool cardStatusReady(uint32_t status);

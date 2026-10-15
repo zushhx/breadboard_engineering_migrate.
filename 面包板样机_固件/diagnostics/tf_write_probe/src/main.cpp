@@ -281,7 +281,9 @@ class FatStore final : public tftest::Store {
 
 static void testCommand(const tftest::Request& request) {
   if (!mountReadOnly()) { Serial.println("[tfrw] FAIL phase=mount; no writes enabled"); return; }
-  FatStore store;
+  // FatFS FIL contains a sector buffer (up to 4 KiB in this frozen config).
+  // Commands are synchronous on app_main; only one test uses this adapter.
+  static FatStore store;
   Serial.printf("[tfrw] begin operation=%s run=%s fixed_bytes=%lu source=%s inputs=%s\n",
       request.kind == tftest::Kind::Write ? "write_test" : "read_only_verify", request.run,
       (unsigned long)tftest::kFileBytes, TF_SOURCE_COMMIT, TF_INPUT_SHA256);
