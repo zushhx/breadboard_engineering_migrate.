@@ -18,6 +18,7 @@
 #include "tf_test_core.h"
 #include "build_identity.h"
 #include "modules.h"
+#include "esp_mac.h"
 #if defined(TF_ARDUINO_SPI) && TF_ARDUINO_SPI
 #include <SD.h>
 #include "sd_diskio.h"
@@ -300,6 +301,10 @@ static void testCommand(const tftest::Request& request) {
 }
 
 static void help() {
+  uint8_t mac[6] = {};
+  esp_err_t macError = esp_efuse_mac_get_default(mac);
+  Serial.printf("[modules] identity source=%s inputs=%s mac_status=%s mac=%02x:%02x:%02x:%02x:%02x:%02x\n",
+      TF_SOURCE_COMMIT, TF_INPUT_SHA256, esp_err_to_name(macError), mac[0], mac[1], mac[2], mac[3], mac[4], mac[5]);
   Serial.println("[modules] m (read-only snapshot) | INIT_MODULES (configure once per boot)");
   Serial.println("[tfrw] i | b | l | help (read-only)");
   Serial.println("[tfrw] WRITE_TEST <8-hex-card-serial> <capacity-bytes> <8-hex-run-id>");
