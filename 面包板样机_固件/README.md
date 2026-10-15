@@ -19,8 +19,7 @@ python3 tools/build_tf_baseline.py --prepare-only
 Windows 工具链构建从 WSL 调用：
 
 ```bash
-wslpath -w "$PWD"
-powershell.exe -NoProfile -Command "& 'C:\Users\acer\Desktop\直插式面包板样机\.shell-tools\PowerShell-7.6.6\pwsh.exe' -NoLogo -NoProfile -File 'C:\Users\acer\Desktop\直插式面包板样机\.shell-tools\build_tf_idf_probe_pwsh7.ps1'"
+'/mnt/c/Users/acer/Desktop/直插式面包板样机/.shell-tools/PowerShell-7.6.6/pwsh.exe' -NoLogo -NoProfile -File 'C:\Users\acer\Desktop\直插式面包板样机\.shell-tools\build_tf_idf_probe_pwsh7.ps1'
 ```
 
 脚本内部核对 PowerShell 7.6.6，以冻结输入构建，在独立本地目录输出文件，绝不自动上传。实际执行结果见[工程整改检查记录](../docs/reports/ENGINEERING_BASELINE_REVIEW_20261015.md)。
