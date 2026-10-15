@@ -1,0 +1,66 @@
+{
+  "date": "2026-10-15T20:27:05.222876+08:00",
+  "firmware_source": "31dda6f23cab21f9a07330a829bae747211334b0",
+  "firmware_sha256": "728e50380e55a08c653142721f064dd5ef9028fe28bb7ed197ef561f10d08ec3",
+  "host_source_commit": "6080ddc614234f4cfd07aeb3cca59e58e8bb8139",
+  "controller_mac": "44:1b:f6:81:91:10",
+  "card_serial": "10044BA5",
+  "scope": "bounded file write-close-read loop and MCU reset before observed sync/close; TF power retained",
+  "flashed": false,
+  "loop_seconds": 304.9679999999935,
+  "loop_complete_files": 51,
+  "loop_complete_bytes": 53477376,
+  "complete_bytes_including_new_post_reset_file": 54525952,
+  "stop_reason": "time_limit",
+  "loop_full_cycle_ms_range": [
+    5326,
+    5982
+  ],
+  "interruption": {
+    "run": "3F5FBC76",
+    "trigger": "create_new success +200ms, before observed sync/close",
+    "mcu_reset": true,
+    "tf_power_removed": false,
+    "electrical_write_activity_measured": false,
+    "partial_file_verified": false
+  },
+  "post_reset": {
+    "remount": true,
+    "new_1MiB_write_readback": "[tfrw] PASS phase=write_sync_close_readback run=09A8A5F9 bytes_written=1048576 bytes_verified=1048576 sha256=7c79a64ca466f57076b4fa369dd7861cf4657c7b00ed8c1bad0c9c9336cc87b7 elapsed_ms=5520 write_gate=0 write_locked=0",
+    "completed_files": [
+      "[tfrw] PASS phase=read_only_verify run=893FB600 bytes_written=0 bytes_verified=1048576 sha256=7c79a64ca466f57076b4fa369dd7861cf4657c7b00ed8c1bad0c9c9336cc87b7 elapsed_ms=1027 write_gate=0 write_locked=0",
+      "[tfrw] PASS phase=read_only_verify run=D2406991 bytes_written=0 bytes_verified=1048576 sha256=7c79a64ca466f57076b4fa369dd7861cf4657c7b00ed8c1bad0c9c9336cc87b7 elapsed_ms=1032 write_gate=0 write_locked=0"
+    ],
+    "original_reference_matches_in_log": 4
+  },
+  "passed": true,
+  "untested": [
+    "interrupted file data and size recovery",
+    "true power interruption during writing",
+    "continuous real-time sensor load and backlog",
+    "lost clusters/free-space leakage and full-card integrity",
+    "long-term stability"
+  ],
+  "evidence": [
+    {
+      "path": "local-data/hardware/tf-endurance/20261015_202028/hardware.log",
+      "bytes": 58223,
+      "sha256": "802a49c2710d3ed78c488cf19ff57db1e0db289c4ddefcc79058e69f443d81f0"
+    },
+    {
+      "path": "local-data/hardware/tf-endurance/20261015_202028/result.json",
+      "bytes": 16576,
+      "sha256": "0d7ce524f549f10166509a44bd351c5ad97f7c7a403aee9ead87860043306609"
+    },
+    {
+      "path": "tools/tf_write_endurance.py",
+      "bytes": 6929,
+      "sha256": "74bb93fc6f7b5226f0c9d8d8c94ecbf5899c56738e2f01c3642dbb120343de7a"
+    },
+    {
+      "path": "tests/test_tf_write_endurance.py",
+      "bytes": 2384,
+      "sha256": "aef7f4997a4417ee3e2fc1d7efb2018518642f89746d82fdf6b3a39d5dfa56e8"
+    }
+  ]
+}
