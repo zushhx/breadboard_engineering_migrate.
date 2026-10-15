@@ -1,0 +1,122 @@
+{
+  "date": "2026-10-15",
+  "result": {
+    "source_commit": "7994b9d57854a2a0b702a8eed083c478b5d75590",
+    "operation_commit": "c1c12dd9f51f8a82fda1065ab30a8cd417b880b4",
+    "candidate_sha256": "db7815d6545ab795d5a6e1b75d5e4a66f3109cd2e1ebf95073ea87bb7b0a2601",
+    "passed": true,
+    "cold_starts_completed": 2,
+    "snapshot_sha256": "ceaa40d70e37c62884638f86a6682e5744bbb9ccd1f30ce885f60eac5584e464",
+    "hold_snapshots": 59,
+    "hold_elapsed_seconds": 60.14100000000326,
+    "run": "B89A4A96",
+    "write": "[tfrw] PASS phase=write_sync_close_readback run=B89A4A96 bytes_written=1048576 bytes_verified=1048576 sha256=7c79a64ca466f57076b4fa369dd7861cf4657c7b00ed8c1bad0c9c9336cc87b7 elapsed_ms=5616 write_gate=0 write_locked=0",
+    "after_mcu_reset": "[tfrw] PASS phase=read_only_verify run=B89A4A96 bytes_written=0 bytes_verified=1048576 sha256=7c79a64ca466f57076b4fa369dd7861cf4657c7b00ed8c1bad0c9c9336cc87b7 elapsed_ms=1047 write_gate=0 write_locked=0",
+    "entire_round_passed": true
+  },
+  "cold_results": [
+    {
+      "number": 1,
+      "user_power_off_confirmation": "User reply call_566846b8933c44d99953adc4e4197a2e: 第 1 次已完成; asked to remove both USB and all other supply for at least 10 seconds and reconnect without wiring changes.",
+      "passed": true,
+      "verify": "[tfrw] PASS phase=read_only_verify run=B89A4A96 bytes_written=0 bytes_verified=1048576 sha256=7c79a64ca466f57076b4fa369dd7861cf4657c7b00ed8c1bad0c9c9336cc87b7 elapsed_ms=1052 write_gate=0 write_locked=0"
+    },
+    {
+      "number": 2,
+      "user_power_off_confirmation": "User reply call_55d1518d253c475ebf6044356760abfd: 第 2 次已完成; asked to remove both USB and all other supply for at least 10 seconds and reconnect without wiring changes.",
+      "passed": true,
+      "verify": "[tfrw] PASS phase=read_only_verify run=B89A4A96 bytes_written=0 bytes_verified=1048576 sha256=7c79a64ca466f57076b4fa369dd7861cf4657c7b00ed8c1bad0c9c9336cc87b7 elapsed_ms=1053 write_gate=0 write_locked=0"
+    }
+  ],
+  "user_wiring_confirmation": "User reported missing GPIO13 to green-board SDO; call_8c8d8f27b0df40d282b0c5b82713234e confirms 已经补接并重新供电",
+  "user_motion_confirmation": "call_52f5b7b6b0084b03970a74031b99600f: 已轻轻改变朝向; no strict sample/action synchronization",
+  "files": [
+    {
+      "path": "local-data/hardware/sensor-monitor/20261015_212125/cold-start-1/hardware.log",
+      "bytes": 5561,
+      "sha256": "ec81d318de182222515987eb00cb5c2694ba08b09c5af18a263e20ee276ceea0"
+    },
+    {
+      "path": "local-data/hardware/sensor-monitor/20261015_212125/cold-start-1/result.json",
+      "bytes": 474,
+      "sha256": "19751518cbb2652fcc057feda43ea7d05f69bf87fbd56dca8b3ca32750b184a9"
+    },
+    {
+      "path": "local-data/hardware/sensor-monitor/20261015_212125/cold-start-2/hardware.log",
+      "bytes": 5561,
+      "sha256": "0917ee7d4cf7a531db8ac687900893bebb31623000258832c0a10b418edb0a72"
+    },
+    {
+      "path": "local-data/hardware/sensor-monitor/20261015_212125/cold-start-2/result.json",
+      "bytes": 474,
+      "sha256": "ce407dc082ac382bd7ae89486be5defb0f3e8251dce128ad93e8c5ca0aade7f5"
+    },
+    {
+      "path": "local-data/hardware/sensor-monitor/20261015_212125/controller_prefix_0x70000.bin",
+      "bytes": 458752,
+      "sha256": "ceaa40d70e37c62884638f86a6682e5744bbb9ccd1f30ce885f60eac5584e464"
+    },
+    {
+      "path": "local-data/hardware/sensor-monitor/20261015_212125/hardware.log",
+      "bytes": 67282,
+      "sha256": "f98ee38584202199f4bf5a6e755afe7cdeb79f67e20e0d266811340a14939d89"
+    },
+    {
+      "path": "local-data/hardware/sensor-monitor/20261015_212125/result.json",
+      "bytes": 953,
+      "sha256": "accb971ce3836a07cdcf096ef3155645de2e1932b8536d4e6ca1b19fee8b7e1b"
+    }
+  ],
+  "observations": {
+    "iis_who_values": [
+      "7B"
+    ],
+    "reference_pc_match_count": 12,
+    "module_snapshots_valid": 67,
+    "module_snapshot_invalid_count": 1,
+    "explicit_initializations": 3,
+    "successful_initialization_write_sequences": 3,
+    "ina_config_cal_write_lines": 6,
+    "ina_valid_measurement_count": 67,
+    "ina_bus_volts_min_max": [
+      3.3925,
+      3.45375
+    ],
+    "ina_current_mA_min_max": [
+      1.15,
+      1.525
+    ],
+    "ina_power_mW_min_max": [
+      4.375,
+      5.0
+    ],
+    "xyz_snapshot_count": 67,
+    "xyz_mg_min": [
+      17.934,
+      -97.661,
+      1022.604
+    ],
+    "xyz_mg_max": [
+      109.739,
+      -50.081,
+      1095.56
+    ],
+    "new_file_write_passes": 1,
+    "full_file_verify_passes": 3,
+    "cold_starts_user_confirmed": 2
+  },
+  "ci": {
+    "operation_commit": "c1c12dd9f51f8a82fda1065ab30a8cd417b880b4",
+    "run_id": 38740344286,
+    "conclusion": "success"
+  },
+  "limits": [
+    "Same firmware and tool hashes as previously approved; wiring correction accompanied by power-off/reconnect",
+    "Power cycles are user-confirmed, not instrumented",
+    "Snapshots are low rate; no fullrate capture, FIFO, sensitivity, frequency-response or drop-rate acceptance",
+    "INA shunt assumes R100=0.1 ohm; precision unverified; bus voltages differ from earlier user 3.26 V readings under different times/conditions",
+    "No recording of real sensor samples to TF; file test uses fixed known payload",
+    "No power loss while writing, long-term load or whole-device current acceptance",
+    "Snapshot contains private NVS; local only"
+  ]
+}
