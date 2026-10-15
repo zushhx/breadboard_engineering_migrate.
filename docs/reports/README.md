@@ -11,6 +11,9 @@
 
 ## TF 对照证据
 
+- [基础写入、主控复位与两次完整断电实测](TF_WRITE_HARDWARE_20261015.md)
+- [实机原始记录哈希与结果清单](TF_WRITE_HARDWARE_EVIDENCE_20261015.json)
+
 - [独立 TF 写入诊断软件检查与自审（未试烧）](TF_WRITE_SOFTWARE_REVIEW_20261015.md)
 - [独立 TF 写入诊断构建原始清单](TF_WRITE_BUILD_20261015.json)
 
