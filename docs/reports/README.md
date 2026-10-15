@@ -4,6 +4,8 @@
 
 ## 本次工程整理
 
+- [项目上下文与旧记忆核查](PROJECT_CONTEXT_AUDIT_20261015.md)
+
 - [TF 访问异常复盘](TF_ACCESS_POSTMORTEM_20261015.md)
 - [整改检查与审查记录](ENGINEERING_BASELINE_REVIEW_20261015.md)
 - [独立构建产物与来源清单](ENGINEERING_BUILD_20261015.json)
