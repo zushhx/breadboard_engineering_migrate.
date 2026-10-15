@@ -1,0 +1,64 @@
+{
+  "date": "2026-10-15",
+  "source_commit": "7994b9d57854a2a0b702a8eed083c478b5d75590",
+  "operation_checkout": "23efd512a3f962da0c02f98ffe56b690a02a9ef6",
+  "controller_mac": "44:1b:f6:81:91:10",
+  "reference": {
+    "instrument_user_model": "UT890C+",
+    "reported_value": 3.23,
+    "unit": "V",
+    "unit_inferred_from_voltage_question": true,
+    "readings_provided": 1,
+    "user_reply_reference": "call_f35dd4b2f11e4926b0e241bb2b40b6fe: 3.23",
+    "requested_points": "INA module VBS to INA module GND, voltage input and DC voltage range",
+    "range_setting_confirmed": false,
+    "rel_hold_minmax_state_confirmed": false,
+    "received_utc": "2026-10-15T13:40:40.1347399+00:00",
+    "note": "Single user-reported display value, not three readings; time is receipt, not exact probe sample time"
+  },
+  "read_only": true,
+  "capture_completed": true,
+  "accuracy_accepted": false,
+  "current_reference_tested": false,
+  "reference_received_before_capture_end": false,
+  "samples": 178,
+  "first_sample_query_utc": "2026-10-15T13:37:36.141396+00:00",
+  "last_sample_query_utc": "2026-10-15T13:40:35.603642+00:00",
+  "last_sample_bus_V": 3.3675,
+  "last_query_to_reference_receipt_seconds": 4.531097,
+  "bus_V_min_max": [
+    3.1575,
+    3.41
+  ],
+  "last_10_bus_V_min_max": [
+    3.36125,
+    3.3875
+  ],
+  "illustrative_nonsynchronous_difference_V": 0.13750000000000018,
+  "illustrative_nonsynchronous_relative_difference_percent": 4.2569659442724515,
+  "files": [
+    {
+      "path": "local-data/hardware/precision-voltage/20261015_reference_1/hardware.log",
+      "bytes": 106291,
+      "sha256": "4d17a464e78198b57422b915125e679dc66e12cf52dddba8f013f6d30613877f"
+    },
+    {
+      "path": "local-data/hardware/precision-voltage/20261015_reference_1/result.json",
+      "bytes": 36813,
+      "sha256": "7372672c1e1e0fd1f7d197934d0c2904e412ddb3b5c568154f11013790afb658"
+    },
+    {
+      "path": "local-data/hardware/precision-voltage/20261015_reference_1/user_reference.json",
+      "bytes": 584,
+      "sha256": "5094957012653b5b31a166340c929f7f76a41c261ab925f2ad6d53539735dea4"
+    }
+  ],
+  "limits": [
+    "User provided one reference value, not three; voltage unit inferred from voltage question",
+    "Exact probe sample time, meter range, REL/HOLD/MINMAX state, model manual applicability and calibration unconfirmed",
+    "Receipt marker was written after bounded collection ended; last query began 5 seconds before receipt",
+    "Software voltage varies; no strict simultaneous precision or full-range acceptance",
+    "Capture passed means valid snapshots collected, not precision passed",
+    "No flash, reset, module initialization, calibration rewrite, TF write or current-series rewiring"
+  ]
+}
