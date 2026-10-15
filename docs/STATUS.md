@@ -6,7 +6,9 @@
 
 用户已确认按[开发计划](plans/TF_WRITE_DIAGNOSTIC_20261015.md)进行软件开发，工作分支为 `codex/tf-write-diagnostic`，起点为下述工程基线分支的 `ce8dc03`。不包含烧录、写卡、主控复位或合并授权。测试卡选择与卡数据备份方式尚未确定。
 
-本次新增源码、构建入口和故障注入测试，结果及候选产物在软件检查完成后记录。代码未部署到主控，不改变下述已验收能力边界。
+软件候选已从干净提交 `31dda6f` 构建通过，8 项自动化测试和本地项目检查通过；生成 SDK 配置值及分区表与冻结基线一致。自行复核发现并修正了测试路径栈帧叠加超过既有主任务栈的问题。证据、候选校验值、审查方式与未测项见[软件检查记录](reports/TF_WRITE_SOFTWARE_REVIEW_20261015.md)。代码未部署到主控，不改变下述已验收能力边界。
+
+[草稿 PR #2](https://github.com/zushhx/breadboard_engineering_migrate./pull/2) 以工程基线分支为 base，依赖 PR #1；最新 CI 以 [PR 检查页](https://github.com/zushhx/breadboard_engineering_migrate./pull/2/checks)为准。尚无独立源码审查通过证据；Code Review 的 CI 诊断工具本次连接失败，不能记为审查通过。
 
 2026-10-15 19:21，经 COM5 不主动复位的只读复查，卡身份与容量与基线记录一致，根目录两轮读取成功，参考文件四次 SHA-256 匹配；未重新读取 Flash 核实当前镜像，也未重新核对接线。日志：固件本地 `logs/tf_software_capture_controller_20261015_192149_000725.log`。
 
