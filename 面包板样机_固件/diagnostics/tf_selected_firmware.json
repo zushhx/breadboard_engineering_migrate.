@@ -1,0 +1,81 @@
+{
+  "recorded_at": "2026-10-15T15:36:23.542321+08:00",
+  "selected_environment": "tf_idf542_4bit_20m",
+  "framework": "ESP-IDF 5.4.2",
+  "controller_mac": "44:1b:f6:81:91:10",
+  "role": "read_only_tf_diagnostic",
+  "configuration": {
+    "protocol": "SDMMC",
+    "width": 4,
+    "max_frequency_khz": 20000,
+    "startup_wait_ms": 5000,
+    "uart_baud": 115200,
+    "clk": 38,
+    "cmd": 39,
+    "d0": 40,
+    "d1": 41,
+    "d2": 42,
+    "d3": 47
+  },
+  "verified_card": {
+    "cid_name": "SU08G",
+    "serial_hex": "10044BA5",
+    "ocr_hex": "C0FF8000",
+    "rca_hex": "E624",
+    "sectors": 15523840,
+    "sector_bytes": 512,
+    "bytes": 7948206080,
+    "lba0_fnv1a_hex": "1410CC45"
+  },
+  "verified_sample": {
+    "bytes": 18327,
+    "sha256": "a8014b2c5ca28eb98c9eaee6de86c76c2256bec875f0f90860ece355b1670b86",
+    "matches_pc_reader_record": true,
+    "matching_reads_in_selected_logs": 14
+  },
+  "evidence": [
+    {
+      "type": "user_confirmed_cold_start_1",
+      "log": "logs/tf_software_capture_controller_20261015_153147_355088.log",
+      "matching_sample_reads": 4
+    },
+    {
+      "type": "mcu_en_reset_card_power_retained",
+      "log": "logs/tf_software_capture_controller_20261015_153255_128860.log",
+      "matching_sample_reads": 6
+    },
+    {
+      "type": "user_confirmed_cold_start_2",
+      "log": "logs/tf_software_capture_controller_20261015_153406_884020.log",
+      "matching_sample_reads": 4
+    }
+  ],
+  "artifacts": [
+    {
+      "path": ".pio/tf_idf_probe/tf_idf542_4bit_20m/firmware.bin",
+      "bytes": 309104,
+      "sha256": "60b50aac7657f47fe375751bcc11f8e321247dffbe44415af9af846ab7c07fb8"
+    },
+    {
+      "path": ".pio/tf_idf_probe/tf_idf542_4bit_20m/bootloader.bin",
+      "bytes": 22368,
+      "sha256": "13b21114672daf143d2878721f12cdf8da4152c649f221bac2720afeffb3d2cf"
+    },
+    {
+      "path": ".pio/tf_idf_probe/tf_idf542_4bit_20m/partitions.bin",
+      "bytes": 3072,
+      "sha256": "1d9cca96de0fe07ad7fc0648b9878ddecd9ce565e38b589ad20fea698ed4c80c"
+    }
+  ],
+  "build_entry": ".shell-tools/build_tf_idf_probe_pwsh7.ps1 (relative to workspace root)",
+  "host_capture_entry": ".shell-tools/run_tf_software_trials_pwsh7.ps1 -Action capture (relative to workspace root)",
+  "original_backup": "backups/tf_software_20261015_125041_550332/esp32s3_full_8MiB.bin",
+  "original_business_firmware_restored": false,
+  "scope": {
+    "card_data_writes_tested": false,
+    "usb_msc_implemented": false,
+    "original_acquisition_wifi_integrated": false,
+    "long_term_stability_tested": false
+  },
+  "interpretation": "Selected after two user-confirmed full power cycles and one MCU reset; does not isolate a single SDK bug or prove long-term hardware stability."
+}

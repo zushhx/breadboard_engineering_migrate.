@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>面包板样机 · v1 / v2 任务验收标准与限制条件</title>
+<style>
+  :root { --ink:#1a2332; --sub:#5a6b7f; --line:#dfe6ee; --accent:#1f4e79; --warn:#b45309; --ok:#15803d; --bad:#b91c1c; --bg:#f6f8fb; --card:#fff; }
+  * { box-sizing:border-box; margin:0; padding:0; }
+  body { font-family:"Microsoft YaHei","PingFang SC",sans-serif; color:var(--ink); background:var(--bg); line-height:1.62; padding:32px 16px; }
+  .wrap { max-width:1100px; margin:0 auto; }
+  h1 { font-size:26px; color:var(--accent); margin-bottom:6px; }
+  .meta { color:var(--sub); font-size:13px; margin-bottom:18px; }
+  h2 { font-size:19px; color:var(--accent); margin:34px 0 12px; padding-left:10px; border-left:4px solid var(--accent); }
+  h3 { font-size:15.5px; margin:20px 0 8px; color:#0f3557; }
+  h4 { font-size:14px; margin:14px 0 6px; color:#274b6d; }
+  p, li { font-size:14px; }
+  .card { background:var(--card); border:1px solid var(--line); border-radius:10px; padding:16px 20px; margin-bottom:14px; }
+  .callout { border-left:4px solid var(--warn); background:#fffbeb; padding:11px 15px; border-radius:0 8px 8px 0; margin:12px 0; font-size:13.5px; }
+  .okbox { border-left:4px solid var(--ok); background:#f0fdf4; padding:11px 15px; border-radius:0 8px 8px 0; margin:12px 0; font-size:13.5px; }
+  .dangerbox { border-left:4px solid var(--bad); background:#fef2f2; padding:11px 15px; border-radius:0 8px 8px 0; margin:12px 0; font-size:13.5px; }
+  table { width:100%; border-collapse:collapse; font-size:12.8px; margin:10px 0; background:#fff; }
+  th { background:var(--accent); color:#fff; padding:7px 9px; text-align:left; font-weight:600; }
+  td { border:1px solid var(--line); padding:6px 9px; vertical-align:top; }
+  tr:nth-child(even) td { background:#f8fafc; }
+  code { background:#eef2f7; padding:1px 5px; border-radius:4px; font-size:12.5px; font-family:Consolas,monospace; }
+  .small { color:var(--sub); font-size:12px; }
+  .tag { display:inline-block; border-radius:4px; padding:0 7px; font-size:11.5px; margin-right:5px; background:#e8eef6; color:#274b6d; }
+  .tag.hot { background:#fee2e2; color:#991b1b; }
+  .tag.mid { background:#fef3c7; color:#92400e; }
+  .tag.low { background:#dcfce7; color:#166534; }
+  .danger { color:var(--bad); font-weight:600; }
+  .ok { color:var(--ok); font-weight:600; }
+  .gate { font-weight:700; color:#0f3557; }
+  footer { color:var(--sub); font-size:12px; margin-top:38px; text-align:center; }
+  @media print { body { background:#fff; padding:0; } .card { break-inside:avoid; } h2 { break-after:avoid; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<h1>面包板样机 · v1 / v2 任务验收标准与限制条件</h1>
+<div class="meta">
+  适用路线：<b>C 混合路线</b>（成品模块走关键路径 + 保真侧自己动手）｜主控：<b>立创·ESP32S3R8N8 · C20626143</b>｜日期：2026-09-20<br>
+  <span class="small">本文只定义「什么算做完」和「不许越的线」，不重复接线细节。接线见 <code>面包板样机_到货验收与施工准备包.html</code>，固件判据见 <code>面包板样机_固件/README.md</code>。</span>
+</div>
+
+<h2>零、先对齐：这里的「第一版 / 第二版」指什么</h2>
+<div class="card">
+<table>
+<tr><th style="width:110px">叫法</th><th style="width:230px">指什么</th><th>状态与口径来源</th></tr>
+<tr>
+  <td><b>第一版 v1</b></td>
+  <td>当前这块面包板样机（830 + 2×400）上的这版任务</td>
+  <td>电子链路验证 + <b>实时显示为主线</b>。口径来源：2026-09-18 20:32 你的原话「这一版先显示实时数据吧」</td>
+</tr>
+<tr>
+  <td><b>第二版 v2</b></td>
+  <td>下一板的任务（改供电为主）</td>
+  <td>「实时 + 写卡」要能同时跑、不再受板载 LDO 热限制。口径来源：同上「等到下一板我给他无线充电加大功率，给他实时还有写 sd 卡都可以」</td>
+</tr>
+</table>
+<div class="callout">
+<b>⚠ 有一处口径需要现在就说清：</b>你原话里的「下一板加大无线充功率」<b>解决不了供电余量问题</b>。<br>
+板载 LDO 的发热只取决于<b>自身压差 × 输出电流</b>，跟输入端能送多少功率无关 —— 现在 Qi 5W 相对系统需要的 0.95 W 已有 <b>4 倍以上余量</b>，从来不是瓶颈。<br>
+更糟的是：Qi <b>EPP 15W 的接收端输出是 9V / 12V 不是 5V</b>，沿用 LDO 做 9V→3.3V 就是 (9−3.3)×0.21 ≈ <b>1.2 W</b>，SOT-23-5 必热关断。<br>
+→ 所以 v2 的主线是「<b>换 buck / 电池直出</b>」，不是「加大无线充功率」。详见 §2。
+</div>
+</div>
+
+<h2>一、第一版任务（v1）</h2>
+
+<div class="card">
+<h3 style="margin-top:0">1.1 任务定义</h3>
+<p><b>一句话：</b>在面包板上把「振动采集 → 处理 → 实时显示 +（可选）落盘」这条电子链路走通，并产出一份 PC 上可解析的原始数据。</p>
+<table>
+<tr><th style="width:60px">模块</th><th style="width:170px">内容</th><th style="width:90px">v1 是否包含</th><th>说明</th></tr>
+<tr><td>M1 主控</td><td>ESP32-S3 开发板</td><td class="ok">包含</td><td>P2</td></tr>
+<tr><td>M2 供电</td><td>USB / Qi → 5V → 板载 3.3V → 磁珠分轨</td><td class="ok">包含</td><td>P1、P7（只做供电，不做充电）</td></tr>
+<tr><td>M3 采集</td><td>IIS3DWB（SPI）</td><td class="ok">包含</td><td>P3，关键路径</td></tr>
+<tr><td>M4 存储</td><td>TF 卡（SDMMC 4-bit）</td><td class="ok">包含</td><td>P4，关键路径</td></tr>
+<tr><td>M5 电流</td><td>INA226 模块 + 自带 0.1 Ω 分流（不拆焊）</td><td class="ok">包含</td><td>P6</td></tr>
+<tr><td>M6 人机</td><td>无屏幕 → 浏览器 UI（SoftAP + HTTP/WebSocket）</td><td class="ok">包含</td><td>v1 主线</td></tr>
+<tr><td>M7 电池充电</td><td>Qi 接收模块自带充电管理</td><td class="danger">不包含</td><td>P8 推后；本轮未采购电池</td></tr>
+<tr><td>M8 无线充</td><td>Qi 收 + 发（5V 段）</td><td class="ok">部分</td><td>只验「Qi 能给系统供电」，不验充电</td></tr>
+<tr><td>—</td><td>洞洞板固化（P9）/ 机械集成</td><td class="danger">不包含</td><td>Won't 清单</td></tr>
+</table>
+</div>
+
+<div class="card">
+<h3 style="margin-top:0">1.2 验收标准（四组，全过才算 v1 通过）</h3>
+
+<h4>A 组 · 阶段门禁 P0~P9 <span class="tag hot">硬门禁</span></h4>
+<p class="small">「不过不许往下走」。逐条可在 <code>面包板样机_到货验收核对表.xlsx</code> 的「P0-P9 门禁记录」里填写。</p>
+<table>
+<tr><th style="width:52px">阶段</th><th style="width:250px">判据</th><th>数值 / 出处</th></tr>
+<tr><td class="gate">P0 准备</td><td>核验清单无遗留项；排针焊齐无虚焊；INA226 分流电阻保持模块自带、未动烙铁；原嘉立创工程保持只读未改动</td><td>顺序不能反：跳过核验直接上电，烧一件就要等海外补货</td></tr>
+<tr><td class="gate">P1 供电</td><td>① 空载 3V3 实测 <b>3.18~3.45 V</b><br>② 挂全部负载（含一次 WiFi 发射峰值）跌落 <b>&lt;100 mV</b><br>③ 万用表确认白轨(3V3_SENS) 与黄轨(3V3) 之间<b>只有一个磁珠通路</b>，不是直连</td><td>板载 ME6217C33M5G 输出 800 mA（Vin≥Vout+1.0V）</td></tr>
+<tr><td class="gate">P2 主控</td><td>设备管理器出现串口；串口有日志；IO2 LED 受控闪烁；按 BOOT(IO0) 能进下载模式</td><td>先烧官方 Blink 验证板子本身，别一上来就烧自己的代码</td></tr>
+<tr><td class="gate">P3 采集</td><td>① <code>WHO_AM_I(0x0F)</code> 返回 <b>0x7B</b><br>② 静置时 Z ≈ 1 g、X/Y ≈ 0<br>③ 敲击桌面有明显响应<br>④ 串口敲 <code>k</code> 做静置标定检查，合模量 |a| 落在 <b>1.0000 g ±2%</b></td><td>④ 的出处：DS12569 Rev8 Table 3（±2 g 灵敏度 0.061 mg/LSB，公差 ±2%）。原理：静止时三轴合模量必等于 1 g，偏差就是标度误差，<b>不需要任何激振设备</b></td></tr>
+<tr><td class="gate">P4 存储</td><td>挂载成功；写后回读逐字节一致；连续写入<b>丢帧率 0</b>；实测持续写速 <b>≥300 KB/s</b></td><td>吞吐账：26.667 kHz × 6 B = <b>160 KB/s</b>，90 s ≈ 14.4 MB。容量不是瓶颈，写卡速度才是</td></tr>
+<tr><td class="gate">P5 联调</td><td>① 文件长度 = 时长 × 采样率 × 轴数 × 2 B（允许极小的分段落差）<br>② 时域波形连续无断层<br>③ FFT 主频与激励源一致</td><td>先用 3.3 / 6.6 kHz 打通，再往 26.7 kHz 提；一上来追满速会把"链路不通"和"吞吐不够"混在一起查</td></tr>
+<tr><td class="gate">P6 电流</td><td>① I²C 扫到 <b>0x40</b><br>② 电流读数与万用表串联读数偏差 <b>&lt;5%</b><br>③ 总线电压与万用表直流档一致</td><td>CAL = 2048 (0x0800)，<b>与分流阻值无关</b>（Current_LSB = 满量程电流 ÷ 32768 时，1 个电流 LSB 恰等于 1 个 2.5 µV 分流电压 LSB）。本阶段用模块自带的 <b>0.1 Ω</b> → 满量程 <b>±0.8192 A</b>、Current_LSB 25 µA。系统峰值约 456 mA，<b>余量 1.8 倍</b>；超过约 800 mA 即饱和，届时再换 10 mΩ</td></tr>
+<tr><td class="gate">P7 无线充</td><td>① 空载输出 <b>5 V ±5%</b><br>② TX 靠近 2~8 mm 时系统正常启动<br>③ 插上 USB 后 <b>Qi 端无反向电流</b>（证明 1N5819 生效）<br>④ 全负载（含一次 WiFi 发射）5 V 跌落 <b>&lt;100 mV</b></td><td>1N5819 是这个阶段唯一的易错点：开发板 5V 脚与 USB VBUS 连体，不串二极管就倒灌</td></tr>
+<tr><td class="gate">P8 电池</td><td>（本期不做）拔 USB 后系统仍工作；充电指示正常；CHRG_N / CHRG_DONE 与 IO7 / IO8 读值一致</td><td><b>BAT_N ≠ GND</b>：原设计电池负是独立节点（经 8205A 到 P−），绝不能并到黑轨</td></tr>
+<tr><td class="gate">P9 固化</td><td>（本期不做）洞洞板版在 P1~P6 全部判据上不劣于面包板版</td><td>面包板能跑 ≠ 洞洞板能跑：面包板的寄生电容其实"帮"了高速信号，升频要重新验证</td></tr>
+</table>
+
+<h4>B 组 · 实时显示（v1 的主线，必须过）</h4>
+<table>
+<tr><th style="width:32px">#</th><th style="width:330px">判据</th><th>量化口径</th></tr>
+<tr><td>B1</td><td>手机 / 电脑连上设备热点 → 浏览器打开 UI，波形持续刷新</td><td>抽帧 26667 ÷ 26 = <b>1026 Hz</b>，32 点/帧 → <b>≈32 fps</b>，398 B/帧，上行 <b>12.7 KB/s</b></td></tr>
+<tr><td>B2</td><td>静置时 Z 轴显示 <b>≈ 0 g</b>（不是 1 g）</td><td>去直流生效：3 s 一阶低通估 DC，对应截止 ≈0.05 Hz</td></tr>
+<tr><td>B3</td><td>敲桌面时波形出现明显冲击</td><td>判据用「冲击峰高与原始数据算出的峰值偏差 &lt;10%」</td></tr>
+<tr><td>B4</td><td>抽帧<b>不丢峰值</b></td><td>必须用 <b>min/max 包络</b>，不能隔点抽样 —— 崩刃/冲击是窄脉冲，隔点会整段抽没。RMS 在全速原始样本上求均方，不是抽帧后求</td></tr>
+<tr><td>B5</td><td>状态栏 2 Hz 更新：电量、Qi 状态、电流、SD 剩余</td><td>JSON 文本广播，约 1 KB/s</td></tr>
+<tr><td>B6</td><td>改界面不必重编译</td><td>页面优先从 TF 卡 <code>/ui.html</code> 加载，卡上没有才用固件内嵌版</td></tr>
+</table>
+
+<h4>C 组 · 数据质量（写卡链路）<span class="tag hot">两个数必须都是 0</span></h4>
+<table>
+<tr><th style="width:32px">#</th><th style="width:330px">判据</th><th>口径</th></tr>
+<tr><td>C1</td><td>UI「① 缓冲溢出丢样本」= <b>0</b></td><td>采集端太快，192 KB PSRAM 环形缓冲被写满</td></tr>
+<tr><td>C2</td><td>UI「② 写卡失败丢样本」= <b>0</b>，且写失败次数 = 0</td><td>存储端出问题（卡满 / 掉卡 / 坏块）</td></tr>
+<tr><td>C3</td><td>段文件头 RecTail 四个数齐全</td><td>dropSamples / writtenSamples / writeFails / lostByWrite（偏移 16，共 16 B）</td></tr>
+<tr><td>C4</td><td>分段落盘生效</td><td>每 <b>10 s</b> 换一个文件（<code>MAX_SEGMENT_SEC</code>），掉电最多丢当前段 ≈1.6 MB</td></tr>
+<tr><td>C5</td><td>重启不覆盖旧数据</td><td>上电扫描卡上最大 <code>vib_%05d.bin</code> 编号后 +1 继续写</td></tr>
+</table>
+<div class="dangerbox">
+<b>B/C 组的关系（关键）：</b>C1 与 C2 是<b>两种不同的故障</b>（采集端 vs 存储端），<b>只有两个都是 0，这段数据才算完整</b> —— 只看一个会误判。
+</div>
+
+<h4>D 组 · 供电与热</h4>
+<table>
+<tr><th style="width:32px">#</th><th style="width:330px">判据</th><th>口径</th></tr>
+<tr><td>D1</td><td>3V3 轨并 <b>≥470 µF 低 ESR</b> 电解 + 100 nF</td><td>治瞬态跌落（TX 突发 355 mA 造成的几十 mV 塌陷 → 传感器复位 / TF 掉卡）。零成本零风险，<b>没理由不做</b></td></tr>
+<tr><td>D2</td><td>采集 + 推流连跑 <b>10 分钟</b>，LDO 附近手背可停留 5 秒（约 &lt;60 °C）</td><td>耗散约 <b>320 mW</b>（只推流）；烫手就先关 WiFi 并安排改 buck</td></tr>
+<tr><td>D3</td><td>热预算记录留档，用于 v2 对比</td><td>推流+写卡 ≈230 mA / 约 390 mW（写卡增量只有 +40 mA / +70 mW，即 +22%）</td></tr>
+</table>
+</div>
+
+<div class="card">
+<h3 style="margin-top:0">1.3 限制条件（v1 不许越的线）</h3>
+<table>
+<tr><th style="width:32px">#</th><th style="width:250px">约束</th><th>为什么</th></tr>
+<tr><td>1</td><td>原嘉立创工程 <b>只读，永不改动</b></td><td>它是原装置的判据来源，一改就失去对照基准</td></tr>
+<tr><td>2</td><td>面包板阶段<b>只插不焊</b>；不拆焊板载 LDO、不做改板动作</td><td>例外只有两处离线准备：焊排针、磁珠分轨（INA226 沿用模块自带分流，<b>不拆焊</b>）</td></tr>
+<tr><td>3</td><td>采样率先 <b>3.3 / 6.6 kHz 打通</b>，再往 26.667 kHz 提</td><td>一上来追满速会把"链路不通"和"吞吐不够"两个问题混在一起查</td></tr>
+<tr><td>4</td><td><b>大电流路径必须飞线</b>，不走面包板触点</td><td>触点 10~50 mΩ/点，直接污染 INA226 读数</td></tr>
+<tr><td>5</td><td>INA226 的 IN+/IN− 必须<b>开尔文接在分流电阻两端</b>（模块 PCB 上本就直连电阻焊盘，天然成立）；<b>分流电阻保持模块自带的 0.1 Ω，不拆焊</b>（2026-09-21 决定）</td><td>不换的代价只有一个：满量程 <b>±0.8192 A</b>。当前峰值 456 mA 有 1.8 倍余量；实测一旦超过约 800 mA（典型场景：Qi 同时供设备 + 给电池充电）即饱和，<b>届时再换 10 mΩ</b>（备用件已在手，软件只改 <code>config.h</code> 两个宏，CAL 恒为 2048）</td></tr>
+<tr><td>6</td><td>每接一个新模块<b>先测通断再上电</b>；每次只动一处</td><td>这是唯一能在烧件前拦住错误的动作</td></tr>
+<tr><td>7</td><td>3V3_SENS 必须经<b>磁珠分轨</b>，黄轨白轨之间不得直连</td><td>直连会让开关噪声直接调制进加速度信号，事后无法从数据里剥离</td></tr>
+<tr><td>8</td><td>WiFi 与采集共存<b>必须实测</b>；若 LDO 烫手 → 用「排障 · 录制时关 WiFi」切工况录数据</td><td><b>不许用"砍掉写卡功能"来省电</b>。写卡只多 70 mW，且 M4 存储是 MVP 四项之一</td></tr>
+<tr><td>9</td><td>SPI / SDMMC 线束 <b>&lt;15 cm</b></td><td>面包板已是信号完整性的硬约束</td></tr>
+<tr><td>10</td><td>电解电容长脚 = 正、LED 长脚 = 正；100 nF 必须是 <b>X7R</b></td><td>电解接反会炸；Y5V 介质容值随温度/电压暴跌，做不了去耦</td></tr>
+<tr><td>11</td><td>DIL24 脚位<b>按实物丝印，不按芯片脚号</b></td><td>接错电源可能烧掉评估板，补货要走海外</td></tr>
+<tr><td>12</td><td>软件<b>不引入第三方库</b>（HTTP/WebSocket/SHA-1/base64 全部自写）；交付物 xlsx 一律<b>静态值零公式</b></td><td>少一个构建期依赖就少一处下载失败风险；本机无重算引擎，公式会显示空白</td></tr>
+<tr><td>13</td><td>通讯架构的适用性边界：SoftAP + 浏览器只是<b>台式验证形态</b></td><td>刀柄是装夹件、可能是旋转件，人不会守在旁边连热点 → <b>不许把它当成刀柄上的最终方案</b></td></tr>
+</table>
+</div>
+
+<div class="card">
+<h3 style="margin-top:0">1.4 v1 明确<b>不</b>验收的（避免误判为失败）</h3>
+<ul style="margin-left:20px">
+<li>不要求无线充给电池充上电（P8 推后，本轮未采购电池）</li>
+<li>不要求 26.667 kHz 满速下丢帧为 0 —— 先看吞吐余量与实测丢帧率</li>
+<li>不要求电量读数准确：分压网络未在实物校准，且电量用开路电压法估算（无库仑计），平台区误差可达 ±15%</li>
+<li>不要求射频性能、机械集成、旋转动平衡、小型化（Won't 清单）</li>
+<li>不要求 ADC 双路（电量 / Qi）读数精度优于 ±5%（<code>analogReadMilliVolts()</code> 走 eFuse Vref 校准）</li>
+</ul>
+</div>
+
+<h2>二、第二版任务（v2）</h2>
+
+<div class="card">
+<h3 style="margin-top:0">2.1 任务定义</h3>
+<p><b>一句话：</b>把 v1 暴露出来的供电瓶颈解决掉，让「实时 + 写卡」在正常工况下能长时间同时稳定运行，并把电池链路接成闭环。</p>
+<table>
+<tr><th style="width:60px">任务</th><th style="width:300px">内容</th><th>要点</th></tr>
+<tr><td><b>T1</b></td><td>供电改造：去掉板载 LDO 的热瓶颈</td><td>两条候选：<b>①</b> 外置同步 buck（TPS62130 / MP2315 类）5V→3.3V，效率 66%→90%，发热 357 mW → 约 40 mW；<b>②</b> 电池直出 + buck-boost（原设计 TPS63031 就是干这个），一次解决「电池 &lt;3.3 V 失压」与发热</td></tr>
+<tr><td><b>T2</b></td><td>电源轨再平衡（v1 现在就能做，v2 固化）</td><td><b>方案 ④（推荐）</b>：buck 降到 <b>3.80 V</b> 喂开发板 5V 脚 → 板载 LDO 照常工作但压差只剩 0.5 V，耗散 (3.8−3.3)×0.23 ≈ <b>115 mW</b>（原 390 mW，降到 1/3.4）。只需改一根杜邦线，不用管反灌。⚠ 此期间不能插 USB</td></tr>
+<tr><td><b>T3</b></td><td>电池链路闭环（P8）</td><td>Qi 接收模块<b>自带充电管理</b>（4.2 V ≤0.6 A）→ 电池 → 系统。<b>TP4056 可省</b>，比原设计少一级</td></tr>
+<tr><td><b>T4</b></td><td>通讯架构重新选型（若上真刀柄）</td><td>BLE / 离线取卡 / 其他 —— 不能沿用 SoftAP 假设</td></tr>
+</table>
+</div>
+
+<div class="card">
+<h3 style="margin-top:0">2.2 验收标准</h3>
+<table>
+<tr><th style="width:52px">组</th><th style="width:300px">判据</th><th>口径</th></tr>
+<tr><td class="gate">A 热</td><td>满载（WiFi TX + TF 写 + 采集）连跑 <b>30 分钟</b>，3.3 V 稳压器件表面温度 <b>&lt;60 °C</b>；LDO 耗散降至 <b>&lt;150 mW</b></td><td>走方案 ④ 时约 115 mW；走 ① 时接近 0 mW</td></tr>
+<tr><td class="gate">B 并行</td><td>「实时 + 写卡」连跑 <b>30 分钟</b>，UI 上 ① 与 ② <b>都保持 0</b></td><td><b>这才是"能不能同时跑"的唯一判据</b>（v1 里这一项未实测）</td></tr>
+<tr><td class="gate">C 电池</td><td>拔 USB 后系统持续工作；充电指示正常；CHRG_N / CHRG_DONE 与 IO7 / IO8 读值一致；<b>BAT_N 与 GND 保持隔离</b></td><td>电池负是独立节点（经 8205A 到 P−）</td></tr>
+<tr><td class="gate">D 无线充</td><td>确认接收模块两路输出（5 V / 4.2 V）是否<b>同时可用</b>；若提到 EPP 15W → <b>必须配套 buck</b></td><td>EPP 输出是 9V/12V，沿用 LDO 做 9V→3.3V = 1.2 W，SOT-23-5 必热关断（ME6217 热关断点 160 °C）</td></tr>
+<tr><td class="gate">E 回归</td><td>v1 已通过的全部判据（P1~P7 + B/C 组）在 v2 上<b>不劣化</b></td><td>见 §三 基线表</td></tr>
+</table>
+</div>
+
+<div class="card">
+<h3 style="margin-top:0">2.3 限制条件</h3>
+<table>
+<tr><th style="width:32px">#</th><th style="width:290px">约束</th><th>为什么</th></tr>
+<tr><td>1</td><td><b>保真侧一律不动</b>：IIS3DWB 型号、INA226 模块（含自带 0.1 Ω 分流）、3V3_SENS 磁珠分轨</td><td>这些是"被读的物理量"所在的地方，改了测量基准就变了</td></tr>
+<tr><td>2</td><td><b>不能沿用 LDO 承受 &gt;5 V 输入</b></td><td>EPP 9V/12V 直接否 —— 发热 = 压差 × 电流，与输入功率无关</td></tr>
+<tr><td>3</td><td><b>「加大无线充功率」不是供电余量的解法</b></td><td>Qi 5W 相对需要的 0.95 W 已有 4 倍余量，输入端从来不是瓶颈</td></tr>
+<tr><td>4</td><td><b>不是「做了 buck 就不用大电容」</b>：③ 电容与 ①/④ buck <b>都要做</b></td><td>③ 治瞬态跌落（µs~ms 毛刺，buck 环路带宽跟不上 355 mA 的跳变）；①/④ 治稳态温升（分钟级平均耗散，电容只能摊平不能减少产热）</td></tr>
+<tr><td>5</td><td>面包板能跑 ≠ PCB 能跑</td><td>面包板寄生电容"帮"了高速信号，升频与改板都要重新验证</td></tr>
+<tr><td>6</td><td><b>旋转件上的无线传输不在 v2 范围</b></td><td>替代滑环、动平衡、传输可靠性是另一个量级的题目，与"面包板验证电子链路"不是一回事</td></tr>
+<tr><td>7</td><td>不得改动 v1 的判据基线（P0~P9 判据文本与红线）</td><td>基线一动，前后两版就无法比较</td></tr>
+</table>
+</div>
+
+<div class="card">
+<h3 style="margin-top:0">2.4 需要你拍板的 3 件事</h3>
+<table>
+<tr><th style="width:190px">待定项</th><th>选项</th></tr>
+<tr><td>v2 硬件形态</td><td>① 改板（自绘 PCB，彻底）／ ② 外置 buck 模块旁路（一个模块 + 一根杜邦线，本周末就能做）</td></tr>
+<tr><td>v2 无线充功率</td><td>① 维持 5W（够用，4 倍余量，零改动）／ ② 上 EPP（必须配套 buck）</td></tr>
+<tr><td>通讯架构</td><td>① 继续 SoftAP（只适合台面）／ ② 先按"离线取卡"做（更接近真刀柄）</td></tr>
+</table>
+</div>
+
+<h2>三、v1 → v2 的回归基线（不许退化）</h2>
+<div class="card">
+<table>
+<tr><th style="width:32px">#</th><th style="width:300px">基线判据</th><th>来源</th></tr>
+<tr><td>1</td><td>静置合模量 1.0000 g ±2%</td><td>P3-④ / DS12569 Rev8 Table 3</td></tr>
+<tr><td>2</td><td>WHO_AM_I = 0x7B</td><td>P3-① / DS12569 Rev8 §9.21</td></tr>
+<tr><td>3</td><td>连续写卡丢帧率 0，持续写速 ≥300 KB/s</td><td>P4</td></tr>
+<tr><td>4</td><td>电流读数与万用表偏差 &lt;5%；CAL = 2048（与阻值无关），满量程 ±0.8192 A @0.1 Ω</td><td>P6</td></tr>
+<tr><td>5</td><td>3V3 空载 3.18~3.45 V；满载跌落 &lt;100 mV</td><td>P1</td></tr>
+<tr><td>6</td><td>UI ① 与 ② 两路丢样本计数均可读、且正常工况为 0</td><td>C1 / C2</td></tr>
+<tr><td>7</td><td>Qi 支路串 1N5819，插 USB 无倒灌</td><td>P7-③</td></tr>
+</table>
+</div>
+
+<h2>四、口径与数据来源</h2>
+<div class="card">
+<table>
+<tr><th style="width:32px">#</th><th style="width:190px">内容</th><th>来源</th></tr>
+<tr><td>1</td><td>P0~P9 判据、红线 12 条</td><td><code>面包板样机_到货验收与施工准备包.html</code> §六 / §七（本文件的 A 组与限制条件均引自该处，未新增判据）</td></tr>
+<tr><td>2</td><td>实时 UI、写卡、RecTail、分段、编号扫描判据</td><td><code>面包板样机_固件/README.md</code>（§4.9 / §4.11 / §六 / §九）</td></tr>
+<tr><td>3</td><td>热预算（320 / 390 mW、115 mW、1.2 W）</td><td>README §4.11 细化热预算表</td></tr>
+<tr><td>4</td><td>ME6217C33M5G 参数</td><td>立创 / 嘉立创 / 云汉芯城三处商品页口径一致。⚠ <b>"功耗上限 1000 mW"出处不明，已标记不可作设计依据</b>；按 SOT-23-5 真实 θJA 200~250 °C/W 估算，85 °C 环境 PD 预算只有约 300 mW</td></tr>
+<tr><td>5</td><td>MP1584EN</td><td>立创 <b>C454188</b>（MPS，SOIC-8-EP，4.5~28 V 入 / 0.8~25 V 出 / 3 A，非同步降压）；成品可调降压模块走淘宝</td></tr>
+<tr><td>6</td><td>v1 / v2 的版本划分与节奏</td><td>2026-09-18 20:32 与 20:39 你的原话（<code>.workbuddy/memory/2026-09-18.md</code>）</td></tr>
+</table>
+<div class="callout">
+<b>诚实边界：</b>本文所有判据均为<b>纸面判据</b>，器件到货前的实测列全部为空。v2 的三个待定项（硬件形态 / 无线充功率 / 通讯架构）尚未拍板 —— 定下来后 §2 的验收标准需要相应细化。
+</div>
+</div>
+
+<footer>面包板样机 · v1 / v2 任务验收标准与限制条件 ｜ 生成 2026-09-20 ｜ 知微 🔧</footer>
+
+</div>
+</body>
+</html>

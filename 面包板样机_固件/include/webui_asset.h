@@ -1,0 +1,1361 @@
+#pragma once
+#include <Arduino.h>
+
+// ============================================================
+//  ⚠ 本文件由 tools/build_webui.py 自动生成 —— 不要手工编辑！
+//     源文件：webui/index.html
+//     重新生成：python tools/build_webui.py
+//
+//  想改界面又不想重编译固件？把 index.html 拷到 TF 卡根目录，
+//  设备会优先用卡上的 /ui.html（见 src/netui.cpp 的 serveAsset）。
+// ============================================================
+
+static const char WEBUI_HTML[] =
+R"__VIBUI__(<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#f5f4f0">
+<title>振动监测 · VibMon</title>
+<style>
+/* ============================================================
+   振动监测 UI · 深色主题
+   直接双击本文件打开 → 自动进入「演示模式」（用合成数据驱动）
+   由设备提供时（http://192.168.4.1/）→ 自动连 WebSocket 走真机数据
+   ============================================================ */
+:root{
+  --bg:#0a0e13; --panel:#121922; --panel2:#18222c; --line:#233240;
+  --txt:#e6edf3; --dim:#8ba0b3; --dim2:#5d7288;
+  --accent:#22d3ee; --ok:#4ade80; --warn:#fbbf24; --bad:#f87171;
+  --x:#ff7d7d; --y:#4ade80; --z:#6cb0ff;
+  --r:14px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{
+  background:var(--bg); color:var(--txt);
+  font:14px/1.5 system-ui,-apple-system,"Segoe UI","Microsoft YaHei",sans-serif;
+  -webkit-font-smoothing:antialiased;
+  padding:14px; padding-bottom:28px;
+}
+.wrap{max-width:1400px;margin:0 auto;display:grid;grid-template-columns:296px minmax(0,1fr);gap:14px;align-items:start}
+@media (max-width:920px){ .wrap{grid-template-columns:1fr} }
+
+/* ---------- 顶栏 ---------- */
+header{
+  grid-column:1/-1; display:flex;align-items:center;gap:14px;flex-wrap:wrap;
+  background:linear-gradient(180deg,#141d27,#111820);
+  border:1px solid var(--line);border-radius:var(--r);padding:12px 16px;
+}
+.brand{display:flex;align-items:center;gap:10px;font-weight:650;font-size:16px;letter-spacing:.3px}
+.brand small{font-weight:400;font-size:11.5px;color:var(--dim2);letter-spacing:0}
+.dot{width:9px;height:9px;border-radius:50%;background:var(--dim2);flex:none;box-shadow:0 0 0 0 rgba(34,211,238,.6)}
+.dot.live{background:var(--ok);animation:pulse 2s infinite}
+.dot.demo{background:var(--warn)}
+.dot.dead{background:var(--bad)}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(74,222,128,.55)}70%{box-shadow:0 0 0 8px rgba(74,222,128,0)}100%{box-shadow:0 0 0 0 rgba(74,222,128,0)}}
+.conn{font-size:12px;color:var(--dim);display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.conn code{background:#0c1319;border:1px solid var(--line);border-radius:6px;padding:1px 7px;font-size:11.5px;color:var(--accent)}
+.spacer{flex:1}
+button{
+  font:inherit;font-size:13px;color:var(--txt);background:var(--panel2);
+  border:1px solid var(--line);border-radius:9px;padding:7px 14px;cursor:pointer;
+  transition:.15s;white-space:nowrap;
+}
+button:hover{background:#1f2c38;border-color:#31465a}
+button:active{transform:translateY(1px)}
+button:disabled{opacity:.4;cursor:not-allowed}
+button.primary{background:linear-gradient(180deg,#0e7490,#0c6076);border-color:#17869f;color:#e8fbff;font-weight:600}
+button.primary:hover{background:linear-gradient(180deg,#1189a8,#0d6e87)}
+button.danger{background:linear-gradient(180deg,#7f1d1d,#6b1717);border-color:#a33;color:#ffe9e9}
+button.ghost{background:transparent}
+button.on{background:#0e7490;border-color:#22d3ee;color:#e8fbff}
+.seg{display:flex;border:1px solid var(--line);border-radius:9px;overflow:hidden}
+.seg button{border:0;border-radius:0;padding:6px 11px;font-size:12.5px;background:transparent}
+.seg button+button{border-left:1px solid var(--line)}
+.seg button.on{background:#0f3b47;color:var(--accent)}
+
+/* ---------- 卡片 ---------- */
+.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:14px}
+.col-left{display:flex;flex-direction:column;gap:14px}
+.card h3{font-size:11.5px;font-weight:600;letter-spacing:.9px;text-transform:uppercase;color:var(--dim2);margin-bottom:12px;display:flex;align-items:center;gap:7px}
+
+/* ---------- 电量环 ---------- */
+.bat{display:flex;gap:14px;align-items:center}
+.ring{position:relative;width:112px;height:112px;flex:none}
+.ring svg{transform:rotate(-90deg);display:block}
+.ring .val{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.ring .val b{font-size:27px;font-weight:700;letter-spacing:-.5px;line-height:1}
+.ring .val i{font-size:11px;font-style:normal;color:var(--dim2);margin-top:2px}
+.batmeta{flex:1;min-width:0;display:flex;flex-direction:column;gap:7px}
+.row{display:flex;justify-content:space-between;align-items:baseline;gap:8px;font-size:13px}
+.row span{color:var(--dim)}
+.row b{font-weight:600;font-variant-numeric:tabular-nums}
+
+/* ---------- 无线充 ---------- */
+.qi{display:flex;align-items:center;gap:13px}
+.coil{width:60px;height:60px;flex:none;position:relative}
+.coil .arc{transition:.4s}
+.pill{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;font-weight:600;padding:4px 11px;border-radius:99px;border:1px solid transparent}
+.pill.idle{background:#1b2530;color:var(--dim);border-color:var(--line)}
+.pill.wireless{background:#0b3a33;color:#5eead4;border-color:#15695c}
+.pill.usb{background:#12304d;color:#7cc4ff;border-color:#1d4c78}
+.pill.none{background:#2a1c1c;color:#f8a9a9;border-color:#5a2a2a}
+.flow{animation:flow 1.8s linear infinite}
+@keyframes flow{to{stroke-dashoffset:-24}}
+
+/* ---------- 电流条 ---------- */
+.bar{height:7px;border-radius:99px;background:#0c1319;border:1px solid var(--line);overflow:hidden;margin-top:9px}
+.bar i{display:block;height:100%;background:linear-gradient(90deg,#22d3ee,#4ade80);width:0;transition:width .25s;border-radius:99px}
+.legend{display:flex;justify-content:space-between;font-size:10.5px;color:var(--dim2);margin-top:5px}
+
+/* ---------- 波形 ---------- */
+.wavecard{padding:0;overflow:hidden}
+.wavehead{display:flex;align-items:center;gap:12px;padding:11px 14px;border-bottom:1px solid var(--line);flex-wrap:wrap}
+.wavehead .t{font-size:11.5px;font-weight:600;letter-spacing:.9px;text-transform:uppercase;color:var(--dim2)}
+#cv{display:block;width:100%;height:330px}
+@media (max-width:640px){ #cv{height:260px} }
+.ctl{display:flex;gap:10px;align-items:center;padding:10px 14px;border-top:1px solid var(--line);flex-wrap:wrap;font-size:12.5px}
+.ctl label{color:var(--dim2);font-size:11.5px;margin-right:-4px}
+.badge{font-size:11px;padding:3px 9px;border-radius:99px;background:#0c1319;border:1px solid var(--line);color:var(--dim)}
+
+/* ---------- 三轴数值 ---------- */
+.tri{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:14px}
+@media (max-width:640px){ .tri{grid-template-columns:1fr} }
+.ax{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:11px 13px;position:relative;overflow:hidden}
+.ax::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--c)}
+.ax .n{font-size:11.5px;color:var(--dim);letter-spacing:.6px;font-weight:600}
+.ax .v{font-size:21px;font-weight:700;font-variant-numeric:tabular-nums;margin-top:3px;letter-spacing:-.4px}
+.ax .p{font-size:11.5px;color:var(--dim2);margin-top:2px;font-variant-numeric:tabular-nums}
+.ax .p em{font-style:normal;color:var(--c);opacity:.85}
+
+/* ---------- 记录状态 ---------- */
+.stat{display:grid;grid-template-columns:repeat(2,1fr);gap:9px 14px}
+.stat .row{font-size:12.5px}
+.prog{height:8px;border-radius:99px;background:#0c1319;border:1px solid var(--line);overflow:hidden;margin-top:11px}
+.prog i{display:block;height:100%;width:0;background:linear-gradient(90deg,#22d3ee,#0ea5e9);transition:width .3s;border-radius:99px}
+.recfile{font-family:ui-monospace,Consolas,monospace;font-size:12px;color:var(--accent);word-break:break-all}
+.empty{color:var(--dim2);font-size:12.5px}
+
+/* ---------- 文件列表 ---------- */
+.files{margin-top:10px;max-height:150px;overflow:auto;font-family:ui-monospace,Consolas,monospace;font-size:11.5px}
+.files div{display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px dashed #1b2530;color:var(--dim)}
+.files div b{color:var(--txt);font-weight:500}
+
+/* ---------- 底栏说明 ---------- */
+.note{grid-column:1/-1;background:#0d141b;border:1px solid var(--line);border-radius:var(--r);padding:13px 16px;font-size:12.5px;color:var(--dim)}
+.note b{color:var(--txt)}
+.note ol{margin:7px 0 0 18px;display:grid;gap:4px}
+.note code{background:#0c1319;border:1px solid var(--line);border-radius:5px;padding:0 5px;color:var(--accent);font-size:11.5px}
+
+/* ---------- 提示条 ---------- */
+#toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%) translateY(80px);background:#18222c;border:1px solid var(--line);border-radius:11px;padding:10px 18px;font-size:13px;opacity:0;transition:.25s;pointer-events:none;z-index:99;box-shadow:0 8px 30px rgba(0,0,0,.5)}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+/* Instrument dashboard — compact, local assets only */
+:root{--bg:#101318;--panel:#191e25;--panel2:#242c35;--line:#303943;--txt:#edf1f5;--dim:#a9b5c1;--dim2:#8e9baa;--accent:#67ded0;--r:16px}
+body{padding:28px 32px 40px;background:var(--bg);font-size:14px}
+.wrap{max-width:1480px;grid-template-columns:300px minmax(0,1fr);gap:20px}
+header{padding:0 0 22px;background:none;border:0;border-radius:0;border-bottom:1px solid var(--line);gap:16px}
+.brand{font-size:21px;letter-spacing:-.5px}.brand small{display:block;font-size:12px;letter-spacing:1px;margin-top:3px;color:var(--dim)}
+.brandmark{width:38px;height:38px;color:var(--accent);margin-right:2px}
+.conn{padding:8px 12px;border-radius:8px;background:var(--panel);max-width:400px}
+.hero{grid-column:1/-1;display:flex;align-items:end;justify-content:space-between;gap:20px;padding:6px 0 8px}
+.eyebrow{font-size:11px;font-weight:600;letter-spacing:2px;color:var(--accent);margin-bottom:8px}
+h1{font-size:32px;line-height:1.25;letter-spacing:-1px;font-weight:600}
+.hero p{margin-top:8px;color:var(--dim);font-size:13px}.hero-meta{text-align:right;color:var(--dim);font-size:12px;line-height:1.9}.hero-meta strong{color:var(--txt);font-weight:500}
+.card{padding:20px;border-color:#29323c;box-shadow:0 4px 14px #00000012}
+.col-left{gap:16px}.card h3{color:var(--dim);font-size:12px;letter-spacing:1px;margin-bottom:20px;font-weight:500}
+button{min-height:36px;border-radius:8px;padding:8px 14px;font-size:12px}
+button.primary{background:var(--accent);border-color:var(--accent);color:#102e2b;font-weight:700;padding:10px 22px}
+button.primary:hover{background:#95eee4;border-color:#95eee4}
+button:focus-visible,summary:focus-visible{outline:2px solid var(--accent);outline-offset:4px}
+.seg{border-radius:8px;background:#11171d}.seg button{min-height:32px}.seg button.on{background:#28463f;color:#b7fff0}
+.wavecard{padding:0}.wavehead{padding:18px 20px;gap:8px}.wavehead .t{font-size:14px;color:var(--txt);margin-right:8px;letter-spacing:.2px}
+.badge{font-size:11px;border:0;border-radius:5px;background:#252e37;color:var(--dim)}
+#cv{height:360px}.ctl{padding:14px 18px;gap:12px}.ctl label{color:var(--dim);font-size:12px}
+.tri{margin-top:0;gap:16px}.ax{padding:18px 20px;border-radius:12px;background:var(--panel);border-color:#29323c}.ax::before{left:20px;top:20px;bottom:auto;width:6px;height:6px;border-radius:50%}.ax .n{padding-left:14px;font-size:12px}.ax .v{font-size:29px;font-weight:500;margin:12px 0 6px}.ax .p{font-size:12px}
+.row{padding:3px 0}.row b{font-weight:500}.stat{gap:12px 28px}.stat .row{border-bottom:1px solid #28313a;padding-bottom:9px}
+.ring .val b{font-weight:500}.bar,.prog{border:0;background:#0f141a;height:5px}.bar i,.prog i{background:var(--accent)}
+.legend{font-size:11px;color:var(--dim2)}.empty{line-height:1.8;color:var(--dim)}
+.files{max-height:230px;font-size:12px}.files div{padding:10px 0;border-bottom:1px solid var(--line)}.files a{color:var(--accent)}
+.note{background:none;border:0;border-top:1px solid var(--line);border-radius:0;padding:20px 0;color:var(--dim)}
+summary{cursor:pointer;font-size:13px;color:var(--txt);list-style-position:inside}details[open]>summary{margin-bottom:16px}
+.note ol{gap:10px}.foot{grid-column:1/-1;display:flex;justify-content:space-between;color:var(--dim2);font-size:11px;letter-spacing:.5px;padding:0 0 4px}
+@media(max-width:1100px){body{padding:20px}.wrap{grid-template-columns:260px minmax(0,1fr)}header .spacer{display:none}.conn{margin-left:auto}.hero-meta{display:none}.stat{grid-template-columns:1fr}.card{padding:16px}.wavecard{padding:0}}
+@media(max-width:800px){.wrap{grid-template-columns:1fr;gap:16px}.col-left{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));grid-row:4}.bat{flex-direction:column}.qi{flex-direction:column}.batmeta{width:100%}header{gap:10px}.conn{margin-left:0}h1{font-size:27px}.hero{padding-top:4px}.stat{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:560px){body{padding:16px 12px 24px}.brand{font-size:19px}.conn{width:100%;max-width:none;order:5}header{padding-bottom:16px}.col-left{display:flex}.bat,.qi{flex-direction:row}.tri{grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}.ax{padding:14px 10px}.ax::before{left:10px;top:16px}.ax .v{font-size:19px}.ax .p{font-size:10px}.stat{grid-template-columns:1fr}#cv{height:320px}.wavehead{padding:14px}.ctl{padding:12px;gap:8px}.seg button{padding:6px 9px}.hero p{font-size:12px}.foot{gap:15px;flex-wrap:wrap}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
+
+
+/* Scientific editorial theme */
+:root{--bg:#f5f4f0;--panel:#fdfdfb;--panel2:#eeefeb;--line:#d9ddd9;--txt:#25332f;--dim:#606e68;--dim2:#6b7771;--accent:#356d64;--ok:#34705d;--warn:#986326;--bad:#a64d47;--x:#436a8b;--y:#468277;--z:#b17949;--r:3px}
+body{background:var(--bg);color:var(--txt);padding-top:30px}
+.wrap{grid-template-columns:300px minmax(0,1fr);gap:26px}
+header{border-bottom:1px solid #c9cfca;padding-bottom:22px}
+.brand{font-family:Georgia,'Times New Roman',serif;font-size:25px;font-weight:400;letter-spacing:-.6px}.brand small{font-family:system-ui,'Microsoft YaHei',sans-serif;font-size:11px;letter-spacing:2px}.brandmark{width:32px;height:32px}.dot{width:6px;height:6px;box-shadow:none}.dot.live{animation:none}
+.conn{background:transparent;border-left:1px solid var(--line);border-radius:0;padding-left:18px;font-size:11px}.conn code{background:#edf1eb;color:var(--accent);border:0}
+.hero{padding:9px 0 14px}.eyebrow{font-family:Georgia,serif;font-size:11px;font-weight:400;letter-spacing:2.4px;color:var(--dim)}
+h1{font-family:Georgia,'Songti SC','SimSun',serif;font-size:34px;font-weight:400;letter-spacing:5px}.hero p{font-size:12px;letter-spacing:1px;margin-top:12px}.hero-meta{font-size:11px}
+.card{box-shadow:none;border:1px solid var(--line);border-radius:3px;padding:22px;background:var(--panel)}.card h3{letter-spacing:1.1px;color:var(--dim);font-size:11px;margin-bottom:20px}.col-left{gap:20px}
+button{background:transparent;color:var(--txt);border-color:#cbd2cc;border-radius:3px;font-size:12px}button:hover{background:#e9eee8;border-color:#8caaa0}button.primary{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:500}button.primary:hover{background:#28564f;border-color:#28564f}button.on{background:#e4eee8;color:#2e6459;border-color:#8ea79d}button.danger{background:#a64d47;border-color:#a64d47;color:#fff}
+.seg{background:transparent;border-color:#d4dad4;border-radius:3px}.seg button.on{background:#e2ebe4;color:#285d50}.seg button+button{border-color:#d4dad4}
+.wavecard{padding:0;border:0;background:var(--panel);border-top:2px solid #52695e;border-bottom:1px solid var(--line)}.wavehead{padding:17px 12px;background:var(--bg);border-bottom:1px solid var(--line)}.wavehead .t{font-family:Georgia,'SimSun',serif;font-size:15px;font-weight:400;letter-spacing:1px}.badge{background:transparent;border-radius:0;color:var(--dim);font-size:10px;padding:3px 6px}
+#cv{height:350px}.ctl{padding:14px 0;background:var(--bg);border-color:var(--line)}.ctl label{font-size:11px}
+.tri{gap:24px}.ax{border:0;border-radius:0;border-bottom:1px solid var(--line);background:transparent;padding:12px 0 19px}.ax::before{left:0;top:16px;width:5px;height:5px}.ax .n{font-weight:400;font-size:11px}.ax .v{font-family:Georgia,'Times New Roman',serif;font-size:30px;font-weight:400;letter-spacing:-.5px;margin:12px 0 7px}.ax .p{font-size:11px}.ax .p em{color:var(--dim)}
+.ring{width:90px;height:90px}.ring svg{width:90px;height:90px}.ring .val b{font-family:Georgia,serif;font-size:29px;font-weight:400}.ring circle{stroke-width:4px}.ring circle:first-child{stroke:#e2e7df}.bat{gap:16px}.row span{flex-shrink:0}.row b{text-align:right;font-size:12px}.stat .row{border-bottom:1px solid #e4e7e1}
+.coil circle:not(.arc){stroke:#d9e1d7}.coil{opacity:.85}.pill{font-weight:400;border-radius:3px;font-size:11px}.pill.idle{background:#eeefeb;color:var(--dim);border-color:#d8ddd6}.pill.wireless{background:#e7efe8;color:#326451;border-color:#d4e1d4}.pill.usb{background:#e7edf1;color:#436a8b;border-color:#d2dde5}.pill.none{background:#f2eae5;color:#8c624e;border-color:#e5d9d0}
+.bar,.prog{height:3px;border-radius:0;background:#e3e8df}.bar i,.prog i{border-radius:0;background:var(--accent)}.files div{border-bottom:1px solid var(--line)}.files a{color:var(--accent)}
+.note{background:none;border:0;border-top:1px solid var(--line);border-radius:0;padding:20px 0}.note code{background:#e8eee5;color:var(--accent);border:0}.note:not([open])>:not(summary){display:none}.foot{font-size:10px;letter-spacing:1px}
+#toast{background:#fdfdfb;color:var(--txt);border-color:#cbd4cb;border-radius:3px;box-shadow:0 5px 24px #25332f12}
+@media(max-width:1100px){.wrap{grid-template-columns:260px minmax(0,1fr)}.card{padding:16px}.wavecard{padding:0}.bat{gap:10px}.ring{width:76px;height:76px}.ring svg{width:76px;height:76px}.row{font-size:12px}}
+@media(max-width:800px){.wrap{grid-template-columns:1fr;gap:22px}.col-left{grid-row:4}.hero-meta{display:none}.bat{flex-direction:column}.ring{width:90px;height:90px}.ring svg{width:90px;height:90px}}
+@media(max-width:560px){.wrap{gap:18px}body{padding:18px 14px}.brand{font-size:23px}.conn{border-left:0;padding:5px 0}.hero{padding:4px 0 8px}h1{font-size:30px}.hero p{font-size:11px}.tri{gap:14px}.ax{padding:10px 0 15px}.ax .v{font-size:23px}.ax::before{left:0;top:14px}.ax .p{font-size:10px}.bat,.qi{flex-direction:row}.wavehead{padding:12px 0}.wavehead .t{font-size:14px}.ctl{gap:8px}.badge{font-size:10px}#cv{height:320px}}
+
+
+.control-group{display:flex;align-items:center;gap:8px;flex-wrap:nowrap;max-width:100%}.control-label{white-space:nowrap;color:var(--dim);font-size:11px}.control-group .seg{min-width:0}
+
+.page-nav{grid-column:1/-1;display:flex;gap:24px;border-bottom:1px solid var(--line)}
+.page-nav button{border:0;border-bottom:2px solid transparent;border-radius:0;padding:9px 0;color:var(--dim)}
+.page-nav button.on{border-color:var(--accent);background:none;color:var(--txt)}
+.device-strip{grid-column:1/-1;display:flex;gap:28px;flex-wrap:wrap;border:1px solid var(--line);background:var(--panel);padding:13px 20px;color:var(--dim);font-size:12px}
+.device-strip span{white-space:nowrap}.device-strip b{color:var(--txt);font-weight:500;margin-left:6px}
+.monitor-main{grid-column:1/-1;grid-row:5;display:flex;flex-direction:column;gap:20px;min-width:0}
+.col-left{grid-column:1/-1;grid-row:6;display:grid;grid-template-columns:1fr 1fr 1fr;gap:20px}
+.not-attached{color:var(--dim);font-size:12px}.col-left .card:nth-child(-n+2) .bat,.col-left .card:nth-child(-n+2) .qi{display:none}
+.auxiliary-display{margin-left:auto}.auxiliary-display .control-label{font-size:11px}
+.trend-section{border-top:1px solid var(--line);padding-top:20px}.trend-head{display:flex;justify-content:space-between;align-items:end;gap:16px;flex-wrap:wrap;margin-bottom:16px}
+.trend-head h3{font:400 17px Georgia,'SimSun',serif;margin-bottom:4px}.trend-head small,.trend-note{color:var(--dim);font-size:11px}.trend-controls{display:flex;gap:10px;flex-wrap:wrap}
+#trendCanvas{width:100%;display:block;background:var(--panel);border:1px solid var(--line)}.trend-note{margin-top:8px}
+.advanced summary{cursor:pointer;font-size:13px}.advanced[open] summary{margin-bottom:18px}
+#analysisPage{grid-column:1/-1;display:flex;flex-direction:column;gap:20px}#analysisPage[hidden],.monitor-only[hidden]{display:none}
+.analysis-head{display:block}.analysis-head h2{font:400 30px Georgia,'SimSun',serif;letter-spacing:2px}.analysis-head p{color:var(--dim);font-size:12px;margin-top:8px}
+.analysis-controls{display:flex;align-items:end;gap:12px;flex-wrap:wrap}.analysis-controls label{font-size:11px;color:var(--dim);display:flex;flex-direction:column;gap:6px}
+.analysis-controls input,.analysis-controls select{background:var(--panel);border:1px solid var(--line);padding:8px;color:var(--txt);max-width:250px}
+#analysisInfo{width:100%;font-size:12px;color:var(--dim)}.analysis-plots{display:grid;grid-template-columns:1fr 1fr;gap:20px}.analysis-plots canvas{width:100%;display:block}
+.analysis-overview h3{font:400 17px Georgia,'SimSun',serif;color:var(--txt);margin:0 0 8px}.analysis-overview p{font-size:11px;color:var(--dim);line-height:1.7;margin:0 0 12px}#analysisOverview{width:100%;display:block;touch-action:none;cursor:crosshair}#analysisSelection{margin-top:9px!important;color:var(--accent)!important}
+.feature-note{color:var(--dim);font-size:11px;margin:-8px 0 0}.feature-summary{display:flex;gap:22px;flex-wrap:wrap;font-size:13px}.feature-summary span{padding:8px 0;border-bottom:1px solid var(--line)}
+.domain-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px}.domain-card{min-width:0}.domain-card:last-child{grid-column:1/-1}.domain-card h3{font:400 17px Georgia,'SimSun',serif;color:var(--txt);margin-bottom:7px}.domain-card .domain-note{font-size:11px;color:var(--dim);line-height:1.7;margin-bottom:13px}.domain-card canvas{width:100%;display:block;margin-bottom:12px}.domain-card .feature-summary{gap:8px 16px;font-size:12px}.domain-card .feature-summary span{padding:5px 0}
+@media(max-width:850px){.col-left{grid-template-columns:1fr}.analysis-plots{grid-template-columns:1fr}.monitor-main{grid-row:5}.col-left{grid-row:6}}
+@media(max-width:850px){.domain-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- ================= 顶栏 ================= -->
+  <header>
+    <div class="brand">
+      <span class="dot dead" id="dot"></span>
+      <svg class="brandmark" viewBox="0 0 40 40" fill="none" aria-hidden="true"><rect x="1" y="1" width="38" height="38" rx="10" stroke="currentColor" opacity=".35"/><path d="M7 21h6l3-10 6 20 3-10h8" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg><span>VibMon <small>振动监测工作台</small></span>
+    </div>
+    <div class="conn" id="conn">
+      <span id="connTxt">正在连接…</span>
+    </div>
+    <div class="spacer"></div>
+    <div class="seg" id="durSeg">
+      <button data-s="10">10s</button>
+      <button data-s="30">30s</button>
+      <button data-s="90" class="on">90s</button>
+      <button data-s="300">5min</button>
+    </div>
+    <button class="primary" id="btnRec">开始采集</button>
+    <button class="ghost" id="btnMode" title="切换演示数据 / 真机数据">演示模式</button>
+  </header>
+
+  <section class="hero"><div><div class="eyebrow">VIBRATION OBSERVATORY</div><h1>振动观测</h1><p>三轴时域信号 / 能耗 / 原始记录</p></div><div class="hero-meta"><strong>面包板验证平台</strong><br>ESP32-S3 · IIS3DWB · INA226</div></section>
+
+  <nav class="page-nav" aria-label="页面">
+    <button id="tabMonitor" class="on" type="button">实时监控</button>
+    <button id="tabAnalysis" type="button">数据分析</button>
+  </nav>
+  <section class="device-strip" aria-label="设备状态">
+    <span>数据源 <b id="sourceState">连接中</b></span>
+    <span>传感器 <b id="sensorState">未确认</b></span>
+    <span>TF 卡 <b id="cardState">未确认</b></span>
+    <span>录制 <b id="recordState">未确认</b></span>
+  </section>
+  <!-- ================= 左栏 ================= -->
+  <div class="col-left monitor-only">
+
+    <!-- 电量 -->
+    <div class="card">
+      <h3>电池模块</h3><p class="not-attached">未接入 · 数值不可用</p>
+      <div class="bat">
+        <div class="ring">
+          <svg width="112" height="112" viewBox="0 0 112 112">
+            <circle cx="56" cy="56" r="47" fill="none" stroke="#1b2530" stroke-width="10"/>
+            <circle id="batArc" cx="56" cy="56" r="47" fill="none" stroke="#4ade80" stroke-width="10"
+                    stroke-linecap="round" stroke-dasharray="295.3" stroke-dashoffset="295.3"
+                    style="transition:stroke-dashoffset .6s,stroke .4s"/>
+          </svg>
+          <div class="val"><b id="batPct">--</b><i>%</i></div>
+        </div>
+        <div class="batmeta">
+          <div class="row"><span>电池电压</span><b id="batV">-- V</b></div>
+          <div class="row"><span>电压趋势</span><b id="batTrend">--</b></div>
+          <div class="row"><span>估算方式</span><b style="font-size:11.5px;color:var(--dim2)">开路电压法</b></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 无线充 -->
+    <div class="card">
+      <h3>无线充电模块</h3><p class="not-attached">未接入 · 数值不可用</p>
+      <div class="qi">
+        <div class="coil">
+          <svg width="60" height="60" viewBox="0 0 60 60">
+            <circle cx="30" cy="30" r="24" fill="none" stroke="#1f2c38" stroke-width="3"/>
+            <circle class="arc" id="coilArc" cx="30" cy="30" r="24" fill="none" stroke="#2b3d4d" stroke-width="3"
+                    stroke-linecap="round" stroke-dasharray="34 117" stroke-dashoffset="0"/>
+            <circle cx="30" cy="30" r="13" fill="none" stroke="#22303c" stroke-width="2.5"/>
+            <text x="30" y="36" text-anchor="middle" font-size="17" id="coilIcon">⚡</text>
+          </svg>
+        </div>
+        <div class="batmeta">
+          <div><span class="pill idle" id="qiPill">未知</span></div>
+          <div class="row" style="margin-top:9px"><span>Qi 输出</span><b id="qiV">-- V</b></div>
+          <div class="row"><span>系统 5V</span><b id="busV">-- V</b></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 系统电流 -->
+    <div class="card">
+      <h3>供电信息 · INA226</h3>
+      <div class="row"><span>监测端电压</span><b id="pV">-- V</b></div>
+      <div class="row" style="margin-top:7px"><span>监测回路电流</span><b id="pI">-- mA</b></div>
+      <div class="row" style="margin-top:7px"><span>监测回路功率</span><b id="pP">-- mW</b></div>
+      <div class="bar"><i id="pBar"></i></div>
+      <div class="legend"><span>0</span><span id="pScale">满量程 ±0.819 A</span></div>
+    </div>
+
+  </div>
+
+  <!-- ================= 主区 ================= -->
+  <div class="monitor-main monitor-only">
+
+    <!-- 波形 -->
+    <div class="card wavecard">
+      <div class="wavehead">
+        <span class="t">实时振动波形</span>
+        <span class="badge" id="badgeProc">去直流 · 包络显示</span>
+        <span class="badge" id="badgeRate">-- Hz / -- fps</span>
+        <div class="spacer"></div>
+        <span class="badge" id="badgeUp">上行 -- KB/s</span>
+      </div>
+      <canvas id="cv" role="img" aria-label="X、Y、Z 三轴振动实时波形">三轴振动波形；对应有效值及峰值显示在下方。</canvas>
+      <div class="ctl">
+        <div class="control-group"><span class="control-label">量程</span>
+        <div class="seg" id="gainSeg">
+          <button data-g="auto" class="on">自动</button>
+          <button data-g="0.05">±50mg</button>
+          <button data-g="0.2">±0.2g</button>
+          <button data-g="1">±1g</button>
+          <button data-g="5">±5g</button>
+        </div>
+        </div><div class="control-group"><span class="control-label">窗口</span>
+        <div class="seg" id="winSeg">
+          <button data-w="0.2">0.2s</button>
+          <button data-w="0.5">0.5s</button>
+          <button data-w="1" class="on">1s</button>
+          <button data-w="2">2s</button>
+        </div>
+        </div><div class="control-group auxiliary-display"><span class="control-label">显示</span>
+        <div class="seg" id="dcSeg">
+          <button data-d="ac" class="on">振动（去直流）</button>
+          <button data-d="dc">含重力（近似）</button>
+        </div>
+        </div><button id="btnZero">清零</button>
+        <button id="btnFreeze">暂停</button>
+      </div>
+    </div>
+
+    <p class="feature-note">当前特征：约 0.5 秒原始样本统计；RMS 经过平滑，峰值短暂保持并衰减。单位 mg（加速度）。</p>
+    <!-- 三轴数值 -->
+    <div class="tri">
+      <div class="ax" style="--c:var(--x)"><div class="n">X 轴 · 振动 RMS</div><div class="v" id="rmsX">--</div><div class="p">振动峰值 <em id="pkX">--</em></div></div>
+      <div class="ax" style="--c:var(--y)"><div class="n">Y 轴 · 振动 RMS</div><div class="v" id="rmsY">--</div><div class="p">振动峰值 <em id="pkY">--</em></div></div>
+      <div class="ax" style="--c:var(--z)"><div class="n">Z 轴 · 振动 RMS</div><div class="v" id="rmsZ">--</div><div class="p">振动峰值 <em id="pkZ">--</em></div></div>
+    </div>
+
+    <section class="trend-section" aria-label="特征趋势">
+      <div class="trend-head"><div><h3>特征趋势</h3><small>最近 1 分钟 / 10 分钟 · 设备状态约每秒取 1 点</small></div>
+        <div class="trend-controls"><div class="seg" id="trendMetric"><button data-m="rms" class="on">RMS</button><button data-m="pk">峰值</button></div>
+        <div class="seg" id="trendSpan"><button data-t="60" class="on">1 分钟</button><button data-t="600">10 分钟</button></div></div></div>
+      <canvas id="trendCanvas" height="210" role="img" aria-label="三轴特征值随时间变化">三轴特征趋势</canvas>
+      <p class="trend-note" id="trendNote">等待真实传感器数据</p>
+    </section>
+
+    <!-- 记录状态 -->
+    <div class="card">
+      <h3>原始数据记录 <span style="text-transform:none;letter-spacing:0;font-weight:400;color:var(--dim2)">三轴原始样本</span></h3>
+      <div class="stat">
+        <div class="row"><span>状态</span><b id="sdState">--</b></div>
+        <div class="row"><span>当前文件</span><b class="recfile" id="sdFile">--</b></div>
+        <div class="row"><span>已写样本</span><b id="sdCap">--</b></div>
+        <div class="row"><span>文件大小</span><b id="sdMB">-- MB</b></div>
+        <div class="row"><span>卡剩余</span><b id="sdFree">-- MB</b></div>
+        <div class="row"><span>采集时长</span><b id="recSec">--</b></div>
+        <div class="row" title="采集太快、写卡跟不上，环形缓冲被写满而丢的样本。192KB 缓冲相当于约 1.2 秒的余量。">
+          <span>① 缓冲溢出丢样本</span><b id="sdDrop">0</b></div>
+        <div class="row" title="卡满 / 掉卡 / 坏块导致写文件失败而丢的样本。这与缓冲溢出是两回事 —— 少的那部分会被写进该段文件的文件头，事后分析能查出来。">
+          <span>② 写卡失败丢样本</span><b id="sdFail">0</b></div>
+      </div>
+      <div class="empty" style="margin-top:8px">
+        ①② 语义不同、必须分开看：<b>①</b> 是"采集端跑太快"，可降采样率或关 WiFi 缓解；
+        <b>②</b> 是"存储端出问题"，要查卡（满/掉卡/坏块）。
+        两项都应为 0；完整性还需结合传感器状态和文件校验确认。
+      </div>
+      <div class="prog"><i id="recBar"></i></div>
+      <div style="display:flex;justify-content:space-between;margin-top:7px;align-items:center;gap:10px;flex-wrap:wrap">
+        <span class="legend" id="recNote" style="margin:0">空闲中 · 波形仍在实时刷新，按「开始采集」才写入 TF 卡</span>
+        <button id="btnList" class="ghost" style="padding:4px 11px;font-size:12px">列出卡内文件</button>
+      </div>
+      <div class="files" id="fileList"></div>
+    </div>
+
+    <!-- 命令行 -->
+    <details class="card advanced"><summary>高级设置与设备诊断</summary>
+      <h3>设备诊断</h3>
+      <div class="stat">
+        <div class="row"><span>WebSocket</span><b id="dgWs">--</b></div>
+        <div class="row"><span>上行帧率</span><b id="dgFps">--</b></div>
+        <div class="row"><span>抽帧比 / 速率</span><b id="dgDecim">--</b></div>
+        <div class="row"><span>丢帧（设备队列）</span><b id="dgDrop">0</b></div>
+        <div class="row"><span>空闲堆</span><b id="dgHeap">--</b></div>
+        <div class="row"><span>PSRAM 空闲</span><b id="dgPs">--</b></div>
+      </div>
+      <div style="margin-top:11px;display:flex;gap:9px;flex-wrap:wrap">
+        <button id="btnSelf" class="ghost" style="padding:5px 12px;font-size:12.5px">设备自检</button>
+        <button id="btnWifiOff" class="ghost" style="padding:5px 12px;font-size:12.5px;color:var(--warn)">关闭 Wi-Fi（节能）</button>
+        <button id="btnRecWifi" class="ghost" style="padding:5px 12px;font-size:12.5px"
+                title="开启后录制期间关闭 Wi-Fi，网页暂时断开；结束后恢复。可减少无线通信功耗，也可用于对比排障。">录制时关 WiFi：关</button>
+      </div>
+      <div class="empty" style="margin-top:9px">
+        <b>设备自检</b>用于检查硬件状态。<b>关闭 Wi-Fi</b>用于节能，也可辅助排查干扰；关闭后本页断开，需串口命令 n 或重启恢复。
+        <b>录制时关 Wi-Fi</b>会在录制期间暂停网页连接，结束后自动恢复；是否改善采集质量需实测确认。
+      </div>
+      <div class="empty" id="selfOut" style="margin-top:9px"></div>
+    </details>
+
+  </div>
+
+  <section id="analysisPage" hidden aria-label="数据分析">
+    <header class="analysis-head"><div><div class="eyebrow">RECORD ANALYSIS</div><h2>原始记录分析</h2><p>文件只在当前浏览器中处理，不上传。</p></div></header>
+    <div class="analysis-controls card">
+      <label>选择 vib_*.bin 原始记录 <input id="analysisFile" type="file" accept=".bin,application/octet-stream"></label>
+      <label>轴 <select id="analysisAxis"><option value="0">X</option><option value="1">Y</option><option value="2">Z</option></select></label>
+      <button id="analysisExample" type="button">试用合成记录</button>
+      <p id="analysisInfo" role="status">请先选择从设备下载的原始记录。</p>
+    </div>
+    <section class="card analysis-overview"><h3>整段原始信号</h3><p>先看完整记录，再在图上按住拖动，选取分析的开始与结束时间。单次分析最多 262144 个样本；超过时请缩小选区。</p><canvas id="analysisOverview" height="180" role="img" aria-label="整段原始信号与分析选区"></canvas><p id="analysisSelection">尚未选择时间段</p></section>
+    <div class="domain-grid">
+      <section class="card domain-card"><h3>01 · 时域</h3><p class="domain-note">连续原始样本去均值；观察振幅、冲击与波形形状。</p><canvas id="analysisTime" height="240" role="img" aria-label="原始时域波形"></canvas><div id="featuresTime" class="feature-summary">—</div></section>
+      <section class="card domain-card"><h3>02 · 频域</h3><p class="domain-note">选定时间段的 Hann 窗频谱；观察主频与能量分布。</p><canvas id="analysisSpectrum" height="240" role="img" aria-label="频率幅值谱"></canvas><div id="featuresFrequency" class="feature-summary">—</div></section>
+      <section class="card domain-card"><h3>03 · 时频域</h3><p class="domain-note">短时傅里叶变换；颜色越深表示幅值越高。短时 RMS 变异系数描述强弱波动，谱流量描述相邻频谱变化。</p><canvas id="analysisSpectrogram" height="240" role="img" aria-label="时频谱图"></canvas><div id="featuresTimeFrequency" class="feature-summary">—</div></section>
+    </div>
+    <p class="empty">三类特征只使用本地所选文件和时间段；单位 mg 为加速度单位。短记录的频率分辨率有限，不能单凭这些数值判定故障。</p>
+  </section>
+
+  <!-- ================= 说明 ================= -->
+  <details class="note"><summary>了解波形与数据记录</summary>
+    <b>这套界面在做什么（一句话版）：</b>原始振动信号 26.667 kHz 全部原样写进 TF 卡，同时设备端把它「压小」后通过 WiFi 发给这个页面看。
+    <ol>
+      <li><b>去直流</b> —— 设备用 3 秒低通估出重力/零点（Z 轴约 1 g）并减掉，所以静置时波形在 0 附近，看的是真正的<span style="color:var(--txt)">振动交流分量</span>。</li>
+      <li><b>min/max 包络抽帧</b> —— 每 26 个原始样本压成 1 个点，<b>同时保留这 26 个里的最小值和最大值</b>。所以敲击、崩刃这类窄脉冲<b>不会被抽没</b>（隔点抽样就会）。最终 1026 Hz × 32 点/帧 ≈ 32 fps，上行只有约 12.7 KB/s。</li>
+      <li><b>RMS / 峰值</b> —— 有效值是在<b>全速原始样本</b>上算的，不是抽帧后算的，所以数值是真实振动有效值。</li>
+    </ol>
+    <div style="margin-top:8px;color:var(--dim2)">
+      采集与写卡分任务运行，中间使用环形缓冲。数据完整性仍需结合缓冲溢出、写卡失败、传感器状态及文件校验确认。
+    </div>
+  </details>
+  <footer class="foot"><span>VibMon / 振动监测工作台</span><span>演示模式使用合成数据 · 不代表设备测量结果</span></footer>
+
+</div>
+<div id="toast" role="status" aria-live="polite"></div>
+
+<script>
+'use strict';
+/* ============================================================
+   数据源：真机 WebSocket  |  演示（合成数据）
+   ============================================================ */
+const $ = id => document.getElementById(id);
+
+const state = {
+  live:false, demo:false, ws:null,
+  gainMode:'auto', winSec:1, dcMode:'ac', frozen:false,
+  targetSec:90, recording:false, devRec:false,
+  recWifiOff:false,   // 录制时关 WiFi（保真优先）
+  silent:false,       // 已进入"静默录制"，此时断线是预期的，不是故障
+  // 三轴 min/max 环形缓冲（单位 g）
+  // ★ 故意用 Float32Array：float32 相对精度约 1e-7，对 <2 g 的振动量来说，
+  //   绝对误差 < 1e-7 g（0.0001 mg），远小于传感器本身的 ±2% —— 够用，
+  //   而且内存只有 Float64Array 的一半（3×4096×4B = 49 KB）。
+  cap:4096, len:0, head:0,
+  mn:[new Float32Array(4096),new Float32Array(4096),new Float32Array(4096)],
+  mx:[new Float32Array(4096),new Float32Array(4096),new Float32Array(4096)],
+  scale:[0.05,0.05,0.05],
+  rateHz:1026, decim:26, seq:-1, seqLost:0, frames:0, bytes:0,
+  dc:[0,0,0], rms:[0,0,0], pk:[0,0,0],
+  bat:{v:0,pct:-1,trend:0}, qi:0, qiV:0, busV:0, busMA:0, busMW:0,
+  sd:{ok:false,file:'',mb:0,cap:0,drop:0},
+  sys:{heap:0,ps:0,cl:0,fps:0,qdrop:0},
+  fpsT:0, fpsN:0, fps:0
+};
+
+const AX = ['X','Y','Z'];
+const COL = ['#436a8b','#468277','#b17949'];
+
+/* ---------------- 波形缓冲 ---------------- */
+function pushPoint(a, mn, mx){
+  const i = state.head;
+  state.mn[a][i] = mn; state.mx[a][i] = mx;
+}
+function pushFrameEnd(){
+  state.head = (state.head + 1) % state.cap;
+  if (state.len < state.cap) state.len++;
+}
+function at(a, back){          // back: 0 = 最新
+  let i = (state.head - 1 - back) % state.cap;
+  if (i < 0) i += state.cap;
+  return [state.mn[a][i], state.mx[a][i]];
+}
+
+/* ---------------- 真机 WebSocket ---------------- */
+//  三种情形要分清（很关键，别让合成数据冒充真机数据）：
+//    A. file:// 打开          → 本地预览，直接演示模式
+//    B. 从设备打开但从未连上过 → 演示模式兜底（例如在 IDE 预览面板里看）
+//    C. 连上过之后又断了      → 只重试，绝不切演示（否则会把假数据当真数据看）
+function connect(force){
+  if (!force && location.protocol === 'file:'){ enterDemo(false); return; }
+  const url = (location.protocol === 'https:' ? 'wss://' : 'ws://') + location.host + '/ws';
+  setConn('dead', '正在连接设备…');
+  let ws;
+  try { ws = new WebSocket(url); } catch (e){ onConnectFail(); return; }
+  ws.binaryType = 'arraybuffer';
+  state.ws = ws;
+
+  // 3 秒既没连上也没关闭（少数网络环境会一直挂着）→ 判定为没有设备
+  clearTimeout(state.connTimer);
+  state.connTimer = setTimeout(() => {
+    if (!state.everConnected && !state.demo) onConnectFail();
+  }, 3000);
+
+  ws.onopen = () => {
+    state.everConnected = true;
+    setConn('live', '已连接 · ' + location.host);
+    if (state.silent){ state.silent = false; showToast('设备录制完成，已恢复连接 —— 现在可以下载原始文件'); }
+    else showToast('已连接设备 ' + location.host);
+  };
+  ws.onclose = () => {
+    state.live = false;
+    $('dgWs').textContent = '断开';
+    if (!state.everConnected){ onConnectFail(); return; }
+    // ★ 静默录制时断线是"预期行为"，不能报成故障，否则用户会以为设备挂了
+    if (state.silent){
+      setConn('dead', '设备静默录制中（WiFi 已关闭，录完自动恢复）…');
+      setTimeout(() => connect(true), 2000);
+      return;
+    }
+    setConn('dead', '连接已断开，2 秒后重试…');
+    setTimeout(() => connect(true), 2000);
+  };
+  ws.onerror = () => {};
+  ws.onmessage = ev => { if (typeof ev.data === 'string') onStatus(ev.data); else onFrame(ev.data); };
+}
+function onConnectFail(){
+  if (state.demo) return;
+  clearTimeout(state.connTimer);
+  state.live = false;
+  enterDemo(true);
+}
+function setConn(cls, txt){ $('dot').className = 'dot '+cls; $('connTxt').textContent = txt; }
+function send(o){ if (state.live && state.ws && state.ws.readyState===1) state.ws.send(JSON.stringify(o)); }
+
+/* 二进制波形帧 —— 布局必须与 src/netui.cpp 的序列化一致
+   0  u8  0xAA      1 u8  0x01
+   2  u16 seq       4 u32 tMs
+   8  u16 rateHz   10 u8  decim   11 u8 nAxes   12 u16 nPts
+   14 起：逐点 → 逐轴 → (min,max) 各 int16 小端 */
+function onFrame(ab){
+  const u8 = new Uint8Array(ab);
+  if (u8[0] !== 0xAA || u8[1] !== 0x01) return;
+  const dv = new DataView(ab);
+  const seq  = dv.getUint16(2, true);
+  const rate = dv.getUint16(8, true);
+  const dec  = u8[10];
+  const nA   = u8[11];
+  const nP   = dv.getUint16(12, true);
+  state.rateHz = rate; state.decim = dec;
+
+  if (state.seq >= 0 && seq > state.seq + 1) state.seqLost += (seq - state.seq - 1);
+  state.seq = seq; state.frames++;
+  state.bytes += ab.byteLength;
+
+  const K = 0.061/1000;                    // LSB → g（SENS_MG_PER_LSB）
+  const off = state.dcMode === 'dc' ? state.dc : [0,0,0];
+  let o = 14;
+  for (let p=0;p<nP;p++){
+    for (let a=0;a<nA && a<3;a++){
+      const mn = dv.getInt16(o,true)*K + off[a];
+      const mx = dv.getInt16(o+2,true)*K + off[a];
+      o += 4;
+      pushPoint(a, mn, mx);
+    }
+    pushFrameEnd();
+  }
+}
+
+/* ---------------- 状态 JSON ---------------- */
+function onStatus(txt){
+  let s; try { s = JSON.parse(txt); } catch(e){ return; }
+  if (s.ty === 'files'){ renderFiles(s); return; }
+  if (s.ty === 'self'){ $('selfOut').textContent = s.text || ''; return; }
+  if (s.ty === 'ack'){ showToast(s.text || 'ok'); return; }
+
+  state.bat.v = s.bat_v ?? 0;
+  state.bat.pct = (s.bat_pct === undefined || s.bat_pct === null) ? -1 : s.bat_pct;
+  state.bat.trend = s.bat_tr ?? 0;
+  state.qi = s.qi|0; state.qiV = s.qi_v ?? 0; state.busV = s.bus_v ?? 0;
+  state.busMA = s.bus_ma ?? 0; state.busMW = s.bus_mw ?? 0;
+  state.dc = s.dc || [0,0,0];
+  state.rms = s.rms || [0,0,0];
+  state.pk  = s.pk  || [0,0,0];
+  state.recording = !!s.rec;
+  state.targetSec = s.tgt || 90;
+  state.recSec = s.sec || 0;
+  state.sensorOk = !!s.sensor; state.inaOk = !!s.ina;
+  state.sd.ok = !!s.sdp; state.sd.file = s.sdf || ''; state.sd.mb = s.sd_mb ?? 0;
+  state.sd.cap = s.cap ?? 0;
+  state.sd.drop = s.drop ?? 0;        // ① 环形缓冲溢出丢的样本
+  state.sd.fail = s.sd_fail ?? 0;     // ② 写卡失败丢的样本
+  state.sd.fails = s.sd_drops ?? 0;   // 写失败次数
+  state.sd.free = s.sd_free ?? 0;     // 卡剩余 MB
+  state.sys.heap = s.heap ?? 0; state.sys.ps = s.psram ?? 0;
+  state.sys.cl = s.cl ?? 0; state.sys.qdrop = s.qdrop ?? 0;
+  state.devRate = s.fs ?? state.rateHz;
+  // 设备是"录制时关 WiFi"的唯一权威（可能被串口 m 改过），UI 跟着它同步
+  $('sourceState').textContent='真机 · '+(state.live?'已连接':'断开');
+  $('sensorState').textContent=state.sensorOk?'就绪':'未就绪';
+  $('cardState').textContent=state.sd.ok?'已挂载':'未挂载';
+  $('recordState').textContent=state.recording?'正在录制':'空闲';
+  addTrend(s);
+  if (s.rw !== undefined && !!s.rw !== state.recWifiOff){
+    state.recWifiOff = !!s.rw;
+    updateRecWifiBtn();
+  }
+}
+
+/* ---------------- 演示模式（合成数据） ---------------- */
+let demoT = 0, demoAcc = 0, demoLast = 0, demoBat = 3.94, demoQi = 0, demoQiT = 0;
+function demoTick(now){
+  if (!demoLast) demoLast = now;
+  const dtMs = Math.min(now - demoLast, 100); demoLast = now;
+  // 累积的是"这一帧该补出多少个抽帧点"。★ 单位必须是抽帧后的速率（rateHz），
+  // 不能拿抽帧比 26 当门槛 —— 那会让点数凭空少 26 倍（首版就是这个错）。
+  demoAcc += dtMs/1000 * state.rateHz;
+  const step = 1/state.rateHz;                 // 每个抽帧点代表的时间
+  let guard = 0;
+  while (demoAcc >= 1 && guard++ < 40){
+    demoAcc -= 1;
+    demoT += step;
+    const sub = [];
+    for (let a=0;a<3;a++) sub.push([1e9,-1e9]);
+    for (let k=0;k<10;k++){
+      const t = demoT + k*step/10;
+      const v = demoSignal(t);
+      for (let a=0;a<3;a++){
+        if (v[a] < sub[a][0]) sub[a][0] = v[a];
+        if (v[a] > sub[a][1]) sub[a][1] = v[a];
+      }
+    }
+    for (let a=0;a<3;a++){
+      const off = state.dcMode==='dc' ? (a===2?1:0) : 0;
+      pushPoint(a, sub[a][0]+off, sub[a][1]+off);
+    }
+    pushFrameEnd();
+    state.frames++;
+  }
+  // 每隔 500ms 造一份状态
+  if (now - demoStatT > 500){
+    demoStatT = now;
+    // 演示模式下自己算统计量，量纲必须与设备一致：**mg**
+    // （设备 status JSON 里 rms/pk 都是 mg；首版这里直接塞了 g，整整差 1000 倍）
+    let ss=[0,0,0], pk=[0,0,0], n=0;
+    const W = Math.min(state.len, Math.round(state.rateHz*0.5));
+    for (let i=0;i<W;i+=3){
+      for (let a=0;a<3;a++){
+        const p = at(a,i);
+        const baseline = state.dcMode === 'dc' && a === 2 ? 1 : 0;
+        const amp = (Math.abs(p[0]-baseline) + Math.abs(p[1]-baseline))/2;      // 包络幅度
+        ss[a] += amp*amp;
+        pk[a]  = Math.max(pk[a], Math.abs(p[0]-baseline), Math.abs(p[1]-baseline));
+      }
+      n++;
+    }
+    for (let a=0;a<3;a++){
+      // 幅度 → 有效值：正弦取 1/√2；再 g → mg
+      const r = Math.sqrt(ss[a]/Math.max(n,1)) / Math.SQRT2 * 1000;
+      state.rms[a] = state.rms[a]*0.6 + r*0.4;
+      state.pk[a]  = Math.max(pk[a]*1000, state.pk[a]*0.8);
+    }
+    demoBat -= 0.00045;
+    demoQiT += 0.5;
+    if (demoQiT > 12){ demoQiT = 0; demoQi = demoQi ? 0 : 1; }   // 每 12 秒切一次无线充
+    if (demoQi && demoBat < 4.12) demoBat += 0.0022;
+    state.bat.v = demoBat;
+    state.bat.pct = Math.max(0, Math.min(100, Math.round((demoBat-3.30)/(4.15-3.30)*100)));
+    state.bat.trend = demoQi ? 1 : 0;
+    state.qi = demoQi; state.qiV = demoQi ? 5.02 : 0;
+    state.busV = demoQi ? 5.04 : 4.98;
+    state.busMA = 120 + 55*Math.sin(now/900) + (state.frozen?0:38*Math.random()) + (demoQi?180:520)*0;
+    if (!demoQi) state.busMA = 0;
+    state.busMW = state.busV * state.busMA;
+    state.recording = !!state.demoRec;
+    state.recSec = state.demoRec ? ((now - state.demoRecT0)/1000) : 0;
+    state.sd.ok = true;
+    state.sd.file = 'vib_0001.bin';
+    const rate = 26667;
+    state.sd.cap = state.demoRec ? Math.round(state.recSec*rate) : 0;
+    $('sourceState').textContent='演示 · 合成数据';$('sensorState').textContent='模拟';
+    $('cardState').textContent='模拟';$('recordState').textContent=state.demoRec?'模拟录制':'空闲';
+    addTrend(null,true);
+    state.sd.mb  = state.sd.cap*6/1048576;
+    state.sd.drop = 0;
+    state.sys.heap = 214000; state.sys.ps = 6300000; state.sys.cl = 1; state.sys.qdrop = 0;
+  }
+}
+// 合成振动：主轴 200 Hz + 谐波 + 宽带噪声 + 每 3 秒一次"刀具切入"冲击
+function demoSignal(t){
+  const n = ()=> (Math.random()*2-1);
+  const imp = t % 3.0;
+  const hit = imp < 0.05 ? Math.exp(-imp*90)*0.55 : 0;      // 冲击脉冲
+  const x = 0.0090*Math.sin(2*Math.PI*200*t) + 0.0035*Math.sin(2*Math.PI*600*t+1.1)
+          + 0.0016*n() + hit*0.9;
+  const y = 0.0065*Math.sin(2*Math.PI*200*t+0.7) + 0.0022*Math.sin(2*Math.PI*1200*t)
+          + 0.0014*n() + hit*0.35;
+  const z = 0.0125*Math.sin(2*Math.PI*200*t+2.0) + 0.0048*Math.sin(2*Math.PI*1000*t+0.4)
+          + 0.0022*n() + hit*0.6;
+  return [x,y,z];
+}
+let demoStatT = 0;
+
+function enterDemo(auto){
+  if (state.demo) return;
+  state.demo = true; state.live = true;
+  setConn('demo', auto ? '预览模式 · 合成数据（未检测到设备）'
+                       : '演示模式 · 合成数据（未连接设备）');
+  $('btnMode').textContent = '切换到真机';
+  $('dgWs').textContent = '演示';
+  $('selfOut').textContent = auto
+    ? '当前是本地预览：数据由本页合成，仅用于看界面长什么样。接上设备后连它的热点再打开本页，即为真机数据。'
+    : '演示模式：数据由本页合成，仅用于预览界面。';
+  showToast(auto ? '未检测到设备 → 已用合成数据预览界面' : '已进入演示模式');
+  if (!state.demoRAF) state.demoRAF = requestAnimationFrame(demoLoop);
+  state.demoRec = false;
+}
+function exitDemo(){
+  state.demo = false; state.live = false;
+  if (state.demoRAF){ cancelAnimationFrame(state.demoRAF); state.demoRAF = 0; }
+  $('btnMode').textContent = '演示模式';
+  connect(true);
+}
+function demoLoop(now){ demoTick(now); draw(); render(now); state.demoRAF = requestAnimationFrame(demoLoop); }
+
+/* ---------------- 量程 ---------------- */
+function autoscale(){
+  const win = Math.min(state.len, Math.round(state.rateHz*state.winSec));
+  for (let a=0;a<3;a++){
+    let m = 0;
+    for (let i=0;i<win;i+=2){
+      const p = at(a,i);
+      const v = Math.max(Math.abs(p[0]), Math.abs(p[1]));
+      if (v > m) m = v;
+    }
+    const tgt = Math.max(m*1.25, 0.02);
+    const s = state.scale[a];
+    state.scale[a] = tgt > s ? s + (tgt-s)*0.30 : s + (tgt-s)*0.05;
+  }
+}
+
+/* ---------------- 绘制 ---------------- */
+const cv = $('cv'), ctx = cv.getContext('2d');
+function fitCanvas(){
+  const dpr = Math.min(window.devicePixelRatio||1, 2);
+  const w = cv.clientWidth, h = cv.clientHeight;
+  if (cv.width !== Math.round(w*dpr) || cv.height !== Math.round(h*dpr)){
+    cv.width = Math.round(w*dpr); cv.height = Math.round(h*dpr);
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+  }
+}
+function draw(){
+  fitCanvas();
+  const W = cv.clientWidth, H = cv.clientHeight;
+  ctx.clearRect(0,0,W,H);
+  ctx.fillStyle = '#fdfdfb'; ctx.fillRect(0,0,W,H);
+
+  const laneH = H/3;
+  const win  = Math.min(state.len, Math.max(2, Math.round(state.rateHz*state.winSec)));
+  if (state.gainMode === 'auto') autoscale();
+
+  // 时间网格
+  const gridN = 10;
+  ctx.strokeStyle = '#e9ece5'; ctx.lineWidth = 1;
+  for (let i=1;i<gridN;i++){
+    const x = Math.round(W*i/gridN)+.5;
+    ctx.beginPath(); ctx.moveTo(x,0); ctx.lineTo(x,H); ctx.stroke();
+  }
+  // 每秒/每格时间标注
+  ctx.fillStyle = '#67766d'; ctx.font = '10px ui-monospace,Consolas,monospace';
+  for (let i=0;i<=gridN;i++){
+    const ms = state.winSec*1000*(1 - i/gridN);
+    const x = Math.min(Math.max(W*i/gridN, 3), W-30);
+    ctx.fillText(ms.toFixed(0)+'ms', x+2, H-4);
+  }
+
+  for (let a=0;a<3;a++){
+    const top = a*laneH, mid = top + laneH/2;
+    const half = laneH/2 - 13;
+    const sc = (state.gainMode==='auto') ? state.scale[a] : parseFloat(state.gainMode);
+
+    // 基线与轴底色
+    ctx.fillStyle = a%2 ? 'rgba(255,255,255,0.012)' : 'rgba(255,255,255,0.026)';
+    ctx.fillRect(0, top, W, laneH);
+    ctx.strokeStyle = '#cbd4c9'; ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(0, mid+.5); ctx.lineTo(W, mid+.5); ctx.stroke();
+    // 分格（±半量程）
+    ctx.strokeStyle = '#edf0e9';
+    ctx.beginPath(); ctx.moveTo(0, mid-half/2+.5); ctx.lineTo(W, mid-half/2+.5); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(0, mid+half/2+.5); ctx.lineTo(W, mid+half/2+.5); ctx.stroke();
+
+    // 每当量程变化，画一条淡色标尺
+    // 波形：按像素列聚合 min/max（这也是示波器画包络的方式）
+    ctx.fillStyle = COL[a];
+    ctx.globalAlpha = 0.92;
+    const g2px = half/sc;
+    for (let px=0; px<W; px++){
+      const i0 = Math.floor(win * px / W);
+      const i1 = Math.max(i0+1, Math.floor(win * (px+1) / W));
+      let lo = 1e9, hi = -1e9;
+      for (let i=i0;i<i1 && i<win;i++){
+        const p = at(a,i);
+        if (p[0] < lo) lo = p[0];
+        if (p[1] > hi) hi = p[1];
+      }
+      if (lo > hi) continue;
+      let y1 = mid - hi*g2px, y2 = mid - lo*g2px;
+      if (y2 - y1 < 1.1){ const c=(y1+y2)/2; y1=c-0.55; y2=c+0.55; }
+      // 越界裁剪提示
+      if (y1 < top+1) y1 = top+1;
+      if (y2 > top+laneH-1) y2 = top+laneH-1;
+      ctx.fillRect(px, y1, 1, y2-y1);
+    }
+    ctx.globalAlpha = 1;
+
+    // 车道文字
+    ctx.font = '600 12px system-ui,"Microsoft YaHei",sans-serif';
+    ctx.fillStyle = COL[a];
+    ctx.fillText(AX[a], 9, top+17);
+    ctx.font = '500 11px ui-monospace,Consolas,monospace';
+    ctx.fillStyle = '#607068';
+    const scTxt = (sc>=1) ? '±'+sc.toFixed(2)+' g' : '±'+(sc*1000).toFixed(0)+' mg';
+    ctx.fillText(scTxt, 27, top+17);
+    // 越界提示
+    if (state.gainMode !== 'auto'){
+      let over = false;
+      for (let i=0;i<win;i+=2){ const p=at(a,i); if (Math.abs(p[0])>sc || Math.abs(p[1])>sc){ over=true; break; } }
+      if (over){
+        ctx.fillStyle = 'rgba(251,191,36,.16)'; ctx.fillRect(0,top,W,laneH);
+        ctx.fillStyle = '#986326'; ctx.font='600 11px system-ui,sans-serif';
+        ctx.textAlign='right'; ctx.fillText('⚠ 超出量程（可切自动）', W-10, top+laneH-11); ctx.textAlign='left';
+      }
+    }
+  }
+  if (state.frozen){
+    ctx.fillStyle='rgba(245,244,240,.8)'; ctx.fillRect(0,0,W,H);
+    ctx.fillStyle='#25332f'; ctx.font='600 15px system-ui,sans-serif';
+    ctx.textAlign='center'; ctx.fillText('已暂停（数据仍在接收）', W/2, H/2); ctx.textAlign='left';
+  }
+}
+
+/* ---------------- 渲染面板 ---------------- */
+const fmtMg = v => v === undefined || isNaN(v) ? '--'
+  : (Math.abs(v) >= 1000 ? (v/1000).toFixed(2)+' g' : v.toFixed(1)+' mg');
+
+function render(now){
+  $('badgeProc').textContent = state.dcMode === 'dc' ? '含重力（近似） · 包络显示' : '去直流 · 包络显示';
+  // ---- 电池环 ----
+  const C = 2*Math.PI*47;
+  const pct = state.bat.pct;
+  const shown = Math.max(0, Math.min(100, pct<0?0:pct));
+  $('batPct').textContent = pct < 0 ? '--' : shown;
+  const col = state.qi ? '#356d64' : (shown>60 ? '#468277' : shown>30 ? '#986326' : '#a64d47');
+  const arc = $('batArc');
+  arc.setAttribute('stroke-dashoffset', C*(1-shown/100));
+  arc.setAttribute('stroke', col);
+  $('batV').textContent = state.bat.v>1 ? state.bat.v.toFixed(2)+' V' : '-- V';
+  $('batTrend').textContent = state.bat.trend>0 ? '↑ 上升（充电中）' : state.bat.trend<0 ? '↓ 下降（放电中）' : '→ 平稳';
+  $('batTrend').style.color = state.bat.trend>0 ? 'var(--ok)' : state.bat.trend<0 ? 'var(--warn)' : 'var(--dim)';
+
+  // ---- 无线充 ----
+  const cp = $('coilArc');
+  let cls='pill idle', txt='未知';
+  if (state.qi){ cls='pill wireless'; txt = state.bat.trend>0 ? '无线充电中' : '无线供电中'; }
+  else if (state.busV > 4.4){ cls='pill usb'; txt='USB 供电'; }
+  else if (state.live){ cls='pill none'; txt='未接外部电源'; }
+  const pill = $('qiPill'); pill.className = cls; pill.textContent = txt;
+  cp.setAttribute('stroke', state.qi ? '#356d64' : '#c3cfc2');
+  cp.setAttribute('class', state.qi ? 'arc flow' : 'arc');
+  $('coilIcon').textContent = state.qi ? '⚡' : '·';
+  $('qiV').textContent  = state.qiV>0.5 ? state.qiV.toFixed(2)+' V' : '0.00 V（未放置）';
+  $('busV').textContent = state.busV>0.5 ? state.busV.toFixed(2)+' V' : '-- V';
+
+  // ---- 电流 ----
+  $('pV').textContent = state.inaOk || state.demo ? (state.busV>0.5 ? state.busV.toFixed(3)+' V' : '-- V') : '未接入';
+  $('pI').textContent = state.busMA ? state.busMA.toFixed(1)+' mA' : '-- mA';
+  $('pP').textContent = state.busMW ? state.busMW.toFixed(0)+' mW' : '-- mW';
+  // 进度条满量程 819.2 mA（0.1Ω 分流，未更换）；若将来换成 10mΩ 须改为 8192
+  $('pBar').style.width = Math.min(100, Math.abs(state.busMA)/819.2*100) + '%';
+
+  // ---- 三轴 ----
+  $('rmsX').textContent = fmtMg(state.rms[0]); $('pkX').textContent = fmtMg(state.pk[0]);
+  $('rmsY').textContent = fmtMg(state.rms[1]); $('pkY').textContent = fmtMg(state.pk[1]);
+  $('rmsZ').textContent = fmtMg(state.rms[2]); $('pkZ').textContent = fmtMg(state.pk[2]);
+
+  // ---- 记录 ----
+  $('sdState').innerHTML = state.sd.ok
+    ? (state.recording ? '<span style="color:var(--ok)">● 正在记录</span>' : '<span style="color:var(--dim)">已挂载 · 空闲</span>')
+    : '<span style="color:var(--bad)">未挂载</span>';
+  $('sdFile').textContent = state.sd.file || (state.recording ? '...' : '--');
+  $('sdCap').textContent = state.sd.cap ? state.sd.cap.toLocaleString()+' 样本' : '--';
+  $('sdMB').textContent = state.sd.mb ? state.sd.mb.toFixed(2)+' MB' : '-- MB';
+  // 卡剩余：低于 1 GB 转黄，低于 200 MB 转红（一段 90 秒 ≈ 14.4 MB）
+  const fr = state.sd.free;
+  $('sdFree').textContent = fr ? fr.toLocaleString()+' MB' : '-- MB';
+  $('sdFree').style.color = (fr && fr < 200) ? 'var(--bad)'
+                          : (fr && fr < 1024) ? 'var(--warn)' : 'var(--txt)';
+  // ① 缓冲溢出（采集端太快）与 ② 写卡失败（存储端出问题）分开显示、颜色不同
+  $('sdDrop').textContent = state.sd.drop;
+  $('sdDrop').style.color = state.sd.drop > 0 ? 'var(--warn)' : 'var(--txt)';
+  $('sdFail').textContent = state.sd.fail > 0
+    ? state.sd.fail + '（失败 ' + state.sd.fails + ' 次）'
+    : '0';
+  $('sdFail').style.color = state.sd.fail > 0 ? 'var(--bad)' : 'var(--txt)';
+  const tgt = state.targetSec || 90;
+  $('recSec').textContent = state.recording ? state.recSec.toFixed(0)+' / '+tgt+' s' : '--';
+  $('recBar').style.width = state.recording ? Math.min(100, state.recSec/tgt*100)+'%' : '0%';
+  $('recNote').textContent = state.recording
+    ? '采集中 · 原始数据实时落盘，掉电最多丢当前分段'
+    : '空闲中 · 波形仍在实时刷新，按「开始采集」才写入 TF 卡';
+
+  // ---- 诊断 ----
+  // fps 用 1 秒滑动统计
+  if (!state.fpsT){ state.fpsT = now; state.fpsN = state.frames; }
+  else if (now - state.fpsT >= 1000){
+    state.fps = (state.frames - state.fpsN) * 1000 / (now - state.fpsT);
+    state.kbps = state.bytes / 1024 * 1000 / (now - state.fpsT);
+    state.fpsT = now; state.fpsN = state.frames; state.bytes = 0;
+  }
+  $('dgFps').textContent = state.fps ? state.fps.toFixed(1)+' fps' : '--';
+  $('dgWs').textContent = state.demo ? '演示模式' : (state.live ? ('已连接 · '+state.sys.cl+' 客户端') : '断开');
+  $('dgDecim').textContent = '1 : ' + state.decim + '  →  ' + state.rateHz + ' Hz';
+  $('dgDrop').textContent = state.sys.qdrop + ' 帧';
+  $('dgDrop').style.color = state.sys.qdrop>0 ? 'var(--warn)' : 'var(--txt)';
+  $('dgHeap').textContent = state.sys.heap ? (state.sys.heap/1024).toFixed(0)+' KB' : '--';
+  $('dgPs').textContent = state.sys.ps ? (state.sys.ps/1024/1024).toFixed(2)+' MB' : '--';
+  $('badgeRate').textContent = state.rateHz + ' Hz / ' + (state.fps?state.fps.toFixed(0):'--') + ' fps';
+  $('badgeUp').textContent = '上行 ' + (state.kbps?state.kbps.toFixed(1):'--') + ' KB/s';
+  $('btnRec').textContent = state.recording ? '停止采集' : '开始采集';
+  $('btnRec').className   = state.recording ? 'danger' : 'primary';
+}
+
+/* ---------------- 文件列表 + 原始数据下载 ---------------- */
+function renderFiles(s){
+  const box = $('fileList');
+  const items = s.items || [];
+  if (!items.length){ box.innerHTML = '<div><span class="empty">卡内暂无文件</span></div>'; return; }
+  // ★ 采集中一律不给下载链接：设备端也会返回 409。
+  //   原因不是"慢"，而是下载要读 SD，而写卡任务正在另一个核上写 SD —— 并发碰驱动会出事。
+  const busy = state.recording;
+  box.innerHTML = items.map(f => {
+    const mb = (f.b / 1048576).toFixed(2) + ' MB';
+    let link;
+    if (busy){
+      link = '<span style="color:var(--dim2);cursor:not-allowed" title="采集中禁止下载，避免与写卡争用 SD 总线">⏸ 采集中不可下载</span>';
+    } else if (state.demo){
+      // 演示模式没有真实设备端点，别给可点链接（点了会 404），只示意
+      link = '<span style="color:var(--dim2)" title="连接真机后这里是可点的下载链接">⬇ 下载原始数据（真机可用）</span>';
+    } else {
+      link = '<a href="/dl?f=' + encodeURIComponent(f.n) +
+             '" download style="color:var(--accent);text-decoration:none">⬇ 下载原始数据</a>';
+    }
+    return '<div><b>' + f.n + '</b><span style="display:flex;gap:12px;align-items:center">'
+         + '<span>' + mb + '</span>' + link + '</span></div>';
+  }).join('');
+}
+
+/* ---------------- 交互 ---------------- */
+$('btnRec').onclick = () => {
+  if (state.demo){
+    state.demoRec = !state.demoRec; state.demoRecT0 = performance.now();
+    showToast(state.demoRec ? '演示：模拟开始采集' : '演示：模拟停止采集');
+    return;
+  }
+  if (state.recording){
+    send({c:'stop'});
+    showToast('已发送停止命令');
+  } else {
+    send({c:'start', s:state.targetSec});
+    if (state.recWifiOff){
+      state.silent = true;   // 之后断线要按"预期"处理，不能报成故障
+      showToast('保真录制已开始：约 1 秒后 WiFi 会断开，' + state.targetSec + ' 秒后自动恢复');
+    } else {
+      showToast('已发送开始命令');
+    }
+  }
+};
+$('btnRecWifi').onclick = () => {
+  state.recWifiOff = !state.recWifiOff;
+  updateRecWifiBtn();
+  if (state.demo){ showToast('演示：录制时关 WiFi = ' + (state.recWifiOff ? '开' : '关')); return; }
+  send({c:'recwifi', on: state.recWifiOff ? 1 : 0});
+  showToast(state.recWifiOff
+    ? '录制时关 WiFi：开 —— 保真优先，录制期间本页会断线'
+    : '录制时关 WiFi：关 —— 保持实时推流');
+};
+function updateRecWifiBtn(){
+  const b = $('btnRecWifi');
+  b.textContent = '录制时关 WiFi：' + (state.recWifiOff ? '开（采集中断网）' : '关');
+  b.classList.toggle('on', state.recWifiOff);
+}
+$('durSeg').onclick = e => {
+  const b = e.target.closest('button'); if (!b) return;
+  [...e.currentTarget.children].forEach(x=>x.classList.remove('on'));
+  b.classList.add('on'); state.targetSec = +b.dataset.s;
+};
+$('gainSeg').onclick = e => {
+  const b = e.target.closest('button'); if (!b) return;
+  [...e.currentTarget.children].forEach(x=>x.classList.remove('on'));
+  b.classList.add('on'); state.gainMode = b.dataset.g;
+};
+$('winSeg').onclick = e => {
+  const b = e.target.closest('button'); if (!b) return;
+  [...e.currentTarget.children].forEach(x=>x.classList.remove('on'));
+  b.classList.add('on'); state.winSec = +b.dataset.w;
+};
+$('dcSeg').onclick = e => {
+  const b = e.target.closest('button'); if (!b) return;
+  [...e.currentTarget.children].forEach(x=>x.classList.remove('on'));
+  b.classList.add('on'); state.dcMode = b.dataset.d;
+  state.head = 0; state.len = 0; state.scale = [0.05,0.05,0.05];
+  render(performance.now());
+};
+$('btnZero').onclick = () => {
+  for (let a=0;a<3;a++){ state.mn[a].fill(0); state.mx[a].fill(0); }
+  state.head = 0; state.len = 0;
+  send({c:'zero'}); showToast('已清零（设备端把当前值设为直流基准）');
+};
+$('btnFreeze').onclick = e => {
+  state.frozen = !state.frozen;
+  e.currentTarget.classList.toggle('on', state.frozen);
+  e.currentTarget.textContent = state.frozen ? '继续' : '暂停';
+};
+$('btnList').onclick = () => {
+  if (state.demo){
+    // 演示模式给一份示例列表，好让人看清"录完怎么把原始数据拿走"这一步
+    renderFiles({ items: [
+      { n: 'vib_00000.bin', b: 14336000 },
+      { n: 'vib_00001.bin', b: 14336000 },
+      { n: 'vib_00002.bin', b: 2867200  },
+    ]});
+    showToast('演示：示例文件列表（真机上列的是 TF 卡里的真实文件）');
+    return;
+  }
+  send({c:'list'});
+};
+$('btnSelf').onclick = () => { if (state.demo){ $('selfOut').textContent='演示模式：无真实设备信息'; return; } send({c:'self'}); };
+$('btnWifiOff').onclick = () => {
+  if (state.demo){ showToast('演示模式：忽略'); return; }
+  if (!confirm('关闭设备 WiFi 会立即断开本页连接。\n\n用途：减少无线通信功耗，或对比排查干扰。\n恢复方式：串口输入 n，或重启开发板。\n\n确定关闭？')) return;
+  send({c:'wifi', on:0});
+  showToast('已发送关闭指令，连接即将断开');
+};
+$('btnMode').onclick = () => { state.demo ? exitDemo() : enterDemo(); };
+
+let toastT = 0;
+function showToast(t){
+  const el = $('toast'); el.textContent = t; el.classList.add('show');
+  clearTimeout(toastT); toastT = setTimeout(()=>el.classList.remove('show'), 2200);
+}
+
+/* ---------------- 主循环 ---------------- */
+let lastDraw = 0;
+function frameLoop(now){
+  if (!state.demo){
+    if (now - lastDraw > 33){ lastDraw = now; draw(); render(now); }
+  } else {
+    render(now);
+  }
+  requestAnimationFrame(frameLoop);
+}
+window.addEventListener('resize', () => { fitCanvas(); draw(); });
+
+/* ---------------- 启动 ----------------
+   ?demo=1 强制演示    ?live=1 强制连真机（即使在 file:// 下）   不带参数则自动判断 */
+state.demoRAF = 0;
+state.everConnected = false;
+updateRecWifiBtn();
+
+
+// Appended to index.html by tools/build_webui.py; browser-local analysis only.
+const trend = { metric:'rms', span:60, rows:[], lastTick:-1 };
+function addTrend(s, demo=false){
+  const t = demo ? performance.now() : Number(s.tm);
+  const sec = Math.floor(t/1000);
+  if (!Number.isFinite(sec) || sec === trend.lastTick) return;
+  if (!demo && !s.sensor) return;
+  trend.lastTick = sec;
+  trend.rows.push({t:sec, rms:[...state.rms], pk:[...state.pk]});
+  if (trend.rows.length>610) trend.rows.shift();
+  drawTrend();
+}
+function drawTrend(){
+  const cv=$('trendCanvas'), w=Math.max(320,cv.clientWidth||800), h=210, dpr=window.devicePixelRatio||1;
+  cv.width=Math.round(w*dpr);cv.height=Math.round(h*dpr);
+  const c=cv.getContext('2d');c.scale(dpr,dpr);c.clearRect(0,0,w,h);
+  const rows=trend.rows, end=rows.length?rows[rows.length-1].t:0;
+  const visible=rows.filter(r=>r.t>=end-trend.span);
+  const left=42,right=w-12,top=16,bottom=h-29;
+  c.strokeStyle='#e3e8e2';c.fillStyle='#66766d';c.font='11px system-ui';c.lineWidth=1;
+  for(let i=0;i<=4;i++){const y=top+(bottom-top)*i/4;c.beginPath();c.moveTo(left,y+.5);c.lineTo(right,y+.5);c.stroke();}
+  if(!visible.length){c.fillText('等待有效传感器数据',left+12,96);return;}
+  const m=trend.metric, ymax=Math.max(1,...visible.flatMap(r=>r[m].filter(Number.isFinite)))*1.15;
+  for(let i=0;i<=4;i++){const val=ymax*(1-i/4);c.fillText(val.toFixed(val<10?1:0),2,top+(bottom-top)*i/4+4);}
+  c.fillText('mg',2,10);c.fillText('-'+trend.span+'s',left,bottom+17);c.fillText('现在',right-25,bottom+17);
+  for(let a=0;a<3;a++){
+    c.strokeStyle=COL[a];c.lineWidth=1.8;c.beginPath();let started=false;
+    for(const r of visible){const v=r[m][a];if(!Number.isFinite(v))continue;
+      const x=left+(r.t-(end-trend.span))/trend.span*(right-left),y=bottom-v/ymax*(bottom-top);
+      if(!started){c.moveTo(x,y);started=true;}else c.lineTo(x,y);
+    }c.stroke();
+  }
+  $('trendNote').textContent=(state.demo?'演示合成数据 · ':'设备状态数据 · ')+`X 蓝 / Y 绿 / Z 赭 · ${m==='rms'?'振动 RMS':'振动峰值'}，单位 mg`;
+}
+function switchPage(name){
+  const showAnalysis=name==='analysis';
+  document.querySelectorAll('.monitor-only').forEach(e=>e.hidden=showAnalysis);
+  $('analysisPage').hidden=!showAnalysis;
+  $('tabMonitor').classList.toggle('on',!showAnalysis);$('tabAnalysis').classList.toggle('on',showAnalysis);
+  if(!showAnalysis)drawTrend();
+  if(location.hash !== (showAnalysis ? '#analysis' : '#monitor')) location.hash=showAnalysis ? 'analysis' : 'monitor';
+  if(showAnalysis&&state.demo&&new URLSearchParams(location.search).get('demo')==='1'&&!analysis.file)loadAnalysisFile(makeSyntheticRecord());
+}
+$('tabMonitor').onclick=()=>switchPage('monitor');
+$('tabAnalysis').onclick=()=>switchPage('analysis');
+for(const id of ['trendMetric','trendSpan'])$(id).onclick=e=>{
+  const b=e.target.closest('button');if(!b)return;
+  for(const x of e.currentTarget.children)x.classList.toggle('on',x===b);
+  if(id==='trendMetric')trend.metric=b.dataset.m;else trend.span=Number(b.dataset.t);
+  drawTrend();
+};
+
+const analysis={file:null,header:null,total:0,overview:null,selStart:0,selEnd:0,infoPrefix:'',runSeq:0,dragStart:null};
+const ANALYSIS_MAX_SAMPLES=262144;
+function parseHeader(bytes){
+  if(bytes.byteLength<32)throw Error('文件头不足 32 字节');
+  const u=new Uint8Array(bytes),d=new DataView(bytes);
+  if(String.fromCharCode(...u.slice(0,4))!=='VIBB')throw Error('文件不是 VIBB 原始记录');
+  const version=d.getUint16(4,true),fs=d.getUint32(6,true),bps=d.getUint16(14,true);
+  if(version!==1||bps!==6||fs<100||fs>100000)throw Error('不支持的记录版本、采样率或样本格式');
+  return {fs,version,bps,tail:{drop:d.getUint32(16,true),written:d.getUint32(20,true),fails:d.getUint32(24,true),lost:d.getUint32(28,true)}};
+}
+function makeSyntheticRecord(){
+  const fs=26667,n=fs,ab=new ArrayBuffer(32+n*6),d=new DataView(ab),u=new Uint8Array(ab);
+  u.set([86,73,66,66]);d.setUint16(4,1,true);d.setUint32(6,fs,true);d.setUint16(14,6,true);d.setUint32(20,n,true);
+  for(let i=0;i<n;i++){
+    const t=i/fs,imp=Math.exp(-(((t-.62)/.0015)**2))*370;
+    const mg=[420*Math.sin(2*Math.PI*1000*t)+imp,220*Math.sin(2*Math.PI*700*t),
+      1000+310*Math.sin(2*Math.PI*(t<.5?800:1500)*t)+imp*.7];
+    for(let a=0;a<3;a++)d.setInt16(32+i*6+a*2,Math.max(-32768,Math.min(32767,Math.round(mg[a]/.061))),true);
+  }
+  return new File([ab],'演示_合成记录.bin',{type:'application/octet-stream'});
+}
+async function buildOverview(file,total){
+  const buckets=1024,min=Array.from({length:3},()=>new Float32Array(buckets).fill(Infinity));
+  const max=Array.from({length:3},()=>new Float32Array(buckets).fill(-Infinity));
+  const chunk=65536;
+  for(let begin=0;begin<total;begin+=chunk){
+    const end=Math.min(total,begin+chunk),ab=await file.slice(32+begin*6,32+end*6).arrayBuffer(),d=new DataView(ab);
+    for(let i=begin;i<end;i++){
+      const b=Math.min(buckets-1,Math.floor(i*buckets/total)),off=(i-begin)*6;
+      for(let a=0;a<3;a++){const v=d.getInt16(off+a*2,true)*.061;min[a][b]=Math.min(min[a][b],v);max[a][b]=Math.max(max[a][b],v);}
+    }
+    if(end<total&&begin/chunk%16===15)await new Promise(resolve=>setTimeout(resolve,0));
+  }
+  return {min,max,buckets};
+}
+function drawOverview(){
+  const cv=$('analysisOverview'),w=Math.max(320,cv.clientWidth||800),h=180,dpr=window.devicePixelRatio||1;
+  cv.width=w*dpr;cv.height=h*dpr;const c=cv.getContext('2d');c.scale(dpr,dpr);
+  c.fillStyle='#fdfdfb';c.fillRect(0,0,w,h);const l=45,r=w-14,t=15,b=h-29;
+  if(!analysis.overview)return;
+  const axis=Number($('analysisAxis').value),lo=analysis.overview.min[axis],hi=analysis.overview.max[axis];
+  let ymin=Infinity,ymax=-Infinity;for(let i=0;i<lo.length;i++){if(Number.isFinite(lo[i])){ymin=Math.min(ymin,lo[i]);ymax=Math.max(ymax,hi[i]);}}
+  if(!Number.isFinite(ymin))return;
+  const pad=Math.max(1,(ymax-ymin)*.08);ymin-=pad;ymax+=pad;
+  c.strokeStyle='#e3e8e2';c.fillStyle='#627068';c.font='11px system-ui';
+  for(let i=0;i<=4;i++){const y=t+(b-t)*i/4;c.beginPath();c.moveTo(l,y+.5);c.lineTo(r,y+.5);c.stroke();c.fillText((ymax-(ymax-ymin)*i/4).toFixed(0),2,y+4);}
+  c.fillText('mg',l,t+10);c.fillText('0s',l,b+18);c.fillText((analysis.total/analysis.header.fs).toFixed(2)+'s',r-48,b+18);
+  c.strokeStyle=COL[axis];c.lineWidth=1;c.beginPath();
+  for(let i=0;i<lo.length;i++)if(Number.isFinite(lo[i])){const x=l+(i+.5)/lo.length*(r-l);c.moveTo(x,b-(lo[i]-ymin)/(ymax-ymin)*(b-t));c.lineTo(x,b-(hi[i]-ymin)/(ymax-ymin)*(b-t));}
+  c.stroke();
+  const x1=l+analysis.selStart/analysis.total*(r-l),x2=l+analysis.selEnd/analysis.total*(r-l);
+  c.fillStyle='#356d6424';c.fillRect(x1,t,Math.max(1,x2-x1),b-t);
+  c.strokeStyle='#356d64';c.lineWidth=2;for(const x of [x1,x2]){c.beginPath();c.moveTo(x,t);c.lineTo(x,b);c.stroke();}
+  $('analysisSelection').textContent=`${(analysis.selStart/analysis.header.fs).toFixed(3)}–${(analysis.selEnd/analysis.header.fs).toFixed(3)} 秒 · ${((analysis.selEnd-analysis.selStart)/analysis.header.fs).toFixed(3)} 秒选区`;
+}
+function overviewSample(e){
+  const cv=$('analysisOverview'),w=Math.max(320,cv.clientWidth||800),l=45,r=w-14;
+  return Math.max(0,Math.min(analysis.total,Math.round((e.offsetX-l)/(r-l)*analysis.total)));
+}
+function fft(re,im){
+  const n=re.length;for(let i=1,j=0;i<n;i++){let bit=n>>1;for(;j&bit;bit>>=1)j^=bit;j^=bit;if(i<j){[re[i],re[j]]=[re[j],re[i]];[im[i],im[j]]=[im[j],im[i]];}}
+  for(let len=2;len<=n;len<<=1){const a=-2*Math.PI/len,wr=Math.cos(a),wi=Math.sin(a);
+    for(let i=0;i<n;i+=len){let cr=1,ci=0;for(let j=0;j<len/2;j++){
+      const k=i+j+len/2,tr=cr*re[k]-ci*im[k],ti=cr*im[k]+ci*re[k];
+      re[k]=re[i+j]-tr;im[k]=im[i+j]-ti;re[i+j]+=tr;im[i+j]+=ti;
+      [cr,ci]=[cr*wr-ci*wi,cr*wi+ci*wr];
+    }}
+  }
+}
+function drawAnalysisPlot(id,values,xmin,xmax,ylabel,color){
+  const cv=$(id),w=Math.max(320,cv.clientWidth||500),h=240,dpr=window.devicePixelRatio||1;
+  cv.width=w*dpr;cv.height=h*dpr;const c=cv.getContext('2d');c.scale(dpr,dpr);
+  c.fillStyle='#fdfdfb';c.fillRect(0,0,w,h);const l=47,r=w-13,t=15,b=h-30;
+  let ymin=Infinity,ymax=-Infinity;for(const v of values){ymin=Math.min(ymin,v);ymax=Math.max(ymax,v);}if(ymax<=ymin){ymax=ymin+1;ymin-=1;}
+  c.strokeStyle='#e3e8e2';c.lineWidth=1;c.fillStyle='#627068';c.font='11px system-ui';
+  for(let i=0;i<=4;i++){let y=t+(b-t)*i/4;c.beginPath();c.moveTo(l,y+.5);c.lineTo(r,y+.5);c.stroke();c.fillText((ymax-(ymax-ymin)*i/4).toFixed(1),2,y+4);}
+  c.fillText(ylabel,l,t+10);c.fillText(xmin.toFixed(2),l,b+17);c.fillText(xmax.toFixed(2),r-43,b+17);
+  c.strokeStyle=color;c.lineWidth=1.2;c.beginPath();const cols=Math.min(values.length,Math.ceil(r-l));
+  for(let j=0;j<cols;j++){
+    const first=Math.floor(j*values.length/cols),last=Math.max(first+1,Math.floor((j+1)*values.length/cols));let low=Infinity,high=-Infinity;
+    for(let i=first;i<last;i++){low=Math.min(low,values[i]);high=Math.max(high,values[i]);}
+    const x=l+(j+.5)/cols*(r-l);c.moveTo(x,b-(low-ymin)/(ymax-ymin)*(b-t));c.lineTo(x,b-(high-ymin)/(ymax-ymin)*(b-t));
+  }c.stroke();
+}
+function formatFeatures(id,items){$(id).innerHTML=items.map(([name,value])=>`<span>${name} <b>${value}</b></span>`).join('');}
+function clearAnalysis(){
+  for(const id of ['featuresTime','featuresFrequency','featuresTimeFrequency'])$(id).textContent='—';
+  for(const id of ['analysisTime','analysisSpectrum','analysisSpectrogram']){const cv=$(id);cv.getContext('2d').clearRect(0,0,cv.width,cv.height);}
+}
+function stftFeatures(values,fs,fmax){
+  const size=1024,hop=512,frames=[],energies=[],centroids=[];let peakRms=0,peakAt=0,fluxSum=0,previous=null;
+  for(let start=0;start+size<=values.length;start+=hop){
+    const re=new Float64Array(size),im=new Float64Array(size);let ss=0;
+    for(let i=0;i<size;i++){const v=values[start+i];ss+=v*v;re[i]=v*(.5-.5*Math.cos(2*Math.PI*i/(size-1)));}
+    const frameRms=Math.sqrt(ss/size);if(frameRms>peakRms){peakRms=frameRms;peakAt=(start+size/2)/fs;}
+    energies.push(frameRms);fft(re,im);
+    const bins=Math.min(size/2,Math.floor(fmax*size/fs)+1),row=new Float64Array(bins);
+    let total=0,weighted=0;for(let k=1;k<bins;k++){const amp=Math.hypot(re[k],im[k]);row[k]=amp;const p=amp*amp;total+=p;weighted+=p*k*fs/size;}
+    centroids.push(total?weighted/total:0);
+    if(previous){let change=0,denom=0;for(let k=1;k<bins;k++){change+=Math.max(0,row[k]-previous[k]);denom+=row[k];}fluxSum+=denom?change/denom:0;}
+    previous=row;frames.push(row);
+  }
+  const avg=energies.reduce((a,b)=>a+b,0)/Math.max(1,energies.length);
+  const variation=avg?Math.sqrt(energies.reduce((s,x)=>s+(x-avg)**2,0)/energies.length)/avg:0;
+  return {frames,peakRms,peakAt,variation,flux:fluxSum/Math.max(1,frames.length-1),bins:frames[0]?.length||0};
+}
+function drawSpectrogram(result,startSec,fs,fmax){
+  const cv=$('analysisSpectrogram'),w=Math.max(320,cv.clientWidth||500),h=240,dpr=window.devicePixelRatio||1;
+  cv.width=w*dpr;cv.height=h*dpr;const c=cv.getContext('2d');c.scale(dpr,dpr);
+  c.fillStyle='#fdfdfb';c.fillRect(0,0,w,h);const l=48,r=w-13,t=16,b=h-30;
+  const frames=result.frames,bins=result.bins;let max=0;for(const row of frames)for(let k=1;k<bins;k++)max=Math.max(max,row[k]);
+  const cols=Math.min(frames.length,Math.max(1,Math.floor(r-l))),rows=Math.min(128,bins-1);
+  for(let j=0;j<cols;j++)for(let k=0;k<rows;k++){
+    const jf=Math.floor(j*frames.length/cols),jt=Math.max(jf+1,Math.floor((j+1)*frames.length/cols));
+    const kf=1+Math.floor(k*(bins-1)/rows),kt=Math.max(kf+1,1+Math.floor((k+1)*(bins-1)/rows));
+    let amp=0;for(let fj=jf;fj<jt;fj++)for(let fk=kf;fk<kt;fk++)amp=Math.max(amp,frames[fj][fk]);
+    const db=20*Math.log10(Math.max(amp,1e-12)/Math.max(max,1e-12));
+    const v=Math.max(0,Math.min(1,(db+55)/55));
+    c.fillStyle=`hsl(${161+46*v}  ${12+32*v}% ${97-57*v}%)`;
+    const x=l+j*(r-l)/cols,y=b-(k+1)*(b-t)/rows;
+    c.fillRect(x,y,(r-l)/cols+1,(b-t)/rows+1);
+  }
+  c.fillStyle='#627068';c.font='11px system-ui';
+  c.fillText('Hz',l,t+8);c.fillText(fmax.toFixed(0),2,t+6);c.fillText('0',17,b+3);
+  c.fillText(startSec.toFixed(2)+'s',l,b+18);c.fillText((startSec+(frames.length-1)*512/fs+1024/fs).toFixed(2)+'s',r-47,b+18);
+}
+async function runAnalysis(){
+  try{
+    if(!analysis.file)throw Error('请先选择 vib_*.bin 文件');
+    const {fs}=analysis.header,start=analysis.selStart,n=analysis.selEnd-start,axis=Number($('analysisAxis').value),seq=++analysis.runSeq;
+    if(start<0||n<1024||analysis.selEnd>analysis.total)throw Error('请在概览图中拖出至少 1024 个样本的时间段');
+    if(n>ANALYSIS_MAX_SAMPLES)throw Error(`选区过长，请缩小到 ${(ANALYSIS_MAX_SAMPLES/fs).toFixed(2)} 秒以内`);
+    const ab=await analysis.file.slice(32+start*6,32+(start+n)*6).arrayBuffer();
+    if(seq!==analysis.runSeq)return;
+    const d=new DataView(ab),v=new Float64Array(n);let sum=0,peak=0,min=Infinity,max=-Infinity;
+    for(let i=0;i<n;i++){const x=d.getInt16(i*6+axis*2,true)*0.061;v[i]=x;sum+=x;min=Math.min(min,x);max=Math.max(max,x);}
+    const mean=sum/n,fftN=2**Math.ceil(Math.log2(n)),re=new Float64Array(fftN),im=new Float64Array(fftN),centered=new Float64Array(n);let ss=0,m4=0,windowSum=0;
+    for(let i=0;i<n;i++){const x=v[i]-mean,win=.5-.5*Math.cos(2*Math.PI*i/(n-1));centered[i]=x;ss+=x*x;peak=Math.max(peak,Math.abs(x));m4+=x**4;re[i]=x*win;windowSum+=win;}
+    const rms=Math.sqrt(ss/n),kurt=m4/n/(rms**4||1),crest=peak/(rms||1);
+    fft(re,im);const spec=new Float64Array(fftN/2+1);
+    for(let i=0;i<spec.length;i++)spec[i]=Math.hypot(re[i],im[i])*(i===0||i===fftN/2?1:2)/windowSum;
+    drawAnalysisPlot('analysisTime',centered,start/fs,(start+n)/fs,'mg（已去均值）',COL[axis]);
+    const fmax=fs/2,bins=spec.length;
+    drawAnalysisPlot('analysisSpectrum',spec,0,fmax,'mg 峰值',COL[axis]);
+    let mainBin=1,power=0,weighted=0;
+    for(let k=1;k<bins;k++){if(spec[k]>spec[mainBin])mainBin=k;const p=spec[k]**2;power+=p;weighted+=p*k*fs/fftN;}
+    const centroid=power?weighted/power:0;let variance=0;
+    for(let k=1;k<bins;k++)variance+=spec[k]**2*((k*fs/fftN-centroid)**2);
+    const bandwidth=power?Math.sqrt(variance/power):0;
+    const tf=stftFeatures(centered,fs,fmax);drawSpectrogram(tf,start/fs,fs,fmax);
+    formatFeatures('featuresTime', [['振动 RMS',rms.toFixed(2)+' mg'],['峰值',peak.toFixed(2)+' mg'],['峰峰值',(max-min).toFixed(2)+' mg'],['峰值因子',crest.toFixed(2)],['峭度',kurt.toFixed(2)]]);
+    formatFeatures('featuresFrequency', [['主频',(mainBin*fs/fftN).toFixed(1)+' Hz'],['谱重心',centroid.toFixed(1)+' Hz'],['谱带宽',bandwidth.toFixed(1)+' Hz'],['频点间距',(fs/fftN).toFixed(2)+' Hz']]);
+    formatFeatures('featuresTimeFrequency', [['最大短时 RMS',tf.peakRms.toFixed(2)+' mg'],['发生于',(start/fs+tf.peakAt).toFixed(3)+' s'],['短时 RMS 变异系数',tf.variation.toFixed(3)],['谱流量',tf.flux.toFixed(3)]]);
+    $('analysisInfo').textContent=`${analysis.infoPrefix} · ${'XYZ'[axis]} 轴 · ${(start/fs).toFixed(3)}–${((start+n)/fs).toFixed(3)} s · 全频谱 0–${fmax.toFixed(0)} Hz · 选区分辨能力约 ${(fs/n).toFixed(2)} Hz${fftN>n?'（频谱已补零）':''}`;
+  }catch(e){clearAnalysis();$('analysisInfo').textContent=e.message;}
+}
+async function loadAnalysisFile(file){
+  analysis.file=file;analysis.header=null;analysis.overview=null;analysis.runSeq++;clearAnalysis();drawOverview();$('analysisSelection').textContent='正在读取整段记录…';
+  if(!file){$('analysisInfo').textContent='请先选择从设备下载的原始记录。';$('analysisSelection').textContent='尚未选择时间段';return;}
+  try{
+    analysis.header=parseHeader(await file.slice(0,32).arrayBuffer());
+    const count=Math.floor((file.size-32)/6),t=analysis.header.tail;analysis.total=count;
+    if(count<1024)throw Error('原始记录不足 1024 个样本，无法分析');
+    analysis.infoPrefix=`${file.name} · ${(count/analysis.header.fs).toFixed(2)} s · ${analysis.header.fs} Hz${t.drop||t.lost?' · 注意：记录有丢样本':''}${(file.size-32)%6?' · 文件尾不完整':''}${t.written&&t.written!==count?' · 头部样本数与文件长度不符':''}`;
+    $('analysisInfo').textContent='正在读取整段原始信号概览…';
+    analysis.overview=await buildOverview(file,count);
+    if(analysis.file!==file)return;
+    analysis.selStart=0;analysis.selEnd=Math.min(count,Math.min(analysis.header.fs*2,ANALYSIS_MAX_SAMPLES));
+    drawOverview();await runAnalysis();
+  }catch(err){analysis.header=null;analysis.overview=null;$('analysisInfo').textContent=err.message;}
+}
+$('analysisFile').onchange=e=>loadAnalysisFile(e.target.files[0]||null);
+$('analysisExample').onclick=()=>loadAnalysisFile(makeSyntheticRecord());
+$('analysisAxis').onchange=()=>{drawOverview();if(analysis.header)runAnalysis();};
+const overviewCanvas=$('analysisOverview');
+overviewCanvas.onpointerdown=e=>{if(!analysis.overview)return;analysis.dragStart=overviewSample(e);analysis.selStart=analysis.selEnd=analysis.dragStart;overviewCanvas.setPointerCapture?.(e.pointerId);drawOverview();};
+overviewCanvas.onpointermove=e=>{if(analysis.dragStart===null)return;const p=overviewSample(e);analysis.selStart=Math.min(p,analysis.dragStart);analysis.selEnd=Math.max(p,analysis.dragStart);drawOverview();};
+overviewCanvas.onpointerup=e=>{if(analysis.dragStart===null)return;const p=overviewSample(e);analysis.selStart=Math.min(p,analysis.dragStart);analysis.selEnd=Math.max(p,analysis.dragStart);analysis.dragStart=null;drawOverview();runAnalysis();};
+window.addEventListener('resize',()=>{drawTrend();drawOverview();if(analysis.file&&analysis.header)runAnalysis();});
+window.addEventListener('hashchange',()=>switchPage(location.hash==='#analysis'?'analysis':'monitor'));
+
+
+(function boot(){
+  const q = new URLSearchParams(location.search);
+  if (q.get('demo') === '1')      enterDemo(false);
+  else if (q.get('live') === '1') connect(true);
+  else if (location.protocol === 'file:') enterDemo(false);
+  else                            connect(false);
+  if(location.hash==='#analysis') switchPage('analysis');
+})();
+requestAnimationFrame(frameLoop);
+</script>
+</body>
+</html>
+
+)__VIBUI__";
+
+static const uint32_t WEBUI_HTML_LEN = sizeof(WEBUI_HTML) - 1;

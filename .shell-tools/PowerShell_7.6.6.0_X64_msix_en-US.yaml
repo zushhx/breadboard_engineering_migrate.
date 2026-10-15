@@ -1,0 +1,92 @@
+PackageIdentifier: Microsoft.PowerShell
+PackageVersion: 7.6.6.0
+Moniker: pwsh
+Documentations:
+- DocumentLabel: Product Documentation
+  DocumentUrl: https://learn.microsoft.com/powershell
+- DocumentLabel: FAQ
+  DocumentUrl: https://github.com/PowerShell/PowerShell/blob/master/docs/FAQ.md
+Tags:
+- command-line
+- cross-platform
+- open-source
+- powershell
+- pwsh
+- shell
+PackageLocale: en-US
+Author: Microsoft Corporation
+Copyright: Copyright (c) Microsoft Corporation
+CopyrightUrl: https://github.com/PowerShell/PowerShell/blob/master/LICENSE.txt
+Description: 'PowerShell is a cross-platform (Windows, Linux, and macOS) automation
+  and configuration tool/framework that works well with your existing tools and is
+  optimized for dealing with structured data (e.g. JSON, CSV, XML, etc.), REST APIs,
+  and object models.
+
+  It includes a command-line shell, an associated scripting language and a framework
+  for processing cmdlets.'
+ShortDescription: PowerShell is a cross-platform task automation solution made up
+  of a command-line shell, a scripting language, and a configuration management framework.
+  PowerShell runs on Windows, Linux, and macOS.
+License: MIT
+LicenseUrl: https://github.com/PowerShell/PowerShell/blob/master/LICENSE.txt
+PackageName: PowerShell
+PackageUrl: https://microsoft.com/PowerShell
+Publisher: Microsoft Corporation
+PublisherSupportUrl: https://github.com/PowerShell/PowerShell/issues
+PublisherUrl: https://github.com/PowerShell/PowerShell/
+ReleaseNotesUrl: https://github.com/PowerShell/PowerShell/releases/tag/v7.6.6
+Installers:
+- Architecture: x64
+  InstallerType: msix
+  InstallerSha256: ad992bc654ad8e6fa7070baedfbc0edbf8cab5b6bcb4f9f7a891fd2438fafe4b
+  SignatureSha256: bf51b167e367f9b4d1cdc2d5db3bfb89b5b25ccaaf9ab400c974ee5b5fa3d8db
+  InstallerUrl: https://github.com/PowerShell/PowerShell/releases/download/v7.6.6/PowerShell-7.6.6.msixbundle
+  PackageFamilyName: Microsoft.PowerShell_8wekyb3d8bbwe
+  ReleaseDate: 2026-09-08
+  InstallerAbortsTerminal: false
+  InstallLocationRequired: false
+  RequireExplicitUpgrade: false
+  DisplayInstallWarnings: false
+  DownloadCommandProhibited: false
+  ArchiveBinariesDependOnPath: false
+  MinimumOSVersion: 10.0.17763.0
+  UpgradeBehavior: install
+  Commands:
+  - pwsh
+  ExpectedReturnCodes:
+  - InstallerReturnCode: 2147958003
+    ReturnResponse: missingDependency
+  - InstallerReturnCode: 2147958004
+    ReturnResponse: diskFull
+  - InstallerReturnCode: 2147958008
+    ReturnResponse: cancelledByUser
+  - InstallerReturnCode: 2147958011
+    ReturnResponse: alreadyInstalled
+  - InstallerReturnCode: 2147958013
+    ReturnResponse: missingDependency
+  - InstallerReturnCode: 2147958015
+    ReturnResponse: blockedByPolicy
+  - InstallerReturnCode: 2147958017
+    ReturnResponse: blockedByPolicy
+  - InstallerReturnCode: 2147958018
+    ReturnResponse: packageInUse
+  - InstallerReturnCode: 2147958022
+    ReturnResponse: downgrade
+  - InstallerReturnCode: 2147958032
+    ReturnResponse: systemNotSupported
+  - InstallerReturnCode: 2147958034
+    ReturnResponse: missingDependency
+  - InstallerReturnCode: 2147958035
+    ReturnResponse: systemNotSupported
+  - InstallerReturnCode: 2147958045
+    ReturnResponse: systemNotSupported
+  - InstallerReturnCode: 2147958058
+    ReturnResponse: systemNotSupported
+  InstallModes:
+  - interactive
+  - silent
+  - silentWithProgress
+  Platform:
+  - Windows.Universal
+ManifestVersion: 1.12.0
+ManifestType: merged

@@ -1,0 +1,81 @@
+﻿网络,节点1,节点2/去向,线色,备注
+GND,USB-C 座 GND(J7.A1B12/B1A12),GND 黑轨,黑,系统地 P-
+GND,D2.2 / D3.2 / D4.2,GND 黑轨,黑,
+GND,U3.1 / U4.1,GND 黑轨,黑,CH213K GND
+GND,U2.3 / U2.EP(9),GND 黑轨,黑,LGS4056
+GND,U6.3 / U6.7 / U6.9 / U6.EP(11),GND 黑轨,黑,TPS63031
+GND,U7.1 / U7.2 / U7.7,GND 黑轨,黑,INA226 A1/A0/GND → 地址0x40
+GND,U8.4,GND 黑轨,黑,SD-NAND
+GND,U9.2(经R30 100Ω),GND 黑轨,黑,DW01 VM→P-
+GND,U10.2,GND 黑轨,黑,SKY13351
+GND,U12.7 / U12.17(EP),GND 黑轨,黑,IP6831
+GND,Q1.1 / Q1.4,GND 黑轨,黑,CJ3134 双N 源极
+GND,Q5.6 / Q5.7,GND 黑轨,黑,8205A S2(P-)
+GND,R4.2 / R5.2 / R8.2 / R9.2 / R11.2 / R30.2 / R32.2 / R33.2 / R35.2 / R36.2,GND 黑轨,黑,各下拉/对地电阻
+GND,SW1.2 / SW2.2 / SW3.3 / SW3.4,GND 黑轨,黑,按键/拨动开关对地端
+GND,LED1 负极,GND 黑轨,黑,
+GND,U1.GND(转接板GND脚),GND 黑轨,黑,模组所有GND脚
+GND,U13(VS板).2 / .3 / GND脚,GND 黑轨,黑,IIS3DWB RES 脚必须接GND
+GND,各去耦电容一端,就近GND,黑,
+BAT_N(B-),CN1.2(电池负),B- 汇流点,黑(独),⚠ 独立节点，禁止接 GND 轨
+BAT_N,Q5.2 / Q5.3 (S1),B- 汇流点,黑(独),电池负经 Q5 到 P-
+BAT_N,RT1 一端 / U9.6 / C14.2,B- 汇流点,黑(独),NTC/DW01地
+VBAT_RAW,CN1.1(电池正),红轨A,红,电池正，SW3 未控前
+VBAT_RAW,Q2.4(D1) / R39.1 / R38.2 / U2.5(BAT),红轨A,红,
+VBAT,Q2.1 / Q2.3 (S1/S3),红轨B,红,Q2 导通后的系统电池正
+VBAT,U4.3(VI+) / C5+,红轨B,红,进第二级理想二极管
+BAT_SW_CTRL,Q2.5(G2),信号节点,灰,
+BAT_SW_CTRL,R38.1,信号节点,灰,R38 另一端=VBAT_RAW
+BAT_SW_CTRL,"SW3 公共脚(2,5)",信号节点,灰,SW3 拨到 ON → 接 GND → Q2 导通 → 整机供电
+C4_N15,Q1.3 / Q1.6,信号节点,灰,Q1 双N 漏/源
+C4_N15,Q2.2(G1) / R10.1,信号节点,灰,R10 另一端=VBAT
+C4_N17,Q2.6(D2) / R7.1,信号节点,灰,分压上臂
+BATT_SENSE,R7.2 / R8.1 / C4+ / U1.IO4,信号节点,紫,ADC1_CH3，4.2V→2.1V
+D1_N1(USB 5V段),J7.VBUS(A4B9/B4A9),橙轨前段,橙,
+D1_N1,D1.A(1) / D2.5 / D4.5 / D3.1 / C36+,橙轨前段,橙,
+5V_VIN,D1.K(2),橙轨,橙,经SS34后
+5V_VIN,U3.3(VI+) / U2.4(VCC) / U2.8(CE) / U12.8 / C6+ / C29+ / C30+ / R9.1 / R40.1,橙轨,橙,
+WCHG_*,U12 线圈/BOOT/COMM/RECT/SET/NEN 各脚,IP6831 子电路,黄绿,严格按 IP6831 手册典型电路：J8→AC1/AC2，C23/C24=BOOT，C25/C26=COMM，C27/C28/C37=RECT，C31=PVDD，R32=SET→GND，R33=NEN→GND
+VSYS_L0,U3.2(VO-) / U4.2(VO-),白轨前段,白,理想二极管 OR 输出
+VSYS_L0,R29.1 / U7.10(IN+),白轨前段,白,INA226 电流采样高端（源侧）
+VSYS_AFTER,R29.2 / U6.8(VIN) / U6.5(VINA) / U7.9(IN-) / U7.8(VBUS) / C11+ / C35+ / R37.2,白轨,白,INA226 需开尔文：IN+/IN- 直接在 R29 两端引出
+BUCK_SW1,U6.4(SW1) ↔ L1 一端,—,黄,L1 跨接 SW1/SW2
+BUCK_SW2,U6.2(SW2) ↔ L1 另一端,—,黄,
+BUCK_EN,U6.6(EN) / U1.IO14 / R37.1,信号节点,灰,R37 100k 上拉到 VSYS_AFTER；IO14 拉低可关 buck
+3V3_SYS,U6.10(VOUT) / U6.1(VOS),黄轨,黄,TPS63031 固定 3.3V 输出
+3V3_SYS,U1.3V3(转接板) / C1+ / C8+ / C12+ / C13+ / C17+ / C3+ / C9+ / C10+,黄轨,黄,MCU 及各芯片去耦
+3V3_SYS,R1.1 / R2.2 / R6.1 / R12.2 / R17.1 / R18.1 / R19.1 / R20.1 / R25.2 / R26.2 / R27.1 / R28.2,黄轨,黄,各上拉电阻
+3V3_SYS,FB1.1,黄轨,黄,→3V3_SENS 分轨
+3V3_SENS,FB1.2 / C15+ / C16+ / R34.2 / U13(VS).VDD,白轨(传感),白,传感器专用轨
+nRESET,U1.EN / R1.2 / C2+ / SW2.1,信号节点,灰,R1 10k 上拉3V3；C2 1µF；SW2 按下接地
+BOOT,U1.IO0 / R2.1 / SW1.1,信号节点,灰,R2 10k 上拉；SW1 按下接地（上电按住进下载）
+LED_SYS,U1.IO2 → R3.1,—,灰,R3.2 → LED1 正极 → GND
+SPI_SCK,U1.IO12 ↔ U13.13(SPC),绿,绿,杜邦尽量短(<15cm)
+SPI_MOSI,U1.IO11 ↔ U13.14(SDI),绿,绿,
+SPI_MISO,U1.IO13 ↔ U13.1(SDO),绿,绿,
+SPI_CS,U1.IO10 ↔ U13.12(CS),绿,绿,R34 10k 上拉到 3V3_SENS
+INT_SENSOR,U13.4(INT1) ↔ U1.IO9,绿,绿,FIFO水位/唤醒中断
+SD_CLK,U1.IO38 → R16(22Ω) → U8.3,蓝,蓝,建议初测 10MHz
+SD_CMD,U1.IO39 ↔ U8.5,蓝,蓝,R17 10k 上拉 3V3
+SD_D0,U1.IO40 ↔ U8.6,蓝,蓝,R18 10k 上拉
+SD_D1,U1.IO41 ↔ U8.7,蓝,蓝,R19 10k 上拉
+SD_D2,U1.IO42 ↔ U8.1,蓝,蓝,R20 10k 上拉
+SD_D3,U1.IO47 ↔ U8.2,蓝,蓝,R27 10k 上拉
+SDA_SYS,U1.IO16 ↔ U7.4,紫,紫,R28 4.7k 上拉 3V3
+SCL_SYS,U1.IO17 ↔ U7.5,紫,紫,R26 4.7k 上拉 3V3
+INA_ALERT,U7.3 ↔ U1.IO15,紫,紫,R25 10k 上拉 3V3
+CHRG_N,U2.7 ↔ U1.IO7,灰,灰,R12 100k 上拉 3V3；低=充电中
+CHRG_DONE,U2.6 ↔ U1.IO8,灰,灰,R6 10k 上拉 3V3；低=充满
+BAT_NTC,CN1.3 / RT1 / R40.2 / U2.1(TEMP),灰,灰,R40 另一端=5V_VIN；RT1 另一端=BAT_N
+DW01_VCC,R39.2 / C14.1 / U9.5,灰,灰,
+USB_DP,J7.A6/B6 ↔ D2.3/D2.4 ↔ U1.IO20,灰,灰,
+USB_DM,J7.A7/B7 ↔ D2.1/D2.6 ↔ U1.IO19,灰,灰,
+USB_CC1,J7.A5 → D4 → R4 5.1k → GND,灰,灰,
+USB_CC2,J7.B5 → D4 → R5 5.1k → GND,灰,灰,
+RF_IN,J3(模组U.FL跳线) → C18 → U10.5(INPUT),同轴/短线,-,C18 就近焊 U10 转接板
+RF_ANT_A,U10.1 → C19 → J2 天线A,-,-,
+RF_ANT_B,U10.3 → C20 → J5 天线B,-,-,
+RF_SW_CTRL_A,U1.IO5 ↔ U10.6(VCTL1),灰,灰,R35 100k 下拉；高选ANT1
+RF_SW_CTRL_B,U1.IO6 ↔ U10.4(VCTL2),灰,灰,R36 100k 下拉；与A必须互补
+RXD0/TXD0,U1.IO44/IO43 → 排针测试点,灰,灰,备用串口
+Q5 pin1-pin8,互连短接线,-,-,原设计内部共漏，面包板版加线更稳

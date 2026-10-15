@@ -1,0 +1,18 @@
+{
+  "VerifiedAt": "2026-10-12T18:52:47.4575713+08:00",
+  "LatestStableVersion": "7.6.6",
+  "ReleaseURL": "https://github.com/PowerShell/PowerShell/releases/tag/v7.6.6",
+  "ActualVersion": "7.6.6",
+  "Executable": "C:\\Users\\acer\\Desktop\\直插式面包板样机\\.shell-tools\\PowerShell-7.6.6\\pwsh.exe",
+  "Source": "WinGet Microsoft.PowerShell 7.6.6.0 official MSIX bundle",
+  "PackageSHA256": "AD992BC654AD8E6FA7070BAEDFBC0EDBF8CAB5B6BCB4F9F7A891FD2438FAFE4B",
+  "SignatureStatus": "Valid",
+  "Signer": "CN=Microsoft Corporation, O=Microsoft Corporation, L=Redmond, S=Washington, C=US",
+  "Deployment": "Project-local extracted Microsoft runtime; not registered as a Windows application",
+  "NormalLauncherVerified": true,
+  "LegacyAdminEntryForwardingVerified": true,
+  "ElevatedRunTested": false,
+  "CardReadDuringUpgrade": false,
+  "BundledCodexBootstrapChanged": false,
+  "InstalledBytes": 298050853.0
+}

@@ -1,0 +1,32 @@
+ACTION=capture; China time=20261015_153406_884020; TF write commands: NONE
+LOG: C:\Users\acer\Desktop\直插式面包板样机\面包板样机_固件\logs\tf_software_capture_controller_20261015_153406_884020.log
+CAPTURE: 12s; DTR/RTS initially false; no automatic reset; commands=['i', 'b', 'l']
+SERIAL OPEN: COM5; USB VID:PID=1A86:7522 SER= LOCATION=1-4.3
+SEND: ['i', 'b', 'l'] (read-only)
+[tfmatrix] OCR=C0FF8000 RCA=E624 CID=SU08G serial=10044BA5 CSD=1 sectors=15523840 sector_bytes=512 bytes=7948206080
+[tfmatrix] LBA0 #1 ESP_OK jump=EB-58-90 signature=55-AA nonzero=371 fnv1a=1410CC45
+[tfmatrix] LBA0 #2 ESP_OK jump=EB-58-90 signature=55-AA nonzero=371 fnv1a=1410CC45
+[tfmatrix] root open=0
+[tfmatrix] D 0 System Volume Information
+[tfmatrix] D 0 FOUND.000
+[tfmatrix] D 0 王俊超论文
+[tfmatrix] D 0 第二张
+[tfmatrix] sample open=0
+[tfmatrix] sample bytes=18327 expected_size=18327 result=0 sha256=a8014b2c5ca28eb98c9eaee6de86c76c2256bec875f0f90860ece355b1670b86 PC_MATCH=1
+[tfmatrix] sample open=0
+[tfmatrix] sample bytes=18327 expected_size=18327 result=0 sha256=a8014b2c5ca28eb98c9eaee6de86c76c2256bec875f0f90860ece355b1670b86 PC_MATCH=1
+[tfmatrix] sample reads consistent=1 rejected_card_writes=0
+SEND: ['i', 'b', 'l'] (final read-only check)
+[tfmatrix] OCR=C0FF8000 RCA=E624 CID=SU08G serial=10044BA5 CSD=1 sectors=15523840 sector_bytes=512 bytes=7948206080
+[tfmatrix] LBA0 #1 ESP_OK jump=EB-58-90 signature=55-AA nonzero=371 fnv1a=1410CC45
+[tfmatrix] LBA0 #2 ESP_OK jump=EB-58-90 signature=55-AA nonzero=371 fnv1a=1410CC45
+[tfmatrix] root open=0
+[tfmatrix] D 0 System Volume Information
+[tfmatrix] D 0 FOUND.000
+[tfmatrix] D 0 王俊超论文
+[tfmatrix] D 0 第二张
+[tfmatrix] sample open=0
+[tfmatrix] sample bytes=18327 expected_size=18327 result=0 sha256=a8014b2c5ca28eb98c9eaee6de86c76c2256bec875f0f90860ece355b1670b86 PC_MATCH=1
+[tfmatrix] sample open=0
+[tfmatrix] sample bytes=18327 expected_size=18327 result=0 sha256=a8014b2c5ca28eb98c9eaee6de86c76c2256bec875f0f90860ece355b1670b86 PC_MATCH=1
+[tfmatrix] sample reads consistent=1 rejected_card_writes=0

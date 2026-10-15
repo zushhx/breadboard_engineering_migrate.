@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>旋转件无线供电 · 论文对照与可行性分析</title>
+<style>
+  :root { --ink:#1a2332; --sub:#5a6b7f; --line:#dfe6ee; --accent:#1f4e79; --warn:#b45309; --ok:#15803d; --bg:#f6f8fb; --card:#ffffff; --danger:#b91c1c; }
+  * { box-sizing: border-box; margin:0; padding:0; }
+  body { font-family:"Microsoft YaHei","PingFang SC",sans-serif; color:var(--ink); background:var(--bg); line-height:1.65; padding:32px 16px; }
+  .wrap { max-width:1140px; margin:0 auto; }
+  h1 { font-size:26px; color:var(--accent); margin-bottom:6px; }
+  .meta { color:var(--sub); font-size:13px; margin-bottom:20px; }
+  h2 { font-size:19px; color:var(--accent); margin:36px 0 12px; padding-left:10px; border-left:4px solid var(--accent); }
+  h3 { font-size:15px; margin:20px 0 8px; color:#0f3557; }
+  p, li { font-size:14px; }
+  ul, ol { padding-left:22px; }
+  .card { background:var(--card); border:1px solid var(--line); border-radius:10px; padding:18px 22px; margin-bottom:16px; }
+  .callout { border-left:4px solid var(--warn); background:#fffbeb; padding:12px 16px; border-radius:0 8px 8px 0; margin:12px 0; font-size:14px; }
+  .okbox { border-left:4px solid var(--ok); background:#f0fdf4; padding:12px 16px; border-radius:0 8px 8px 0; margin:12px 0; font-size:14px; }
+  .dngbox { border-left:4px solid var(--danger); background:#fef2f2; padding:12px 16px; border-radius:0 8px 8px 0; margin:12px 0; font-size:14px; }
+  table { width:100%; border-collapse:collapse; font-size:13px; margin:10px 0; background:#fff; }
+  th { background:var(--accent); color:#fff; padding:7px 9px; text-align:left; font-weight:600; }
+  td { border:1px solid var(--line); padding:6px 9px; vertical-align:top; }
+  tr:nth-child(even) td { background:#f8fafc; }
+  code { background:#eef2f7; padding:1px 5px; border-radius:4px; font-size:12.5px; font-family:Consolas,monospace; }
+  .small { color:var(--sub); font-size:12px; }
+  .danger { color:var(--danger); font-weight:600; }
+  .ok { color:var(--ok); font-weight:600; }
+  .num { text-align:center; white-space:nowrap; }
+  .tag { display:inline-block; background:#e8eef6; color:#274b6d; border-radius:4px; padding:0 7px; font-size:12px; margin-right:6px; }
+  .t-yes { background:#e9f7ee; color:#15803d; }
+  .t-no { background:#fde8e8; color:#9b1c1c; }
+  .t-mid { background:#fff3d6; color:#92500a; }
+  footer { color:var(--sub); font-size:12px; margin-top:36px; text-align:center; line-height:1.9; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<h1>旋转件无线供电 · 论文对照与可行性分析</h1>
+<div class="meta">
+  对照文献：李家兴，梁光胜，刘守豹，等. 无线供电的旋转机械部件监测系统设计[J]. 现代电子技术，2026，49(9)：133-140. DOI: 10.16652/j.issn.1004-373x.2026.09.020<br>
+  对象：智能刀柄振动监测原型（ISO20 环形刀柄） ｜ 编制：知微 🔧 ｜ 日期：2026-09-21
+</div>
+
+<div class="okbox">
+<b>结论先行。</b>这篇论文确实做到了 <b>20 cm</b> 的线圈间距，你的数字有出处，不是拍脑袋。<br>
+但它和你以为的不是同一件事：<b>论文不是"在 20 cm 外持续供电"，而是"每转一圈，只在接收线圈正对发射线圈的那一小段角度里充电，其余角度靠储能装置放电顶着"</b>（证据：论文图 16 的功率曲线是一个窄尖峰，不是一条平线）。<br>
+<b>所以真正的门槛不是"距离能不能到 20 cm"，而是两件事：① 你的刀柄上能装多大的线圈；② 你能接受"间歇充电 + 电池缓冲"这个模式。</b>
+</div>
+
+<div class="card">
+<h3>目录</h3>
+<ol>
+<li><a href="#s1">论文做了什么：核心参数提取</a></li>
+<li><a href="#s2">★ 关键发现：它是间歇耦合，不是持续供电</a></li>
+<li><a href="#s3">逐项对照：论文 vs 你的刀柄</a></li>
+<li><a href="#s4">从论文自己的数据能推出什么</a></li>
+<li><a href="#s5">你该怎么用它：两条路</a></li>
+<li><a href="#s6">需要你确认的参数</a></li>
+<li><a href="#s7">数据来源与诚实边界</a></li>
+</ol>
+</div>
+
+<h2 id="s1">一、论文做了什么：核心参数提取</h2>
+<div class="card">
+<table>
+<tr><th style="width:22%">项</th><th>内容</th></tr>
+<tr><td><b>应用对象</b></td><td>大型旋转机械部件（汽轮机转轴、风力发电机、水轮发电机转子、航空发动机等）的在线监测</td></tr>
+<tr><td><b>技术路线</b></td><td><b>LCC-S 拓扑补偿型磁耦合谐振</b>无线电能传输（MC-WPT）——<span class="danger">不是 Qi 电磁感应</span></td></tr>
+<tr><td><b>线圈间距</b></td><td><b>20 cm</b>（发射线圈与接收线圈之间）</td></tr>
+<tr><td><b>接收线圈旋转半径</b></td><td><b>50 cm</b>（决定线圈与轨迹尺度）</td></tr>
+<tr><td><b>仿真结果</b></td><td>输出电压约 28.6 V，输出功率约 82 W，效率约 <b>70%</b></td></tr>
+<tr><td><b>实测结果</b></td><td>峰值传输功率约 <b>70 W</b>、峰值效率约 <b>75%</b>（据论文图 16 估算）；结论段自述「约 20 cm 传输距离、最大约 80 W」</td></tr>
+<tr><td><b>逆变电路</b></td><td>单相全桥，IRFZ44NPBF（100 V / 49 A）；STM32F103C8T6 + TLP250 光耦隔离 + IR2110 驱动</td></tr>
+<tr><td><b>整流稳压</b></td><td>4×SR5200 肖特基全桥 + LM2596 Buck 降压</td></tr>
+<tr><td><b>供电架构</b></td><td>接收端 → <b>储能装置</b> → 为探测装置供电 <span class="small">（储能装置是必需环节，不是可选）</span></td></tr>
+<tr><td><b>监测端</b></td><td>STM32F407ZET6 主控 + DS18B20 温度（多路）+ RS485 三轴加速度传感器（SP3485 转换）</td></tr>
+<tr><td><b>通信</b></td><td><b>SX1278 LoRa</b>（不是 WiFi）</td></tr>
+<tr><td><b>上位机</b></td><td>PyQt5 多线程（主线程 / 监听线程 / 通信线程）</td></tr>
+</table>
+</div>
+
+<h2 id="s2">二、★ 关键发现：它是间歇耦合，不是持续供电</h2>
+<div class="card">
+<p><b>论文原文（§2.1.2）：</b>「在一个旋转周期内，两线圈的相对位置可分为<b>互感区（α 扇区）</b>与<b>非互感区</b>。在互感区，无线供电子系统正常工作，产生无线电能传输；在非互感区，两线圈之间的互感接近于 0，<b>不产生无线电能传输</b>。」</p>
+<p>「在旋转过程中无线供电子系统的功率和效率随着两线圈偏移角度的减小而增大，并在接近完全对正时达到峰值；<b>当偏移角度过大时，无线电能传输停止</b>。」</p>
+
+<div class="dngbox">
+<b>论文图 16 的曲线形状是这个方案的本质：</b><br>
+横轴是接收线圈的旋转机械角（0°~360°），纵轴是功率 / 效率。曲线<b>不是一条平线，而是一个窄尖峰</b>——峰值出现在 180° 附近（约 70 W / 约 75%），两侧迅速回落到接近 0。<br>
+<b>→ 有效传输窗口只有约 60°（约占一圈的 1/6），其余约 300° 完全不传能。</b>
+</div>
+
+<p><b>这意味着什么：</b>系统的平均可获取功率 ≈ 峰值功率 × 占空比。论文靠「高功率脉冲充电 + 储能装置放电」扛过非互感区，才能让探测装置在整圈里持续工作——论文原文也确认了这一点：「提供足够支持整个旋转周期」。</p>
+
+<div class="callout">
+<b>所以"20 cm"的正确理解是：</b>在接收线圈转到正对位置的那一小段时间里，两线圈相距 20 cm 也能高效耦合，充一次能管一整圈。<b>它不是"随时随地隔着 20 cm 就能供电"。</b>
+</div>
+</div>
+
+<h2 id="s3">三、逐项对照：论文 vs 你的刀柄</h2>
+<div class="card">
+<table>
+<tr><th style="width:16%">维度</th><th style="width:30%">李家兴论文</th><th style="width:30%">你的智能刀柄</th><th>差异含义</th></tr>
+<tr>
+  <td><b>旋转半径</b></td>
+  <td>50 cm</td>
+  <td>刀柄尺寸量级（<span class="small">需确认</span>）</td>
+  <td class="danger">线圈可做多大，直接决定能撑多远距离</td>
+</tr>
+<tr>
+  <td><b>线圈间距</b></td>
+  <td>20 cm</td>
+  <td>待定（结构决定）</td>
+  <td>取决于上面的旋转半径</td>
+</tr>
+<tr>
+  <td><b>传输功率</b></td>
+  <td>峰值 ~70~80 W</td>
+  <td>需求 0.4~0.7 W（WiFi 常开 210 mA @3.3 V）</td>
+  <td class="ok">低两个数量级 → 对耦合要求可放宽</td>
+</tr>
+<tr>
+  <td><b>供电模式</b></td>
+  <td>间歇充电 + 储能缓冲</td>
+  <td>待定</td>
+  <td class="danger">这是最关键的决策点</td>
+</tr>
+<tr>
+  <td><b>转速</b></td>
+  <td>回转实验台（<span class="small">论文未给转速</span>）</td>
+  <td>主轴转速可达数千 rpm（<span class="small">需确认</span>）</td>
+  <td class="danger">转速越高，正对窗口的<b>时间</b>越短</td>
+</tr>
+<tr>
+  <td><b>通信</b></td>
+  <td>LoRa（低功耗、远距离）</td>
+  <td>WiFi（带宽高、功耗高）</td>
+  <td>论文的功耗预算比你宽松得多</td>
+</tr>
+<tr>
+  <td><b>传感器</b></td>
+  <td>RS485 工业三轴加速度 + DS18B20</td>
+  <td>IIS3DWB（26.7 kHz ODR）</td>
+  <td class="danger">你要连续采 160 KB/s，论文是低频监测</td>
+</tr>
+<tr>
+  <td><b>主控</b></td>
+  <td>STM32F407 + STM32F103</td>
+  <td>ESP32-S3（双核 + PSRAM）</td>
+  <td>你的算力压力更大</td>
+</tr>
+</table>
+
+<h3>可以借鉴 / 需要改造 / 不适用</h3>
+<table>
+<tr><th style="width:12%">判定</th><th style="width:34%">内容</th><th>说明</th></tr>
+<tr>
+  <td><span class="tag t-yes">可借鉴</span></td>
+  <td>LCC-S 补偿拓扑</td>
+  <td>恒流/恒压输出特性对变耦合工况友好，正是旋转件该用的拓扑</td>
+</tr>
+<tr>
+  <td><span class="tag t-yes">可借鉴</span></td>
+  <td>「接收侧储能装置」这一架构决策</td>
+  <td>它证明了旋转件取电的正确形态：<b>不是持续供电，而是脉冲充电 + 缓冲</b></td>
+</tr>
+<tr>
+  <td><span class="tag t-yes">可借鉴</span></td>
+  <td>互感随旋转角变化的建模方法</td>
+  <td>论文给了 M(t) 的解析式与仿真验证路径，可直接用来评估你的刀柄构型</td>
+</tr>
+<tr>
+  <td><span class="tag t-yes">可借鉴</span></td>
+  <td>「互感区 / 非互感区」划分思路</td>
+  <td>用来判断你的发射线圈要覆盖多大角度才够</td>
+</tr>
+<tr>
+  <td><span class="tag t-mid">需改造</span></td>
+  <td>功率等级</td>
+  <td>80 W → 你的需求 0.7 W 以下，逆变与整流可大幅简化、迷你化</td>
+</tr>
+<tr>
+  <td><span class="tag t-mid">需改造</span></td>
+  <td>线圈尺寸与距离</td>
+  <td>必须按你的实际可安装空间重算距离，<b>不能直接套用 20 cm</b></td>
+</tr>
+<tr>
+  <td><span class="tag t-mid">需改造</span></td>
+  <td>转速适配</td>
+  <td>论文未提转速；高转速下窗口时间极短，充电电路响应速度是新约束</td>
+</tr>
+<tr>
+  <td><span class="tag t-no">不适用</span></td>
+  <td>LoRa 通信</td>
+  <td>你要传 12.7 KB/s 实时波形，LoRa 带宽不够，必须继续用 WiFi</td>
+</tr>
+<tr>
+  <td><span class="tag t-no">不适用</span></td>
+  <td>低频监测的功耗预算</td>
+  <td>论文是温度 + 低频振动；你是 26.7 kHz 连续采集，功耗结构完全不同</td>
+</tr>
+</table>
+</div>
+
+<h2 id="s4">四、从论文自己的数据能推出什么</h2>
+<div class="card">
+<p>磁耦合的能量传输能力，本质上取决于<b>「线圈尺寸 ÷ 传输距离」这个比值</b>，而不是距离的绝对值。</p>
+<table>
+<tr><th>对象</th><th>线圈尺度</th><th>间距</th><th>尺度/距离比</th></tr>
+<tr><td>李家兴论文</td><td>旋转半径 50 cm（据图 15 照片，线圈在十厘米量级）</td><td class="num">20 cm</td><td class="num">约 0.5 ~ 1</td></tr>
+<tr><td>你的刀柄（假设）</td><td>可安装线圈约 2~3 cm</td><td class="num">?</td><td class="num">—</td></tr>
+</table>
+<p>按同样的比值反推：<b>如果刀柄上只能装 2~3 cm 的线圈，同比例下可用的间距只有约 3~6 cm，而不是 20 cm。</b></p>
+<div class="dngbox">
+<b>要把 20 cm 这个数字落到刀柄上，发射线圈一侧就得做到 20 cm 量级</b>——那意味着机床侧要装一个直径 20 cm 以上的发射线圈，并且刀柄的旋转轨迹要能被它覆盖。这是结构设计问题，不是电路问题。
+</div>
+<p class="small">注：论文未给出收发线圈的具体几何尺寸与匝数，上面「十厘米量级」是从图 15 实验平台照片目测估计，属推断值，需向作者或原文图表确认。</p>
+</div>
+
+<h2 id="s5">五、你该怎么用它：两条路</h2>
+<div class="card">
+<h3>路线 A：充电与工作分离（推荐，成本最低）</h3>
+<ul>
+<li>刀柄自带锂电池，工作时电池供电，<b>充电发生在刀柄离开机床、放回刀座时</b>。</li>
+<li>此时线圈贴近 3~5 mm，<b>你手上那套 Qi 模块直接能用</b>，不用换方案。</li>
+<li>这是电动车无线充、无线充电电动工具的标准形态——静止充电没有时间压力，用最低成本换最高可靠性与效率。</li>
+<li>代价：需要刀座/停放位配套，且电池容量决定单次工作时长。</li>
+</ul>
+
+<h3>路线 B：旋转过程中充电（参考论文，工程量大得多）</h3>
+<ul>
+<li>按论文形态：机床上固定发射线圈，刀柄上装接收线圈，<b>转一圈充一次电</b>，靠储能装置扛过非互感区。</li>
+<li>需要解决：线圈尺寸与安装空间、互感区角度覆盖、高转速下的脉冲充电、金属刀柄的隔磁、旋转动平衡。</li>
+<li>这已经<b>不是"面包板验证"的量级</b>，建议作为下一阶段独立课题（可作为论文方向）。</li>
+<li><b>但有一个优势</b>：你的功率需求比论文低两个数量级（0.7 W vs 80 W），意味着逆变电路、线圈、储能都可以做得比论文小得多、简单得多。</li>
+</ul>
+
+<div class="callout">
+<b>给 v1 / v2 的建议：</b>先把路线 A 做通（当前面包板样机的 P7/P8 就是在做这件事）。路线 B 留作后续——它和你现在的「投板前电子链路验证」是两个不同的问题，不要混在一起做。
+</div>
+</div>
+
+<h2 id="s6">六、需要你确认的参数</h2>
+<div class="card">
+<table>
+<tr><th style="width:6%">#</th><th style="width:30%">参数</th><th>为什么要问</th></tr>
+<tr><td class="num">1</td><td><b>刀柄主轴的工作转速范围</b></td><td>决定正对耦合窗口的<b>时间</b>。10000 rpm 下 60° 窗口仅约 1 ms，充电电路响应速度成为硬约束</td></tr>
+<tr><td class="num">2</td><td><b>刀柄上实际能安装的线圈尺寸</b></td><td>直接决定可用间距（见 §四），是"能不能到 20 cm"的唯一答案</td></tr>
+<tr><td class="num">3</td><td><b>机床侧可安装发射线圈的空间</b></td><td>决定互感区能覆盖多大角度、峰值功率能到多少</td></tr>
+<tr><td class="num">4</td><td><b>刀柄是否需要边转边供电</b></td><td>若可在停机/换刀时充电，路线 A 直接解决问题，无需走论文方案</td></tr>
+<tr><td class="num">5</td><td><b>单次连续工作时长要求</b></td><td>决定电池容量，也决定是否能容忍"间歇充电"</td></tr>
+</table>
+</div>
+
+<h2 id="s7">七、数据来源与诚实边界</h2>
+<div class="card">
+<p><b>数据来源：</b></p>
+<ul>
+<li>论文全文（8 页）经本机 <code>pdfplumber 0.11.10</code> 提取文本 + 渲染页面图像核对，非摘要级转述。</li>
+<li>核心参数（20 cm / 50 cm / 82 W / 70% / 70 W / 75% / LCC-S / LoRa / STM32F407 / DS18B20 / SR5200 / LM2596 等）均取自论文正文与图表。</li>
+</ul>
+<p><b>诚实边界：</b></p>
+<ul>
+<li>实测功率与效率的数值（约 70 W / 约 75%）是<b>从论文图 16 曲线上目测读取</b>，论文未在正文给出精确数字，属估算值。</li>
+<li>线圈几何尺寸论文未给，§四 中「十厘米量级」为图 15 照片目测推断，<b>需以原文献或作者数据为准</b>。</li>
+<li>「尺度/距离比」的反推是基于磁耦合普遍规律的工程近似，用于量级判断，<b>不能作为定量设计依据</b>。</li>
+<li>本文未做任何仿真或实测，属文献对照分析。</li>
+</ul>
+</div>
+
+<footer>
+旋转件无线供电 · 论文对照与可行性分析 ｜ 2026-09-21 ｜ 知微 🔧<br>
+对照文献：李家兴，等. 现代电子技术，2026，49(9)：133-140
+</footer>
+
+</div>
+</body>
+</html>

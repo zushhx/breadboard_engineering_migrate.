@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>面包板验证版 · Mainboard-MCU-01 + VS-Module-01</title>
+<style>
+  :root { --ink:#1a2332; --sub:#5a6b7f; --line:#dfe6ee; --accent:#1f4e79; --warn:#b45309; --ok:#15803d; --bg:#f6f8fb; --card:#ffffff; }
+  * { box-sizing: border-box; margin:0; padding:0; }
+  body { font-family:"Microsoft YaHei","PingFang SC",sans-serif; color:var(--ink); background:var(--bg); line-height:1.65; padding:32px 16px; }
+  .wrap { max-width:1080px; margin:0 auto; }
+  h1 { font-size:26px; color:var(--accent); margin-bottom:6px; }
+  .meta { color:var(--sub); font-size:13px; margin-bottom:20px; }
+  h2 { font-size:19px; color:var(--accent); margin:34px 0 12px; padding-left:10px; border-left:4px solid var(--accent); }
+  h3 { font-size:15px; margin:18px 0 8px; color:#0f3557; }
+  p, li { font-size:14px; }
+  .card { background:var(--card); border:1px solid var(--line); border-radius:10px; padding:18px 22px; margin-bottom:16px; }
+  .callout { border-left:4px solid var(--warn); background:#fffbeb; padding:12px 16px; border-radius:0 8px 8px 0; margin:12px 0; font-size:14px; }
+  .okbox { border-left:4px solid var(--ok); background:#f0fdf4; padding:12px 16px; border-radius:0 8px 8px 0; margin:12px 0; font-size:14px; }
+  table { width:100%; border-collapse:collapse; font-size:13px; margin:10px 0; background:#fff; }
+  th { background:var(--accent); color:#fff; padding:7px 9px; text-align:left; font-weight:600; }
+  td { border:1px solid var(--line); padding:6px 9px; vertical-align:top; }
+  tr:nth-child(even) td { background:#f8fafc; }
+  code { background:#eef2f7; padding:1px 5px; border-radius:4px; font-size:12.5px; font-family:Consolas,monospace; }
+  .svgbox { background:#fff; border:1px solid var(--line); border-radius:10px; padding:12px; margin:12px 0; overflow-x:auto; }
+  .pin { fill:#eaf1f8; stroke:#7d97b3; }
+  .modbox { fill:#f3f7fc; stroke:#33557e; stroke-width:1.5; rx:8; }
+  .wire { stroke:#444; stroke-width:1.6; fill:none; }
+  text { font-family:"Microsoft YaHei",sans-serif; }
+  .small { color:var(--sub); font-size:12px; }
+  ol.steps > li { margin:10px 0 10px 4px; padding-left:6px; }
+  .tag { display:inline-block; background:#e8eef6; color:#274b6d; border-radius:4px; padding:0 7px; font-size:12px; margin-right:6px; }
+  .danger { color:#b91c1c; font-weight:600; }
+  footer { color:var(--sub); font-size:12px; margin-top:36px; text-align:center; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<h1>面包板验证版 · 装置原理与接线参考页</h1>
+<div class="callout" style="border-left-color:#b91c1c;background:#fef2f2"><b>⚠ 本页是 2026-09-17「B 路线」（贴片转直插）的产物，路线已变更，请勿直接照此施工。</b><br>当前有效路线为 <b>C 混合路线</b>（主控 立创·ESP32S3R8N8 / C20626143），接线、布局、上电流程一律以 <b><code>面包板样机_到货验收与施工准备包.html</code></b> 为准。<br>本页仅保留作原理与信号名的对照参考。已更正：WHO_AM_I 由 <code>0x63</code> → <code>0x7B</code>；IIS3DWB RES 脚「必须接 GND」的说法放宽为 VDDIO 或 GND 均可。<br><b>2026-09-21 再添一条口径变更：</b>INA226 改用成品模块，<b>沿用模块自带的 0.1 Ω 分流电阻、不拆换</b>（量程 ±0.8192 A、Current_LSB 25 µA，CAL 恒为 2048）——<b>本页下方「R29 10 mΩ + 四线制小焊板」属 B 路线做法，当前不复现。</b></div>
+
+<div class="meta">
+  依据：嘉立创EDA工程 <code>New Project_2026-09-04_14-48-16</code> 最新原理图网表（2026-09-17 20:14 导出，96 器件 / 69 网络）+ <code>VS-Module-01</code> 传感器板 ｜ 编制：知微 🔧 ｜ 2026-09-17 ｜ <b>原工程只读，未做任何修改</b>
+</div>
+
+<div class="okbox">
+<b>结论：可以做。</b>原装置所有器件型号全部保留，仅封装形态改为面包板可用形式（模组/IC 焊 2.54mm 转接板、阻容换同值直插、FPC 换杜邦）。供电链、采集链、存储链、触发逻辑与原装置 <b>逐网络一致</b>。
+</div>
+
+<div class="callout">
+<b>面包板版相对原 PCB 的 4 条固有差异</b>（不影响"能不能跑"，影响"跑得好不好"）：<br>
+① RF 分集链路在面包板上阻抗不可控 → 只验证<b>切换逻辑</b>，不比 RSSI 性能；<br>
+② <b>（B 路线做法，当前不复现）</b>10mΩ 采样电阻会被面包板接触电阻（毫欧级）淹没 → INA226 与 R29 必须<b>焊在同一小块板上做四线制</b>。当前 C 路线改用 INA226 成品模块，沿用其自带的 0.1 Ω 分流、不拆换（2026-09-21 决定）；<br>
+③ SDMMC 使用 <b>20 MHz 标准档</b>，诊断用 400 kHz；本固件旧 SDK 设置 10 MHz 会停留在 400 kHz；SPI 线尽量 &lt;15cm；<br>
+④ SKY13351（1×1mm）与 IP6831（QFN-16）手焊难度高 → 上电测试流程把它们放在最后，焊不动可先跳过，不阻塞其余验证。
+</div>
+
+<h2>一、系统框图（面包板版，与原原理图逐块对应）</h2>
+<div class="svgbox">
+<svg viewBox="0 0 1040 640" xmlns="http://www.w3.org/2000/svg" font-size="13">
+  <defs>
+    <marker id="ar" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="#33557e"/></marker>
+  </defs>
+  <!-- 电源链 -->
+  <text x="20" y="26" font-weight="bold" fill="#1f4e79" font-size="15">① 供电链（谁给谁供电）</text>
+
+  <rect class="modbox" x="20" y="40" width="130" height="58" rx="8"/>
+  <text x="85" y="63" text-anchor="middle" font-weight="bold">USB-C 直插座</text>
+  <text x="85" y="82" text-anchor="middle" class="small">J7 · CC 5.1k×2 · ESD</text>
+
+  <rect class="modbox" x="20" y="130" width="130" height="58" rx="8"/>
+  <text x="85" y="153" text-anchor="middle" font-weight="bold">电池 PH-2P</text>
+  <text x="85" y="172" text-anchor="middle" class="small">CN1（带NTC）</text>
+
+  <rect class="modbox" x="20" y="220" width="130" height="58" rx="8"/>
+  <text x="85" y="243" text-anchor="middle" font-weight="bold">无线充 IP6831</text>
+  <text x="85" y="262" text-anchor="middle" class="small">U12 转接板 + 线圈</text>
+
+  <!-- 保护 -->
+  <rect class="modbox" x="200" y="122" width="150" height="74" rx="8"/>
+  <text x="275" y="146" text-anchor="middle" font-weight="bold">DW01A + 8205A</text>
+  <text x="275" y="165" text-anchor="middle" class="small">U9+Q5 转接板</text>
+  <text x="275" y="184" text-anchor="middle" class="small">背靠背共漏 · B−→P−</text>
+
+  <!-- SW3 -->
+  <rect class="modbox" x="392" y="130" width="96" height="58" rx="8"/>
+  <text x="440" y="153" text-anchor="middle" font-weight="bold">SW3</text>
+  <text x="440" y="172" text-anchor="middle" class="small">TK-800-1 原件</text>
+
+  <!-- CH213K -->
+  <rect class="modbox" x="200" y="34" width="288" height="70" rx="8"/>
+  <text x="344" y="57" text-anchor="middle" font-weight="bold">理想二极管 OR（U3 + U4 CH213K）</text>
+  <text x="344" y="76" text-anchor="middle" class="small">USB/无线充(5V_VIN) ⊕ 电池(VBAT) → VSYS_L0</text>
+  <text x="344" y="94" text-anchor="middle" class="small">有外部电源时电池自动不放电</text>
+
+  <!-- D1 -->
+  <rect x="200" y="44" width="0" height="0"/>
+  <text x="212" y="34" class="small">SS34 防倒灌</text>
+
+  <!-- INA226 -->
+  <rect class="modbox" x="540" y="122" width="170" height="74" rx="8"/>
+  <text x="625" y="146" text-anchor="middle" font-weight="bold">R29 10mΩ + INA226</text>
+  <text x="625" y="165" text-anchor="middle" class="small">同一小板 · 四线开尔文</text>
+  <text x="625" y="184" text-anchor="middle" class="small">I²C 0x40 · 0.25mA/LSB</text>
+
+  <!-- TPS63031 -->
+  <rect class="modbox" x="760" y="122" width="180" height="74" rx="8"/>
+  <text x="850" y="146" text-anchor="middle" font-weight="bold">TPS63031 buck-boost</text>
+  <text x="850" y="165" text-anchor="middle" class="small">U6 + L1 1.5µH · 固定3.3V</text>
+  <text x="850" y="184" text-anchor="middle" class="small">EN=IO14 可软件关断</text>
+
+  <rect class="modbox" x="760" y="238" width="180" height="52" rx="8"/>
+  <text x="850" y="259" text-anchor="middle" font-weight="bold">3V3_SYS（黄轨）</text>
+  <text x="850" y="278" text-anchor="middle" class="small">FB1 磁珠 → 3V3_SENS（白轨）</text>
+
+  <!-- MCU -->
+  <rect class="modbox" x="560" y="330" width="380" height="270" rx="8"/>
+  <text x="750" y="356" text-anchor="middle" font-weight="bold" font-size="15">ESP32-S3-WROOM-1U-N8（U1）+ 2.54 转接板</text>
+  <text x="586" y="386">· EN：R1 10k↑ + C2 1µF + SW2 复位键</text>
+  <text x="586" y="408">· BOOT(IO0)：R2 10k↑ + SW1 下载键</text>
+  <text x="586" y="430">· LED(IO2) → R3 1k → 黄LED → GND</text>
+  <text x="586" y="452">· USB：IO19/IO20 ↔ D2 USBLC6 ↔ Type-C</text>
+  <text x="586" y="474" fill="#1f4e79" font-weight="bold">SPI → IIS3DWB：SCK=IO12 MOSI=IO11 MISO=IO13 CS=IO10 INT1→IO9</text>
+  <text x="586" y="496" fill="#1f4e79" font-weight="bold">SDMMC → SD-NAND：CLK=IO38(22Ω) CMD=IO39 D0~D2=IO40~42 D3=IO47</text>
+  <text x="586" y="518" fill="#1f4e79" font-weight="bold">I²C → INA226：SDA=IO16 SCL=IO17 ALERT=IO15</text>
+  <text x="586" y="540">· BATT_SENSE(IO4) ← Q1/Q2 门控分压 + SW3 使能</text>
+  <text x="586" y="562">· RF 分集：IO5/IO6 → SKY13351（三路 100pF 隔直）</text>
+  <text x="586" y="584" class="small">⚠ IO35/36/37 保持 NC · IO15 属 ADC2（WiFi 下不可作 ADC）</text>
+
+  <!-- 传感器 -->
+  <rect class="modbox" x="20" y="330" width="220" height="120" rx="8"/>
+  <text x="130" y="356" text-anchor="middle" font-weight="bold">IIS3DWBTR（U13）</text>
+  <text x="130" y="378" text-anchor="middle" class="small">LGA-14 转接板 / STEVAL-MKI208V1K</text>
+  <text x="130" y="400" text-anchor="middle" class="small">26.667 kHz 固定 ODR · ±16g</text>
+  <text x="130" y="422" text-anchor="middle" class="small">VDD=3V3_SENS · RES(2/3) 接 GND 或 VDDIO 均可</text>
+  <text x="130" y="444" text-anchor="middle" class="small">CS 上拉 R34 10k → 3V3_SENS</text>
+
+  <!-- 存储 -->
+  <rect class="modbox" x="20" y="480" width="220" height="120" rx="8"/>
+  <text x="130" y="506" text-anchor="middle" font-weight="bold">CSNP32GCR01-AOW（U8）</text>
+  <text x="130" y="528" text-anchor="middle" class="small">4GB SD-NAND · LGA-8 转接板</text>
+  <text x="130" y="550" text-anchor="middle" class="small">SDMMC 4-bit · 五路 10k 上拉</text>
+  <text x="130" y="572" text-anchor="middle" class="small">流式写入 ≈40 kB/s 落盘</text>
+
+  <!-- 连线：电源 -->
+  <path class="wire" d="M150 69 L200 69" marker-end="url(#ar)"/>
+  <path class="wire" d="M150 159 L200 159" marker-end="url(#ar)"/>
+  <path class="wire" d="M150 249 C 180 249, 180 90, 200 90" marker-end="url(#ar)" stroke-dasharray="4 3"/>
+  <text x="158" y="52" class="small">5V_VIN</text>
+  <text x="160" y="150" class="small">BAT_N→P−</text>
+  <path class="wire" d="M350 196 L350 210 L440 210 L440 188" marker-end="url(#ar)"/>
+  <text x="358" y="222" class="small">Q2 高边开关（SW3 控栅）→ VBAT</text>
+  <path class="wire" d="M488 159 L 540 159" marker-end="url(#ar)"/>
+  <path class="wire" d="M710 159 L760 159" marker-end="url(#ar)"/>
+  <text x="714" y="150" class="small">VSYS_AFTER</text>
+  <path class="wire" d="M850 196 L850 238" marker-end="url(#ar)"/>
+  <path class="wire" d="M760 264 C 700 264, 660 300, 620 330" stroke="#7d97b3" stroke-width="1.4" fill="none" stroke-dasharray="3 3"/>
+  <path class="wire" d="M240 390 L560 390" stroke="#2e7d32" stroke-width="1.6"/>
+  <text x="330" y="384" class="small" fill="#2e7d32">SPI 五线 + INT</text>
+  <path class="wire" d="M240 540 L560 500" stroke="#1565c0" stroke-width="1.6"/>
+  <text x="330" y="530" class="small" fill="#1565c0">SDMMC 六线</text>
+</svg>
+</div>
+
+<h2>二、面包板布局建议</h2>
+<div class="svgbox">
+<svg viewBox="0 0 1040 560" xmlns="http://www.w3.org/2000/svg" font-size="12">
+  <!-- 面包板 A -->
+  <rect x="20" y="20" width="990" height="230" rx="10" fill="#fbfbf6" stroke="#b9b39a" stroke-width="2"/>
+  <text x="34" y="42" font-weight="bold" fill="#6b6449">面包板 A：电源区（左）+ MCU 区（右）</text>
+  <line x1="40" y1="60" x2="990" y2="60" stroke="#c0392b" stroke-width="4"/>
+  <text x="40" y="54" fill="#c0392b" font-size="11">红轨：VBAT / 5V 分段跳线</text>
+  <line x1="40" y1="80" x2="990" y2="80" stroke="#2c3e50" stroke-width="4"/>
+  <text x="40" y="98" fill="#2c3e50" font-size="11">蓝轨(GND)：全板系统地 P−，跨板必须连通</text>
+
+  <rect x="40" y="110" width="300" height="46" rx="6" fill="#fdf3e3" stroke="#b45309"/>
+  <text x="190" y="130" text-anchor="middle">电源区：SW3 / DW01A / 8205A / Q2</text>
+  <text x="190" y="148" text-anchor="middle" font-size="11">CH213K×2 → R29+INA226 小板 → TPS63031+L1</text>
+
+  <rect x="380" y="110" width="240" height="46" rx="6" fill="#eaf3fd" stroke="#1f4e79"/>
+  <text x="500" y="130" text-anchor="middle">USB-C 直插座 + D1/D2/D3/D4</text>
+  <text x="500" y="148" text-anchor="middle" font-size="11">CC 5.1k×2 · TVS · ESD</text>
+
+  <rect x="660" y="104" width="330" height="130" rx="6" fill="#eaf3fd" stroke="#1f4e79" stroke-width="2"/>
+  <text x="825" y="130" text-anchor="middle" font-weight="bold">ESP32-S3-WROOM-1U-N8 转接板</text>
+  <text x="825" y="150" text-anchor="middle" font-size="11">EN/BOOT 按键 + RC 就近插</text>
+  <text x="825" y="168" text-anchor="middle" font-size="11">去耦 C 10µF+100nF 紧贴 3V3 脚</text>
+  <text x="825" y="186" text-anchor="middle" font-size="11">左侧引出：IO4~IO17 信号排</text>
+  <text x="825" y="204" text-anchor="middle" font-size="11">右侧引出：IO38~IO47 SDMMC 排</text>
+  <text x="825" y="222" text-anchor="middle" font-size="11" fill="#b45309">U.FL → IPEX4 跳线 → RF 小板</text>
+
+  <!-- 面包板 B -->
+  <rect x="20" y="290" width="990" height="240" rx="10" fill="#fbfbf6" stroke="#b9b39a" stroke-width="2"/>
+  <text x="34" y="312" font-weight="bold" fill="#6b6449">面包板 B：外设区</text>
+  <line x1="40" y1="330" x2="990" y2="330" stroke="#2c3e50" stroke-width="4"/>
+  <text x="40" y="348" fill="#2c3e50" font-size="11">GND 轨（与 A 板用两根粗线跨接）</text>
+
+  <rect x="40" y="370" width="250" height="120" rx="6" fill="#e8f5e9" stroke="#2e7d32" stroke-width="2"/>
+  <text x="165" y="394" text-anchor="middle" font-weight="bold">IIS3DWB（U13 转接板）</text>
+  <text x="165" y="414" text-anchor="middle" font-size="11">C32 10µF + C33/C34 100nF</text>
+  <text x="165" y="432" text-anchor="middle" font-size="11">紧贴电源脚</text>
+  <text x="165" y="454" text-anchor="middle" font-size="11">SCK/MOSI/MISO/CS/INT 五根杜邦</text>
+  <text x="165" y="472" text-anchor="middle" font-size="11" fill="#b45309">线长 ≤15cm · 共地必须两根</text>
+
+  <rect x="330" y="370" width="250" height="120" rx="6" fill="#e8eaf6" stroke="#283593" stroke-width="2"/>
+  <text x="455" y="394" text-anchor="middle" font-weight="bold">SD-NAND（U8 转接板）</text>
+  <text x="455" y="414" text-anchor="middle" font-size="11">CLK 串 22Ω 靠主控侧</text>
+  <text x="455" y="432" text-anchor="middle" font-size="11">CMD/D0~D3 10k 上拉到 3V3</text>
+  <text x="455" y="454" text-anchor="middle" font-size="11">20 MHz 标准档</text>
+
+  <rect x="620" y="370" width="180" height="120" rx="6" fill="#f3e5f5" stroke="#6a1b9a" stroke-width="2"/>
+  <text x="710" y="394" text-anchor="middle" font-weight="bold">I²C 区</text>
+  <text x="710" y="414" text-anchor="middle" font-size="11">INA226+R29 四线制小板</text>
+  <text x="710" y="432" text-anchor="middle" font-size="11">4.7k 上拉 ×2</text>
+  <text x="710" y="454" text-anchor="middle" font-size="11">ALERT → IO15</text>
+
+  <rect x="830" y="370" width="160" height="120" rx="6" fill="#eceff1" stroke="#455a64" stroke-width="2"/>
+  <text x="910" y="394" text-anchor="middle" font-weight="bold">RF 小板</text>
+  <text x="910" y="414" text-anchor="middle" font-size="11">SKY13351 + 3×100pF</text>
+  <text x="910" y="432" text-anchor="middle" font-size="11">就近焊死在转接板</text>
+  <text x="910" y="454" text-anchor="middle" font-size="11">IPEX4 天线 ×2</text>
+
+  <!-- 跨板线 -->
+  <path d="M825 234 C 825 280, 700 280, 165 370" stroke="#2e7d32" stroke-width="2" fill="none" stroke-dasharray="6 4"/>
+  <path d="M825 234 C 825 285, 560 290, 455 370" stroke="#283593" stroke-width="2" fill="none" stroke-dasharray="6 4"/>
+</svg>
+</div>
+<p class="small">杜邦线色约定：红=电源正 / 黑=GND / 黄=3V3_SYS / 白=3V3_SENS / 绿=SPI / 蓝=SDMMC / 紫=I²C·模拟 / 灰=控制与状态。完整网络级接线见 <code>面包板验证版_接线表.csv</code>。</p>
+
+<h2>三、器件形态对照（型号一律不换）</h2>
+<div class="card">
+<table>
+<tr><th>类别</th><th>原器件（位号）</th><th>面包板形态</th><th>要点</th></tr>
+<tr><td rowspan="2">主控</td><td><b>ESP32-S3-WROOM-1U-N8</b>（U1）</td><td>模组焊 2.54mm 转接底板</td><td>U.FL 座保留 → IPEX1↔IPEX4 跳线接 RF 板；IO35/36/37 不接</td></tr>
+<tr><td>—</td><td>（可选省事方案：ESP32-S3-DevKitC-1）</td><td>但那是 -1 模组（PCB 天线），严格"器件不换"请用转接板方案</td></tr>
+<tr><td>传感器</td><td><b>IIS3DWBTR</b>（U13）</td><td>LGA-14 转接板；或 ST 官方 <b>STEVAL-MKI208V1K</b></td><td>推荐评估板（引脚已引出，完全免焊）。⚠ DIL24 是 <b>ST 的 MEMS 标准脚位，不是芯片原脚号</b>，接线前须下载 ST 官网 Schematic PDF 按丝印找 VDD/GND/SPC/SDI/SDO/CS/INT1。自制转接板时：RES(pin2/3) 接 VDDIO 或 GND 均可（DS12569 允许，非「必须 GND」）、pin10/11 悬空、pin9 INT2 悬空</td></tr>
+<tr><td>存储</td><td><b>CSNP32GCR01-AOW</b> 4GB SD-NAND（U8）</td><td>LGA-8 转接板</td><td>SDMMC 4-bit；CLK 串 22Ω；20MHz 标准档，400kHz 诊断</td></tr>
+<tr><td>电源转换</td><td><b>TPS63031DSKR</b>（U6）+ <b>TMPC0312H-1R5MG</b> 1.5µH（L1）</td><td>SON-10 转接板 + 原电感转接/同值直插功率电感</td><td>固定 3.3V；pin1=VOS、2=SW2、4=SW1、5=VINA、6=EN、8=VIN、10=VOUT（以 TI 手册为准）</td></tr>
+<tr><td>理想二极管</td><td><b>CH213K</b> ×2（U3/U4）</td><td>SOT-23-3 转接板</td><td>1=GND 2=VO− 3=VI+</td></tr>
+<tr><td>充电</td><td><b>LGS4056HDA</b>（U2）</td><td>DFN-8 转接板</td><td>PROG R11 10k→100mA；TEMP 接 NTC 分压（新图已启用）</td></tr>
+<tr><td>电池保护</td><td><b>DW01A</b>（U9）+ <b>8205A</b>（Q5）</td><td>SOT-23-6 / TSSOP-8 转接板</td><td>Q5 pin1–pin8 外接短线互连；B− 串 Q5 后才到 GND</td></tr>
+<tr><td>计量 <span class="tag">B 路线</span></td><td><b>INA226AIDGSR</b>（U7）+ <b>10mΩ</b>（R29）</td><td>MSOP-10 转接板，与 R29 同一小板<td><b>四线开尔文</b>：IN+/IN− 直接从 R29 两端焊点引出；A1=A0=GND→0x40</td></tr>
+<tr><td>无线充</td><td><b>IP6831</b>（U12）</td><td>QFN-16 转接板 + Qi RX 线圈</td><td>可最后做；NEN 经 R33 下拉常使能</td></tr>
+<tr><td>RF 分集</td><td><b>SKY13351-378LF</b>（U10）+ 3×100pF</td><td>DFN-6 转接板（热风焊）</td><td>100pF 就近焊转接板；VCTL 互斥靠固件</td></tr>
+<tr><td>电池开关</td><td><b>CJ3134KDW</b>（Q1）+ <b>CJ3139KDW</b>（Q2）+ <b>TK-800-1</b>（SW3）</td><td>SOT-363 转接板；SW3 本就是直插</td><td>SW3 拨 ON → Q2 栅接地 → 电池接入系统</td></tr>
+<tr><td>USB ESD</td><td><b>USBLC6-2SC6</b> ×2（D2/D4）+ <b>SS34</b>（D1）+ <b>SMAJ5.0A</b>（D3）</td><td>SOT-23-6 / SMA 转接板</td><td>CC1/CC2 各 5.1kΩ 下拉</td></tr>
+<tr><td>磁珠/NTC</td><td><b>BLM15HG102SN1D</b>（FB1）+ <b>NCP15XH103</b>（RT1）</td><td>0402 贴片转直插小板</td><td>FB1 分出 3V3_SENS 传感专用轨</td></tr>
+<tr><td>阻容</td><td>10kΩ×11 · 100kΩ×10 · 5.1k×2 · 4.7k×2 · 1k · 22Ω · 100Ω · 470Ω · 6.2kΩ · 1MΩ；100nF×12 · 10µF×8 · 22µF×3 · 1µF×2 · 10nF×2 · 22nF×2 · 82nF · 100pF×3</td><td>同值直插</td><td>值/作用逐一对应原网表；上电/去耦电容紧贴芯片转接板</td></tr>
+<tr><td>机电</td><td>LED 黄（KT-0805Y 同色）、轻触开关×2、USB-C 16P 直插、PH-2P 直插、排针</td><td>直插</td><td>原 FPC 8P → 杜邦：1=3V3_SENS 2=GND 3=SCK 4=MOSI 5=MISO 6=CS 7=INT 8=GND</td></tr>
+</table>
+</div>
+
+<h3>焊接量到底有多少 / 哪些能不焊</h3>
+<div class="card">
+<p>严格"器件不换型号"的前提下，需要焊接的只有<b>贴片芯片 → 转接板</b>这一步，共 <b>14 个焊点组</b>；直插阻容、按键、LED、杜邦线全部免焊。想进一步减量，可用下面三招：</p>
+<table>
+<tr><th>器件</th><th>是否需要焊</th><th>免焊/减量办法</th></tr>
+<tr><td><b>IIS3DWBTR</b>（LGA-14，最难）</td><td>需要</td><td><b>买 ST 官方 STEVAL-MKI208V1K 评估板</b>（注意是 208 不是 209，见第七节），板载同型号芯片、引脚已引出 → 完全免焊，强烈推荐</td></tr>
+<tr><td>ESP32-S3-WROOM-1U-N8</td><td>需要（模组焊转接板）</td><td>可用 ESP32-S3-DevKitC-1 免焊，但那是 -1 模组（PCB 天线），会失去 U.FL → 分集实验做不了；要严格同器件就焊转接板</td></tr>
+<tr><td>INA226 + 10mΩ</td><td><b class="danger">当前不采用</b></td><td>2026-09-21 决定：改用现成 INA226 模块，<b>沿用其自带的 0.1 Ω 分流、不拆换</b>（量程 ±0.8192 A / 25 µA；峰值 456 mA 余量 1.8 倍，超约 800 mA 再换 10 mΩ，CAL 恒为 2048）。本行「自己焊转接板 + 10 mΩ」属 B 路线做法</td></tr>
+<tr><td>SD-NAND（LGA-8）</td><td>需要</td><td>可买"SD-NAND 转 TF 卡座"成品板（芯片仍是原型号，只是换成卡座形态）</td></tr>
+<tr><td>TPS63031 / CH213K×2 / LGS4056 / DW01A / 8205A / CJ3134 / CJ3139 / USBLC6×2</td><td>需要</td><td>买成品 SOT-23 / SOT-23-6 / TSSOP-8 / SON-10 / DFN-8 转接板，只焊芯片上去；<b>建议嘉立创打样一块"转接板拼板"</b>，一次做完，比零散买更整齐</td></tr>
+<tr><td>SKY13351（DFN-6 1×1mm）</td><td>需要（热风焊）</td><td>无现成替代；放最后做，焊不动可先跳过，不阻塞其余验证</td></tr>
+<tr><td>IP6831（QFN-16）</td><td>需要</td><td>无线充放最后；暂无线圈可整块跳过</td></tr>
+<tr><td>SS34 / SMAJ5.0A / 磁珠 / NTC / 电感</td><td>需要（少量）</td><td>可用同值直插件替代（功率电感 1.5µH、NTC 10k 都有直插）</td></tr>
+<tr><td>全部电阻电容、轻触开关、LED、USB-C 座、PH 座、SW3、杜邦线</td><td class="small" style="color:#15803d"><b>免焊</b></td><td>直插件直接插面包板</td></tr>
+</table>
+<p class="small"><b>实操建议：</b>把 14 个转接板在嘉立创打样成一块拼板（SMD→DIP 适配集合，成本几元），一次性焊完；之后面包板上的所有工作都是插拔和跳线，随时能改。</p>
+</div>
+
+<h2>四、MCU 引脚分配（IO 级，与最新原理图一致）</h2>
+<table>
+<tr><th>IO</th><th>功能</th><th>去向</th><th>外围</th></tr>
+<tr><td>IO0</td><td>BOOT</td><td>SW1 → GND</td><td>R2 10k 上拉 3V3；上电按住进下载</td></tr>
+<tr><td>IO2</td><td>LED_SYS</td><td>R3 1k → 黄 LED → GND</td><td>高电平点亮</td></tr>
+<tr><td>IO4</td><td>BATT_SENSE（ADC1_CH3）</td><td>Q1/Q2 门控分压中点</td><td>R7/R8 100k÷2 → 4.2V→2.1V；C4 100nF</td></tr>
+<tr><td>IO5 / IO6</td><td>RF_SW_CTRL_A / B</td><td>SKY13351 VCTL1/VCTL2</td><td>R35/R36 100k 下拉；两脚必须互补</td></tr>
+<tr><td>IO7</td><td>CHRG_N（低有效）</td><td>LGS4056 CHRG</td><td>R12 100k 上拉 3V3</td></tr>
+<tr><td>IO8</td><td>CHRG_DONE（低有效）</td><td>LGS4056 DONE</td><td>R6 10k 上拉 3V3</td></tr>
+<tr><td>IO9</td><td>INT_SENSOR</td><td>IIS3DWB INT1（pin4）</td><td>唤醒/FIFO 水位中断</td></tr>
+<tr><td>IO10/11/12/13</td><td>SPI：CS / MOSI / SCK / MISO</td><td>IIS3DWB pin12/14/13/1</td><td>Mode 3；CS 上拉 10k 至 3V3_SENS</td></tr>
+<tr><td>IO14</td><td>BUCK_EN</td><td>TPS63031 EN（pin6）</td><td>R37 100k 上拉 VSYS_AFTER；拉低关 buck</td></tr>
+<tr><td>IO15</td><td>INA_ALERT</td><td>INA226 pin3</td><td>R25 10k 上拉 3V3；⚠ ADC2 脚</td></tr>
+<tr><td>IO16 / IO17</td><td>SDA_SYS / SCL_SYS</td><td>INA226 pin4 / pin5</td><td>R28/R26 4.7k 上拉 3V3；地址 0x40</td></tr>
+<tr><td>IO19 / IO20</td><td>USB_DM / USB_DP</td><td>Type-C ↔ USBLC6</td><td>原生 USB 下载，无需串口芯片</td></tr>
+<tr><td>IO38~42, IO47</td><td>SDMMC CLK/CMD/D0/D1/D2/D3</td><td>SD-NAND</td><td>CLK 串 22Ω；CMD+D0~D3 各 10k 上拉</td></tr>
+<tr><td>EN</td><td>nRESET</td><td>SW2 + R1 10k + C2 1µF</td><td>禁止浮空</td></tr>
+<tr><td>IO35/36/37</td><td class="danger">NC</td><td>不接任何网络</td><td>与原原理图一致</td></tr>
+</table>
+
+<h2>五、上电与功能验证流程（三阶段：先备转接板 → 面包板纯插拔 → 洞洞板固化）</h2>
+<div class="card">
+<p><b>阶段 0（准备，唯一需要电烙铁的阶段）：</b>把贴片芯片焊到 SMD→DIP 转接板上。这一步<b>离线一次性做完</b>，可以自己焊、找实验室师兄代焊、或买成品转接板/评估板。此后进入面包板阶段，<b>只插不焊</b>。</p>
+<p><b>阶段 1（面包板验证）：</b>全部 2.54mm 插拔 + 杜邦线。下面 12 步里的"装"= 插上，不焊接。拆改自由。</p>
+<p><b>阶段 2（洞洞板固化，可选）：</b>逻辑跑通后，把转接板和直插件按同一网表焊到洞洞板上，做成能拿去机床现场的抗振动版本。</p>
+</div>
+<div class="card">
+<ol class="steps">
+  <li><b>静态检查</b>：不上电。通断档确认 GND 轨互通；VBAT/5V/3V3 各轨对 GND 不短路（&gt;100kΩ）。</li>
+  <li><b>USB 5V</b>：只装 USB-C 座 + D1（+D2/D3/D4/R4/R5 可后补）。量 5V_VIN ≈ 4.5~4.7V。</li>
+  <li><b>电池链路</b>：装 DW01A、8205A、Q2、SW3、R38/R39、C14。接电池，拨 SW3：VBAT 应=电池电压；拨 OFF 归零。</li>
+  <li><b>3V3_SYS</b>：装 TPS63031 + L1 + C11/C35。空载输出应稳定在 3.18~3.45V。再装 U3/U4（理想二极管 OR），USB 供电时电池路径应被阻断（电池不放电）。</li>
+  <li><b>MCU 最小系统</b>：装 WROOM-1U 转接板 + EN/BOOT RC 与按键。USB 连电脑 → 出现串口；烧测试固件点 LED（IO2）。</li>
+  <li><b>I²C</b>：装 INA226（+R26/R28/R25）。I2C 扫描应见 <b>0x40</b>；读电流电压与万用表对照。</li>
+  <li><b>SPI 传感器</b>：接 IIS3DWB。读 <code>WHO_AM_I(0x0F)</code> 应返回 <b style="color:#b91c1c">0x7B</b>（DS12569 Rev 8 默认值 01111011b；<s>0x63</s> 系误记，已更正）；配置 ±16g / FIFO / INT1。</li>
+  <li><b>SDMMC</b>：接 SD-NAND。20MHz 标准档挂载 → 写读回测文件；不稳时可用 400kHz 诊断。</li>
+  <li><b>RF 分集</b>：接 SKY13351 小板 + 两路天线。IO5/IO6 互斥切换，读两路 RSSI 验证切换逻辑（⚠ 不比性能）。</li>
+  <li><b>充电</b>：装 LGS4056 + NTC 分压（RT1/R40）。插 USB+电池：CHRG_N 低=充电中，DONE 低=充满。</li>
+  <li><b>无线充</b>（最后）：装 IP6831 + 线圈。TX 靠近后 5V_VIN 得电、D1 防倒灌不回灌 USB。</li>
+  <li><b>联调</b>：按原固件状态机（自检→待机 INT1 唤醒→前置判定→采集→流式写卡→收尾→充电监测）跑通 90s 采集落盘。</li>
+</ol>
+</div>
+
+<h2>六、红线与易错点</h2>
+<div class="card">
+<ul>
+  <li class="danger">BAT_N（电池负）与 GND（系统 P−）不是同一网络：BAT_N 必须先串过 8205A 才能到 GND。直连=三条保护全部失效。</li>
+  <li>CHRG_N / CHRG_DONE / SD_CMD / SD_D0~D3 / SDA / SCL / ALERT / CS 的<b>上拉一个都不能少</b>，阻值照原网表。</li>
+  <li>IIS3DWB 的 RES 脚（pin2/3）接 VDDIO <b>或</b> GND 都可以（DS12569 未强制接 GND，原文表述偏严，已更正）；pin10/11 允许悬空。</li>
+  <li>IO15 是 ADC2 引脚：WiFi 工作时不能当 ADC 用（本设计只做数字中断输入，不受影响）。</li>
+  <li>IO35/36/37 原理图打 NC → 面包板同样不接。</li>
+  <li>U.FL（IPEX1）与 MHF4（IPEX4）<b>严禁互插</b>，模组到板用 IPEX1↔IPEX4 专用跳线。</li>
+  <li>VCTL1/VCTL2 同一时刻只允许一路为高——硬件无互锁，先在固件里保证再上电。</li>
+  <li>R29+INA226 四线开尔文是读数可信的前提；直接插面包板读数会偏差数毫安到数十毫安。</li>
+</ul>
+</div>
+
+<h2>七、采购与打样怎么落地</h2>
+
+<h3>7.1 买 STEVAL-MKI208V1K（IIS3DWB 评估板）</h3>
+<div class="card">
+<p><b>型号已核实纠正（2026-09-17）：</b>IIS3DWB 对应的是 <code>STEVAL-MKI208V1K</code>。⚠ <code>STEVAL-MKI209V1 / MKI209V1K</code> 是 <b>IIS2ICLX 双轴倾斜仪</b>的，别买错。</p>
+<table>
+<tr><th>渠道</th><th>参考价（含税）</th><th>库存</th><th>说明</th></tr>
+<tr><td>贸泽 Mouser（511-STEVAL-MKI208V1K）</td><td>≈ ¥273.7</td><td>136（可直发）</td><td>国内常用，13%增值税票</td></tr>
+<tr><td>e络盟 element14（3297746）</td><td>≈ ¥261.6</td><td>31</td><td>英国仓，5–6 工作日</td></tr>
+<tr><td>DigiKey</td><td>≈ $60.65</td><td>210</td><td>适合有代购/学术采购渠道</td></tr>
+<tr><td>ST 官网 st.com</td><td>—</td><td>—</td><td>可查 <b>Schematic PDF / BOM / UM2116</b>；部分可申请样片</td></tr>
+<tr><td>立创商城 / 淘宝</td><td>—</td><td>—</td><td>该型号基本无现货；搜"IIS3DWB 模块"多为第三方小板，需核对芯片是否原装</td></tr>
+</table>
+<p><b>套件里有什么：</b>① 传感器小板（IIS3DWB 精确焊在板中心，带双面胶 + 四角安装孔，<b>对振动测量特别方便</b>，可直接贴到被测件）② STEVAL-MKIGIBV2 适配器板（标准 DIL24 插座兼容，板载 VDD 去耦电容）③ 连接排线。</p>
+<div class="callout">
+<b>最容易踩的坑：</b>DIL24 上的 24 个脚是 <b>ST MEMS 适配器标准脚位</b>（VDD / GND / SPC / SDI / SDO / CS / INT1 / INT2 / RES…），<b>不等于 IIS3DWB 芯片的 pin1~14</b>。接线前必须去 st.com 下载该套件的 <b>Schematic PDF</b>，按板上丝印/网络名把 VDD、GND、SPC(→IO12)、SDI(→IO11)、SDO(→IO13)、CS(→IO10)、INT1(→IO9) 找出来再接杜邦。别按芯片脚号猜。
+</div>
+<p><b>省钱替代：</b>买裸片 <code>IIS3DWBTR</code>（立创 C717702）+ LGA-14 转接板自焊，约几十元，但 0.5mm 间距 LGA 需热风枪 + 锡膏 + 钢网，失败率高——<b>不建议作为首选</b>。</p>
+</div>
+
+<h3>7.2 转接板：三条路径，推荐 A + B 组合</h3>
+<div class="card">
+<table>
+<tr><th>路径</th><th>怎么做</th><th>成本/周期</th><th>适合</th></tr>
+<tr><td><b>A 买成品套装</b></td><td>淘宝/1688 搜「贴片转直插 转接板 套装」「SOT23 MSOP TSSOP QFN 转DIP 转接板」，一包几十片覆盖常见封装</td><td>十几~三十元，1–3 天</td><td>SOT-23-3/6、SOT-363、TSSOP-8、MSOP-10、SOP-8、DFN-8、QFN-16、SMA、0402/0805</td></tr>
+<tr><td><b>B 嘉立创打样拼板</b></td><td>自己画（或克隆开源广场工程）→ 工具→拼板 → 下单</td><td>10×10cm 内通常几十元（可用免费券），3–5 天</td><td>市面买不到的：SON-10(TPS63031)、LGA-8(SD-NAND)、DFN-6 1×1(SKY13351)、LGA-14</td></tr>
+<tr><td><b>C 嘉立创 SMT 贴片</b></td><td>打样时同时上传 BOM+坐标文件，让嘉立创把贴片芯片直接贴上转接板</td><td>工程费+贴片费，视数量</td><td>不想手焊/没有热风枪时；QFN/DFN/LGA 交给机器最稳</td></tr>
+</table>
+<p class="small"><b>推荐组合：</b>常见封装走 A（立刻到手），4 个特殊封装走 B（打样拼板）；如果预算允许，B 直接选 C（SMT 贴片），把最难的 QFN-16/DFN-6/LGA 交给机器。</p>
+</div>
+
+<h3>7.3 嘉立创打样拼板的具体步骤</h3>
+<div class="card">
+<ol class="steps">
+  <li><b>新建工程</b>（⚠ 千万别在 <code>New Project_2026-09-04_14-48-16</code> 里改，另外新建"转接板拼板"工程）。</li>
+  <li><b>画一块转接板</b>：放置器件封装（立创库搜型号，用现成封装）→ 四周放 2.54mm 排针焊盘（孔径 0.9~1.0mm）→ 逐脚连线 → 加位号丝印 → 底部放 GND 铺铜更好焊。</li>
+  <li><b>复制成多块</b>：每种封装一块，CTRL+C / CTRL+SHIFT+V 按参考点粘贴排布，控制在 10×10cm 以内。</li>
+  <li><b>拼板</b>：顶部菜单 <b>工具 → 拼板</b> → 选 <b>V 割</b>（到手直接掰开，最省事）或邮票孔（邮票孔直径 0.55mm、间距 0.85mm）；行列间距 ≥1.6mm，工艺边 ≥3mm。</li>
+  <li><b>下单</b>：EDA 里「一键下单」→ 板材 FR-4、板厚 1.6mm、铜厚 1oz、<b>有铅喷锡</b>（好焊）、阻焊默认绿油 → 看有没有免费打样券/学生优惠。</li>
+  <li><b>选 SMT（可选）</b>：上传 BOM + 坐标文件，勾选要贴的器件（芯片需立创商城有货，你现在这颗 BOM 大部分都有 C 编号）。</li>
+  <li><b>到手</b>：沿 V 割掰开 → 焊芯片（QFN/DFN 用热风枪 + 锡膏 + 助焊剂）→ 排针朝下插面包板。</li>
+</ol>
+</div>
+
+<h3>7.4 转接板规格清单（照这张表买或画）</h3>
+<div class="card">
+<table>
+<tr><th>器件（位号）</th><th>封装</th><th>引脚间距</th><th>数量</th><th>买什么 / 怎么画</th></tr>
+<tr><td>ESP32-S3-WROOM-1U-N8（U1）</td><td>模组 41 脚城堡孔</td><td>1.27mm</td><td>1</td><td>搜「ESP32-S3-WROOM-1 转接板 2.54」有成品；或自画（注意天线区下方净空开窗）</td></tr>
+<tr><td>TPS63031DSKR（U6）</td><td>SON-10 / VSON-10</td><td>0.5mm</td><td>1</td><td>市面少见 → <b>建议打样</b>；画时以立创库搜 "TPS63031DSKR" 的封装为准</td></tr>
+<tr><td>INA226AIDGSR（U7）</td><td>MSOP-10 / VSSOP-10 3×3</td><td>0.5mm</td><td>1</td><td>「MSOP-10 转接板」成品常见；<b>与 R29 同板做四线开尔文</b></td></tr>
+<tr><td>CSNP32GCR01-AOW（U8）</td><td>LGA-8 8×6.2（SD-NAND）</td><td>—</td><td>1</td><td>建议打样；或买「SD-NAND 转 TF 卡座」成品板</td></tr>
+<tr><td>LGS4056HDA（U2）</td><td>DFN-8 <b>2×2</b></td><td>0.5mm</td><td>1</td><td>「DFN-8 2x2 转接板」（注意别买成 3×3 或 4×4）</td></tr>
+<tr><td>IP6831（U12）</td><td>QFN-16 3×3</td><td>0.5mm</td><td>1</td><td>「QFN-16 0.5mm 转DIP」成品较多</td></tr>
+<tr><td>SKY13351-378LF（U10）</td><td>DFN-6 <b>1×1</b></td><td>0.35mm</td><td>1</td><td>成品极少 → <b>打样</b>；焊盘做到极限精度，建议走 SMT 贴片</td></tr>
+<tr><td>DW01A（U9）</td><td>SOT-23-6</td><td>0.95mm</td><td>1</td><td rowspan="2">「SOT-23-6 转接板」（共需 3 块，含 USBLC6×2）</td></tr>
+<tr><td>USBLC6-2SC6（D2/D4）</td><td>SOT-23-6</td><td>0.95mm</td><td>2</td></tr>
+<tr><td>CH213K（U3/U4）</td><td>SOT-23-3</td><td>1.9mm</td><td>2</td><td>「SOT-23 转接板」</td></tr>
+<tr><td>CJ3134KDW（Q1）/ CJ3139KDW（Q2）</td><td>SOT-363 / SC-70-6</td><td>0.65mm</td><td>2</td><td>「SOT-363 转接板」或「SC70-6 转DIP」</td></tr>
+<tr><td>8205A（Q5）</td><td>TSSOP-8</td><td>0.65mm</td><td>1</td><td>「TSSOP-8 转接板」</td></tr>
+<tr><td>SS34（D1）/ SMAJ5.0A（D3）</td><td>SMA / DO-214AC</td><td>—</td><td>2</td><td>「SMA 转接板」；<b>或直接买直插 SS34 / SMAJ5.0A 省事</b></td></tr>
+<tr><td>BLM15HG102SN1D（FB1）/ NCP15XH103（RT1）</td><td>0402</td><td>—</td><td>2</td><td>「0402 转DIP 小板」；磁珠/NTC 也可买同值直插件</td></tr>
+<tr><td>STE0805MW75R010F（R29）</td><td>0805</td><td>—</td><td>1</td><td>「0805 转DIP」，<b>与 INA226 做在同一块上</b></td></tr>
+<tr><td>IIS3DWBTR（U13）</td><td>LGA-14 2.5×3</td><td>0.5mm</td><td>1</td><td><b>STEVAL-MKI208V1K 评估板（免焊，首选）</b>，否则打样 LGA-14 转接板</td></tr>
+</table>
+<p class="small">合计约 <b>18 块转接板</b>（14 种芯片，含重复位号）。其中 A 路径能解决 12 块，剩下 6 块（TPS63031、SD-NAND、SKY13351、IIS3DWB、R29 同板、ESP32 模组）靠评估板或打样。</p>
+</div>
+
+<footer>数据源：20260917-201429-schematic_netlist（96 器件/69 网络）· 04_POWER_CHG & 10_BATT_PROT 页原理图（09-17）· 运行逻辑 v3.1 ｜ 配套文件：面包板验证版_器件清单与接线表.xlsx · 面包板验证版_接线表.csv</footer>
+</div>
+</body>
+</html>

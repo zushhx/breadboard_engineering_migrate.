@@ -1,0 +1,103 @@
+{
+  "schema_version": 1,
+  "baseline_id": "tf-readonly-20261015",
+  "recorded_date": "2026-10-15",
+  "environment": "tf_idf542_4bit_20m",
+  "controller_mac": "44:1b:f6:81:91:10",
+  "validation_scope": "Two user-confirmed full power cycles, one MCU EN reset, 14 matching file reads; no card writes, USB MSC, original acquisition/WiFi integration or long-term acceptance",
+  "original_backup": {
+    "local_path": "面包板样机_固件/backups/tf_software_20261015_125041_550332/esp32s3_full_8MiB.bin",
+    "bytes": 8388608,
+    "sha256": "f139f2ae71a544702c96364e0085bafc249068f6c9ff44e1f88efc1c6778b3aa",
+    "tracked": false
+  },
+  "toolchain": {
+    "platformio_platform": "espressif32@6.11.0",
+    "framework": "platformio/framework-espidf@3.50402.0",
+    "esp_idf": "5.4.2",
+    "xtensa_gcc": "14.2.0+20241119",
+    "riscv_package_unused_ulp_disabled": "8.4.0+2021r2-patch5"
+  },
+  "files": [
+    {
+      "path": "artifacts/bootloader.bin",
+      "bytes": 22368,
+      "sha256": "13b21114672daf143d2878721f12cdf8da4152c649f221bac2720afeffb3d2cf"
+    },
+    {
+      "path": "artifacts/firmware.bin",
+      "bytes": 309104,
+      "sha256": "60b50aac7657f47fe375751bcc11f8e321247dffbe44415af9af846ab7c07fb8"
+    },
+    {
+      "path": "artifacts/partitions.bin",
+      "bytes": 3072,
+      "sha256": "1d9cca96de0fe07ad7fc0648b9878ddecd9ce565e38b589ad20fea698ed4c80c"
+    },
+    {
+      "path": "evidence/tf_software_capture_controller_20261015_153147_355088.log",
+      "bytes": 2136,
+      "sha256": "0dbb31621df584118f452edeec7caeb6b4a41818e5db0add646b5f21ddaf1b32"
+    },
+    {
+      "path": "evidence/tf_software_capture_controller_20261015_153255_128860.log",
+      "bytes": 7280,
+      "sha256": "4c611db00fd2d7a82aec2a78c95f4fc0be3e1e2c41868f84f46295cab0df6a34"
+    },
+    {
+      "path": "evidence/tf_software_capture_controller_20261015_153406_884020.log",
+      "bytes": 2136,
+      "sha256": "f38f7f2502478e3500904a4ad18070ff97d7504d5906b9f9fcaea45b8a197be0"
+    },
+    {
+      "path": "selected_firmware.original.json",
+      "bytes": 2710,
+      "sha256": "9168ec67eab17f771865b61b1dbd68948e6e04d5842a2a926b40ff5a25d326f2"
+    },
+    {
+      "path": "source/CMakeLists.txt",
+      "bytes": 118,
+      "sha256": "a246fd0eb95806f739bf82e7bac912d53946176dba9b13faa917c507be6464bc"
+    },
+    {
+      "path": "source/partitions.csv",
+      "bytes": 273,
+      "sha256": "0c4e02152e1b6911d0a9b94be67d37674052fdc5c0870a5a55cc2133e65233a1"
+    },
+    {
+      "path": "source/platformio.ini",
+      "bytes": 480,
+      "sha256": "140c04d09907e297d7a2135949a48ff4849cfa9d647c039bd0fa043b6344c721"
+    },
+    {
+      "path": "source/sdkconfig.defaults",
+      "bytes": 372,
+      "sha256": "d7610876403351cf588cacf550f21cba1c24f7fa3c859b05be3b4562790f73c8"
+    },
+    {
+      "path": "source/sdkconfig.tf_idf542_4bit_20m",
+      "bytes": 71421,
+      "sha256": "d72b8d7395ff07231b8c310a6d6b55da57a483ee5e4668a85c879a067634a1e3"
+    },
+    {
+      "path": "source/src/CMakeLists.txt",
+      "bytes": 187,
+      "sha256": "de472de5fb4d695aeb657e8622b2de5216f57a4bdf4bd29d9ffa52b426fd8bd1"
+    },
+    {
+      "path": "source/src/main.cpp",
+      "bytes": 10032,
+      "sha256": "98695a454af75ee95ccfbaa45f9628be93211dd960b1170873f90d5e9b65da41"
+    },
+    {
+      "path": "source/src/serial_compat.cpp",
+      "bytes": 608,
+      "sha256": "7a6e0b1f91138280f40dcd1160a1d78fb2ae74d59654891a3e732ccfde71a706"
+    },
+    {
+      "path": "source/src/serial_compat.h",
+      "bytes": 752,
+      "sha256": "6822cb1d13751158c6798f5f6e2c72e6d238ac6108f0a313550fbaef910c127a"
+    }
+  ]
+}

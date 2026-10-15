@@ -1,0 +1,121 @@
+ACTION=capture; China time=20261015_153255_128860; TF write commands: NONE
+LOG: C:\Users\acer\Desktop\直插式面包板样机\面包板样机_固件\logs\tf_software_capture_controller_20261015_153255_128860.log
+CAPTURE: 15s; DTR/RTS initially false; no automatic reset; commands=['i', 'b', 'l']
+SERIAL OPEN: COM5; USB VID:PID=1A86:7522 SER= LOCATION=1-4.3
+MCU RESET: DTR false, RTS true 100 ms then false; card remains powered
+ESP-ROM:esp32s3-20210327
+Build:Mar 27 2021
+rst:0x1 (POWERON),boot:0x8 (SPI_FAST_FLASH_BOOT)
+SPIWP:0xee
+mode:DIO, clock div:1
+load:0x3fce2820,len:0x16d0
+load:0x403c8700,len:0x4
+load:0x403c8704,len:0xec8
+load:0x403cb700,len:0x3160
+entry 0x403c8948
+I (27) boot: ESP-IDF 5.4.2 2nd stage bootloader
+I (27) boot: compile time Oct 15 2026 13:22:46
+I (27) boot: Multicore bootloader
+I (27) boot: chip revision: v0.2
+I (30) boot: efuse block revision: v1.4
+I (33) qio_mode: Enabling default flash chip QIO
+I (38) boot.esp32s3: Boot SPI Speed : 80MHz
+I (42) boot.esp32s3: SPI Mode       : QIO
+I (45) boot.esp32s3: SPI Flash Size : 8MB
+I (49) boot: Enabling RNG early entropy source...
+I (54) boot: Partition Table:
+I (56) boot: ## Label            Usage          Type ST Offset   Length
+I (62) boot:  0 nvs              WiFi data        01 02 00009000 00005000
+I (69) boot:  1 otadata          OTA data         01 00 0000e000 00002000
+I (75) boot:  2 app0             OTA app          00 10 00010000 00330000
+I (82) boot:  3 app1             OTA app          00 11 00340000 00330000
+I (88) boot:  4 spiffs           Unknown data     01 82 00670000 00180000
+I (95) boot:  5 coredump         Unknown data     01 03 007f0000 00010000
+I (102) boot: End of partition table
+I (105) esp_image: segment 0: paddr=00010020 vaddr=3c030020 size=0ebf0h ( 60400) map
+I (121) esp_image: segment 1: paddr=0001ec18 vaddr=3fc93800 size=01400h (  5120) load
+I (128) esp_image: segment 2: paddr=00020020 vaddr=42000020 size=2a7a0h (173984) map
+I (154) esp_image: segment 3: paddr=0004a7c8 vaddr=3fc94c00 size=017c0h (  6080) load
+I (155) esp_image: segment 4: paddr=0004bf90 vaddr=40374000 size=0f798h ( 63384) load
+I (170) esp_image: segment 5: paddr=0005b730 vaddr=600fe000 size=0001ch (    28) load
+I (176) boot: Loaded app from partition at offset 0x10000
+I (176) boot: Disabling RNG early entropy source...
+I (187) cpu_start: Multicore app
+I (196) cpu_start: Pro cpu start user code
+I (196) cpu_start: cpu freq: 160000000 Hz
+I (196) app_init: Application information:
+I (196) app_init: Project name:     tf_idf_software_probe
+I (201) app_init: App version:      1
+I (205) app_init: Compile time:     Oct 15 2026 13:21:08
+I (210) app_init: ELF file SHA256:  157696fdc...
+I (214) app_init: ESP-IDF:          5.4.2
+I (218) efuse_init: Min chip rev:     v0.0
+I (222) efuse_init: Max chip rev:     v0.99 
+I (226) efuse_init: Chip rev:         v0.2
+I (230) heap_init: Initializing. RAM available for dynamic allocation:
+I (236) heap_init: At 3FC97E08 len 00051908 (326 KiB): RAM
+I (241) heap_init: At 3FCE9710 len 00005724 (21 KiB): RAM
+I (246) heap_init: At 3FCF0000 len 00008000 (32 KiB): DRAM
+I (251) heap_init: At 600FE01C len 00001FCC (7 KiB): RTCRAM
+I (257) spi_flash: detected chip: boya
+I (260) spi_flash: flash io: qio
+I (263) sleep_gpio: Configure to isolate all GPIO pins in sleep state
+I (269) sleep_gpio: Enable automatic switching of GPIO sleep configuration
+I (276) main_task: Started on CPU0
+I (307) main_task: Calling app_main()
+
+[tfmatrix] build=Oct 15 2026 13:21:03 IDF=5.4.2 protocol=SDMMC width=4 freq_khz=20000 wait_ms=5000
+[tfmatrix] no application tasks; card disk writes blocked; no format/repair
+[tfmatrix] SDMMC host init=ESP_OK
+I (5315) gpio: GPIO[38]| InputEn: 0| OutputEn: 0| OpenDrain: 0| Pullup: 1| Pulldown: 0| Intr:0 
+I (5324) gpio: GPIO[39]| InputEn: 0| OutputEn: 0| OpenDrain: 0| Pullup: 1| Pulldown: 0| Intr:0 
+I (5332) gpio: GPIO[40]| InputEn: 0| OutputEn: 0| OpenDrain: 0| Pullup: 1| Pulldown: 0| Intr:0 
+I (5341) gpio: GPIO[41]| InputEn: 0| OutputEn: 0| OpenDrain: 0| Pullup: 1| Pulldown: 0| Intr:0 
+I (5349) gpio: GPIO[42]| InputEn: 0| OutputEn: 0| OpenDrain: 0| Pullup: 1| Pulldown: 0| Intr:0 
+I (5357) gpio: GPIO[47]| InputEn: 0| OutputEn: 1| OpenDrain: 0| Pullup: 0| Pulldown: 0| Intr:0 
+[tfmatrix] SDMMC slot init=ESP_OK
+I (5415) gpio: GPIO[47]| InputEn: 0| OutputEn: 0| OpenDrain: 0| Pullup: 1| Pulldown: 0| Intr:0 
+[tfmatrix] card init=ESP_OK (0x0)
+[tfmatrix] OCR=C0FF8000 RCA=E624 CID=SU08G serial=10044BA5 CSD=1 sectors=15523840 sector_bytes=512 bytes=7948206080
+[tfmatrix] LBA0 #1 ESP_OK jump=EB-58-90 signature=55-AA nonzero=371 fnv1a=1410CC45
+[tfmatrix] LBA0 #2 ESP_OK jump=EB-58-90 signature=55-AA nonzero=371 fnv1a=1410CC45
+[tfmatrix] READ-ONLY FatFS mount=0
+[tfmatrix] root open=0
+[tfmatrix] D 0 System Volume Information
+[tfmatrix] D 0 FOUND.000
+[tfmatrix] D 0 王俊超论文
+[tfmatrix] D 0 第二张
+[tfmatrix] sample open=0
+[tfmatrix] sample bytes=18327 expected_size=18327 result=0 sha256=a8014b2c5ca28eb98c9eaee6de86c76c2256bec875f0f90860ece355b1670b86 PC_MATCH=1
+[tfmatrix] sample open=0
+[tfmatrix] sample bytes=18327 expected_size=18327 result=0 sha256=a8014b2c5ca28eb98c9eaee6de86c76c2256bec875f0f90860ece355b1670b86 PC_MATCH=1
+[tfmatrix] sample reads consistent=1 rejected_card_writes=0
+[tfmatrix] commands: i=metadata b=LBA0 l=read-only directory and sample hash
+SEND: ['i', 'b', 'l'] (read-only)
+[tfmatrix] OCR=C0FF8000 RCA=E624 CID=SU08G serial=10044BA5 CSD=1 sectors=15523840 sector_bytes=512 bytes=7948206080
+[tfmatrix] LBA0 #1 ESP_OK jump=EB-58-90 signature=55-AA nonzero=371 fnv1a=1410CC45
+[tfmatrix] LBA0 #2 ESP_OK jump=EB-58-90 signature=55-AA nonzero=371 fnv1a=1410CC45
+[tfmatrix] root open=0
+[tfmatrix] D 0 System Volume Information
+[tfmatrix] D 0 FOUND.000
+[tfmatrix] D 0 王俊超论文
+[tfmatrix] D 0 第二张
+[tfmatrix] sample open=0
+[tfmatrix] sample bytes=18327 expected_size=18327 result=0 sha256=a8014b2c5ca28eb98c9eaee6de86c76c2256bec875f0f90860ece355b1670b86 PC_MATCH=1
+[tfmatrix] sample open=0
+[tfmatrix] sample bytes=18327 expected_size=18327 result=0 sha256=a8014b2c5ca28eb98c9eaee6de86c76c2256bec875f0f90860ece355b1670b86 PC_MATCH=1
+[tfmatrix] sample reads consistent=1 rejected_card_writes=0
+SEND: ['i', 'b', 'l'] (final read-only check)
+[tfmatrix] OCR=C0FF8000 RCA=E624 CID=SU08G serial=10044BA5 CSD=1 sectors=15523840 sector_bytes=512 bytes=7948206080
+[tfmatrix] LBA0 #1 ESP_OK jump=EB-58-90 signature=55-AA nonzero=371 fnv1a=1410CC45
+[tfmatrix] LBA0 #2 ESP_OK jump=EB-58-90 signature=55-AA nonzero=371 fnv1a=1410CC45
+[tfmatrix] root open=0
+[tfmatrix] D 0 System Volume Information
+[tfmatrix] D 0 FOUND.000
+[tfmatrix] D 0 王俊超论文
+[tfmatrix] D 0 第二张
+[tfmatrix] sample open=0
+[tfmatrix] sample bytes=18327 expected_size=18327 result=0 sha256=a8014b2c5ca28eb98c9eaee6de86c76c2256bec875f0f90860ece355b1670b86 PC_MATCH=1
+[tfmatrix] sample open=0
+[tfmatrix] sample bytes=18327 expected_size=18327 result=0 sha256=a8014b2c5ca28eb98c9eaee6de86c76c2256bec875f0f90860ece355b1670b86 PC_MATCH=1
+[tfmatrix] sample reads consistent=1 rejected_card_writes=0

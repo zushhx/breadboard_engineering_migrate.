@@ -1,0 +1,776 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>直插式面包板样机 · 需求拆解与实施规划</title>
+<style>
+  :root { --ink:#1a2332; --sub:#5a6b7f; --line:#dfe6ee; --accent:#1f4e79; --warn:#b45309; --ok:#15803d; --bg:#f6f8fb; --card:#ffffff; --danger:#b91c1c; }
+  * { box-sizing: border-box; margin:0; padding:0; }
+  body { font-family:"Microsoft YaHei","PingFang SC",sans-serif; color:var(--ink); background:var(--bg); line-height:1.65; padding:32px 16px; }
+  .wrap { max-width:1140px; margin:0 auto; }
+  h1 { font-size:26px; color:var(--accent); margin-bottom:6px; }
+  .meta { color:var(--sub); font-size:13px; margin-bottom:20px; }
+  h2 { font-size:19px; color:var(--accent); margin:36px 0 12px; padding-left:10px; border-left:4px solid var(--accent); }
+  h3 { font-size:15px; margin:20px 0 8px; color:#0f3557; }
+  h4 { font-size:14px; margin:14px 0 6px; color:#274b6d; }
+  p, li { font-size:14px; }
+  ul, ol { padding-left:22px; }
+  .card { background:var(--card); border:1px solid var(--line); border-radius:10px; padding:18px 22px; margin-bottom:16px; }
+  .callout { border-left:4px solid var(--warn); background:#fffbeb; padding:12px 16px; border-radius:0 8px 8px 0; margin:12px 0; font-size:14px; }
+  .okbox { border-left:4px solid var(--ok); background:#f0fdf4; padding:12px 16px; border-radius:0 8px 8px 0; margin:12px 0; font-size:14px; }
+  .dngbox { border-left:4px solid var(--danger); background:#fef2f2; padding:12px 16px; border-radius:0 8px 8px 0; margin:12px 0; font-size:14px; }
+  table { width:100%; border-collapse:collapse; font-size:13px; margin:10px 0; background:#fff; }
+  th { background:var(--accent); color:#fff; padding:7px 9px; text-align:left; font-weight:600; }
+  td { border:1px solid var(--line); padding:6px 9px; vertical-align:top; }
+  tr:nth-child(even) td { background:#f8fafc; }
+  code { background:#eef2f7; padding:1px 5px; border-radius:4px; font-size:12.5px; font-family:Consolas,monospace; }
+  .svgbox { background:#fff; border:1px solid var(--line); border-radius:10px; padding:12px; margin:12px 0; overflow-x:auto; }
+  .modbox { fill:#f3f7fc; stroke:#33557e; stroke-width:1.5; }
+  .modboxopt { fill:#fdf6ec; stroke:#b45309; stroke-width:1.5; stroke-dasharray:5 4; }
+  .wire { stroke:#5a6b7f; stroke-width:1.6; fill:none; }
+  text { font-family:"Microsoft YaHei",sans-serif; }
+  .small { color:var(--sub); font-size:12px; }
+  .tag { display:inline-block; background:#e8eef6; color:#274b6d; border-radius:4px; padding:0 7px; font-size:12px; margin-right:6px; }
+  .t-must { background:#fde8e8; color:#9b1c1c; }
+  .t-should { background:#fff3d6; color:#92500a; }
+  .t-could { background:#e6f0fb; color:#1f4e79; }
+  .t-wont { background:#eceff3; color:#5a6b7f; }
+  .lv-h { background:#fde8e8; color:#9b1c1c; font-weight:600; }
+  .lv-m { background:#fff3d6; color:#92500a; font-weight:600; }
+  .lv-l { background:#e9f7ee; color:#15803d; font-weight:600; }
+  .danger { color:var(--danger); font-weight:600; }
+  .num { text-align:center; white-space:nowrap; }
+  footer { color:var(--sub); font-size:12px; margin-top:36px; text-align:center; line-height:1.9; }
+  .toc { columns:2; column-gap:30px; font-size:13.5px; }
+  .toc a { color:#274b6d; text-decoration:none; }
+  .toc a:hover { text-decoration:underline; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<h1>直插式面包板样机 · 需求拆解与实施规划</h1>
+<div class="meta">
+  对象：智能刀柄振动监测原型（Haas OM-2A / ISO20 环形刀柄）的<b>面包板验证机</b> ｜ 编制：知微 🔧 ｜ 版本 v1.2 · 2026-09-21 二次修订（分流口径反转 + 电流测量含义澄清）<br>
+  依据：原工程网表 <code>20260917-201429-schematic_netlist</code>（96 器件 / 69 网络，只读解析）· 09-17 三件套交付物 · 09-18 路线变更（成品模块）
+</div>
+
+<div class="okbox">
+<b>结论先行。</b>本需求可拆为 <b>8 个功能模块、3 个优先级层</b>，其中只有 <b>4 个模块构成最小可行链路（MVP）</b>：<code>供电 → MCU → 振动采集 → 数据存储</code>。<br>
+建议把充电管理、电池保护、无线充、射频分集 <b>整体降级为可选项</b>——它们不影响"能不能拿到可用振动数据"这一核心命题，却占掉约 60% 的焊接与调试工作量。<br>
+<b>最高风险的三件事：</b>① INA226 成品模块自带 <b>0.1 Ω</b> 分流，满量程只有 <b>±0.8192 A</b>（09-21 决定不更换：峰值 456 mA 有 1.8 倍余量，超约 800 mA 再换 10 mΩ）；② 26.7 kHz 满采样率下 SPI 写卡吞吐可能不足；③ 面包板接触电阻会污染微弱信号的测量结果。
+</div>
+
+<div class="card">
+<h3>目录</h3>
+<div class="toc">
+<a href="#s1">1. 需求来源、目标与范围边界</a><br>
+<a href="#s2">2. 输入 / 输出 / 边界条件</a><br>
+<a href="#s3">3. 系统分解：模块划分与依赖关系</a><br>
+<a href="#s4">4. 实施步骤与优先级规划</a><br>
+<a href="#s5">5. 关键约束清单</a><br>
+<a href="#s6">6. 风险登记册</a><br>
+<a href="#s7">7. 验收标准（DoD）</a><br>
+<a href="#s8">8. 待决策项</a><br>
+<a href="#s9">9. 下一步行动</a><br>
+</div>
+</div>
+
+<h2 id="s1">一、需求来源、目标与范围边界</h2>
+
+<h3>1.1 需求从哪来（三层递进）</h3>
+<div class="card">
+<table>
+<tr><th style="width:14%">层次</th><th style="width:30%">对象</th><th>目的与当前状态</th></tr>
+<tr><td><b>上位需求</b></td><td>智能刀柄振动监测原型<br><span class="small">Haas OM-2A / ISO20 环形刀柄，多传感（振动 + 电流 + 温度 + 射频触发）</span></td><td>面向企业就业的工艺/机理方向课题载体。整机形态未定，需要先证明"这套电子链路能不能拿到可信的振动数据"。</td></tr>
+<tr><td><b>中层需求</b></td><td>正式硬件 Mainboard-MCU-01 + VS-Module-01<br><span class="small">ESP32-S3 + IIS3DWB + INA226 + SD-NAND + 电源链，已完成原理图与网表</span></td><td><b>设计已完成但零验证</b>。直接投板 = 把设计风险、器件风险、固件风险一次性押注在一次打样上，返工代价高。</td></tr>
+<tr><td><b>当前需求</b></td><td><b>直插式面包板样机</b></td><td>在投板之前，用最低成本、可反复重连的形式，把<b>电子链路的风险前置消化</b>（de-risk）。这是本次拆解的对象。</td></tr>
+</table>
+<p class="small"><b>关键判断：</b>面包板样机的价值不在"做出一个像样的设备"，而在<b>用最快的速度排除"这条路走不通"的可能</b>。因此评价它成功与否的标尺是"多久拿到第一条可信的振动数据"，不是"复现得多完整"。</p>
+</div>
+
+<h3>1.2 功能目标（MoSCoW 分级）</h3>
+<div class="card">
+<table>
+<tr><th style="width:9%">等级</th><th style="width:26%">目标</th><th style="width:32%">通过标准（可观测）</th><th>不达成的后果</th></tr>
+<tr>
+  <td><span class="tag t-must">Must</span></td>
+  <td><b>G1 能采到</b><br>三轴振动数据可被 MCU 正确读取</td>
+  <td>读 <code>WHO_AM_I(0x0F)</code> 返回 <code>0x7B</code>；静置时 Z 轴 ≈ 1 g；轻敲桌面波形有可见响应</td>
+  <td>整个方案不成立，必须换传感器/换接口</td>
+</tr>
+<tr>
+  <td><span class="tag t-must">Must</span></td>
+  <td><b>G2 能存下</b><br>连续数据可靠落盘，不丢帧、不损坏</td>
+  <td>连续采集 ≥ 90 s 写入存储卡；拔卡在 PC 上能读出完整文件；时间戳连续无跳变</td>
+  <td>数据无法用于后续分析，等于白采</td>
+</tr>
+<tr>
+  <td><span class="tag t-must">Must</span></td>
+  <td><b>G3 能重放</b><br>采集的数据可离线复现与查看</td>
+  <td>PC 侧脚本能解析文件并画出时域波形 + FFT 频谱，主频与激励源（如敲击/电机转频）对得上</td>
+  <td>无法判断数据真伪，无法形成结论</td>
+</tr>
+<tr>
+  <td><span class="tag t-should">Should</span></td>
+  <td><b>G4 稳定供电</b><br>3.3 V 稳定输出 + USB/电池双路径切换</td>
+  <td>空载 3.18~3.45 V；USB 供电时电池路径被阻断（电池不放电）</td>
+  <td>只能用 USB 拖着线测，丧失"刀柄上独立运行"的前提</td>
+</tr>
+<tr>
+  <td><span class="tag t-should">Should</span></td>
+  <td><b>G5 自耗电可测</b><br>INA226 读出刀柄板子<b>自身</b>的输入电流，与万用表对得上</td>
+  <td>I²C 扫描见地址 <code>0x40</code>；与串联万用表读数偏差 &lt; 5%；且电流随「采集／写卡／推流」呈现可辨识的台阶</td>
+  <td>失去<b>功耗账</b>与<b>工况状态标记</b>的实测依据，LDO 热预算只能靠估算（<span class="danger">注：这一路测不到切削负载，见 §2.3 口径澄清</span>）</td>
+</tr>
+<tr>
+  <td><span class="tag t-could">Could</span></td>
+  <td><b>G6 电池与充电</b><br>电池保护 + 充电状态上报</td>
+  <td>CHRG_N / CHRG_DONE 状态正确；过流/过放保护动作正常</td>
+  <td>不影响数据链；后期做整机时再补</td>
+</tr>
+<tr>
+  <td><span class="tag t-could">Could</span></td>
+  <td><b>G7 无线充 / 射频分集</b></td>
+  <td>TX 靠近后系统得电；IO5/IO6 互斥切换逻辑正确（不比 RSSI 性能）</td>
+  <td>属于形态与通信层的加分项，非验证链路必需</td>
+</tr>
+<tr>
+  <td><span class="tag t-wont">Won't</span></td>
+  <td colspan="3"><b>本期明确不做：</b>刀柄机械集成与装夹、旋转动平衡、切削液/粉尘/高温环境适应性、整机小型化、射频性能指标、电池续航测试、量产一致性。<br><span class="small">写出来是为了防止范围蔓延（scope creep）——这些是下一步"洞洞板固化 / 正式 PCB"阶段的事。</span></td>
+</tr>
+</table>
+</div>
+
+<h3>1.3 范围边界（In / Out）</h3>
+<div class="card">
+<table>
+<tr><th style="width:50%">在范围内（In Scope）</th><th>不在范围内（Out of Scope）</th></tr>
+<tr>
+<td>
+① 电源链的分段上电与电压验证<br>
+② MCU 最小系统跑通（串口 + 点灯 + 下载）<br>
+③ 振动传感器 SPI 通信与数据采集<br>
+④ 数据存储与文件系统读写<br>
+⑤ 电流监测（I²C + 分流电阻）<br>
+⑥ 固件状态机的路径联调<br>
+⑦ 采集数据的离线解析与频谱确认
+</td>
+<td>
+① 结构件、外壳、装夹方式的任何设计与加工<br>
+② 长时间老化、振动台标定、计量级精度评定<br>
+③ 上位机软件产品化（本期只要求能看波形）<br>
+④ 与机床（Haas OM-2A）的任何电气连接<br>
+⑤ 优化功耗与续航<br>
+⑥ 修改原嘉立创工程（<span class="danger">原工程只读，禁止改动</span>）
+</td>
+</tr>
+</table>
+</div>
+
+<h2 id="s2">二、输入 / 输出 / 边界条件</h2>
+
+<h3>2.1 系统输入</h3>
+<div class="card">
+<table>
+<tr><th style="width:12%">类型</th><th style="width:26%">输入项</th><th>规格 / 说明</th></tr>
+<tr><td rowspan="3"><b>电能</b></td><td>USB 5 V</td><td>Type-C，兼作调试与下载通道；VBUS → 防反接（SS34）→ 5V_VIN</td></tr>
+<tr><td>单节锂电池 3.0~4.2 V</td><td>PH-2P 接口，带 NTC（10 kΩ B≈3380，NCP15XH103）</td></tr>
+<tr><td>Qi 无线（可选）</td><td>IP6831 接收端 + 线圈，整流后并入 5V_VIN</td></tr>
+<tr><td rowspan="2"><b>物理量</b></td><td>三轴加速度（振动）</td><td><b>量程 ±2/±4/±8/±16 g 可选</b>；带宽 <b>DC ~ 6 kHz（±3 dB）</b>；<b>ODR 最高 26.7 kHz</b>；噪声 75 µg/√Hz（三轴）；FIFO 3 KB</td></tr>
+<tr><td>电流</td><td>经分流电阻转换（面包板样机用 INA226 模块自带的 0.1 Ω），采样链见 2.3</td></tr>
+<tr><td rowspan="2"><b>人机</b></td><td>按键 ×2</td><td>BOOT（IO0）、RESET（EN），按下接地</td></tr>
+<tr><td>拨动开关 ×1</td><td>SW3 总开关，串在 Q2 栅极（低有效导通）</td></tr>
+<tr><td><b>配置</b></td><td>固件参数</td><td>量程、ODR、滤波截止、采集时长、触发阈值</td></tr>
+</table>
+<p class="small">注：加速度参数已按 ST 官方产品页与数据手册 DS12569 核实（2026-09-18）。</p>
+</div>
+
+<h3>2.2 系统输出</h3>
+<div class="card">
+<table>
+<tr><th style="width:16%">输出</th><th style="width:22%">形态</th><th>规格 / 判读方式</th></tr>
+<tr><td><b>主输出</b></td><td>存储卡上的数据文件</td><td>三轴时序加速度（建议二进制或 CSV）；含文件头（采样率、量程、时间戳、固件版本），保证可离线解析</td></tr>
+<tr><td>副输出</td><td>串口日志（115200）</td><td>上电自检、状态机迁移、错误码；用于定位问题</td></tr>
+<tr><td>状态指示</td><td>LED（IO2）</td><td>慢闪=待机、快闪=采集中、常亮=故障</td></tr>
+<tr><td>扩展输出</td><td>WiFi 流式（可选）</td><td>本期不做实时性要求，仅验证连通性</td></tr>
+</table>
+</div>
+
+<h3>2.3 量化边界条件</h3>
+<div class="card">
+<h4>电源与功耗</h4>
+<table>
+<tr><th style="width:26%">参数</th><th style="width:20%">数值</th><th>依据 / 说明</th></tr>
+<tr><td>系统供电</td><td>3.3 V（固定）</td><td>TPS63031 固定 3.3 V 输出，L = 1.5 µH</td></tr>
+<tr><td>3.3 V 允许范围</td><td>3.18 ~ 3.45 V</td><td>TPS63031 容差；超出即判失败</td></tr>
+<tr><td>传感器供电</td><td>2.1 ~ 3.6 V</td><td>IIS3DWB 规格（由 3V3_SENS 经磁珠分轨供给）</td></tr>
+<tr><td>传感器电流</td><td>≈ 1.1 mA（三轴全速）</td><td>IIS3DWB 规格 —— 采集链本身很省电</td></tr>
+<tr><td>电池检测分压</td><td>4.2 V → 2.1 V</td><td>R7/R8 分压进 IO4（ADC1_CH3），满电不得超 ADC 量程</td></tr>
+</table>
+
+<h4>采集链路（决定"数据可信度"的核心）</h4>
+<table>
+<tr><th style="width:26%">参数</th><th style="width:20%">数值</th><th>依据 / 说明</th></tr>
+<tr><td>单样本体积</td><td>6 字节（3 轴 × 2 B）</td><td>16 位有符号</td></tr>
+<tr><td>满速数据率</td><td><b>160 KB/s</b></td><td>26.7 kHz × 6 B —— 这是<b>存储链的吞吐下限</b></td></tr>
+<tr><td>90 s 满速数据量</td><td>≈ 14.4 MB</td><td>容量无压力；<b>瓶颈在写入速度，不在容量</b></td></tr>
+<tr><td>SPI 时钟（传感器）</td><td>建议 10 MHz，杜邦线 &lt; 15 cm</td><td>IIS3DWB 支持更高，但面包板走线限制先保守</td></tr>
+<tr><td>SPI 时钟（存储卡）</td><td><b>初次 10 MHz</b>，稳定后再试 20 MHz</td><td>面包板版 SDMMC 信号完整性不足</td></tr>
+</table>
+<div class="callout">
+<b>算一笔账（这是本需求最容易被忽略的硬约束）：</b>满速采集要求存储链持续吞下 <b>160 KB/s</b>。SPI 模式 TF 卡在 10 MHz 时钟下理论带宽 1.25 MB/s，但实际卡内写入（尤其小尺寸随机写）常低至 <b>100~300 KB/s</b>，且受卡质量影响极大。<br>
+<b>应对：</b>链路验证期把 ODR 降到 <b>3.3 kHz 或 6.6 kHz</b>（数据率降至 20~40 KB/s，留足余量）；确认全链路稳定后，再逐级提到 26.7 kHz，并<b>用实测丢帧率</b>决定最终工作点。不要一上来就全速。
+</div>
+
+<h4>电流采样链（INA226 + 0.1 Ω，模块自带）</h4>
+<table>
+<tr><th style="width:26%">参数</th><th style="width:20%">数值</th><th>依据 / 说明</th></tr>
+<tr><td>分流电阻</td><td>0.1 Ω（模块自带 R100）</td><td><b>2026-09-21 决定不更换</b>。原型机原设计的 R29 为 10 mΩ（<code>STE0805MW75R010F</code>），面包板阶段不复现。模块 PCB 上 IC 的 IN+/IN− 本就直连电阻两个焊盘，<b>开尔文天然成立</b></td></tr>
+<tr><td>分流电压满量程</td><td>±81.92 mV</td><td>INA226 规格（分流输入范围）</td></tr>
+<tr><td><b>换算电流量程</b></td><td><b>±0.8192 A</b></td><td>81.92 mV ÷ 0.1 Ω（系统峰值 456 mA，余量 1.8 倍）</td></tr>
+<tr><td>分流电压 LSB</td><td>2.5 µV</td><td>INA226 规格</td></tr>
+<tr><td><b>换算电流分辨率</b></td><td><b>25 µA</b></td><td>2.5 µV ÷ 0.1 Ω；等价于 Current_LSB = 0.8192 A ÷ 32768</td></tr>
+<tr><td>总线电压</td><td>0 ~ 36 V（LSB 1.25 mV）</td><td>INA226 规格，本用途远未触及</td></tr>
+<tr><td>转换时间</td><td>140 µs ~ 8.24 ms 可配</td><td>与平均次数共同决定有效采样率</td></tr>
+<tr><td>I²C 地址</td><td><code>0x40</code></td><td>A1/A0 均接地</td></tr>
+</table>
+<div class="dngbox">
+<b class="danger">⚠ 口径再修正（2026-09-21）：不换分流电阻。</b>09-18 本页曾要求"把自带的 R100（0.1 Ω）换成 10 mΩ"。复核后<b>不换更合理</b>，三条理由：<br>
+① <b>量程本来就够</b>——系统峰值电流约 <b>456 mA</b>（WiFi 发射 355 + TF 卡写入 100 + 传感 1.5），对 819.2 mA 有 <b>1.8 倍余量</b>；<br>
+② <b>风险与收益不成比例</b>——拆焊 2512 贴片的虚焊风险高于收益。虚焊引入的几十 mΩ 接触电阻比 10 mΩ 本身还大，读数严重偏大且时好时坏，面包板阶段极难排查；烫坏焊盘直接报废一个模块；<br>
+③ <b>小电流精度反而更好</b>——INA226 分流失调 Vos 最大 ±10 µV 是<b>固定值</b>，误差占比与分流阻值成反比：110 mA 时 0.1 Ω 约 <b>0.09%</b>，10 mΩ 约 <b>0.91%</b>，相差 10 倍。<br>
+<b>代价只有一个：量程降到 ±0.8192 A</b>（Current_LSB 25 µA）。实测一旦超过约 800 mA（典型场景：Qi 那一路同时供设备 + 给电池充电）立即换 10 mΩ——备用件 HoLRM2512-2W-10mR-1%（<code>C2985675</code>）已在手，软件只改 <code>config.h</code> 的 <code>SHUNT_OHM</code> / <code>INA_MAX_CURRENT</code> 两个宏，<b>CAL 恒为 2048、无需改动</b>。
+</div>
+<div class="dngbox">
+<b class="danger">⚠ 口径澄清（2026-09-21 按网表逐网络核实）：这一路电流不是切削负载。</b><br>
+<b>采样点在哪：</b>R29 串在 <code>VSYS_L0 → VSYS_AFTER</code> 之间，即「USB／Qi 经 CH213K 理想二极管 OR → TPS63031 升降压输入」这一段。所以 <b>INA226 量的是刀柄这块板子自身的输入电流</b>——主要由 <b>WiFi 发射（约 355 mA）＋ TF 卡写入（约 100 mA）</b> 决定，反映的是「<b>设备自己正在干什么</b>」，不是「刀具在切什么」。<br>
+<b>为什么拿不到切削负载：</b>刀柄是随主轴旋转的独立件，与主轴电机驱动回路<b>没有任何电气连接</b>，板上也没有与电机串联的采样电阻。这是接线拓扑决定的，不是量程或精度问题。<br>
+<b>这一路的正确用途（三条）：</b>① <b>功耗账</b>——实测「写卡 ＋ 推流」并存时的真实电流，核对 ME6217 LDO 的热预算（190／230 mA 那笔账）；② 无线传能链路的<b>接收端带载基准</b>；③ 电流台阶作为「采集／写卡／推流」的<b>工况状态标记</b>，给多传感器数据做时间对齐。<br>
+<b>真要测切削负载</b>，得在<b>机床侧</b>取量：主轴／进给驱动电流（变频器输出或伺服直流母线），或主轴功率／扭矩传感器。力基准用实验室的 <b>Kistler 9257B / 9170A 测力仪</b>，不要指望刀柄内的 INA226。
+</div>
+</div>
+
+<h3>2.4 绝对边界（违反即失效或损坏）</h3>
+<div class="card">
+<ul>
+<li><b>BAT_N（电池负）与 GND（系统 P−）不是同一网络。</b>BAT_N 必须先串过 8205A 保护管才汇到 GND；两者直连 = 过充/过放/过流三条保护全部失效。</li>
+<li><b>3.3 V 轨不得被外部倒灌。</b>USB 与电池路径靠理想二极管（CH213K ×2）隔离。</li>
+<li><b>传感器 RES 脚处理：</b>pin2 / pin3 可接 VDDIO 或 GND（本设计接 GND）；<b>pin10 / pin11 可接 VDDIO 或悬空</b>。<span class="small">（09-17 文档表述为"pin2/3 必须接 GND"，说法偏严——DS12569 允许 VDDIO 或 GND 两种，实际设计取 GND，无冲突。）</span></li>
+<li><b>VCTL1 / VCTL2 硬件无互锁</b>，同一时刻只允许一路为高，必须由固件保证后才上电。</li>
+<li><b>IO15 属 ADC2</b>，WiFi 工作时不可作 ADC（本设计仅用作数字中断输入，不受影响）。</li>
+<li><b>IO35 / IO36 / IO37</b> 原设计打 NC，面包板同样不接；若使用带 PSRAM 的开发板需另议。</li>
+</ul>
+</div>
+
+<h2 id="s3">三、系统分解：模块划分与依赖关系</h2>
+
+<h3>3.1 模块清单</h3>
+<div class="card">
+<table>
+<tr><th style="width:6%">ID</th><th style="width:15%">模块</th><th style="width:24%">职责</th><th style="width:20%">关键器件</th><th style="width:9%">优先级</th><th>依赖</th></tr>
+<tr>
+  <td><b>M1</b></td><td><b>主控与调试</b></td>
+  <td>固件运行、外设调度、串口日志、程序下载、复位/BOOT 控制</td>
+  <td>ESP32-S3-WROOM-1U-N8（或 DevKitC-1）· USB-C · USBLC6-2SC6 · 按键 SW1/SW2</td>
+  <td class="num"><span class="tag t-must">Must</span></td><td>M2（供电）</td>
+</tr>
+<tr>
+  <td><b>M2</b></td><td><b>供电与电源路径</b></td>
+  <td>USB 输入保护 → 3.3 V 稳压 → USB/电池理想二极管 OR → 传感器分轨滤波</td>
+  <td>TPS63031 · L1 1.5 µH · SS34 · SMAJ5.0A · CH213K ×2 · FB1 磁珠</td>
+  <td class="num"><span class="tag t-must">Must</span></td><td>—（根节点）</td>
+</tr>
+<tr>
+  <td><b>M3</b></td><td><b>振动采集</b></td>
+  <td>SPI 读三轴加速度、FIFO 管理、INT1 中断唤醒</td>
+  <td>IIS3DWB（LGA-14）或 STEVAL-MKI208V1K 评估板</td>
+  <td class="num"><span class="tag t-must">Must</span></td><td>M1、M2</td>
+</tr>
+<tr>
+  <td><b>M4</b></td><td><b>数据存储</b></td>
+  <td>文件系统挂载、连续写入、掉电保护、文件头写入</td>
+  <td>SD-NAND（CSNP32GCR01-AOW）或 TF 卡座模块</td>
+  <td class="num"><span class="tag t-must">Must</span></td><td>M1、M2</td>
+</tr>
+<tr>
+  <td><b>M5</b></td><td><b>电流监测</b></td>
+  <td>分流电压采集 → I²C 上报电流/功率 → <b>反映设备自耗电与工况状态</b>（<span class="danger">不是切削负载，见 §2.3</span>）</td>
+  <td>INA226 · 模块自带 0.1 Ω 分流（开尔文天然成立）· 上拉 R25/R26/R28</td>
+  <td class="num"><span class="tag t-should">Should</span></td><td>M1、M2</td>
+</tr>
+<tr>
+  <td><b>M6</b></td><td><b>人机与状态</b></td>
+  <td>LED 指示、按键输入、总开关</td>
+  <td>LED1 + R3 · SW1/SW2 · SW3 · Q2</td>
+  <td class="num"><span class="tag t-should">Should</span></td><td>M1、M2</td>
+</tr>
+<tr>
+  <td><b>M7</b></td><td><b>电池与充电</b></td>
+  <td>锂电充电管理（含 NTC 温控）、过充/过放/过流保护</td>
+  <td>LGS4056HDA · RT1 NTC · R40 · DW01A · 8205A · Q1</td>
+  <td class="num"><span class="tag t-could">Could</span></td><td>M2</td>
+</tr>
+<tr>
+  <td><b>M8</b></td><td><b>无线充 / 射频分集</b></td>
+  <td>Qi 接收整流；双天线互斥切换</td>
+  <td>IP6831 + 线圈 · SKY13351 · IPEX 跳线 · C18-C20</td>
+  <td class="num"><span class="tag t-could">Could</span></td><td>M1、M2</td>
+</tr>
+</table>
+<p class="small"><b>MVP 定义：</b>M1 + M2 + M3 + M4 = 能采、能存、能重放。其余 4 个模块是"加分项"，可并行推进，但不阻塞 MVP。</p>
+</div>
+
+<h3>3.2 依赖关系图</h3>
+<div class="svgbox">
+<svg viewBox="0 0 1120 520" xmlns="http://www.w3.org/2000/svg" font-size="13">
+  <defs>
+    <marker id="ar2" markerWidth="9" markerHeight="9" refX="8" refY="3.2" orient="auto"><path d="M0,0 L8,3.2 L0,6.4 z" fill="#33557e"/></marker>
+    <marker id="arw" markerWidth="9" markerHeight="9" refX="8" refY="3.2" orient="auto"><path d="M0,0 L8,3.2 L0,6.4 z" fill="#b45309"/></marker>
+  </defs>
+
+  <text x="20" y="24" font-weight="bold" fill="#1f4e79" font-size="15">模块依赖与数据流（实线=必需，虚线橙=可选）</text>
+
+  <!-- M2 -->
+  <rect class="modbox" x="30" y="60" width="170" height="66" rx="8"/>
+  <text x="115" y="86" text-anchor="middle" font-weight="bold">M2 供电与电源路径</text>
+  <text x="115" y="105" text-anchor="middle" class="small">Must · 根节点</text>
+  <text x="115" y="120" text-anchor="middle" class="small">TPS63031 → 3V3</text>
+
+  <!-- M1 -->
+  <rect class="modbox" x="280" y="60" width="170" height="66" rx="8"/>
+  <text x="365" y="86" text-anchor="middle" font-weight="bold">M1 主控与调试</text>
+  <text x="365" y="105" text-anchor="middle" class="small">Must · ESP32-S3</text>
+  <text x="365" y="120" text-anchor="middle" class="small">固件宿主</text>
+
+  <!-- M3 -->
+  <rect class="modbox" x="530" y="40" width="180" height="60" rx="8"/>
+  <text x="620" y="64" text-anchor="middle" font-weight="bold">M3 振动采集</text>
+  <text x="620" y="84" text-anchor="middle" class="small">Must · SPI</text>
+
+  <!-- M4 -->
+  <rect class="modbox" x="530" y="130" width="180" height="60" rx="8"/>
+  <text x="620" y="154" text-anchor="middle" font-weight="bold">M4 数据存储</text>
+  <text x="620" y="174" text-anchor="middle" class="small">Must · SDMMC</text>
+
+  <!-- M5 -->
+  <rect class="modbox" x="530" y="220" width="180" height="60" rx="8"/>
+  <text x="620" y="244" text-anchor="middle" font-weight="bold">M5 电流监测</text>
+  <text x="620" y="264" text-anchor="middle" class="small">Should · I²C 0x40</text>
+
+  <!-- M6 -->
+  <rect class="modbox" x="530" y="310" width="180" height="56" rx="8"/>
+  <text x="620" y="333" text-anchor="middle" font-weight="bold">M6 人机与状态</text>
+  <text x="620" y="352" text-anchor="middle" class="small">Should · LED/按键</text>
+
+  <!-- M7 -->
+  <rect class="modboxopt" x="530" y="392" width="180" height="56" rx="8"/>
+  <text x="620" y="415" text-anchor="middle" font-weight="bold" fill="#92500a">M7 电池与充电</text>
+  <text x="620" y="434" text-anchor="middle" class="small">Could · 保护+4056</text>
+
+  <!-- M8 -->
+  <rect class="modboxopt" x="810" y="130" width="200" height="60" rx="8"/>
+  <text x="910" y="154" text-anchor="middle" font-weight="bold" fill="#92500a">M8 无线充 / 射频分集</text>
+  <text x="910" y="174" text-anchor="middle" class="small">Could · 形态加分项</text>
+
+  <!-- MVP 边界 -->
+  <rect x="512" y="24" width="450" height="110" rx="12" fill="none" stroke="#15803d" stroke-width="2" stroke-dasharray="8 5"/>
+  <text x="524" y="42" fill="#15803d" font-size="12.5" font-weight="bold">MVP 边界（能采 · 能存 · 能重放）</text>
+
+  <!-- wires M2 → M1 -->
+  <path class="wire" d="M200,93 L280,93" marker-end="url(#ar2)"/>
+  <text x="240" y="86" text-anchor="middle" class="small">3V3</text>
+
+  <!-- M1 → M3/M4/M5/M6 -->
+  <path class="wire" d="M450,80 C490,80 490,70 530,70" marker-end="url(#ar2)"/>
+  <path class="wire" d="M450,100 C490,100 490,160 530,160" marker-end="url(#ar2)"/>
+  <path class="wire" d="M450,115 C495,115 495,250 530,250" marker-end="url(#ar2)"/>
+  <path class="wire" d="M450,122 C500,122 500,338 530,338" marker-end="url(#ar2)"/>
+
+  <!-- M2 → M7 -->
+  <path class="wire" d="M115,126 C115,420 300,420 530,420" stroke-dasharray="6 4" marker-end="url(#arw)"/>
+  <text x="330" y="412" class="small" fill="#92500a">5V_VIN / VBAT（可选支路）</text>
+
+  <!-- M1 → M8 -->
+  <path class="wire" d="M450,88 C500,88 520,88 545,88" />
+  <path d="M545,88 L545,160 L810,160" stroke="#b45309" stroke-width="1.6" fill="none" stroke-dasharray="6 4" marker-end="url(#arw)"/>
+
+  <text x="20" y="480" class="small">数据流方向：M3 / M5 → M1（SPI / I²C）→ M4（写入存储）。M3 是唯一产生"真值"的源头，M4 是唯一的持久化出口。</text>
+  <text x="20" y="500" class="small">M1 与 M2 构成全部模块的共同前置——这两块不通，后面一切免谈（这就是关键路径的起点）。</text>
+</svg>
+</div>
+
+<h3>3.3 关键路径与并行度</h3>
+<div class="card">
+<table>
+<tr><th style="width:26%">路径</th><th style="width:34%">链条</th><th>说明</th></tr>
+<tr><td><b>关键路径</b><br><span class="small">（决定总工期）</span></td><td><code>M2 → M1 → M3 → M4 → 数据重放</code></td><td>串行、不可压缩。任何一环卡住，总工期直接顺延。应优先投入调试资源。</td></tr>
+<tr><td>可并行支路</td><td><code>M5</code>（电流）</td><td>只需 M1 跑通后接 I²C 总线，可与 M3 并行推进</td></tr>
+<tr><td>可延后支路</td><td><code>M6 → M7 → M8</code></td><td>按 Could 处理；M8（无线充/射频）建议最后做，且允许直接放弃</td></tr>
+</table>
+<div class="callout">
+<b>排期含义：</b>如果时间紧，正确做法不是"每块都做一点"，而是<b>死磕关键路径</b>——先把 M2 与 M1 打通（这一步不依赖任何特殊器件，纯模块即可），再一次性打通 M3 与 M4，拿到第一条完整数据。其余模块在 MVP 之后按剩余时间回填。
+</div>
+</div>
+
+<h3>3.4 接口定义：MCU 引脚分配（沿用原网表，固件可直接复用）</h3>
+<div class="card">
+<table>
+<tr><th style="width:11%">IO</th><th style="width:18%">网络名</th><th style="width:15%">方向</th><th style="width:12%">所属模块</th><th>备注</th></tr>
+<tr><td><code>IO0</code></td><td>BOOT</td><td>输入</td><td>M1</td><td>10 kΩ 上拉；下载时按住</td></tr>
+<tr><td><code>EN</code></td><td>nRESET</td><td>输入</td><td>M1</td><td>10 kΩ 上拉 + 1 µF；SW2 接地复位</td></tr>
+<tr><td><code>IO2</code></td><td>LED_SYS</td><td>输出</td><td>M6</td><td>经 R3 1 kΩ 驱动 LED</td></tr>
+<tr><td><code>IO4</code></td><td>BATT_SENSE</td><td>输入(A)</td><td>M7</td><td>ADC1_CH3，4.2 V→2.1 V 分压</td></tr>
+<tr><td><code>IO5</code></td><td>RF_SW_CTRL_A</td><td>输出</td><td>M8</td><td>100 kΩ 下拉；高选 ANT1</td></tr>
+<tr><td><code>IO6</code></td><td>RF_SW_CTRL_B</td><td>输出</td><td>M8</td><td>与 A 必须互补</td></tr>
+<tr><td><code>IO7</code></td><td>CHRG_N</td><td>输入</td><td>M7</td><td>100 kΩ 上拉；低=充电中</td></tr>
+<tr><td><code>IO8</code></td><td>CHRG_DONE</td><td>输入</td><td>M7</td><td>10 kΩ 上拉；低=充满</td></tr>
+<tr><td><code>IO9</code></td><td>INT_SENSOR</td><td>输入</td><td>M3</td><td>IIS3DWB INT1，FIFO 水位/唤醒</td></tr>
+<tr><td><code>IO10</code></td><td>SPI_CS</td><td>输出</td><td>M3</td><td>10 kΩ 上拉到 3V3_SENS</td></tr>
+<tr><td><code>IO11</code></td><td>SPI_MOSI</td><td>输出</td><td>M3</td><td>接 SDI</td></tr>
+<tr><td><code>IO12</code></td><td>SPI_SCK</td><td>输出</td><td>M3</td><td>接 SPC</td></tr>
+<tr><td><code>IO13</code></td><td>SPI_MISO</td><td>输入</td><td>M3</td><td>接 SDO</td></tr>
+<tr><td><code>IO14</code></td><td>BUCK_EN</td><td>输出</td><td>M2</td><td>100 kΩ 上拉；拉低可关 buck</td></tr>
+<tr><td><code>IO15</code></td><td>INA_ALERT</td><td>输入</td><td>M5</td><td>10 kΩ 上拉（ADC2 引脚，此处仅作数字输入）</td></tr>
+<tr><td><code>IO16</code></td><td>SDA_SYS</td><td>双向</td><td>M5</td><td>4.7 kΩ 上拉</td></tr>
+<tr><td><code>IO17</code></td><td>SCL_SYS</td><td>输出</td><td>M5</td><td>4.7 kΩ 上拉</td></tr>
+<tr><td><code>IO19/20</code></td><td>USB_DM / USB_DP</td><td>双向</td><td>M1</td><td>经 USBLC6-2SC6</td></tr>
+<tr><td><code>IO38</code></td><td>SD_CLK</td><td>输出</td><td>M4</td><td>串 22 Ω（R16）</td></tr>
+<tr><td><code>IO39</code></td><td>SD_CMD</td><td>双向</td><td>M4</td><td>10 kΩ 上拉</td></tr>
+<tr><td><code>IO40/41/42/47</code></td><td>SD_D0~D3</td><td>双向</td><td>M4</td><td>各 10 kΩ 上拉</td></tr>
+<tr><td><code>IO43/44</code></td><td>TXD0 / RXD0</td><td>输出/输入</td><td>M1</td><td>备用串口测试点</td></tr>
+</table>
+</div>
+
+<h2 id="s4">四、实施步骤与优先级规划</h2>
+
+<h3>4.1 里程碑（按关键路径排序）</h3>
+<div class="card">
+<table>
+<tr><th style="width:8%">阶段</th><th style="width:18%">目标</th><th style="width:37%">要做的事</th><th>通过判据（Gate）</th></tr>
+<tr>
+  <td><b>P0</b><br><span class="small">准备</span></td><td>物料与方法就位</td>
+  <td>采购成品模块（MCU / 电源 / 传感 / 存储 / 电流）；备齐面包板、杜邦线、万用表、示波器；建立测试记录表；<b>确认原工程只读</b></td>
+  <td>模块到手并逐个确认型号与分流电阻丝印（<b>只记录、不拆焊</b>）；测试记录表建好</td>
+</tr>
+<tr>
+  <td><b>P1</b><br><span class="small">供电</span></td><td>M2 分段通电</td>
+  <td><b>不要一次插满。</b>先接 USB → 5V_VIN，量电压；再装稳压模块，量 3V3 空载</td>
+  <td>5V_VIN = 4.9~5.1 V；3V3 = 3.18~3.45 V；无异常发热</td>
+</tr>
+<tr>
+  <td><b>P2</b><br><span class="small">主控</span></td><td>M1 跑起来</td>
+  <td>接 MCU 模块 → USB 出现串口 → 烧测试固件点 LED → 串口回显</td>
+  <td>串口能打印启动信息；LED（IO2）受控闪烁</td>
+</tr>
+<tr>
+  <td><b>P3</b><br><span class="small">采集</span></td><td>M3 读得到</td>
+  <td>接传感器（SPI）→ 读 <code>WHO_AM_I</code> → 静置读 Z 轴 → 配置量程/ODR/滤波 → 验证 INT1</td>
+  <td><code>WHO_AM_I = 0x7B</code>；静置 Z≈1 g、X/Y≈0；敲击有响应；中断可触发</td>
+</tr>
+<tr>
+  <td><b>P4</b><br><span class="small">存储</span></td><td>M4 存得下</td>
+  <td>接存储模块（先 10 MHz）→ 挂载文件系统 → 写读自检 → 连续写入压测</td>
+  <td>挂载成功；写读回一致；<b>连续 90 s 写入零丢帧</b>（用序号校验）</td>
+</tr>
+<tr>
+  <td><b>P5</b><br><span class="small">联调</span></td><td>端到端跑通</td>
+  <td>按状态机联调：自检 → 待机 → INT1 唤醒 → 采集 → 流式写卡 → 收尾</td>
+  <td>90 s 采集文件在 PC 上解析出完整波形 + FFT 主频正确</td>
+</tr>
+<tr>
+  <td><b>P6</b><br><span class="small">扩展</span></td><td>M5 / M6</td>
+  <td>接 INA226（记录自带分流丝印，<b>不拆焊</b>）→ I²C 扫描 → 与万用表比对；补 LED 状态语义</td>
+  <td>扫到 <code>0x40</code>；电流读数与万用表偏差 &lt; 5%</td>
+</tr>
+<tr>
+  <td><b>P7</b><br><span class="small">可选</span></td><td>M7 / M8</td>
+  <td>电池保护 + 充电状态；无线充整流；射频切换逻辑</td>
+  <td>各模块单独可用；<b>允许整段跳过不影响交付</b></td>
+</tr>
+<tr>
+  <td><b>P8</b><br><span class="small">固化</span></td><td>迁移到洞洞板</td>
+  <td>面包板验证通过后，把确定下来的连接固化到洞洞板/正式 PCB</td>
+  <td>固化版复现面包板版的全部 MVP 判据</td>
+</tr>
+</table>
+</div>
+
+<h3>4.2 优先级依据（价值 / 风险矩阵）</h3>
+<div class="card">
+<table>
+<tr><th style="width:14%">定位</th><th style="width:28%">模块</th><th>为什么这样排</th></tr>
+<tr><td class="lv-h">先做<br>（高价值·高风险）</td><td><b>M2 供电、M3 采集</b></td><td>既是关键路径起点，又是失败代价最大的环节（供电错了烧板；采集错了整个课题思路要重估）。必须最先暴露问题。</td></tr>
+<tr><td class="lv-m">紧接着<br>（高价值·低风险）</td><td><b>M1 主控、M4 存储</b></td><td>成熟方案，风险主要在"面包板走线"而非"原理"。投入产出比最高。</td></tr>
+<tr><td class="lv-m">随手做</td><td><b>M5 电流、M6 人机</b></td><td>接根线就能验，成本极低；M5 用来核对<b>功耗账</b>（写卡 ＋ 推流并存的真实电流）并给数据加<b>工况状态标记</b>。</td></tr>
+<tr><td class="lv-l">最后做<br>（低价值·高风险）</td><td><b>M7 电池、M8 无线充/射频</b></td><td>对核心命题（拿到可信振动数据）无直接贡献，却有焊接难题（QFN-16 / DFN-6 1×1）与阻抗不可控问题。放最后，焊不动就跳过。</td></tr>
+</table>
+</div>
+
+<h2 id="s5">五、关键约束清单</h2>
+
+<h3>5.1 电气约束</h3>
+<div class="card">
+<ul>
+<li>所有上拉电阻<b>一个都不能省</b>，阻值照原网表（CHRG_N/DONE、SD_CMD/D0-D3、SDA/SCL、ALERT、CS 共 10 处）。</li>
+<li>IIS3DWB 的 RES 脚处理见 2.4；<code>CS</code> 为高时器件进入 I²C 模式，SPI 通信时必须保持低。</li>
+<li>VCTL1 / VCTL2 软件互锁，先写固件再上电。</li>
+<li>U.FL（IPEX1）与 MHF4（IPEX4）<b>严禁互插</b>，须用专用转接跳线。</li>
+<li>电池负（BAT_N）不得与系统地（GND）直连。</li>
+</ul>
+</div>
+
+<h3>5.2 测量约束（决定数据是否"可信"）</h3>
+<div class="card">
+<ul>
+<li><b>四线开尔文是硬要求：</b>INA226 的 IN+ / IN− 必须直接从分流电阻两端焊盘引出——INA226 模块 PCB 上本来就如此，这也是选用成品模块的原因。不能从面包板其它支路"顺手取电"，否则毫欧级接触电阻会串进测量回路，读数偏差可达数十毫安。</li>
+<li>SPI 走线尽量短（&lt; 15 cm），避免与 SD_CLK 并行长距离走线。</li>
+<li>存储卡初次挂载用 10 MHz，稳定后再提 20 MHz。</li>
+<li>传感器贴装位置决定能测到什么：面包板阶段用双面胶贴在被测件表面即可，但<b>要记录贴装方向与位置</b>，否则频谱无法解释。</li>
+</ul>
+</div>
+
+<h3>5.3 资源约束</h3>
+<div class="card">
+<table>
+<tr><th style="width:22%">约束</th><th>影响与应对</th></tr>
+<tr><td>无 CMP 抛光机 / AFM / XPS</td><td>不影响本需求（纯电子链路验证）；但若后续想转向"摩擦化学/CMP"方向，需另找合作团队设备。</td></tr>
+<tr><td>设备与黄辉组、沈剑云组共享</td><td>示波器/电源/万用表排期需协调，建议一次性借齐再集中调试，减少往返。</td></tr>
+<tr><td>研0 阶段时间碎片化（课程 + 提前进组）</td><td>把 P0~P2 拆成 1~2 小时可完成的独立小任务，避免依赖整块时间。</td></tr>
+<tr><td>原嘉立创工程只读</td><td>所有验证性改动只发生在面包板与新建工程中，<b>任何情况下不回改原工程</b>。</td></tr>
+<tr><td>本机 Bash 缺 coreutils</td><td>文件与脚本操作走 PowerShell / 专用工具；不要用 <code>mkdir</code>、<code>dirname</code> 等命令。</td></tr>
+</table>
+</div>
+
+<h2 id="s6">六、风险登记册</h2>
+<div class="card">
+<table>
+<tr><th style="width:5%">ID</th><th style="width:22%">风险</th><th style="width:9%">概率</th><th style="width:9%">影响</th><th style="width:7%">等级</th><th>缓解措施 / 触发后的应对</th></tr>
+<tr>
+  <td><b>R1</b></td>
+  <td><b>INA226 量程只有 ±0.8192 A</b><br><span class="small">模块自带 0.1 Ω；09-21 决定不更换</span></td>
+  <td class="num">中</td><td class="num">中</td><td class="num lv-m">中</td>
+  <td>峰值 456 mA 有 1.8 倍余量，<b>该风险已评估并接受</b>。<b>触发条件：实测电流超过约 800 mA</b>（如 Qi 那一路同时供设备 + 给电池充电）→ 换成 10 mΩ（备用件 C2985675 在手）。软件只改 <code>config.h</code> 的 <code>SHUNT_OHM</code> / <code>INA_MAX_CURRENT</code> 两个宏，CAL 恒为 2048。</td>
+</tr>
+<tr>
+  <td><b>R2</b></td>
+  <td><b>存储写入吞吐不足</b><br><span class="small">满速需 160 KB/s，SPI 卡实际可能仅 100~300 KB/s</span></td>
+  <td class="num">中</td><td class="num">高</td><td class="num lv-h">高</td>
+  <td>先用 3.3/6.6 kHz ODR 打通链路；加环形缓冲；改用 SD-NAND 或高速卡。<b>触发：丢帧计数 &gt; 0 或文件时间戳跳变。</b></td>
+</tr>
+<tr>
+  <td><b>R3</b></td>
+  <td><b>面包板接触电阻污染测量</b><br><span class="small">毫欧级且不稳定，影响微弱信号</span></td>
+  <td class="num">高</td><td class="num">中</td><td class="num lv-h">高</td>
+  <td>关键节点（电源、分流电阻、传感器供电）单独走线，不共用面包板长轨；必要时把这几处焊到小板上。</td>
+</tr>
+<tr>
+  <td><b>R4</b></td>
+  <td><b>关键器件买不到 / 型号错</b><br><span class="small">如评估板型号混淆</span></td>
+  <td class="num">中</td><td class="num">中</td><td class="num lv-m">中</td>
+  <td>采购前逐一核对型号（IIS3DWB 对应 <code>STEVAL-MKI208V1K</code>；<code>MKI209V1</code> 是另一颗器件）。付订前二次确认封装与引脚定义。</td>
+</tr>
+<tr>
+  <td><b>R5</b></td>
+  <td><b>DIL24 引脚定义误判</b><br><span class="small">评估板脚位 ≠ 芯片 pin1~14</span></td>
+  <td class="num">中</td><td class="num">中</td><td class="num lv-m">中</td>
+  <td>接线前下载该评估板 Schematic PDF，按网络名（VDD/GND/SPC/SDI/SDO/CS/INT1）定位，<b>不要按芯片脚号猜</b>。</td>
+</tr>
+<tr>
+  <td><b>R6</b></td>
+  <td><b>细间距器件焊接失败</b><br><span class="small">QFN-16、DFN-6 1×1、LGA</span></td>
+  <td class="num">中</td><td class="num">低</td><td class="num lv-m">中</td>
+  <td>这些器件全部归属 Could 模块，允许直接跳过；或交 SMT 贴片。不阻塞 MVP。</td>
+</tr>
+<tr>
+  <td><b>R7</b></td>
+  <td><b>电池保护设计理解偏差</b><br><span class="small">BAT_N 与 GND 混接</span></td>
+  <td class="num">低</td><td class="num">高</td><td class="num lv-m">中</td>
+  <td>上电前用万用表通断档确认 BAT_N 与 GND <b>不导通</b>；把这条写进上电检查清单。</td>
+</tr>
+<tr>
+  <td><b>R8</b></td>
+  <td><b>射频链路不可测</b><br><span class="small">面包板阻抗不可控，RSSI 无意义</span></td>
+  <td class="num">高</td><td class="num">低</td><td class="num lv-l">低</td>
+  <td>降级为"只验证切换逻辑"：确认 IO5/IO6 互斥、通路导通即可，<b>不比较性能</b>。</td>
+</tr>
+<tr>
+  <td><b>R9</b></td>
+  <td><b>时间被课程/其他任务挤占</b></td>
+  <td class="num">高</td><td class="num">中</td><td class="num lv-m">中</td>
+  <td>把 P0~P2 切成小任务；宁可长时间只推进关键路径，也不要全面铺开。</td>
+</tr>
+<tr>
+  <td><b>R10</b></td>
+  <td><b>对真实刀柄工况的认知偏差</b><br><span class="small">面包板数据 ≠ 刀柄数据</span></td>
+  <td class="num">中</td><td class="num">中</td><td class="num lv-m">中</td>
+  <td>明确"面包板只验证电子链路"。真实工况（转速、齿频、装夹刚度、切削液、电磁干扰）必须另做台架实验，不要用面包板结论外推。</td>
+</tr>
+<tr>
+  <td><b>R11</b></td>
+  <td><b>采样时钟与数据时间戳不一致</b><br><span class="small">ODR 与 MCU 读取节拍不同步</span></td>
+  <td class="num">中</td><td class="num">高</td><td class="num lv-h">高</td>
+  <td>用 FIFO 水位/INT1 中断驱动读取而非轮询；文件头记录实际 ODR 与样本计数，事后可校验。</td>
+</tr>
+<tr>
+  <td><b>R12</b></td>
+  <td><b>范围蔓延</b><br><span class="small">越做越大，迟迟拿不到第一条数据</span></td>
+  <td class="num">中</td><td class="num">高</td><td class="num lv-h">高</td>
+  <td>严格执行 MVP 边界；Could 模块一律推迟到 P5 通过之后。以"首个可用数据文件诞生"作为唯一阶段性胜利标准。</td>
+</tr>
+</table>
+</div>
+
+<h2 id="s7">七、验收标准（Definition of Done）</h2>
+<div class="card">
+<p><b>MVP 验收（全部满足才算通过）：</b></p>
+<ol>
+<li>3V3 输出电压在 3.18~3.45 V，连续 10 分钟波动 &lt; 50 mV。</li>
+<li>传感器 <code>WHO_AM_I</code> 返回 <code>0x7B</code>，静置 Z 轴读数在 1 g ± 5% 内。</li>
+<li>连续采集 90 s 落盘，样本序号连续、<b>丢帧率 = 0</b>。</li>
+<li>PC 侧脚本能解析该文件并输出时域波形 + FFT，主频与已知激励吻合。</li>
+<li>采集期间无异常发热、无意外复位、无数据损坏。</li>
+</ol>
+<p><b>扩展验收（可选，逐项独立判定）：</b></p>
+<ol start="6">
+<li>I²C 扫到 <code>0x40</code>，电流读数与万用表偏差 &lt; 5%。</li>
+<li>USB 与电池路径切换正常，互不倒灌。</li>
+<li>充电状态（CHRG_N / CHRG_DONE）指示正确。</li>
+<li>射频切换逻辑正确（不比性能）。</li>
+</ol>
+<div class="okbox">
+<b>一句话验收：</b>能在 PC 上打开一个来自面包板样机的数据文件，看到一条解释得通的三轴振动波形。
+</div>
+</div>
+
+<h2 id="s8">八、待决策项</h2>
+<div class="card">
+<table>
+<tr><th style="width:6%">ID</th><th style="width:26%">决策点</th><th style="width:34%">选项</th><th>影响面</th></tr>
+<tr>
+  <td><b>D1</b></td><td><b>总体路线</b></td>
+  <td><b>A 成品模块路线</b>（DevKitC-1 + INA226 模块 + 4056 模块 + Qi 模块 + TF 卡模块）<br><b>B 原型号直插化路线</b>（芯片焊 2.54 转接板，逐网络复现原型机）<br><b>C 混合</b>：模块走 A，最影响数据可信度的环节走 B（传感器）；分流电阻 09-21 已决定沿用模块自带 0.1 Ω，不再走 B</td>
+  <td><b>全局影响。</b>A 上手快、与原型号不完全一致；B 保真度高但焊接与调试量大。当前工作区资产（三件套）按 B 编制。</td>
+</tr>
+<tr>
+  <td><b>D2</b></td><td>存储方案</td>
+  <td>TF 卡座模块（易得、易换卡） ／ SD-NAND 原片（保真但需转接）</td>
+  <td>决定 M4 的接线与吞吐上限</td>
+</tr>
+<tr>
+  <td><b>D3</b></td><td>传感器方案</td>
+  <td>STEVAL-MKI208V1K 评估板（免焊、原芯片，约 ¥260~275） ／ 第三方 IIS3DWB 模块 ／ 退而用 MPU9250 类模块（便宜但带宽与噪声差一个量级）</td>
+  <td>直接决定"数据能不能用于高频振动分析"</td>
+</tr>
+<tr>
+  <td><b>D4</b></td><td>电源方案</td>
+  <td>纯 USB 供电（最简） ／ USB + 电池 + 保护（接近真实形态）</td>
+  <td>决定 M2 与 M7 的范围</td>
+</tr>
+<tr>
+  <td><b>D5</b></td><td>是否保留无线充与射频分集</td>
+  <td>保留（形态完整） ／ 本期砍掉（聚焦数据链）</td>
+  <td>影响工作量与失败面</td>
+</tr>
+<tr>
+  <td><b>D6</b></td><td>目标工作点</td>
+  <td>先 3.3 kHz 打通、逐步提频 ／ 直接冲 26.7 kHz</td>
+  <td>决定采集与存储链的设计余量</td>
+</tr>
+</table>
+<div class="callout">
+<b>D1 是本轮唯一需要先拍板的决策</b>——它决定模块划分里"器件形态"那一层怎么写，其余 D2~D6 都可以在实施过程中逐步收敛。<br>
+建议默认取 <b>C（混合路线）</b>：用成品模块快速把关键路径打通，只在"传感器"这个直接决定数据可信度的环节保留原型号做法（分流电阻 09-21 已决定沿用模块自带的 0.1 Ω，理由见 2.3）。
+</div>
+</div>
+
+<h3>8.1 C 混合路线展开：分界规则与落地形态</h3>
+<div class="card">
+<h4>分界判据（一句话 + 三问）</h4>
+<p><b>判据：</b>这段路上的物理量是<b>被"读"的</b>，还是<b>只判"通不通"</b>？<br>
+面包板有两个固有缺陷：<b>接触电阻</b>（毫欧级，且每次插拔都变）与<b>走线寄生电感</b>。二者对数字信号容限（SPI 通不通、3.3 V 有没有）几乎无影响，但对毫伏级模拟测量是毁灭性的。</p>
+<p>落到具体判断，只问三句：<b>① 会改变读数吗？② 寄生参数与被测量同一量级吗？③ 出错会烧东西吗？</b>任一为"是"，即归入保真侧。</p>
+
+<table>
+<tr><th style="width:14%">模块</th><th style="width:16%">侧别</th><th style="width:34%">混合后买什么 / 怎么做</th><th>关键注意</th></tr>
+<tr>
+  <td>M1 主控</td><td><span class="tag t-could">模块侧</span></td>
+  <td>ESP32-S3-DevKitC-1 开发板</td>
+  <td><b class="danger">DevKitC-1 无 U.FL 引出</b>（板载 PCB 天线）。若要保留 M8 射频分集，需改用 WROOM-1U 模组转接板。</td>
+</tr>
+<tr>
+  <td>M2 供电</td><td><span class="tag t-could">模块侧</span><br><span class="small">含一处保真</span></td>
+  <td>3.3 V 稳压模块；<b>传感器分轨单独引出</b></td>
+  <td><b class="danger">3V3 模块必须是升降压型（buck-boost）</b>：电池 3.0~4.2 V 与 3.3 V 交叠，普通 LDO 或 MP1584 类降压模块在电池掉到 3.3 V 以下即失压。原设计用 TPS63031 正是出于此因。<br>另：<b>3V3_SENS 分轨（原 FB1 磁珠）不能省</b>，DC-DC 开关噪声会直接调制成加速度信号。</td>
+</tr>
+<tr>
+  <td>M3 采集</td><td><span class="tag t-must">保真侧</span></td>
+  <td>STEVAL-MKI208V1K 评估板（原芯片 IIS3DWB，免焊）</td>
+  <td>用<b>原芯片</b>而非替代品。消费级 MEMS 模块（MPU 系列等）带宽与噪声均差一个量级，&gt;1 kHz 频段基本淹没在噪声中，用于刀柄振动频谱分析等于无效数据。<br>接线按评估板 Schematic PDF 的<b>网络名</b>（VDD/GND/SPC/SDI/SDO/CS/INT1）定位，不得按 DIL24 脚号猜。</td>
+</tr>
+<tr>
+  <td>M4 存储</td><td><span class="tag t-could">模块侧</span></td>
+  <td>TF 卡座模块</td>
+  <td><b class="danger">多数 TF 模块只引 SPI 接口，会占用 IO10-13 —— 与传感器 SPI 冲突。</b>须选支持 4-bit SDIO 的卡座（沿用 IO38-42/47），或为 TF 卡另分配一组空闲 IO。</td>
+</tr>
+<tr>
+  <td>M5 电流</td><td><span class="tag t-should">半保真</span></td>
+  <td>INA226 模块（<b>沿用自带 0.1 Ω 分流，不拆换</b>）</td>
+  <td>见下方口径修正。</td>
+</tr>
+<tr>
+  <td>M6 人机</td><td><span class="tag t-could">模块侧</span></td>
+  <td>直插按键 / LED，无需模块</td>
+  <td>—</td>
+</tr>
+<tr>
+  <td>M7 电池</td><td><span class="tag t-must">保真侧</span></td>
+  <td><b>带保护的 TP4056 充电模块</b></td>
+  <td>模块上已集成 DW01 + 8205，正好对应原设计的 U9 + Q5，无需自制。<br>代价：失去 NTC 温控（原设计有 RT1 + R40）。</td>
+</tr>
+<tr>
+  <td>M8 无线充 / 射频</td><td><span class="tag t-wont">建议砍掉</span></td>
+  <td>Qi 接收模块（若保留）</td>
+  <td>DevKitC-1 无 U.FL，射频分集在本路线下做不到；建议整体推迟。</td>
+</tr>
+</table>
+
+<h4>口径两次修正：INA226 成品模块可用，且不必拆换电阻</h4>
+<div class="callout">
+<b>第一次修正（09-18）：</b>09-17 参考页写"INA226 不建议用成品模块（自带分流非 10 mΩ）"，该理由不成立——模块 PCB 上 IC 的 IN+ / IN− 就直接连在分流电阻两个焊盘上，这本身就是合理的开尔文布局，<b>模块的接线端子并不在测量回路里</b>，不引入测量误差（只影响压降）。当时结论是"买模块 + 拆换电阻为 10 mΩ"。<br>
+<b>第二次修正（2026-09-21）：不拆换，沿用模块自带的 0.1 Ω。</b>① 峰值 456 mA 对 819.2 mA 有 1.8 倍余量；② 拆焊 2512 的虚焊风险 &gt; 收益（虚焊引入的几十 mΩ 比 10 mΩ 还大，且时好时坏，极难排查）；③ 小电流精度反而更好（Vos 固定 ±10 µV，误差占比与阻值成反比，110 mA 时 0.1 Ω 约 0.09%、10 mΩ 约 0.91%）。<br>
+<b>唯一代价：</b>量程只剩 <b>±0.8192 A</b>（Current_LSB 25 µA）。超过约 800 mA 会饱和，届时换 10 mΩ——备用件已在手，软件改两个宏即可，<b>CAL 恒为 2048 无需改动</b>。<br>
+<b>结论：M5 的正确做法 = 买模块直接插面包板，一颗电阻都不用焊。</b>
+</div>
+
+<h4>混合路线下需要自己动手的全部工作（仅 2 处）</h4>
+<ol>
+<li><b>传感器接线</b>：按评估板 Schematic PDF 的网络名接杜邦线；</li>
+<li><b>INA226 无需焊接</b>：模块直接插面包板，只记录自带分流丝印（0.1 Ω）并按此在固件里配量程；</li>
+<li><b>3V3_SENS 分轨</b>：加一颗磁珠从 3V3_SYS 隔离给传感器供电（原设计 FB1，不能省）。</li>
+</ol>
+<div class="okbox">
+<b>混合的本质不是折中，而是把工程量精准投在"只有这几个点影响数据可信度"的地方。</b>除上述 2 处，其余连接全部插线完成。
+</div>
+</div>
+
+<h2 id="s9">九、下一步行动</h2>
+<div class="card">
+<ol>
+<li><b>拍板 D1</b>（路线），并确认 D3（传感器方案）——这一项最贵，且决定数据上限。</li>
+<li><b>输出采购清单（BOM）</b>：按选定路线列出模块型号、数量、渠道、单价，生成可直接下单的表格。</li>
+<li><b>建立测试记录表</b>：每个里程碑一页，记录日期、环境、测量值、判定、异常现象——这是后续写论文/报告的一手材料。</li>
+<li><b>列出上电检查清单</b>：把 2.4 的绝对边界与 5.2 的测量约束变成逐项打勾的检查表，贴在面包板旁边。</li>
+<li><b>开始 P1</b>：只接 USB 与 3.3 V 稳压，量电压。不要一次插满。</li>
+</ol>
+</div>
+
+<footer>
+数据源：20260917-201429-schematic_netlist（96 器件 / 69 网络，只读解析）· 09-17 交付三件套 · ST 官方 IIS3DWB 产品页与 DS12569 · TI INA226 DS(SBOS547)<br>
+编制：知微 🔧 ｜ v1.2 · 2026-09-21（分流口径反转 + 电流含义澄清） ｜ 当前路线配套：面包板样机_C路线采购清单.xlsx · 面包板样机_到货验收与施工准备包.html · 面包板样机_v1-v2任务验收标准与限制条件.html<br>
+<span class="small">本文档为需求规划件。具体施工与接线以 <b>面包板样机_到货验收与施工准备包.html</b> 为准。09-17 的「面包板验证版_*」三件套属 B 路线（原型号直插化）存档，已非当前路线，仅供原设计对照。</span>
+</footer>
+</div>
+</body>
+</html>
