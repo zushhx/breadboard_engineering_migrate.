@@ -11,6 +11,15 @@
 
 ## TF 对照证据
 
+- [单轮约五分钟文件循环与写入流程中 MCU 复位](TF_FILE_LOOP_INTERRUPTION_20261015.md)
+- [单轮文件循环与复位后的原始证据清单](TF_FILE_LOOP_EVIDENCE_20261015.json)
+
+- [基础写入、主控复位与两次完整断电实测](TF_WRITE_HARDWARE_20261015.md)
+- [实机原始记录哈希与结果清单](TF_WRITE_HARDWARE_EVIDENCE_20261015.json)
+
+- [独立 TF 写入诊断软件检查与自审（未试烧）](TF_WRITE_SOFTWARE_REVIEW_20261015.md)
+- [独立 TF 写入诊断构建原始清单](TF_WRITE_BUILD_20261015.json)
+
 - [10 月 15 日软件实板对照与选用结果](TF卡软件实测_2026-10-15.md)
 - [软件路径复核](TF卡软件复核_2026-10-15.md)
 - [15:18 重新接线后的复测](TF卡接线复测_2026-10-15_1518.md)

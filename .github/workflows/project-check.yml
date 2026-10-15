@@ -27,3 +27,12 @@ jobs:
           python-version: '3.12'
       - run: python -m pip install platformio==6.2.0
       - run: python tools/build_tf_baseline.py
+  tf-write-diagnostic-build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install platformio==6.2.0
+      - run: python tools/build_tf_write_probe.py

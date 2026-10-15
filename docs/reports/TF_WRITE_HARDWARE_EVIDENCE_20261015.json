@@ -1,0 +1,112 @@
+{
+  "date": "2026-10-15T20:07:45.977473+08:00",
+  "firmware_source_commit": "31dda6f23cab21f9a07330a829bae747211334b0",
+  "host_batch_source_commit": "5d5dcdd3fe076d4880330003165adad13e3bac2f",
+  "firmware_sha256": "728e50380e55a08c653142721f064dd5ef9028fe28bb7ed197ef561f10d08ec3",
+  "controller_mac": "44:1b:f6:81:91:10",
+  "card_serial": "10044BA5",
+  "card_bytes": 7948206080,
+  "platform": "ESP-IDF 5.4.2 / SDMMC 4-bit / max request 20000 kHz / CPU 160 MHz / PSRAM disabled",
+  "flash_tool_observed": "esptool 4.11.0 under existing PlatformIO Python; no toolchain upgrade",
+  "authorization": "User approved candidate flash, 10 x 1 MiB card writes, MCU reset/verify and readonly firmware recovery on failure; current card data disposable and backup waived",
+  "snapshot_scope": "0x0..0x60000; covers app0 changed sectors; not a full-flash backup; binary remains local/private",
+  "tests": {
+    "write_sync_close_readback_pass": 10,
+    "written_bytes": 10485760,
+    "post_mcu_reset_read_pass": 10,
+    "user_confirmed_cold_start_count": 2,
+    "cold_start_read_pass_counts": [
+      10,
+      10
+    ],
+    "complete_1MiB_verification_count": 40,
+    "original_18327_byte_sample_PC_MATCH_count_in_logs": 10,
+    "full_write_sync_close_readback_elapsed_ms": [
+      5778,
+      5828,
+      5875,
+      5675,
+      5532,
+      5331,
+      5346,
+      5328,
+      5356,
+      5347
+    ],
+    "full_cycle_elapsed_ms_range": [
+      5328,
+      5875
+    ]
+  },
+  "test_runs": [
+    "893FB600",
+    "C725C001",
+    "97632002",
+    "58A42D03",
+    "57DA6804",
+    "2F100805",
+    "D3165906",
+    "65DF5307",
+    "D0942A08",
+    "DC65E809"
+  ],
+  "cold_start_confirmation_basis": "User replies in current chat; host sent no reset in cold1/cold2 verification; physical removal duration not independently instrumented",
+  "recovery_used": false,
+  "deleted_original_files": false,
+  "automatic_format_repair": false,
+  "passed_scope": "basic create/write/sync/close/reopen/full byte+SHA256 check, MCU reset, and two user-confirmed full power cycles after close",
+  "untested": [
+    "power interruption during active write",
+    "long duration or sustained sampling load",
+    "actual sensor acquisition integration",
+    "full card integrity",
+    "recovery flashing (not triggered)"
+  ],
+  "evidence": [
+    {
+      "path": "local-data/hardware/tf-write/20261015_200137/hardware.log",
+      "bytes": 32543,
+      "sha256": "a80f0a245a92205974c23740905ec107c849798883961a8027f3988698d8e646"
+    },
+    {
+      "path": "local-data/hardware/tf-write/20261015_200137/result.json",
+      "bytes": 4948,
+      "sha256": "a3b42394c239edca2990f280820ca3fd87d03e971f46c4cccfc5d97f7f26c2de"
+    },
+    {
+      "path": "local-data/hardware/tf-write/20261015_200137/snapshot.json",
+      "bytes": 322,
+      "sha256": "1bd878e23453daa6499dc2c53710227c4752dea5812e23996a21b6b3c804da94"
+    },
+    {
+      "path": "local-data/hardware/tf-write/20261015_200137/controller_prefix_0x60000.bin",
+      "bytes": 393216,
+      "sha256": "60acf6d3f4d509458e476399508c8a959e8e66af010e6e41b2ba5fb7c91419ff"
+    },
+    {
+      "path": "local-data/hardware/tf-write/20261015_200137/verify_after_power.py",
+      "bytes": 1857,
+      "sha256": "8dd07e09bad86c46b930414a488832c067bd01dd8ab27d4aa650c96882b0891a"
+    },
+    {
+      "path": "local-data/hardware/tf-write/20261015_200137/cold1/hardware.log",
+      "bytes": 7468,
+      "sha256": "20f12d3c670ba4c5d7ca7c726ff3011eb4ddc442a20c5e05c8689c1d0418c846"
+    },
+    {
+      "path": "local-data/hardware/tf-write/20261015_200137/cold1/result.json",
+      "bytes": 2481,
+      "sha256": "440c1cf1ce28e8e634399735b28e853f459b9cd9f633a302875e84c6a450ec7b"
+    },
+    {
+      "path": "local-data/hardware/tf-write/20261015_200137/cold2/hardware.log",
+      "bytes": 7469,
+      "sha256": "481aad7ff72046f068eb52a93558e2b5f5be52b63c4dfc53c88dbbce2ec97522"
+    },
+    {
+      "path": "local-data/hardware/tf-write/20261015_200137/cold2/result.json",
+      "bytes": 2482,
+      "sha256": "586b04d55e5cf01e042ce24fbeb3e0efc83acf629eba4732736c5bd191410b61"
+    }
+  ]
+}

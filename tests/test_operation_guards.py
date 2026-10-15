@@ -14,18 +14,25 @@ sys.path.insert(0, str(ROOT / 'tools'))
 from operation_gate import require_approval
 
 class UploadGuardTest(unittest.TestCase):
-    def run_target(self, target):
+    def run_target(self, target, guard='面包板样机_固件/tools/block_implicit_upload.py'):
         package = types.ModuleType('SCons')
         script = types.ModuleType('SCons.Script')
         script.COMMAND_LINE_TARGETS = [target]
         with patch.dict(sys.modules, {'SCons': package, 'SCons.Script': script}):
-            runpy.run_path(str(ROOT / '面包板样机_固件/tools/block_implicit_upload.py'))
+            runpy.run_path(str(ROOT / guard))
 
     def test_build_is_allowed_and_device_write_targets_are_blocked(self):
         self.run_target('buildprog')
         for target in ['upload', 'uploadfs', 'erase', 'program']:
             with self.subTest(target=target), self.assertRaises(RuntimeError):
                 self.run_target(target)
+
+    def test_write_diagnostic_guard_blocks_device_writes(self):
+        guard = '面包板样机_固件/diagnostics/tf_write_probe/block_implicit_upload.py'
+        self.run_target('buildprog', guard)
+        for target in ['upload', 'uploadfs', 'uploadfsota', 'erase', 'program']:
+            with self.subTest(target=target), self.assertRaises(RuntimeError):
+                self.run_target(target, guard)
 
 class ApprovalGuardTest(unittest.TestCase):
     def setUp(self):

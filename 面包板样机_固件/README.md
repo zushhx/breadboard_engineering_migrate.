@@ -26,6 +26,8 @@ Windows 工具链构建从 WSL 调用：
 
 ## 历史业务与实验
 
+独立写入诊断的软件候选见 [tf_write_probe](diagnostics/tf_write_probe/README.md)，开发与验收范围见[本次计划](../docs/plans/TF_WRITE_DIAGNOSTIC_20261015.md)。构建入口为工作区根目录 `.shell-tools/build_tf_write_probe_pwsh7.ps1`；不执行烧录或写卡，不替换冻结基线。
+
 `src/`、`include/`、`webui/` 和根 `platformio.ini` 是原 Arduino 业务程序；`diagnostics/` 与其他 `platformio.*.ini` 保留诊断实验。原业务的旧说明已移到[历史固件 README](../docs/history/firmware-README.before-engineering.md)，其中的“当前”和烧录步骤均属当时语境。
 
 默认 PlatformIO 上传将被阻止，以免把旧业务程序覆盖到主控。需要开发业务功能时，按[工程流程](../docs/WORKFLOW.md)建立任务、审查并取得具体试烧确认。
