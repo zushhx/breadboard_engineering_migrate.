@@ -1,0 +1,64 @@
+{
+  "source_commit": "0965b47fb6de8d95240c7c702bbe1af68a345f7e",
+  "working_tree_dirty_at_start": false,
+  "input_sha256": "4c28407a05e79cb821d67fb10db927128851478eab6a5a4ef7dce93f6261b5e7",
+  "inputs": {
+    "面包板样机_固件/diagnostics/sensor_monitor_probe/block_implicit_upload.py": "c42921770acde18eff80aab917d144e7b2f320e92da836b4653cb7b76bc611b9",
+    "面包板样机_固件/diagnostics/sensor_monitor_probe/CMakeLists.txt": "71ed3bdcc629649f5bc3d37f1ce315890a9b22f9707633f97e7782f07b0c95bb",
+    "面包板样机_固件/diagnostics/sensor_monitor_probe/partitions.csv": "0c4e02152e1b6911d0a9b94be67d37674052fdc5c0870a5a55cc2133e65233a1",
+    "面包板样机_固件/diagnostics/sensor_monitor_probe/platformio.ini": "6ac59c9f55dad9d2c0512b9f71679ea52c81b3093c19bbdef1deb7dd9e247c77",
+    "面包板样机_固件/diagnostics/sensor_monitor_probe/README.md": "3b03badf22236d615fd432088f6626366018917528ed5311e500ae19f13b34f9",
+    "面包板样机_固件/diagnostics/sensor_monitor_probe/sdkconfig.defaults": "d7610876403351cf588cacf550f21cba1c24f7fa3c859b05be3b4562790f73c8",
+    "面包板样机_固件/diagnostics/sensor_monitor_probe/sdkconfig.sensor_monitor_idf542": "7c1175f80b103a3ea7aa7e4d5b2fc4c658dee6ba32cb4971b0073690fbf28c45",
+    "面包板样机_固件/diagnostics/sensor_monitor_probe/src/build_identity.h": "d62ddc63024702fa0befdd176e6dac4b6d1b0420f78fe6d8e61239d0f9f2cdcf",
+    "面包板样机_固件/diagnostics/sensor_monitor_probe/src/CMakeLists.txt": "702f077b5c0f38addeaf2ed6b428338b82c13d469c36f65bed37d6988b391b06",
+    "面包板样机_固件/diagnostics/sensor_monitor_probe/src/main.cpp": "c442d83c8ab23a85609e5c277095ea83131ec0d84d9c9f501583cd80c42f6e9a",
+    "面包板样机_固件/diagnostics/sensor_monitor_probe/src/module_values.h": "ab7390efd879defd5f4731b646dc007a4507e7239a685baed1fb62e5c9bc0fce",
+    "面包板样机_固件/diagnostics/sensor_monitor_probe/src/modules.cpp": "3a5060543826be7a38d93c718042fe64ca0230c2efe8bb5afcf43b3b88e6ec3b",
+    "面包板样机_固件/diagnostics/sensor_monitor_probe/src/modules.h": "96d3286c930478928d2ebd1432a86020a0e0c08257a9595ce7ab53ce590b97c3",
+    "面包板样机_固件/diagnostics/sensor_monitor_probe/src/serial_compat.cpp": "7a6e0b1f91138280f40dcd1160a1d78fb2ae74d59654891a3e732ccfde71a706",
+    "面包板样机_固件/diagnostics/sensor_monitor_probe/src/serial_compat.h": "6822cb1d13751158c6798f5f6e2c72e6d238ac6108f0a313550fbaef910c127a",
+    "面包板样机_固件/diagnostics/sensor_monitor_probe/src/tf_test_core.cpp": "f3d2077e5807836d49ced6e6df011ebbfb3443791fb4921f9307b33fb5bec9ed",
+    "面包板样机_固件/diagnostics/sensor_monitor_probe/src/tf_test_core.h": "99745aee6f44a126784e37e7fb8612788759e4d576429665ea84c992aff66b05",
+    "tools/build_sensor_monitor_probe.py": "4b0d26a4a2b026ccf6db41e95b7b6a5a3a8881110c04ef8b08356c26c5459d0c"
+  },
+  "staged_identity_sha256": "1d2db9d8a6e2728516ece6d33369f17b43724d60aca6153a07438b8cd7390716",
+  "baseline_manifest_sha256": "785d6d1e76037737cbf4f5410208691b2ebeac4fd31f147c054db575736b5426",
+  "command": [
+    "C:\\Users\\acer\\.platformio\\penv\\Scripts\\python.exe",
+    "-m",
+    "platformio",
+    "run",
+    "--project-dir",
+    "C:\\Users\\acer\\.platformio\\breadboard_module_builds\\4c28407a05e79cb8",
+    "--environment",
+    "sensor_monitor_idf542"
+  ],
+  "sdkconfig_differences": [],
+  "sdkconfig_generated_sha256": "7c1175f80b103a3ea7aa7e4d5b2fc4c658dee6ba32cb4971b0073690fbf28c45",
+  "artifacts": [
+    {
+      "path": "local-data/build/sensor-monitor/4c28407a05e79cb8/20261015_204903_596499/artifacts/firmware.bin",
+      "bytes": 361184,
+      "sha256": "7aba58e53173011d88a42d7ce11e409134c49c235fa8ffa7adb0535a7bdddcb5"
+    },
+    {
+      "path": "local-data/build/sensor-monitor/4c28407a05e79cb8/20261015_204903_596499/artifacts/bootloader.bin",
+      "bytes": 22368,
+      "sha256": "d3e2e34e7436eb048297cc670dcfba3f62557862273c72e3d05b0eeca37e89da"
+    },
+    {
+      "path": "local-data/build/sensor-monitor/4c28407a05e79cb8/20261015_204903_596499/artifacts/partitions.bin",
+      "bytes": 3072,
+      "sha256": "1d9cca96de0fe07ad7fc0648b9878ddecd9ce565e38b589ad20fea698ed4c80c"
+    },
+    {
+      "path": "local-data/build/sensor-monitor/4c28407a05e79cb8/20261015_204903_596499/artifacts/firmware.elf",
+      "bytes": 5228888,
+      "sha256": "c8d7ca8b00c2a1022c92d427198e736a13c7ea3fd23f140202ec2a6f04b38602"
+    }
+  ],
+  "build_passed": true,
+  "hardware_tested": false,
+  "note": "Module software candidate only; not flashed, modules/TF regression untested"
+}
