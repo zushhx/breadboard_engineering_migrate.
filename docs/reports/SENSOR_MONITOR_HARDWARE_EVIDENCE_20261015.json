@@ -1,0 +1,61 @@
+{
+  "date": "2026-10-15",
+  "result": {
+    "source_commit": "7994b9d57854a2a0b702a8eed083c478b5d75590",
+    "operation_commit": "2e77d560cb74fd89561f0b96233822a71c7ab5be",
+    "candidate_sha256": "db7815d6545ab795d5a6e1b75d5e4a66f3109cd2e1ebf95073ea87bb7b0a2601",
+    "passed": false,
+    "cold_starts_completed": 0,
+    "snapshot_sha256": "ceaa40d70e37c62884638f86a6682e5744bbb9ccd1f30ce885f60eac5584e464",
+    "error": "RuntimeError('Module initialization/readback did not pass')",
+    "restored_previous_tf_candidate": true
+  },
+  "files": [
+    {
+      "path": "local-data/hardware/sensor-monitor/20261015_210220/controller_prefix_0x70000.bin",
+      "bytes": 458752,
+      "sha256": "ceaa40d70e37c62884638f86a6682e5744bbb9ccd1f30ce885f60eac5584e464"
+    },
+    {
+      "path": "local-data/hardware/sensor-monitor/20261015_210220/hardware.log",
+      "bytes": 29341,
+      "sha256": "2a74102b60506ee82b4350d4db1f615a6b29d73e8e4a7f5cfb5ec55469393d7d"
+    },
+    {
+      "path": "local-data/hardware/sensor-monitor/20261015_210220/restore_app_range.bin",
+      "bytes": 393216,
+      "sha256": "98d8a94c78800efc2b1c56f5934a3f80b8b9469c46aec82b2c018d519fed06ef"
+    },
+    {
+      "path": "local-data/hardware/sensor-monitor/20261015_210220/result.json",
+      "bytes": 486,
+      "sha256": "4372f9409fe82a731e63288eef14014a468e16f4c382c72a28562d3d05f4e9a9"
+    }
+  ],
+  "observations": {
+    "iis_who_values": [
+      "00",
+      "00"
+    ],
+    "ina_identity_lines": [
+      "[modules] INA identity address=44 transport=1 maker=5449 die=2260 valid=1",
+      "[modules] INA identity address=44 transport=1 maker=5449 die=2260 valid=1"
+    ],
+    "reference_pc_match_count": 8,
+    "module_configuration_write_lines": 0,
+    "write_test_commands": 0,
+    "cold_starts_tested": 0
+  },
+  "ci": {
+    "operation_commit": "2e77d560cb74fd89561f0b96233822a71c7ab5be",
+    "run_id": 38738944266,
+    "conclusion": "success"
+  },
+  "limits": [
+    "INA identity only; current accuracy/calibration not tested",
+    "IIS3DWB identity failed, physical/software cause unresolved",
+    "60-second hold, TF new write, MCU integration reset and cold starts not executed",
+    "Raw snapshot includes private NVS; local only",
+    "Recovery verified original TF banner, capacity, directory and reference hash; not full flash readback"
+  ]
+}
