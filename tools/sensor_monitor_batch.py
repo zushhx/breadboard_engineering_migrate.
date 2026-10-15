@@ -13,8 +13,8 @@ from project_check import ROOT, BUNDLE, sha
 import tf_write_batch as tf
 
 MANIFEST = ROOT / 'docs/reports/SENSOR_MONITOR_BUILD_20261015.json'
-CANDIDATE_SHA = '7aba58e53173011d88a42d7ce11e409134c49c235fa8ffa7adb0535a7bdddcb5'
-SOURCE_COMMIT = '0965b47fb6de8d95240c7c702bbe1af68a345f7e'
+CANDIDATE_SHA = 'db7815d6545ab795d5a6e1b75d5e4a66f3109cd2e1ebf95073ea87bb7b0a2601'
+SOURCE_COMMIT = '7994b9d57854a2a0b702a8eed083c478b5d75590'
 SCOPE = {'sensor_branch_only': True, 'tf_direct_3v3': True, 'hold_seconds': 60,
          'new_files': 1, 'mcu_reset': True, 'cold_starts': 2,
          'restore_on_failure': True, 'card_data_disposable': True}
