@@ -46,2666 +46,3115 @@
     "面包板样机_到货验收核对表.xlsx": "docs/hardware/procurement/面包板样机_到货验收核对表.xlsx",
     "面包板验证版_原理与接线参考页.html": "docs/history/legacy-b-route/面包板验证版_原理与接线参考页.html",
     "面包板验证版_器件清单与接线表.xlsx": "docs/history/legacy-b-route/面包板验证版_器件清单与接线表.xlsx",
-    "面包板验证版_接线表.csv": "docs/history/legacy-b-route/面包板验证版_接线表.csv"
+    "面包板验证版_接线表.csv": "docs/history/legacy-b-route/面包板验证版_接线表.csv",
+    "面包板样机_固件/README.md": "docs/history/firmware-README.before-engineering.md"
   },
   "files": [
     {
       "before": "AGENTS.md",
       "after": "AGENTS.md",
       "bytes": 843,
-      "sha256": "c1d521f8155c0d618c5cd49aec57cf6cb30d895d78ec7cd7346ca77d63196e98"
+      "sha256": "c1d521f8155c0d618c5cd49aec57cf6cb30d895d78ec7cd7346ca77d63196e98",
+      "tracked_after_migration": true
     },
     {
       "before": "TF卡接线复测_2026-10-15_1518.md",
       "after": "docs/reports/TF卡接线复测_2026-10-15_1518.md",
       "bytes": 1710,
-      "sha256": "b1a167b86362022ac380859bdfdc38ef6876c15d9948d9b7f5c82edb63784eba"
+      "sha256": "b1a167b86362022ac380859bdfdc38ef6876c15d9948d9b7f5c82edb63784eba",
+      "tracked_after_migration": true
     },
     {
       "before": "TF卡软件复核_2026-10-15.md",
       "after": "docs/reports/TF卡软件复核_2026-10-15.md",
       "bytes": 5653,
-      "sha256": "f36943015a8a682e85c39416d6d18c62d06f5e701a9693602aea5bb4cad6a6ff"
+      "sha256": "f36943015a8a682e85c39416d6d18c62d06f5e701a9693602aea5bb4cad6a6ff",
+      "tracked_after_migration": true
     },
     {
       "before": "TF卡软件实测_2026-10-15.md",
       "after": "docs/reports/TF卡软件实测_2026-10-15.md",
       "bytes": 14332,
-      "sha256": "b077852c3871de61d6cf3cbfe9949a2b86cc728bf0dd0ef1634901cd2ea8dce0"
+      "sha256": "b077852c3871de61d6cf3cbfe9949a2b86cc728bf0dd0ef1634901cd2ea8dce0",
+      "tracked_after_migration": true
     },
     {
       "before": "TF卡重新检查_2026-10-15.md",
       "after": "docs/reports/TF卡重新检查_2026-10-15.md",
       "bytes": 10761,
-      "sha256": "fba932e7a3361304d90139a6d052d307565026c9e433d626399e41c2cc846f72"
+      "sha256": "fba932e7a3361304d90139a6d052d307565026c9e433d626399e41c2cc846f72",
+      "tracked_after_migration": true
     },
     {
       "before": "TF卡验收_2026-09-27.md",
       "after": "docs/reports/TF卡验收_2026-09-27.md",
       "bytes": 9137,
-      "sha256": "6617085404b17b1cc58b8e00dc361a7cb4462b694144ee46c4070b1947fc45dd"
+      "sha256": "6617085404b17b1cc58b8e00dc361a7cb4462b694144ee46c4070b1947fc45dd",
+      "tracked_after_migration": true
     },
     {
       "before": "WSL安装记录_2026-10-12.md",
       "after": "docs/history/WSL安装记录_2026-10-12.md",
       "bytes": 4733,
-      "sha256": "a6ab17158f2d0c89d0fc53bf1fbb74681d317d2ef97a2d93d7788b21ef9e4af4"
+      "sha256": "a6ab17158f2d0c89d0fc53bf1fbb74681d317d2ef97a2d93d7788b21ef9e4af4",
+      "tracked_after_migration": true
     },
     {
       "before": "传感器复检汇总_2026-10-14.md",
       "after": "docs/reports/传感器复检汇总_2026-10-14.md",
       "bytes": 4836,
-      "sha256": "91dc776edf3857e6bbe1a96d09f62d24f815ce06a194bc89a79a6cc6041d3712"
+      "sha256": "91dc776edf3857e6bbe1a96d09f62d24f815ce06a194bc89a79a6cc6041d3712",
+      "tracked_after_migration": true
     },
     {
       "before": "供电地线固定与复检_2026-10-14.md",
       "after": "docs/reports/供电地线固定与复检_2026-10-14.md",
       "bytes": 10884,
-      "sha256": "55416aa4ff78eee99ce2e1c6ad2f5b0d0622b53349757ad90658de7f8d4b3fab"
+      "sha256": "55416aa4ff78eee99ce2e1c6ad2f5b0d0622b53349757ad90658de7f8d4b3fab",
+      "tracked_after_migration": true
     },
     {
       "before": "导师汇报PPT_生成提示词.md",
       "after": "docs/history/report-prompts/导师汇报PPT_生成提示词.md",
       "bytes": 20634,
-      "sha256": "9f5cc4ab1344bb009fb7ea16e6e432f5ae3f8f3f8e32eb16e7ae50e082560046"
+      "sha256": "9f5cc4ab1344bb009fb7ea16e6e432f5ae3f8f3f8e32eb16e7ae50e082560046",
+      "tracked_after_migration": true
     },
     {
       "before": "整机全部接线总表_2026-10-12.md",
       "after": "docs/hardware/wiring/整机全部接线总表_2026-10-12.md",
       "bytes": 4347,
-      "sha256": "ca00edc0608bbdf6cb310cf7279277f0de1cbf27bf0ce70fccb6fee80524713b"
+      "sha256": "ca00edc0608bbdf6cb310cf7279277f0de1cbf27bf0ce70fccb6fee80524713b",
+      "tracked_after_migration": true
     },
     {
       "before": "整机接线优化_2026-10-12.md",
       "after": "docs/hardware/wiring/整机接线优化_2026-10-12.md",
       "bytes": 10284,
-      "sha256": "31bf0c21d346a2a99ad1b5395533085e464d54f0c99f2e7d504759c06e74177b"
+      "sha256": "31bf0c21d346a2a99ad1b5395533085e464d54f0c99f2e7d504759c06e74177b",
+      "tracked_after_migration": true
     },
     {
       "before": "旋转件无线供电_论文对照与可行性分析.html",
       "after": "docs/reports/旋转件无线供电_论文对照与可行性分析.html",
       "bytes": 16438,
-      "sha256": "22257ce2d3a360f373fb31fc0ee8df22b31b65201df421eb7100f54832b3b5ee"
+      "sha256": "22257ce2d3a360f373fb31fc0ee8df22b31b65201df421eb7100f54832b3b5ee",
+      "tracked_after_migration": true
     },
     {
       "before": "装配验收记录_2026-10-12.md",
       "after": "docs/reports/装配验收记录_2026-10-12.md",
       "bytes": 24470,
-      "sha256": "90c70b5e7b7f27a16f20c56689df00f964a9abd41ddfadcc011fbb6892513d85"
+      "sha256": "90c70b5e7b7f27a16f20c56689df00f964a9abd41ddfadcc011fbb6892513d85",
+      "tracked_after_migration": true
     },
     {
       "before": "装配验收记录_2026-10-14.md",
       "after": "docs/reports/装配验收记录_2026-10-14.md",
       "bytes": 68135,
-      "sha256": "3239a690364e1997f02d78123a64cce0e19bce6eaec848379986f9e7645fe909"
+      "sha256": "3239a690364e1997f02d78123a64cce0e19bce6eaec848379986f9e7645fe909",
+      "tracked_after_migration": true
     },
     {
       "before": "面包板样机_C路线采购清单.xlsx",
       "after": "docs/hardware/procurement/面包板样机_C路线采购清单.xlsx",
       "bytes": 28731,
-      "sha256": "1635ebeca28c5d6b6f09f6b3ec6195778f99d9bd696bd6dd3e9d4176a0651b8a"
+      "sha256": "1635ebeca28c5d6b6f09f6b3ec6195778f99d9bd696bd6dd3e9d4176a0651b8a",
+      "tracked_after_migration": true
     },
     {
       "before": "面包板样机_v1-v2任务验收标准与限制条件.html",
       "after": "docs/history/previous-plans/面包板样机_v1-v2任务验收标准与限制条件.html",
       "bytes": 24714,
-      "sha256": "13ab486261bf7c2b047a6c373db451b349743e9cadfa925c875b2f00c05360d4"
+      "sha256": "13ab486261bf7c2b047a6c373db451b349743e9cadfa925c875b2f00c05360d4",
+      "tracked_after_migration": true
     },
     {
       "before": "面包板样机_其他平台采购链接.xlsx",
       "after": "docs/hardware/procurement/面包板样机_其他平台采购链接.xlsx",
       "bytes": 8098,
-      "sha256": "8b4214a8bf8e294f771f7e1e39d39ea6b01b77bc432e119d68680701899a3422"
+      "sha256": "8b4214a8bf8e294f771f7e1e39d39ea6b01b77bc432e119d68680701899a3422",
+      "tracked_after_migration": true
     },
     {
       "before": "面包板样机_到货验收与施工准备包.html",
       "after": "docs/history/previous-plans/面包板样机_到货验收与施工准备包.html",
       "bytes": 51248,
-      "sha256": "497eaabd8d03f9df85cb64e459f17a37eaca1b9eade43e4f4ffccd185b1814d5"
+      "sha256": "497eaabd8d03f9df85cb64e459f17a37eaca1b9eade43e4f4ffccd185b1814d5",
+      "tracked_after_migration": true
     },
     {
       "before": "面包板样机_到货验收核对表.xlsx",
       "after": "docs/hardware/procurement/面包板样机_到货验收核对表.xlsx",
       "bytes": 18910,
-      "sha256": "0aacfd8a66a5a1677485043f6f2d39555a91f089793102c1bdfe19838966bd5e"
+      "sha256": "0aacfd8a66a5a1677485043f6f2d39555a91f089793102c1bdfe19838966bd5e",
+      "tracked_after_migration": true
     },
     {
       "before": "面包板样机_需求拆解与实施规划.html",
       "after": "docs/history/previous-plans/面包板样机_需求拆解与实施规划.html",
       "bytes": 52925,
-      "sha256": "9926a41d9af6b6f79e2de7d5472283c2dea791d60ba63240ca4254014f56ec74"
+      "sha256": "9926a41d9af6b6f79e2de7d5472283c2dea791d60ba63240ca4254014f56ec74",
+      "tracked_after_migration": true
     },
     {
       "before": "面包板验证版_原理与接线参考页.html",
       "after": "docs/history/legacy-b-route/面包板验证版_原理与接线参考页.html",
       "bytes": 36498,
-      "sha256": "f3acc43019c5b996c9b31b09fd438e5cdf946371c9a8b1dce7c50d33c57b844c"
+      "sha256": "f3acc43019c5b996c9b31b09fd438e5cdf946371c9a8b1dce7c50d33c57b844c",
+      "tracked_after_migration": true
     },
     {
       "before": "面包板验证版_器件清单与接线表.xlsx",
       "after": "docs/history/legacy-b-route/面包板验证版_器件清单与接线表.xlsx",
       "bytes": 22885,
-      "sha256": "eb2a2510e9dc7aeccc00374eaf494a0a6573d5aa0e5858fd54f539069bdd83a3"
+      "sha256": "eb2a2510e9dc7aeccc00374eaf494a0a6573d5aa0e5858fd54f539069bdd83a3",
+      "tracked_after_migration": true
     },
     {
       "before": "面包板验证版_接线表.csv",
       "after": "docs/history/legacy-b-route/面包板验证版_接线表.csv",
       "bytes": 5393,
-      "sha256": "1cbf0d6bf926b6a518cc9d4f2f5a2fd88e30f97158510289ef546baa61d9f203"
+      "sha256": "1cbf0d6bf926b6a518cc9d4f2f5a2fd88e30f97158510289ef546baa61d9f203",
+      "tracked_after_migration": true
     },
     {
       "before": ".audit/SwReadOnlyProbe.cs",
       "after": "local-data/work/audit/SwReadOnlyProbe.cs",
       "bytes": 7104,
-      "sha256": "bcbe3ac807e870c3ff674d95ae54bcf3a1ff740bd31cdc6966976b2a82e7b1c7"
+      "sha256": "bcbe3ac807e870c3ff674d95ae54bcf3a1ff740bd31cdc6966976b2a82e7b1c7",
+      "tracked_after_migration": false
     },
     {
       "before": ".audit/SwReadOnlyProbe.exe",
       "after": "local-data/work/audit/SwReadOnlyProbe.exe",
       "bytes": 9216,
-      "sha256": "5098247bf9909c6610934224fda53f6b64e13da8bc456f2b582f9cacd52e7aaa"
+      "sha256": "5098247bf9909c6610934224fda53f6b64e13da8bc456f2b582f9cacd52e7aaa",
+      "tracked_after_migration": false
     },
     {
       "before": ".audit/SwReadOnlyProbe.exe.config",
       "after": "local-data/work/audit/SwReadOnlyProbe.exe.config",
       "bytes": 605,
-      "sha256": "f54ff3e86ac0ae79862274846ef274fad4d3e3241da1f0c74bf4ba2551ec4f28"
+      "sha256": "f54ff3e86ac0ae79862274846ef274fad4d3e3241da1f0c74bf4ba2551ec4f28",
+      "tracked_after_migration": false
     },
     {
       "before": ".audit/audit_workbooks.mjs",
       "after": "local-data/work/audit/audit_workbooks.mjs",
       "bytes": 2628,
-      "sha256": "70ba8ea931510a074ccde7df7cfd5ed91d591df31d8a4144e41ed6f9f3675247"
+      "sha256": "70ba8ea931510a074ccde7df7cfd5ed91d591df31d8a4144e41ed6f9f3675247",
+      "tracked_after_migration": false
     },
     {
       "before": ".audit/pdf_rotor/page-2.png",
       "after": "local-data/work/audit/pdf_rotor/page-2.png",
       "bytes": 518635,
-      "sha256": "f10c7ccd68c1b1cab5218c8ae23b0f1bf03371428cc394bc95c3d2acd8a5b5cc"
+      "sha256": "f10c7ccd68c1b1cab5218c8ae23b0f1bf03371428cc394bc95c3d2acd8a5b5cc",
+      "tracked_after_migration": false
     },
     {
       "before": ".audit/pdf_rotor/page-3.png",
       "after": "local-data/work/audit/pdf_rotor/page-3.png",
       "bytes": 387071,
-      "sha256": "4543530dd7482384bf49caf76f24b5c62543d61c0bd6a2aaf0dcbec6135a5c95"
+      "sha256": "4543530dd7482384bf49caf76f24b5c62543d61c0bd6a2aaf0dcbec6135a5c95",
+      "tracked_after_migration": false
     },
     {
       "before": ".audit/pdf_rotor/page-4.png",
       "after": "local-data/work/audit/pdf_rotor/page-4.png",
       "bytes": 403672,
-      "sha256": "40fdb616eca55e67cf0d46647081c3a542436bcd3d2113e91cf52c912d66aab0"
+      "sha256": "40fdb616eca55e67cf0d46647081c3a542436bcd3d2113e91cf52c912d66aab0",
+      "tracked_after_migration": false
     },
     {
       "before": ".audit/pdf_rotor/page-5.png",
       "after": "local-data/work/audit/pdf_rotor/page-5.png",
       "bytes": 250552,
-      "sha256": "77e9e972797dc032b25b1ba803b9e14ebd0039df0eea5b05a95229b8d0579cfd"
+      "sha256": "77e9e972797dc032b25b1ba803b9e14ebd0039df0eea5b05a95229b8d0579cfd",
+      "tracked_after_migration": false
     },
     {
       "before": ".audit/pdf_rotor/page-6.png",
       "after": "local-data/work/audit/pdf_rotor/page-6.png",
       "bytes": 371316,
-      "sha256": "c3b76163755604b5eb9d38a4024a525ce271cb4e83eefdcda5999e8f2fcb7f95"
+      "sha256": "c3b76163755604b5eb9d38a4024a525ce271cb4e83eefdcda5999e8f2fcb7f95",
+      "tracked_after_migration": false
     },
     {
       "before": ".audit/pdf_rotor/page-7.png",
       "after": "local-data/work/audit/pdf_rotor/page-7.png",
       "bytes": 409110,
-      "sha256": "c9519f2aafe0046804dca3efd0321c358edcfa062c76656320ff10669a095e8e"
+      "sha256": "c9519f2aafe0046804dca3efd0321c358edcfa062c76656320ff10669a095e8e",
+      "tracked_after_migration": false
     },
     {
       "before": ".audit/workbooks/面包板样机_C路线采购清单.report.json",
       "after": "local-data/work/audit/workbooks/面包板样机_C路线采购清单.report.json",
       "bytes": 31078,
-      "sha256": "7272bbb6160a2d30e4f37dde77f8b182dcd439c0c2e58bd0f433316173f3ecd2"
+      "sha256": "7272bbb6160a2d30e4f37dde77f8b182dcd439c0c2e58bd0f433316173f3ecd2",
+      "tracked_after_migration": false
     },
     {
       "before": ".audit/workbooks/面包板样机_C路线采购清单__分阶段到位计划.json",
       "after": "local-data/work/audit/workbooks/面包板样机_C路线采购清单__分阶段到位计划.json",
       "bytes": 4290,
-      "sha256": "598bdb687d9f146a21d47d826905e3a8de2ddee81819407bf3b2636bbea00a56"
+      "sha256": "598bdb687d9f146a21d47d826905e3a8de2ddee81819407bf3b2636bbea00a56",
+      "tracked_after_migration": false
     },
     {
       "before": ".audit/workbooks/面包板样机_C路线采购清单__分阶段到位计划.png",
       "after": "local-data/work/audit/workbooks/面包板样机_C路线采购清单__分阶段到位计划.png",
       "bytes": 143186,
-      "sha256": "fa8ef9bbee15dd3546e873ffad9b4deaadb2da6f7b79708e8d04b76bd64143cf"
+      "sha256": "fa8ef9bbee15dd3546e873ffad9b4deaadb2da6f7b79708e8d04b76bd64143cf",
+      "tracked_after_migration": false
     },
     {
       "before": ".audit/workbooks/面包板样机_C路线采购清单__参数核验清单.json",
       "after": "local-data/work/audit/workbooks/面包板样机_C路线采购清单__参数核验清单.json",
       "bytes": 5696,
-      "sha256": "93aa79651b73b03e0579e2661280e95f85ebddbfdbfed7ca2ed88e96251f5926"
+      "sha256": "93aa79651b73b03e0579e2661280e95f85ebddbfdbfed7ca2ed88e96251f5926",
+      "tracked_after_migration": false
     },
     {
       "before": ".audit/workbooks/面包板样机_C路线采购清单__参数核验清单.png",
       "after": "local-data/work/audit/workbooks/面包板样机_C路线采购清单__参数核验清单.png",
       "bytes": 192538,
-      "sha256": "479c14878b429a48f18c05e3105965908bb32876ff215953cf3d55073d61113f"
+      "sha256": "479c14878b429a48f18c05e3105965908bb32876ff215953cf3d55073d61113f",
+      "tracked_after_migration": false
     },
     {
       "before": ".audit/workbooks/面包板样机_C路线采购清单__数据来源与说明.json",
       "after": "local-data/work/audit/workbooks/面包板样机_C路线采购清单__数据来源与说明.json",
       "bytes": 7999,
-      "sha256": "a2aab53a346c76cca0b8e17706905490b7120576eb1b370074614782699f7f08"
+      "sha256": "a2aab53a346c76cca0b8e17706905490b7120576eb1b370074614782699f7f08",
+      "tracked_after_migration": false
     },
     {
       "before": ".audit/workbooks/面包板样机_C路线采购清单__数据来源与说明.png",
       "after": "local-data/work/audit/workbooks/面包板样机_C路线采购清单__数据来源与说明.png",
       "bytes": 323210,
-      "sha256": "b9e6da266fafa6ed8b04cc4898a1a022e4f04fd13e41d2c1b2fa41b39e667fe7"
+      "sha256": "b9e6da266fafa6ed8b04cc4898a1a022e4f04fd13e41d2c1b2fa41b39e667fe7",
+      "tracked_after_migration": false
     },
     {
       "before": ".audit/workbooks/面包板样机_C路线采购清单__无线充接线要点.json",
       "after": "local-data/work/audit/workbooks/面包板样机_C路线采购清单__无线充接线要点.json",
       "bytes": 2663,
-      "sha256": "8137aa067641d7def700c25349f2b7d01a5d4174d026827676c7e1bce82e62d0"
+      "sha256": "8137aa067641d7def700c25349f2b7d01a5d4174d026827676c7e1bce82e62d0",
+      "tracked_after_migration": false
     },
     {
       "before": ".audit/workbooks/面包板样机_C路线采购清单__无线充接线要点.png",
       "after": "local-data/work/audit/workbooks/面包板样机_C路线采购清单__无线充接线要点.png",
       "bytes": 115777,
-      "sha256": "914a97a46a45e1be03e42432d49ff87fd1a91d463fd96c83d0d2e0650df4ef2a"
+      "sha256": "914a97a46a45e1be03e42432d49ff87fd1a91d463fd96c83d0d2e0650df4ef2a",
+      "tracked_after_migration": false
     },
     {
       "before": ".audit/workbooks/面包板样机_C路线采购清单__渠道与选型说明.json",
       "after": "local-data/work/audit/workbooks/面包板样机_C路线采购清单__渠道与选型说明.json",
       "bytes": 5389,
-      "sha256": "1b53163f2fa1c6f05d36a3976a93a4a900a0ad2d416fd1e6162f2f9202dceff0"
+      "sha256": "1b53163f2fa1c6f05d36a3976a93a4a900a0ad2d416fd1e6162f2f9202dceff0",
+      "tracked_after_migration": false
     },
     {
       "before": ".audit/workbooks/面包板样机_C路线采购清单__渠道与选型说明.png",
       "after": "local-data/work/audit/workbooks/面包板样机_C路线采购清单__渠道与选型说明.png",
       "bytes": 266135,
-      "sha256": "3987a5d751afdbf5c1487853a88c723d439f86e83134a3561675d89e5bf5d3ac"
+      "sha256": "3987a5d751afdbf5c1487853a88c723d439f86e83134a3561675d89e5bf5d3ac",
+      "tracked_after_migration": false
     },
     {
       "before": ".audit/workbooks/面包板样机_C路线采购清单__采购总览.json",
       "after": "local-data/work/audit/workbooks/面包板样机_C路线采购清单__采购总览.json",
       "bytes": 2943,
-      "sha256": "a7ebf8808317911f4f30246700a722b617d851b94e0f3bda80af3c11e403eb57"
+      "sha256": "a7ebf8808317911f4f30246700a722b617d851b94e0f3bda80af3c11e403eb57",
+      "tracked_after_migration": false
     },
     {
       "before": ".audit/workbooks/面包板样机_C路线采购清单__采购总览.png",
       "after": "local-data/work/audit/workbooks/面包板样机_C路线采购清单__采购总览.png",
       "bytes": 66557,
-      "sha256": "585cffeb9997c000a888bb62c3cf14837b6fef8ec261e6ac371332600eb88d09"
+      "sha256": "585cffeb9997c000a888bb62c3cf14837b6fef8ec261e6ac371332600eb88d09",
+      "tracked_after_migration": false
     },
     {
       "before": ".audit/workbooks/面包板样机_C路线采购清单__采购清单.json",
       "after": "local-data/work/audit/workbooks/面包板样机_C路线采购清单__采购清单.json",
       "bytes": 14317,
-      "sha256": "05bd814ed8f524c14112fc798a7dc35716bdfe82229555ba858bc31b4dd21651"
+      "sha256": "05bd814ed8f524c14112fc798a7dc35716bdfe82229555ba858bc31b4dd21651",
+      "tracked_after_migration": false
     },
     {
       "before": ".audit/workbooks/面包板样机_C路线采购清单__采购清单.png",
       "after": "local-data/work/audit/workbooks/面包板样机_C路线采购清单__采购清单.png",
       "bytes": 550328,
-      "sha256": "71c6f1d39b726d4210a941b5257e748ca626481425205c8be24e5274e8f50040"
+      "sha256": "71c6f1d39b726d4210a941b5257e748ca626481425205c8be24e5274e8f50040",
+      "tracked_after_migration": false
     },
     {
       "before": ".audit/workbooks/面包板样机_其他平台采购链接.report.json",
       "after": "local-data/work/audit/workbooks/面包板样机_其他平台采购链接.report.json",
       "bytes": 3856,
-      "sha256": "bd4c77133b2227a1dfc7f9ae74742e707e6b831142fc944fdfbd990504a7fd5c"
+      "sha256": "bd4c77133b2227a1dfc7f9ae74742e707e6b831142fc944fdfbd990504a7fd5c",
+      "tracked_after_migration": false
     },
     {
       "before": ".audit/workbooks/面包板样机_其他平台采购链接__其他平台采购链接.json",
       "after": "local-data/work/audit/workbooks/面包板样机_其他平台采购链接__其他平台采购链接.json",
       "bytes": 4495,
-      "sha256": "08c3ab1a8e53c260b3000084b8c3e9ec9d45be91e9573e10a401a18421ad2fd2"
+      "sha256": "08c3ab1a8e53c260b3000084b8c3e9ec9d45be91e9573e10a401a18421ad2fd2",
+      "tracked_after_migration": false
     },
     {
       "before": ".audit/workbooks/面包板样机_其他平台采购链接__其他平台采购链接.png",
       "after": "local-data/work/audit/workbooks/面包板样机_其他平台采购链接__其他平台采购链接.png",
       "bytes": 217883,
-      "sha256": "29d8fbd725b9b4ad747af6542bad8dd736e67e30702f8b49865ba019dd830690"
+      "sha256": "29d8fbd725b9b4ad747af6542bad8dd736e67e30702f8b49865ba019dd830690",
+      "tracked_after_migration": false
     },
     {
       "before": ".audit/workbooks/面包板样机_到货验收核对表.report.json",
       "after": "local-data/work/audit/workbooks/面包板样机_到货验收核对表.report.json",
       "bytes": 19241,
-      "sha256": "8be11cde1ee45e70b3afc4efe6a345942af9c99cc82b7577302c3c61dfa5a83a"
+      "sha256": "8be11cde1ee45e70b3afc4efe6a345942af9c99cc82b7577302c3c61dfa5a83a",
+      "tracked_after_migration": false
     },
     {
       "before": ".audit/workbooks/面包板样机_到货验收核对表__① 开箱逐项核对.json",
       "after": "local-data/work/audit/workbooks/面包板样机_到货验收核对表__① 开箱逐项核对.json",
       "bytes": 9059,
-      "sha256": "ab59c09282a416d8f14b3cf1be7b589f70b5a4bcd701fb3309b7e4bf9ac54013"
+      "sha256": "ab59c09282a416d8f14b3cf1be7b589f70b5a4bcd701fb3309b7e4bf9ac54013",
+      "tracked_after_migration": false
     },
     {
       "before": ".audit/workbooks/面包板样机_到货验收核对表__① 开箱逐项核对.png",
       "after": "local-data/work/audit/workbooks/面包板样机_到货验收核对表__① 开箱逐项核对.png",
       "bytes": 322755,
-      "sha256": "59c469b89f0c653fa81edea108942e0527f37e38dd10e4ae88299665bb33de61"
+      "sha256": "59c469b89f0c653fa81edea108942e0527f37e38dd10e4ae88299665bb33de61",
+      "tracked_after_migration": false
     },
     {
       "before": ".audit/workbooks/面包板样机_到货验收核对表__② 关键参数实测.json",
       "after": "local-data/work/audit/workbooks/面包板样机_到货验收核对表__② 关键参数实测.json",
       "bytes": 9314,
-      "sha256": "26a15fd390501fcbafb0f296a896e76bcc7002026b0c1e113309826aca0522c9"
+      "sha256": "26a15fd390501fcbafb0f296a896e76bcc7002026b0c1e113309826aca0522c9",
+      "tracked_after_migration": false
     },
     {
       "before": ".audit/workbooks/面包板样机_到货验收核对表__② 关键参数实测.png",
       "after": "local-data/work/audit/workbooks/面包板样机_到货验收核对表__② 关键参数实测.png",
       "bytes": 254554,
-      "sha256": "226c8e8571e548f5ab71e0f0ba96477455d03d4587bf6dcef3e554b36e59b8fe"
+      "sha256": "226c8e8571e548f5ab71e0f0ba96477455d03d4587bf6dcef3e554b36e59b8fe",
+      "tracked_after_migration": false
     },
     {
       "before": ".audit/workbooks/面包板样机_到货验收核对表__③ P0-P9 门禁记录.json",
       "after": "local-data/work/audit/workbooks/面包板样机_到货验收核对表__③ P0-P9 门禁记录.json",
       "bytes": 4511,
-      "sha256": "28ca988ccd6ee1629ba36dc3698b7ce1872eee4f367701d4905b72714cf161e2"
+      "sha256": "28ca988ccd6ee1629ba36dc3698b7ce1872eee4f367701d4905b72714cf161e2",
+      "tracked_after_migration": false
     },
     {
       "before": ".audit/workbooks/面包板样机_到货验收核对表__③ P0-P9 门禁记录.png",
       "after": "local-data/work/audit/workbooks/面包板样机_到货验收核对表__③ P0-P9 门禁记录.png",
       "bytes": 152303,
-      "sha256": "dbd2a20234ae204ff2224aec529b7960916f81137c737143202581c00a6bd1b5"
+      "sha256": "dbd2a20234ae204ff2224aec529b7960916f81137c737143202581c00a6bd1b5",
+      "tracked_after_migration": false
     },
     {
       "before": ".audit/workbooks/面包板样机_到货验收核对表__④ IO分配与接线.json",
       "after": "local-data/work/audit/workbooks/面包板样机_到货验收核对表__④ IO分配与接线.json",
       "bytes": 7810,
-      "sha256": "19a098cb9f50c51761e3b6b8b04f58f0861173cee12bcf0a8065858ef19f4803"
+      "sha256": "19a098cb9f50c51761e3b6b8b04f58f0861173cee12bcf0a8065858ef19f4803",
+      "tracked_after_migration": false
     },
     {
       "before": ".audit/workbooks/面包板样机_到货验收核对表__④ IO分配与接线.png",
       "after": "local-data/work/audit/workbooks/面包板样机_到货验收核对表__④ IO分配与接线.png",
       "bytes": 228743,
-      "sha256": "868d30cba54afe549a934515037525e4b795c9a5fe6e5206032446f3558094d0"
+      "sha256": "868d30cba54afe549a934515037525e4b795c9a5fe6e5206032446f3558094d0",
+      "tracked_after_migration": false
     },
     {
       "before": ".audit/workbooks/面包板验证版_器件清单与接线表.report.json",
       "after": "local-data/work/audit/workbooks/面包板验证版_器件清单与接线表.report.json",
       "bytes": 26469,
-      "sha256": "31ba74983d3002664dba8e4a87e98fa3ee6a5d60c74a455a880ad21d1788ded4"
+      "sha256": "31ba74983d3002664dba8e4a87e98fa3ee6a5d60c74a455a880ad21d1788ded4",
+      "tracked_after_migration": false
     },
     {
       "before": ".audit/workbooks/面包板验证版_器件清单与接线表__00 口径变更(2026-09-21).json",
       "after": "local-data/work/audit/workbooks/面包板验证版_器件清单与接线表__00 口径变更(2026-09-21).json",
       "bytes": 1319,
-      "sha256": "33e45e00fcc72fe6073956578cb0931388dae30e11adb5bc7f2c1b6908ed9ca3"
+      "sha256": "33e45e00fcc72fe6073956578cb0931388dae30e11adb5bc7f2c1b6908ed9ca3",
+      "tracked_after_migration": false
     },
     {
       "before": ".audit/workbooks/面包板验证版_器件清单与接线表__00 口径变更(2026-09-21).png",
       "after": "local-data/work/audit/workbooks/面包板验证版_器件清单与接线表__00 口径变更(2026-09-21).png",
       "bytes": 64089,
-      "sha256": "fca4bb5b31a512bcb1b63e58f3fa25aefc2d65d67fd3a70e039f18687d059eea"
+      "sha256": "fca4bb5b31a512bcb1b63e58f3fa25aefc2d65d67fd3a70e039f18687d059eea",
+      "tracked_after_migration": false
     },
     {
       "before": ".audit/workbooks/面包板验证版_器件清单与接线表__上电测试步骤.json",
       "after": "local-data/work/audit/workbooks/面包板验证版_器件清单与接线表__上电测试步骤.json",
       "bytes": 3316,
-      "sha256": "19c770103a09117245b4696a3d32e794e7165268abd8e80156867535b9480df5"
+      "sha256": "19c770103a09117245b4696a3d32e794e7165268abd8e80156867535b9480df5",
+      "tracked_after_migration": false
     },
     {
       "before": ".audit/workbooks/面包板验证版_器件清单与接线表__上电测试步骤.png",
       "after": "local-data/work/audit/workbooks/面包板验证版_器件清单与接线表__上电测试步骤.png",
       "bytes": 124833,
-      "sha256": "8c4e5bb2a6648f7ee30323f7ca1363a9dd3abcac26389d816d5921293ff3d723"
+      "sha256": "8c4e5bb2a6648f7ee30323f7ca1363a9dd3abcac26389d816d5921293ff3d723",
+      "tracked_after_migration": false
     },
     {
       "before": ".audit/workbooks/面包板验证版_器件清单与接线表__器件形态对照（型号一律不换）.json",
       "after": "local-data/work/audit/workbooks/面包板验证版_器件清单与接线表__器件形态对照（型号一律不换）.json",
       "bytes": 15298,
-      "sha256": "d29bbf267565971b75067311ca681aac787ecde199a6309db1443ea2efd3a562"
+      "sha256": "d29bbf267565971b75067311ca681aac787ecde199a6309db1443ea2efd3a562",
+      "tracked_after_migration": false
     },
     {
       "before": ".audit/workbooks/面包板验证版_器件清单与接线表__器件形态对照（型号一律不换）.png",
       "after": "local-data/work/audit/workbooks/面包板验证版_器件清单与接线表__器件形态对照（型号一律不换）.png",
       "bytes": 474136,
-      "sha256": "d3794b6b1a74e06b27b8aba145e68fc9fa7221adfead94eb36b54f707a580299"
+      "sha256": "d3794b6b1a74e06b27b8aba145e68fc9fa7221adfead94eb36b54f707a580299",
+      "tracked_after_migration": false
     },
     {
       "before": ".audit/workbooks/面包板验证版_器件清单与接线表__接线表（网络级）.json",
       "after": "local-data/work/audit/workbooks/面包板验证版_器件清单与接线表__接线表（网络级）.json",
       "bytes": 15440,
-      "sha256": "4f6f96fd0b8a0ce71cf0d7adf58d89c76eec71ca53ba24de7cfd5f144803d652"
+      "sha256": "4f6f96fd0b8a0ce71cf0d7adf58d89c76eec71ca53ba24de7cfd5f144803d652",
+      "tracked_after_migration": false
     },
     {
       "before": ".audit/workbooks/面包板验证版_器件清单与接线表__接线表（网络级）.png",
       "after": "local-data/work/audit/workbooks/面包板验证版_器件清单与接线表__接线表（网络级）.png",
       "bytes": 437949,
-      "sha256": "1465aa449a98d09e65e3c2201a3d49aeea84679e5905bd10d398a52b1df3f86f"
+      "sha256": "1465aa449a98d09e65e3c2201a3d49aeea84679e5905bd10d398a52b1df3f86f",
+      "tracked_after_migration": false
     },
     {
       "before": ".audit/workbooks/面包板验证版_器件清单与接线表__采购与打样.json",
       "after": "local-data/work/audit/workbooks/面包板验证版_器件清单与接线表__采购与打样.json",
       "bytes": 10179,
-      "sha256": "d41fd1537e530ff2636ddcf9002ff5f750b16027273441edb6ec349b39700edc"
+      "sha256": "d41fd1537e530ff2636ddcf9002ff5f750b16027273441edb6ec349b39700edc",
+      "tracked_after_migration": false
     },
     {
       "before": ".audit/workbooks/面包板验证版_器件清单与接线表__采购与打样.png",
       "after": "local-data/work/audit/workbooks/面包板验证版_器件清单与接线表__采购与打样.png",
       "bytes": 388039,
-      "sha256": "010d04437fa1e6b900ea7ac9f21b7a5db0c1ebeff51cec150cfd87d0ddf77a9e"
+      "sha256": "010d04437fa1e6b900ea7ac9f21b7a5db0c1ebeff51cec150cfd87d0ddf77a9e",
+      "tracked_after_migration": false
     },
     {
       "before": ".codex-finalizer/candidate.pptx",
       "after": "local-data/work/codex-finalizer/candidate.pptx",
       "bytes": 2583857,
-      "sha256": "56dde80fe51e4ef01829ca50d449751bd4f0820375720fe9b3537c7f3a61d5ed"
+      "sha256": "56dde80fe51e4ef01829ca50d449751bd4f0820375720fe9b3537c7f3a61d5ed",
+      "tracked_after_migration": false
     },
     {
       "before": ".codex-finalizer/candidate.pptx.inspect.ndjson",
       "after": "local-data/work/codex-finalizer/candidate.pptx.inspect.ndjson",
       "bytes": 41821,
-      "sha256": "494a499df8dca9fd015d52b526fede22308754852137e8815b4730e2813dd616"
+      "sha256": "494a499df8dca9fd015d52b526fede22308754852137e8815b4730e2813dd616",
+      "tracked_after_migration": false
     },
     {
       "before": ".codex-finalizer/导师汇报PPT.validation.json",
       "after": "local-data/work/codex-finalizer/导师汇报PPT.validation.json",
       "bytes": 4313,
-      "sha256": "c918e81f77a163ac906fb83eadbc9b2fa2b69025274216e0e75aa40f4b1e9eb3"
+      "sha256": "c918e81f77a163ac906fb83eadbc9b2fa2b69025274216e0e75aa40f4b1e9eb3",
+      "tracked_after_migration": false
     },
     {
       "before": ".codex-finalizer/导师汇报PPT_13页修订版.validation.json",
       "after": "local-data/work/codex-finalizer/导师汇报PPT_13页修订版.validation.json",
       "bytes": 4313,
-      "sha256": "a81c22e008812782a637cd9c46a565552e236eb81933a6f2e82c1f3277fb2f67"
+      "sha256": "a81c22e008812782a637cd9c46a565552e236eb81933a6f2e82c1f3277fb2f67",
+      "tracked_after_migration": false
     },
     {
       "before": ".codex-finalizer/导师汇报PPT_14页含短板版.validation.json",
       "after": "local-data/work/codex-finalizer/导师汇报PPT_14页含短板版.validation.json",
       "bytes": 4456,
-      "sha256": "f70b8ed3c423aa5eebef58a7d134d8b2e2cbf92defdc83d8419c023ef1812a6c"
+      "sha256": "f70b8ed3c423aa5eebef58a7d134d8b2e2cbf92defdc83d8419c023ef1812a6c",
+      "tracked_after_migration": false
     },
     {
       "before": ".codex-finalizer/导师汇报PPT_定稿.validation.json",
       "after": "local-data/work/codex-finalizer/导师汇报PPT_定稿.validation.json",
       "bytes": 4313,
-      "sha256": "7862db5a650557fab56897d63866da07aa2523193d16bd19022b76af22942a1c"
+      "sha256": "7862db5a650557fab56897d63866da07aa2523193d16bd19022b76af22942a1c",
+      "tracked_after_migration": false
     },
     {
       "before": ".codex-finalizer/导师汇报PPT_数据计算版.validation.json",
       "after": "local-data/work/codex-finalizer/导师汇报PPT_数据计算版.validation.json",
       "bytes": 4313,
-      "sha256": "bbb821f2976c67f2992a175f197525d2b895f6a3d4f65e223ccdfdeb2357de3d"
+      "sha256": "bbb821f2976c67f2992a175f197525d2b895f6a3d4f65e223ccdfdeb2357de3d",
+      "tracked_after_migration": false
     },
     {
       "before": ".doc-build/create_calculations_docx.py",
       "after": "local-data/work/doc-build/create_calculations_docx.py",
       "bytes": 13667,
-      "sha256": "ecdc7c9f50e4eeaa9a39af57550c0f4d1470de96edac7f3ed075c5d5d8542741"
+      "sha256": "ecdc7c9f50e4eeaa9a39af57550c0f4d1470de96edac7f3ed075c5d5d8542741",
+      "tracked_after_migration": false
     },
     {
       "before": ".doc-build/rendered/page-1.png",
       "after": "local-data/work/doc-build/rendered/page-1.png",
       "bytes": 302483,
-      "sha256": "c8a9bf217d73f90946a09cc9e5c5c798d62639321a2cbe379b5eeb2723e399fc"
+      "sha256": "c8a9bf217d73f90946a09cc9e5c5c798d62639321a2cbe379b5eeb2723e399fc",
+      "tracked_after_migration": false
     },
     {
       "before": ".doc-build/rendered/page-2.png",
       "after": "local-data/work/doc-build/rendered/page-2.png",
       "bytes": 319455,
-      "sha256": "64c9693fce9492865cd4b6c0b8adea9bdb794eb074aef3d0cf9aa75de68f8caf"
+      "sha256": "64c9693fce9492865cd4b6c0b8adea9bdb794eb074aef3d0cf9aa75de68f8caf",
+      "tracked_after_migration": false
     },
     {
       "before": ".doc-build/rendered/page-3.png",
       "after": "local-data/work/doc-build/rendered/page-3.png",
       "bytes": 193573,
-      "sha256": "c456e6e1b371062731ae721c49ce4b968690826a4a3111461730c47cde626128"
+      "sha256": "c456e6e1b371062731ae721c49ce4b968690826a4a3111461730c47cde626128",
+      "tracked_after_migration": false
     },
     {
       "before": ".doc-build/rendered/数据与计算依据.pdf",
       "after": "local-data/work/doc-build/rendered/数据与计算依据.pdf",
       "bytes": 360989,
-      "sha256": "d0b678ff0dc1833f50279622e4b4554e65509944e2564ea6f8aeded3e4522354"
+      "sha256": "d0b678ff0dc1833f50279622e4b4554e65509944e2564ea6f8aeded3e4522354",
+      "tracked_after_migration": false
     },
     {
       "before": ".ppt-build/build.mjs",
       "after": "local-data/work/ppt-build/build.mjs",
       "bytes": 21439,
-      "sha256": "eee648f3e41d875445865c38dff8100fefdfcd6b1f5ed13fc519cc334891e63b"
+      "sha256": "eee648f3e41d875445865c38dff8100fefdfcd6b1f5ed13fc519cc334891e63b",
+      "tracked_after_migration": false
     },
     {
       "before": ".ppt-build/render.mjs",
       "after": "local-data/work/ppt-build/render.mjs",
       "bytes": 661,
-      "sha256": "175ebc4bc4630f946f36172319cc50ad8e02bb671fdbe49e1b72dc860f41548f"
+      "sha256": "175ebc4bc4630f946f36172319cc50ad8e02bb671fdbe49e1b72dc860f41548f",
+      "tracked_after_migration": false
     },
     {
       "before": ".ppt-build/slide-01.png",
       "after": "local-data/work/ppt-build/slide-01.png",
       "bytes": 34330,
-      "sha256": "15e73a7fde981b31dedffdae074c3a0707d8187ccf23188f6617b99f89823550"
+      "sha256": "15e73a7fde981b31dedffdae074c3a0707d8187ccf23188f6617b99f89823550",
+      "tracked_after_migration": false
     },
     {
       "before": ".ppt-build/slide-02.png",
       "after": "local-data/work/ppt-build/slide-02.png",
       "bytes": 65681,
-      "sha256": "d0a2537e430dc767933748acb756408353f5cb1a10ebaf011af156327fa7ef94"
+      "sha256": "d0a2537e430dc767933748acb756408353f5cb1a10ebaf011af156327fa7ef94",
+      "tracked_after_migration": false
     },
     {
       "before": ".ppt-build/slide-03.png",
       "after": "local-data/work/ppt-build/slide-03.png",
       "bytes": 75608,
-      "sha256": "11063bbce6fa53b94e8dbcc808fe0dfca825c770af5d0d6d282de6d7fd28b8de"
+      "sha256": "11063bbce6fa53b94e8dbcc808fe0dfca825c770af5d0d6d282de6d7fd28b8de",
+      "tracked_after_migration": false
     },
     {
       "before": ".ppt-build/slide-04.png",
       "after": "local-data/work/ppt-build/slide-04.png",
       "bytes": 102060,
-      "sha256": "180c7012e840a1b044b104740cba7ece8f7e7778cff0f00260fcc79fb467f666"
+      "sha256": "180c7012e840a1b044b104740cba7ece8f7e7778cff0f00260fcc79fb467f666",
+      "tracked_after_migration": false
     },
     {
       "before": ".ppt-build/slide-05.png",
       "after": "local-data/work/ppt-build/slide-05.png",
       "bytes": 100156,
-      "sha256": "2439f20f44800ff7b6c6b0e74cc6df2c3e278a4ff506bc7406e5265a25841315"
+      "sha256": "2439f20f44800ff7b6c6b0e74cc6df2c3e278a4ff506bc7406e5265a25841315",
+      "tracked_after_migration": false
     },
     {
       "before": ".ppt-build/slide-06.png",
       "after": "local-data/work/ppt-build/slide-06.png",
       "bytes": 133767,
-      "sha256": "6811ef42a3433dec45b8383eb07ad91c9786c3c85ee8b95e51d1d65884bd9aa5"
+      "sha256": "6811ef42a3433dec45b8383eb07ad91c9786c3c85ee8b95e51d1d65884bd9aa5",
+      "tracked_after_migration": false
     },
     {
       "before": ".ppt-build/slide-07.png",
       "after": "local-data/work/ppt-build/slide-07.png",
       "bytes": 187395,
-      "sha256": "cc46dcc98a6c0ed7ec8909e923343dd62a4765f7d514d65c2496c1a6236e2f93"
+      "sha256": "cc46dcc98a6c0ed7ec8909e923343dd62a4765f7d514d65c2496c1a6236e2f93",
+      "tracked_after_migration": false
     },
     {
       "before": ".ppt-build/slide-08.png",
       "after": "local-data/work/ppt-build/slide-08.png",
       "bytes": 83520,
-      "sha256": "6459d3da2e3f60b5a51020d7eed11df7e63e94edad4ca69d27f3148ceb347641"
+      "sha256": "6459d3da2e3f60b5a51020d7eed11df7e63e94edad4ca69d27f3148ceb347641",
+      "tracked_after_migration": false
     },
     {
       "before": ".ppt-build/slide-09.png",
       "after": "local-data/work/ppt-build/slide-09.png",
       "bytes": 71377,
-      "sha256": "6f7838c885e3fde16986eeed0aeaad5f40e62062db2f943e29d11206c06a42c1"
+      "sha256": "6f7838c885e3fde16986eeed0aeaad5f40e62062db2f943e29d11206c06a42c1",
+      "tracked_after_migration": false
     },
     {
       "before": ".ppt-build/slide-10.png",
       "after": "local-data/work/ppt-build/slide-10.png",
       "bytes": 78670,
-      "sha256": "49edc2c0b7e3dad76264035eec9ffc7aa874f8cc7eb3ddb7c61bf8bc4fa7d833"
+      "sha256": "49edc2c0b7e3dad76264035eec9ffc7aa874f8cc7eb3ddb7c61bf8bc4fa7d833",
+      "tracked_after_migration": false
     },
     {
       "before": ".ppt-build/slide-11.png",
       "after": "local-data/work/ppt-build/slide-11.png",
       "bytes": 95769,
-      "sha256": "013b3f892e45787abb06fc418b2bb99a5bb2cdeab562abb99b6d201f83c5656c"
+      "sha256": "013b3f892e45787abb06fc418b2bb99a5bb2cdeab562abb99b6d201f83c5656c",
+      "tracked_after_migration": false
     },
     {
       "before": ".ppt-build/slide-12.png",
       "after": "local-data/work/ppt-build/slide-12.png",
       "bytes": 99318,
-      "sha256": "4a125833787eb194c3dadde59fbf9c37530d507b4fa4d52625b5f911e4221b3c"
+      "sha256": "4a125833787eb194c3dadde59fbf9c37530d507b4fa4d52625b5f911e4221b3c",
+      "tracked_after_migration": false
     },
     {
       "before": ".ppt-build/slide-13.png",
       "after": "local-data/work/ppt-build/slide-13.png",
       "bytes": 75370,
-      "sha256": "5da3df3e5280572d98b9147a7bd57b19a13345035e7f4aafbdbbc259753d7926"
+      "sha256": "5da3df3e5280572d98b9147a7bd57b19a13345035e7f4aafbdbbc259753d7926",
+      "tracked_after_migration": false
     },
     {
       "before": ".ppt-build/slide-14.png",
       "after": "local-data/work/ppt-build/slide-14.png",
       "bytes": 62559,
-      "sha256": "6afc98e420ec1fd417141de3315b8c22c81d3fd267ffa61f890b28a63d5a0a64"
+      "sha256": "6afc98e420ec1fd417141de3315b8c22c81d3fd267ffa61f890b28a63d5a0a64",
+      "tracked_after_migration": false
     },
     {
       "before": ".ppt-build/slide-15.png",
       "after": "local-data/work/ppt-build/slide-15.png",
       "bytes": 75319,
-      "sha256": "f6686a7ffa9f39cfce639022f09fc71be5da057bdc7d0a1a20ede2e98997d97e"
+      "sha256": "f6686a7ffa9f39cfce639022f09fc71be5da057bdc7d0a1a20ede2e98997d97e",
+      "tracked_after_migration": false
     },
     {
       "before": ".ppt-build/slide-16.png",
       "after": "local-data/work/ppt-build/slide-16.png",
       "bytes": 60388,
-      "sha256": "fbd6e055ead2ba582f8be1d34d8827d3eec9a41a7bb6ab276d615188757f6b6c"
+      "sha256": "fbd6e055ead2ba582f8be1d34d8827d3eec9a41a7bb6ab276d615188757f6b6c",
+      "tracked_after_migration": false
     },
     {
       "before": ".shell-tools/PowerShell_7.6.6.0_X64_msix_en-US.yaml",
       "after": ".shell-tools/PowerShell_7.6.6.0_X64_msix_en-US.yaml",
       "bytes": 3515,
-      "sha256": "1d31c344d3817c45120dc2e7f5e52cb20f927f250553ae8cc25addda7c60eebc"
+      "sha256": "1d31c344d3817c45120dc2e7f5e52cb20f927f250553ae8cc25addda7c60eebc",
+      "tracked_after_migration": true
     },
     {
       "before": ".shell-tools/README.md",
       "after": ".shell-tools/README.md",
       "bytes": 1175,
-      "sha256": "8128d946601d2066664042a8d57a76c5a23453b2f7cf32dcdb3e136b2870f538"
+      "sha256": "8128d946601d2066664042a8d57a76c5a23453b2f7cf32dcdb3e136b2870f538",
+      "tracked_after_migration": true
     },
     {
       "before": ".shell-tools/build_tf_idf_probe_pwsh7.ps1",
       "after": ".shell-tools/build_tf_idf_probe_pwsh7.ps1",
       "bytes": 2023,
-      "sha256": "d09fb3c032d27a1aa7090325ff9dcfd5d6dd82d8ca92c1d26b064e4cd579ad36"
+      "sha256": "d09fb3c032d27a1aa7090325ff9dcfd5d6dd82d8ca92c1d26b064e4cd579ad36",
+      "tracked_after_migration": true
     },
     {
       "before": ".shell-tools/build_tf_protocol_probe_pwsh7.ps1",
       "after": ".shell-tools/build_tf_protocol_probe_pwsh7.ps1",
       "bytes": 1159,
-      "sha256": "192ba75807654893dff6f82ad9d8df010b69259cf2875b6d607f0a966002fe23"
+      "sha256": "192ba75807654893dff6f82ad9d8df010b69259cf2875b6d607f0a966002fe23",
+      "tracked_after_migration": true
     },
     {
       "before": ".shell-tools/build_tf_software_probe_pwsh7.ps1",
       "after": ".shell-tools/build_tf_software_probe_pwsh7.ps1",
       "bytes": 872,
-      "sha256": "b6fd4d8b54376dd94fbef1b047732e0ec0fa2d117a2c423575b89488acab4677"
+      "sha256": "b6fd4d8b54376dd94fbef1b047732e0ec0fa2d117a2c423575b89488acab4677",
+      "tracked_after_migration": true
     },
     {
       "before": ".shell-tools/check_tf_boot_admin_readonly.before_pwsh7.ps1",
       "after": ".shell-tools/check_tf_boot_admin_readonly.before_pwsh7.ps1",
       "bytes": 1288,
-      "sha256": "565b563d8be686ab815acb0be52f667c7f1d44e3601169b7d9ace4cddbe7158e"
+      "sha256": "565b563d8be686ab815acb0be52f667c7f1d44e3601169b7d9ace4cddbe7158e",
+      "tracked_after_migration": true
     },
     {
       "before": ".shell-tools/install_verified.json",
       "after": ".shell-tools/install_verified.json",
       "bytes": 933,
-      "sha256": "f6d1c5949f1356d55ad66bed3b504b8cd4ad1841ce4e96ae2a60ba063fe489f8"
+      "sha256": "f6d1c5949f1356d55ad66bed3b504b8cd4ad1841ce4e96ae2a60ba063fe489f8",
+      "tracked_after_migration": true
     },
     {
       "before": ".shell-tools/pwsh.cmd",
       "after": ".shell-tools/pwsh.cmd",
       "bytes": 68,
-      "sha256": "b5cc46965a631b11fab71ffce2e96cfffbebf4962709a1546b1b963dfe587912"
+      "sha256": "b5cc46965a631b11fab71ffce2e96cfffbebf4962709a1546b1b963dfe587912",
+      "tracked_after_migration": true
     },
     {
       "before": ".shell-tools/record_tf_selected_firmware.py",
       "after": ".shell-tools/record_tf_selected_firmware.py",
       "bytes": 4460,
-      "sha256": "55d30fee1da0db24c286672b2622c4a2bc8e8adbd678a386e2ce65c85ad8ef80"
+      "sha256": "55d30fee1da0db24c286672b2622c4a2bc8e8adbd678a386e2ce65c85ad8ef80",
+      "tracked_after_migration": true
     },
     {
       "before": ".shell-tools/run_tf_mount_retry_pwsh7.ps1",
       "after": ".shell-tools/run_tf_mount_retry_pwsh7.ps1",
       "bytes": 522,
-      "sha256": "e4df5f179098299e59b166becc1d4745e5cc1d6a9526e915e31f0e6a0934f80a"
+      "sha256": "e4df5f179098299e59b166becc1d4745e5cc1d6a9526e915e31f0e6a0934f80a",
+      "tracked_after_migration": true
     },
     {
       "before": ".shell-tools/run_tf_protocol_sequence_pwsh7.ps1",
       "after": ".shell-tools/run_tf_protocol_sequence_pwsh7.ps1",
       "bytes": 859,
-      "sha256": "6e4d8423542ffe7858a92570a4e63c091e8e3ad3aae13e261b3eaa1da8058d33"
+      "sha256": "6e4d8423542ffe7858a92570a4e63c091e8e3ad3aae13e261b3eaa1da8058d33",
+      "tracked_after_migration": true
     },
     {
       "before": ".shell-tools/run_tf_software_trials_pwsh7.ps1",
       "after": ".shell-tools/run_tf_software_trials_pwsh7.ps1",
       "bytes": 768,
-      "sha256": "a74eca14210a95a6eaa788ad5eb62dc429300058db1472c52e60b8fca3c75123"
+      "sha256": "a74eca14210a95a6eaa788ad5eb62dc429300058db1472c52e60b8fca3c75123",
+      "tracked_after_migration": true
     },
     {
       "before": ".shell-tools/tf_mount_retry_readonly.py",
       "after": ".shell-tools/tf_mount_retry_readonly.py",
       "bytes": 3651,
-      "sha256": "eeeeb8c2d83e4df740e092628d5e161d779f29e7ba3f3821e9ed40437902026d"
+      "sha256": "eeeeb8c2d83e4df740e092628d5e161d779f29e7ba3f3821e9ed40437902026d",
+      "tracked_after_migration": true
     },
     {
       "before": ".shell-tools/tf_rewire_boot_readonly.py",
       "after": ".shell-tools/tf_rewire_boot_readonly.py",
       "bytes": 1567,
-      "sha256": "8d497d0e0ddf845c1e7aea5b1b3ada30442368600b5a3eee15e861bd07e1d388"
+      "sha256": "8d497d0e0ddf845c1e7aea5b1b3ada30442368600b5a3eee15e861bd07e1d388",
+      "tracked_after_migration": true
     },
     {
       "before": ".shell-tools/tf_software_trials.py",
       "after": ".shell-tools/tf_software_trials.py",
       "bytes": 11778,
-      "sha256": "66dca73af461b1f7a98a22cc5bf92bb111b3c2da31e7abb2125c447076bed75b"
+      "sha256": "66dca73af461b1f7a98a22cc5bf92bb111b3c2da31e7abb2125c447076bed75b",
+      "tracked_after_migration": true
     },
     {
       "before": ".shell-tools/tf_software_audit/SD_MMC_official_2.0.17.cpp",
       "after": ".shell-tools/tf_software_audit/SD_MMC_official_2.0.17.cpp",
       "bytes": 6357,
-      "sha256": "2a732b4683f080ee41f4cae1b4aa89f00b544ff03c1585847114f97625408e61"
+      "sha256": "2a732b4683f080ee41f4cae1b4aa89f00b544ff03c1585847114f97625408e61",
+      "tracked_after_migration": true
     },
     {
       "before": ".shell-tools/tf_software_audit/sdmmc_cmd_v4.4.7.c",
       "after": ".shell-tools/tf_software_audit/sdmmc_cmd_v4.4.7.c",
       "bytes": 16903,
-      "sha256": "769121ce26693c25ebf7ee3df3baecd2ca820998a04ce01a2f14bf9890e78c04"
+      "sha256": "769121ce26693c25ebf7ee3df3baecd2ca820998a04ce01a2f14bf9890e78c04",
+      "tracked_after_migration": true
     },
     {
       "before": ".shell-tools/tf_software_audit/sdmmc_common_v4.4.7.c",
       "after": ".shell-tools/tf_software_audit/sdmmc_common_v4.4.7.c",
       "bytes": 10952,
-      "sha256": "66027703eb810b72952f1b6e427c15b5632d69d2a5ab91a28145bf4a0513ea90"
+      "sha256": "66027703eb810b72952f1b6e427c15b5632d69d2a5ab91a28145bf4a0513ea90",
+      "tracked_after_migration": true
     },
     {
       "before": ".shell-tools/tf_software_audit/sdmmc_init_v4.4.7.c",
       "after": ".shell-tools/tf_software_audit/sdmmc_init_v4.4.7.c",
       "bytes": 4595,
-      "sha256": "d51afb926b0de1d547aa227b0586f21a252c762c1c977ae149fb5b17368d9d66"
+      "sha256": "d51afb926b0de1d547aa227b0586f21a252c762c1c977ae149fb5b17368d9d66",
+      "tracked_after_migration": true
     },
     {
       "before": ".workbuddy/memory/2026-09-17.md",
       "after": "docs/history/workbuddy/memory/2026-09-17.md",
       "bytes": 3773,
-      "sha256": "8580fb9aff1abd6e654e65280494751f72d804e032d45a7a90c5f7c35638acb6"
+      "sha256": "8580fb9aff1abd6e654e65280494751f72d804e032d45a7a90c5f7c35638acb6",
+      "tracked_after_migration": false
     },
     {
       "before": ".workbuddy/memory/2026-09-18.md",
       "after": "docs/history/workbuddy/memory/2026-09-18.md",
       "bytes": 59659,
-      "sha256": "33e0d7c6d2a43a6eb04fc3448c0be1567171f564f39493ccf8be08fbc5dfe6ae"
+      "sha256": "33e0d7c6d2a43a6eb04fc3448c0be1567171f564f39493ccf8be08fbc5dfe6ae",
+      "tracked_after_migration": false
     },
     {
       "before": ".workbuddy/memory/2026-09-20.md",
       "after": "docs/history/workbuddy/memory/2026-09-20.md",
       "bytes": 2539,
-      "sha256": "73a51797cb4b60d812f6b7c8aca484ae07e632fe7d92218d591e990797799a21"
+      "sha256": "73a51797cb4b60d812f6b7c8aca484ae07e632fe7d92218d591e990797799a21",
+      "tracked_after_migration": false
     },
     {
       "before": ".workbuddy/memory/2026-09-21.md",
       "after": "docs/history/workbuddy/memory/2026-09-21.md",
       "bytes": 24345,
-      "sha256": "acd965645fbac323c6b4e8823c5feb016397999a9b3d478c1e683035c725875e"
+      "sha256": "acd965645fbac323c6b4e8823c5feb016397999a9b3d478c1e683035c725875e",
+      "tracked_after_migration": false
     },
     {
       "before": ".workbuddy/memory/MEMORY.md",
       "after": "docs/history/workbuddy/memory/MEMORY.md",
       "bytes": 5368,
-      "sha256": "544279f16b890f18d0399635bece29b2e6fc167b04a39ea4ef0af71a50042fbd"
+      "sha256": "544279f16b890f18d0399635bece29b2e6fc167b04a39ea4ef0af71a50042fbd",
+      "tracked_after_migration": false
     },
     {
       "before": ".workbuddy/tmp/C路线采购清单_备份_改口径前.xlsx",
       "after": "docs/history/workbuddy/tmp/C路线采购清单_备份_改口径前.xlsx",
       "bytes": 28097,
-      "sha256": "eb6a11b0209fec1e20aa91dd82912747aa9b68099ce73b4697d25a6227808021"
+      "sha256": "eb6a11b0209fec1e20aa91dd82912747aa9b68099ce73b4697d25a6227808021",
+      "tracked_after_migration": false
     },
     {
       "before": ".workbuddy/tmp/PPT提示词_备份_改口径前.md",
       "after": "docs/history/workbuddy/tmp/PPT提示词_备份_改口径前.md",
       "bytes": 18928,
-      "sha256": "11c000eb4184d164f75b9ff9471c44d7dfbe53d03f833a4b1765957a1fca1efd"
+      "sha256": "11c000eb4184d164f75b9ff9471c44d7dfbe53d03f833a4b1765957a1fca1efd",
+      "tracked_after_migration": false
     },
     {
       "before": ".workbuddy/tmp/PPT提示词_备份_电流口径前.md",
       "after": "docs/history/workbuddy/tmp/PPT提示词_备份_电流口径前.md",
       "bytes": 19386,
-      "sha256": "4aa0dfa7d071401307e29d9288ef3d6a47d6fae544e6d2d1acd08f38392b80d3"
+      "sha256": "4aa0dfa7d071401307e29d9288ef3d6a47d6fae544e6d2d1acd08f38392b80d3",
+      "tracked_after_migration": false
     },
     {
       "before": ".workbuddy/tmp/build.log",
       "after": "docs/history/workbuddy/tmp/build.log",
       "bytes": 15808,
-      "sha256": "1323c8d2437edf4e5448b78e451de9e8d27c81d191b4b49583a725190eecf33e"
+      "sha256": "1323c8d2437edf4e5448b78e451de9e8d27c81d191b4b49583a725190eecf33e",
+      "tracked_after_migration": false
     },
     {
       "before": ".workbuddy/tmp/build2.log",
       "after": "docs/history/workbuddy/tmp/build2.log",
       "bytes": 3920,
-      "sha256": "1a89eef7bffe2601e7488994885f346680f78095bcecaa6ed3e86484767cdb3e"
+      "sha256": "1a89eef7bffe2601e7488994885f346680f78095bcecaa6ed3e86484767cdb3e",
+      "tracked_after_migration": false
     },
     {
       "before": ".workbuddy/tmp/build3.log",
       "after": "docs/history/workbuddy/tmp/build3.log",
       "bytes": 3728,
-      "sha256": "d779debb7fecca33d2ccf9c313582b754760ff9571de7c8acd4787841970d632"
+      "sha256": "d779debb7fecca33d2ccf9c313582b754760ff9571de7c8acd4787841970d632",
+      "tracked_after_migration": false
     },
     {
       "before": ".workbuddy/tmp/build4.log",
       "after": "docs/history/workbuddy/tmp/build4.log",
       "bytes": 3728,
-      "sha256": "18e75a57f2768284f5245a2d51a9e48555a5ebe9826923006c812af731380801"
+      "sha256": "18e75a57f2768284f5245a2d51a9e48555a5ebe9826923006c812af731380801",
+      "tracked_after_migration": false
     },
     {
       "before": ".workbuddy/tmp/build5.log",
       "after": "docs/history/workbuddy/tmp/build5.log",
       "bytes": 4224,
-      "sha256": "0dc6dee22ce393b456e241878b9fc21358ec0fdb98b58284b148568cd382f025"
+      "sha256": "0dc6dee22ce393b456e241878b9fc21358ec0fdb98b58284b148568cd382f025",
+      "tracked_after_migration": false
     },
     {
       "before": ".workbuddy/tmp/build6.log",
       "after": "docs/history/workbuddy/tmp/build6.log",
       "bytes": 3728,
-      "sha256": "afea2360735b8235adc26b5bb4055fb1a7b0939276f4d5c4b09cbd1557725ed3"
+      "sha256": "afea2360735b8235adc26b5bb4055fb1a7b0939276f4d5c4b09cbd1557725ed3",
+      "tracked_after_migration": false
     },
     {
       "before": ".workbuddy/tmp/build7.log",
       "after": "docs/history/workbuddy/tmp/build7.log",
       "bytes": 4224,
-      "sha256": "f98fbb8a33950f711a0894d780d5d02c6f0624e47222f2e64e33bba0a8b4a17b"
+      "sha256": "f98fbb8a33950f711a0894d780d5d02c6f0624e47222f2e64e33bba0a8b4a17b",
+      "tracked_after_migration": false
     },
     {
       "before": ".workbuddy/tmp/build8.log",
       "after": "docs/history/workbuddy/tmp/build8.log",
       "bytes": 3928,
-      "sha256": "0f248edfe22b9b908580d78fc004028e6aa85d725a3d41730e45461d46b6c2f6"
+      "sha256": "0f248edfe22b9b908580d78fc004028e6aa85d725a3d41730e45461d46b6c2f6",
+      "tracked_after_migration": false
     },
     {
       "before": ".workbuddy/tmp/build_checklist.py",
       "after": "docs/history/workbuddy/tmp/build_checklist.py",
       "bytes": 18616,
-      "sha256": "0fefb466f8691ee8dc355c0f9cb3aa11197a2054c6c41f825a92c44087fcbbfd"
+      "sha256": "0fefb466f8691ee8dc355c0f9cb3aa11197a2054c6c41f825a92c44087fcbbfd",
+      "tracked_after_migration": false
     },
     {
       "before": ".workbuddy/tmp/build_orders_备份_加警示前.py",
       "after": "docs/history/workbuddy/tmp/build_orders_备份_加警示前.py",
       "bytes": 18195,
-      "sha256": "2f06f70394c5e1c4caa15c9e0201604a7f3568d55825e1a04495dcb776b3db6d"
+      "sha256": "2f06f70394c5e1c4caa15c9e0201604a7f3568d55825e1a04495dcb776b3db6d",
+      "tracked_after_migration": false
     },
     {
       "before": ".workbuddy/tmp/build_v2_备份_加警示前.py",
       "after": "docs/history/workbuddy/tmp/build_v2_备份_加警示前.py",
       "bytes": 34697,
-      "sha256": "374b7189e3d7d99cd366931ce4aa70997b9d73618d6ae113b449b7d46662c4f3"
+      "sha256": "374b7189e3d7d99cd366931ce4aa70997b9d73618d6ae113b449b7d46662c4f3",
+      "tracked_after_migration": false
     },
     {
       "before": ".workbuddy/tmp/build_v3_备份_加警示前.py",
       "after": "docs/history/workbuddy/tmp/build_v3_备份_加警示前.py",
       "bytes": 40855,
-      "sha256": "7379d83b46322a0babf680ec5aa78652a63f741cc797de5291aed42a1e183951"
+      "sha256": "7379d83b46322a0babf680ec5aa78652a63f741cc797de5291aed42a1e183951",
+      "tracked_after_migration": false
     },
     {
       "before": ".workbuddy/tmp/build_v4_generics_备份_加警示前.py",
       "after": "docs/history/workbuddy/tmp/build_v4_generics_备份_加警示前.py",
       "bytes": 24268,
-      "sha256": "29274af5df8a7229862fcb03be36f666f43879458970512064b9d5a815c0fc22"
+      "sha256": "29274af5df8a7229862fcb03be36f666f43879458970512064b9d5a815c0fc22",
+      "tracked_after_migration": false
     },
     {
       "before": ".workbuddy/tmp/build_备份_加警示前.py",
       "after": "docs/history/workbuddy/tmp/build_备份_加警示前.py",
       "bytes": 29099,
-      "sha256": "9783b83bb6d00f4854d2d80202fbbb4443cec98a506060a1b18e8f2e03ea674e"
+      "sha256": "9783b83bb6d00f4854d2d80202fbbb4443cec98a506060a1b18e8f2e03ea674e",
+      "tracked_after_migration": false
     },
     {
       "before": ".workbuddy/tmp/calib_test.bin",
       "after": "docs/history/workbuddy/tmp/calib_test.bin",
       "bytes": 320036,
-      "sha256": "b64d8b1343b4babec975097bdcf405460eefe20139f4bb9a3ca4675a11e30583"
+      "sha256": "b64d8b1343b4babec975097bdcf405460eefe20139f4bb9a3ca4675a11e30583",
+      "tracked_after_migration": false
     },
     {
       "before": ".workbuddy/tmp/calib_test.png",
       "after": "docs/history/workbuddy/tmp/calib_test.png",
       "bytes": 193473,
-      "sha256": "7977854274eaaca88138d6a422783f9cb1465d28533244874c9d734a5fc10f63"
+      "sha256": "7977854274eaaca88138d6a422783f9cb1465d28533244874c9d734a5fc10f63",
+      "tracked_after_migration": false
     },
     {
       "before": ".workbuddy/tmp/diag_403.py",
       "after": "docs/history/workbuddy/tmp/diag_403.py",
       "bytes": 2636,
-      "sha256": "cc5e21e0a0da38a31d0b089e066854600ea8436e1b6cbe42885f39dfacf63d57"
+      "sha256": "cc5e21e0a0da38a31d0b089e066854600ea8436e1b6cbe42885f39dfacf63d57",
+      "tracked_after_migration": false
     },
     {
       "before": ".workbuddy/tmp/diag_net.py",
       "after": "docs/history/workbuddy/tmp/diag_net.py",
       "bytes": 2541,
-      "sha256": "5ff6d37800003f2110b2ff926a11e2f0ea4717f878470603b67d50f3c5f2a912"
+      "sha256": "5ff6d37800003f2110b2ff926a11e2f0ea4717f878470603b67d50f3c5f2a912",
+      "tracked_after_migration": false
     },
     {
       "before": ".workbuddy/tmp/diag_pip2.py",
       "after": "docs/history/workbuddy/tmp/diag_pip2.py",
       "bytes": 1550,
-      "sha256": "1f06ef628de855543c365e80662d40a6dabfe6831f49c3ec80ffe9bd1fc0c2b7"
+      "sha256": "1f06ef628de855543c365e80662d40a6dabfe6831f49c3ec80ffe9bd1fc0c2b7",
+      "tracked_after_migration": false
     },
     {
       "before": ".workbuddy/tmp/doc_text.txt",
       "after": "docs/history/workbuddy/tmp/doc_text.txt",
       "bytes": 23334,
-      "sha256": "13523d37978cc666f45e77b0d3504521ed8c5ce7212fbee9700458f156dad7cb"
+      "sha256": "13523d37978cc666f45e77b0d3504521ed8c5ce7212fbee9700458f156dad7cb",
+      "tracked_after_migration": false
     },
     {
       "before": ".workbuddy/tmp/dump_modules.txt",
       "after": "docs/history/workbuddy/tmp/dump_modules.txt",
       "bytes": 39792,
-      "sha256": "9fc3612e209fd397dc28b186597a90cef895e66dc17b2727fce02ba6d6ba00a0"
+      "sha256": "9fc3612e209fd397dc28b186597a90cef895e66dc17b2727fce02ba6d6ba00a0",
+      "tracked_after_migration": false
     },
     {
       "before": ".workbuddy/tmp/dump_plan.txt",
       "after": "docs/history/workbuddy/tmp/dump_plan.txt",
       "bytes": 24575,
-      "sha256": "a36ca706af9fa3206d68840f688cf39bc40d239f6c1f37bb0bb0589b6c83d9f2"
+      "sha256": "a36ca706af9fa3206d68840f688cf39bc40d239f6c1f37bb0bb0589b6c83d9f2",
+      "tracked_after_migration": false
     },
     {
       "before": ".workbuddy/tmp/extract_doc.py",
       "after": "docs/history/workbuddy/tmp/extract_doc.py",
       "bytes": 945,
-      "sha256": "4bf9e0881d60ba5348faa47508800ae634dd23c921f0fe503c723e4ffe8cd30e"
+      "sha256": "4bf9e0881d60ba5348faa47508800ae634dd23c921f0fe503c723e4ffe8cd30e",
+      "tracked_after_migration": false
     },
     {
       "before": ".workbuddy/tmp/extract_ds.py",
       "after": "docs/history/workbuddy/tmp/extract_ds.py",
       "bytes": 4075,
-      "sha256": "4f00f44cc87c199f12ba0a0e290d1903a717ca768db79b0b1c922a042ecd89e1"
+      "sha256": "4f00f44cc87c199f12ba0a0e290d1903a717ca768db79b0b1c922a042ecd89e1",
+      "tracked_after_migration": false
     },
     {
       "before": ".workbuddy/tmp/find_temp.py",
       "after": "docs/history/workbuddy/tmp/find_temp.py",
       "bytes": 1129,
-      "sha256": "ac78392669d59f019992953bdf7d04c6fec5b621b0d2525d7711ce1b5a8b1508"
+      "sha256": "ac78392669d59f019992953bdf7d04c6fec5b621b0d2525d7711ce1b5a8b1508",
+      "tracked_after_migration": false
     },
     {
       "before": ".workbuddy/tmp/fix_rev8.py",
       "after": "docs/history/workbuddy/tmp/fix_rev8.py",
       "bytes": 4111,
-      "sha256": "28058ec5b7f127fbdb4b6f6e29f3203467e63be74c9282d39cca9b84226d094d"
+      "sha256": "28058ec5b7f127fbdb4b6f6e29f3203467e63be74c9282d39cca9b84226d094d",
+      "tracked_after_migration": false
     },
     {
       "before": ".workbuddy/tmp/gen_deliverables_备份_加标注前.py",
       "after": "docs/history/workbuddy/tmp/gen_deliverables_备份_加标注前.py",
       "bytes": 18990,
-      "sha256": "31c2eca22347ed8a53afa4d475b9f043a8367db4d89be4d44a145fc876821002"
+      "sha256": "31c2eca22347ed8a53afa4d475b9f043a8367db4d89be4d44a145fc876821002",
+      "tracked_after_migration": false
     },
     {
       "before": ".workbuddy/tmp/gen_testbin.py",
       "after": "docs/history/workbuddy/tmp/gen_testbin.py",
       "bytes": 1090,
-      "sha256": "b14b24fedc6f4c62556a347be004f0ab347e5ee176ceb13ed81c1f9395a0d110"
+      "sha256": "b14b24fedc6f4c62556a347be004f0ab347e5ee176ceb13ed81c1f9395a0d110",
+      "tracked_after_migration": false
     },
     {
       "before": ".workbuddy/tmp/get_ds.py",
       "after": "docs/history/workbuddy/tmp/get_ds.py",
       "bytes": 1495,
-      "sha256": "35a3a0e75656cabe2215089a90c202eec07ae365601b16aab993ef37cf109cd6"
+      "sha256": "35a3a0e75656cabe2215089a90c202eec07ae365601b16aab993ef37cf109cd6",
+      "tracked_after_migration": false
     },
     {
       "before": ".workbuddy/tmp/lint_cpp.py",
       "after": "docs/history/workbuddy/tmp/lint_cpp.py",
       "bytes": 2441,
-      "sha256": "6ea9edc3e69c4c9de23dfdb77abbe5a4cba5a1cfb5a655c5a3d7ed775e90421d"
+      "sha256": "6ea9edc3e69c4c9de23dfdb77abbe5a4cba5a1cfb5a655c5a3d7ed775e90421d",
+      "tracked_after_migration": false
     },
     {
       "before": ".workbuddy/tmp/neg.png",
       "after": "docs/history/workbuddy/tmp/neg.png",
       "bytes": 191433,
-      "sha256": "91106a15ae37017d562031ef1a568413e779729d71363ec9d061a083560b7b07"
+      "sha256": "91106a15ae37017d562031ef1a568413e779729d71363ec9d061a083560b7b07",
+      "tracked_after_migration": false
     },
     {
       "before": ".workbuddy/tmp/patch5.py",
       "after": "docs/history/workbuddy/tmp/patch5.py",
       "bytes": 1044,
-      "sha256": "376dbb48d43326be485ea8ac7ef5e83ba4aa2d724ea33e7de1494a57893006a3"
+      "sha256": "376dbb48d43326be485ea8ac7ef5e83ba4aa2d724ea33e7de1494a57893006a3",
+      "tracked_after_migration": false
     },
     {
       "before": ".workbuddy/tmp/patch_acceptance.py",
       "after": "docs/history/workbuddy/tmp/patch_acceptance.py",
       "bytes": 12147,
-      "sha256": "8c18c0404b5f3dba5650f07c0b81c473a556eda2897d9af014b536910cb315f5"
+      "sha256": "8c18c0404b5f3dba5650f07c0b81c473a556eda2897d9af014b536910cb315f5",
+      "tracked_after_migration": false
     },
     {
       "before": ".workbuddy/tmp/patch_broute.py",
       "after": "docs/history/workbuddy/tmp/patch_broute.py",
       "bytes": 4891,
-      "sha256": "db309c27772b6406226766e654c9feb8ffd2363f594eb69c1f60e892cd2438da"
+      "sha256": "db309c27772b6406226766e654c9feb8ffd2363f594eb69c1f60e892cd2438da",
+      "tracked_after_migration": false
     },
     {
       "before": ".workbuddy/tmp/patch_cutting_load.py",
       "after": "docs/history/workbuddy/tmp/patch_cutting_load.py",
       "bytes": 8488,
-      "sha256": "10781c0e935d63776e74f339f443c2885c38528694212596245cba82401ad055"
+      "sha256": "10781c0e935d63776e74f339f443c2885c38528694212596245cba82401ad055",
+      "tracked_after_migration": false
     },
     {
       "before": ".workbuddy/tmp/patch_md_pptx.py",
       "after": "docs/history/workbuddy/tmp/patch_md_pptx.py",
       "bytes": 7080,
-      "sha256": "9b573b5912e512c7234af6ae4a9e0cc0c41f64adbf6e0492443010a90fedb3b0"
+      "sha256": "9b573b5912e512c7234af6ae4a9e0cc0c41f64adbf6e0492443010a90fedb3b0",
+      "tracked_after_migration": false
     },
     {
       "before": ".workbuddy/tmp/patch_old_ref.py",
       "after": "docs/history/workbuddy/tmp/patch_old_ref.py",
       "bytes": 2309,
-      "sha256": "dce30550333a6077741b752357e14c2747ca845ad5bdee3f64ba616d46433bc9"
+      "sha256": "dce30550333a6077741b752357e14c2747ca845ad5bdee3f64ba616d46433bc9",
+      "tracked_after_migration": false
     },
     {
       "before": ".workbuddy/tmp/patch_plan.py",
       "after": "docs/history/workbuddy/tmp/patch_plan.py",
       "bytes": 12433,
-      "sha256": "fc61872cfe11ec7f1f219df80164c0a802353750087ca5cfe3c085cad089aa6f"
+      "sha256": "fc61872cfe11ec7f1f219df80164c0a802353750087ca5cfe3c085cad089aa6f",
+      "tracked_after_migration": false
     },
     {
       "before": ".workbuddy/tmp/patch_ref.py",
       "after": "docs/history/workbuddy/tmp/patch_ref.py",
       "bytes": 2062,
-      "sha256": "28fb119d3c0b6587840753d6ee25b37350a9ab5dfbc9e8f7fa5ae2a73e6f1526"
+      "sha256": "28fb119d3c0b6587840753d6ee25b37350a9ab5dfbc9e8f7fa5ae2a73e6f1526",
+      "tracked_after_migration": false
     },
     {
       "before": ".workbuddy/tmp/patch_src.py",
       "after": "docs/history/workbuddy/tmp/patch_src.py",
       "bytes": 1330,
-      "sha256": "68a222d660b1deffc73a23ff4131cc50231af62fc9c753771663f9ddd81305a1"
+      "sha256": "68a222d660b1deffc73a23ff4131cc50231af62fc9c753771663f9ddd81305a1",
+      "tracked_after_migration": false
     },
     {
       "before": ".workbuddy/tmp/patch_v1v2.py",
       "after": "docs/history/workbuddy/tmp/patch_v1v2.py",
       "bytes": 3712,
-      "sha256": "f2ce05166fd05c52efca0b65f4a09da8ebaa013b387272ec4848391e3c0a868a"
+      "sha256": "f2ce05166fd05c52efca0b65f4a09da8ebaa013b387272ec4848391e3c0a868a",
+      "tracked_after_migration": false
     },
     {
       "before": ".workbuddy/tmp/patch_whoami.py",
       "after": "docs/history/workbuddy/tmp/patch_whoami.py",
       "bytes": 3785,
-      "sha256": "515c5d0d0cbfec1df6317e2b216c30ab0224f949321198fe575043140e1b5588"
+      "sha256": "515c5d0d0cbfec1df6317e2b216c30ab0224f949321198fe575043140e1b5588",
+      "tracked_after_migration": false
     },
     {
       "before": ".workbuddy/tmp/patch_xlsx.py",
       "after": "docs/history/workbuddy/tmp/patch_xlsx.py",
       "bytes": 12809,
-      "sha256": "a5609a863ffa5fbc6cf8f533052c98007c942e166e5b87cdbffb73595273c6f9"
+      "sha256": "a5609a863ffa5fbc6cf8f533052c98007c942e166e5b87cdbffb73595273c6f9",
+      "tracked_after_migration": false
     },
     {
       "before": ".workbuddy/tmp/patch_xlsx_fix.py",
       "after": "docs/history/workbuddy/tmp/patch_xlsx_fix.py",
       "bytes": 6004,
-      "sha256": "0f16a5d030f407ca4c07aaf7e39c92292cbb81af53af684e05723e9a83aea8af"
+      "sha256": "0f16a5d030f407ca4c07aaf7e39c92292cbb81af53af684e05723e9a83aea8af",
+      "tracked_after_migration": false
     },
     {
       "before": ".workbuddy/tmp/render_pages.py",
       "after": "docs/history/workbuddy/tmp/render_pages.py",
       "bytes": 706,
-      "sha256": "bab552c4af5dfe3da7fe0027fd0a58e74129550349e606e928f9b6755cbee661"
+      "sha256": "bab552c4af5dfe3da7fe0027fd0a58e74129550349e606e928f9b6755cbee661",
+      "tracked_after_migration": false
     },
     {
       "before": ".workbuddy/tmp/scan_cutting.py",
       "after": "docs/history/workbuddy/tmp/scan_cutting.py",
       "bytes": 1276,
-      "sha256": "1f79448306b24edff4b78ffd7525fc7cf88d77d0f8954666f83ceeed2d12494b"
+      "sha256": "1f79448306b24edff4b78ffd7525fc7cf88d77d0f8954666f83ceeed2d12494b",
+      "tracked_after_migration": false
     },
     {
       "before": ".workbuddy/tmp/scan_desktop_pptx.py",
       "after": "docs/history/workbuddy/tmp/scan_desktop_pptx.py",
       "bytes": 905,
-      "sha256": "7cced5f05445226cffac7a95c86e828f4dd2e3c3c5d18046ff676d75ad65c0a7"
+      "sha256": "7cced5f05445226cffac7a95c86e828f4dd2e3c3c5d18046ff676d75ad65c0a7",
+      "tracked_after_migration": false
     },
     {
       "before": ".workbuddy/tmp/sec5.html",
       "after": "docs/history/workbuddy/tmp/sec5.html",
       "bytes": 11160,
-      "sha256": "ad5a0c06465e19d87e832e056cf2841dfad54e310555f5a537d4c1c33e6971c4"
+      "sha256": "ad5a0c06465e19d87e832e056cf2841dfad54e310555f5a537d4c1c33e6971c4",
+      "tracked_after_migration": false
     },
     {
       "before": ".workbuddy/tmp/test_analysis.png",
       "after": "docs/history/workbuddy/tmp/test_analysis.png",
       "bytes": 237564,
-      "sha256": "625db6ed99fab953a5709afcae1947dfa15403c349dea959086b0ae20ee6e898"
+      "sha256": "625db6ed99fab953a5709afcae1947dfa15403c349dea959086b0ae20ee6e898",
+      "tracked_after_migration": false
     },
     {
       "before": ".workbuddy/tmp/uitest.js",
       "after": "docs/history/workbuddy/tmp/uitest.js",
       "bytes": 7613,
-      "sha256": "8cc5e07adaa68bbffee0bc9d6ce261045f46376e68418394406c778edd2175a2"
+      "sha256": "8cc5e07adaa68bbffee0bc9d6ce261045f46376e68418394406c778edd2175a2",
+      "tracked_after_migration": false
     },
     {
       "before": ".workbuddy/tmp/v1v2_备份_改口径前.html",
       "after": "docs/history/workbuddy/tmp/v1v2_备份_改口径前.html",
       "bytes": 23972,
-      "sha256": "4f685e14fa8037a4833eb0cad498425943ef3fc97ef70498fd4295cd6374cb16"
+      "sha256": "4f685e14fa8037a4833eb0cad498425943ef3fc97ef70498fd4295cd6374cb16",
+      "tracked_after_migration": false
     },
     {
       "before": ".workbuddy/tmp/vib_test.bin",
       "after": "docs/history/workbuddy/tmp/vib_test.bin",
       "bytes": 320036,
-      "sha256": "f93b72d58c821f8d1997c29b9fb9c28a566004e1b51fc51f240135879ef4e98a"
+      "sha256": "f93b72d58c821f8d1997c29b9fb9c28a566004e1b51fc51f240135879ef4e98a",
+      "tracked_after_migration": false
     },
     {
       "before": ".workbuddy/tmp/vib_test.csv",
       "after": "docs/history/workbuddy/tmp/vib_test.csv",
       "bytes": 2736231,
-      "sha256": "b253b6dc5cd6b79e9d9738630583bd101f3e02189a3362db3fa6c12da6fab975"
+      "sha256": "b253b6dc5cd6b79e9d9738630583bd101f3e02189a3362db3fa6c12da6fab975",
+      "tracked_after_migration": false
     },
     {
       "before": ".workbuddy/tmp/参考页_备份_加标注前.html",
       "after": "docs/history/workbuddy/tmp/参考页_备份_加标注前.html",
       "bytes": 36153,
-      "sha256": "27d849fb236e3abe0c4956c7e028378211ed6c848330039f9207619b4a921da3"
+      "sha256": "27d849fb236e3abe0c4956c7e028378211ed6c848330039f9207619b4a921da3",
+      "tracked_after_migration": false
     },
     {
       "before": ".workbuddy/tmp/导师汇报PPT_备份_改口径前.pptx",
       "after": "docs/history/workbuddy/tmp/导师汇报PPT_备份_改口径前.pptx",
       "bytes": 2839362,
-      "sha256": "0d1f1c4abad86c4ee46bf115538ee3e06cdfd4b13f528c2e0aad94f560b28f21"
+      "sha256": "0d1f1c4abad86c4ee46bf115538ee3e06cdfd4b13f528c2e0aad94f560b28f21",
+      "tracked_after_migration": false
     },
     {
       "before": ".workbuddy/tmp/数据与计算依据_备份_改口径前.md",
       "after": "docs/history/workbuddy/tmp/数据与计算依据_备份_改口径前.md",
       "bytes": 2942,
-      "sha256": "ee2b734c31905345893d73b597d8d39529e6a85acf338a23d0a121b67b7bae0c"
+      "sha256": "ee2b734c31905345893d73b597d8d39529e6a85acf338a23d0a121b67b7bae0c",
+      "tracked_after_migration": false
     },
     {
       "before": ".workbuddy/tmp/规划_备份_改口径前.html",
       "after": "docs/history/workbuddy/tmp/规划_备份_改口径前.html",
       "bytes": 48767,
-      "sha256": "3b12fdd47990afab8805d56062303f4f3ddb228b4c4c7f9d39d3fa2129700bc7"
+      "sha256": "3b12fdd47990afab8805d56062303f4f3ddb228b4c4c7f9d39d3fa2129700bc7",
+      "tracked_after_migration": false
     },
     {
       "before": ".workbuddy/tmp/规划_备份_电流口径前.html",
       "after": "docs/history/workbuddy/tmp/规划_备份_电流口径前.html",
       "bytes": 51052,
-      "sha256": "f125a243b22a0a9769dea7cf9312129079b4f155d6b13320f52797acaa3ba319"
+      "sha256": "f125a243b22a0a9769dea7cf9312129079b4f155d6b13320f52797acaa3ba319",
+      "tracked_after_migration": false
     },
     {
       "before": ".workbuddy/tmp/面包板样机_C路线采购清单_备份_改口径前.xlsx",
       "after": "docs/history/workbuddy/tmp/面包板样机_C路线采购清单_备份_改口径前.xlsx",
       "bytes": 28097,
-      "sha256": "eb6a11b0209fec1e20aa91dd82912747aa9b68099ce73b4697d25a6227808021"
+      "sha256": "eb6a11b0209fec1e20aa91dd82912747aa9b68099ce73b4697d25a6227808021",
+      "tracked_after_migration": false
     },
     {
       "before": ".workbuddy/tmp/面包板样机_其他平台采购链接_备份_改口径前.xlsx",
       "after": "docs/history/workbuddy/tmp/面包板样机_其他平台采购链接_备份_改口径前.xlsx",
       "bytes": 9098,
-      "sha256": "4bbcce07da6525758524b65a25e6d7bcd0c50feafb74c0b5ece2a913737c441e"
+      "sha256": "4bbcce07da6525758524b65a25e6d7bcd0c50feafb74c0b5ece2a913737c441e",
+      "tracked_after_migration": false
     },
     {
       "before": ".workbuddy/tmp/面包板样机_到货验收核对表_备份_改口径前.xlsx",
       "after": "docs/history/workbuddy/tmp/面包板样机_到货验收核对表_备份_改口径前.xlsx",
       "bytes": 18661,
-      "sha256": "3cf64297ceaa3c3fe43f5ee4fe7979f20feb86ab2d8109d9b2a285be8d9a2eb1"
+      "sha256": "3cf64297ceaa3c3fe43f5ee4fe7979f20feb86ab2d8109d9b2a285be8d9a2eb1",
+      "tracked_after_migration": false
     },
     {
       "before": ".workbuddy/tmp/面包板验证版_器件清单与接线表_备份_改口径前.xlsx",
       "after": "docs/history/workbuddy/tmp/面包板验证版_器件清单与接线表_备份_改口径前.xlsx",
       "bytes": 22066,
-      "sha256": "324646f25a3f4322aa6aaf66e381208afe5c8b98bfbea68f56ee343d818abae0"
+      "sha256": "324646f25a3f4322aa6aaf66e381208afe5c8b98bfbea68f56ee343d818abae0",
+      "tracked_after_migration": false
     },
     {
       "before": ".workbuddy/tmp/验收包_备份_换电阻前.html",
       "after": "docs/history/workbuddy/tmp/验收包_备份_换电阻前.html",
       "bytes": 48816,
-      "sha256": "bc5f267c7fc44e822c98aa3965d8abf003a89409c48d2948dd5657f8b62be7f4"
+      "sha256": "bc5f267c7fc44e822c98aa3965d8abf003a89409c48d2948dd5657f8b62be7f4",
+      "tracked_after_migration": false
     },
     {
       "before": ".workbuddy/tmp/pages/pg2.png",
       "after": "docs/history/workbuddy/tmp/pages/pg2.png",
       "bytes": 62018,
-      "sha256": "84aa10009a3012ec7ba047983f133e15af890857dd002630ad4e59147f4ab6bf"
+      "sha256": "84aa10009a3012ec7ba047983f133e15af890857dd002630ad4e59147f4ab6bf",
+      "tracked_after_migration": false
     },
     {
       "before": ".workbuddy/tmp/pages/pg7.png",
       "after": "docs/history/workbuddy/tmp/pages/pg7.png",
       "bytes": 77703,
-      "sha256": "55be1550d8415b8b04f9007f5370ab63bff3c8145222865fe6b077e2becab712"
+      "sha256": "55be1550d8415b8b04f9007f5370ab63bff3c8145222865fe6b077e2becab712",
+      "tracked_after_migration": false
     },
     {
       "before": ".workbuddy/tmp/wheels/numpy-2.5.3-cp313-cp313-win_amd64.whl",
       "after": "docs/history/workbuddy/tmp/wheels/numpy-2.5.3-cp313-cp313-win_amd64.whl",
       "bytes": 12560965,
-      "sha256": "71cad2b2a7451ab79d8f5e71b453485b6775963d5cf794179144a7463fe6e8ec"
+      "sha256": "71cad2b2a7451ab79d8f5e71b453485b6775963d5cf794179144a7463fe6e8ec",
+      "tracked_after_migration": false
     },
     {
       "before": ".面包板样机_C路线采购清单.ref/build.py",
       "after": "references/procurement-sources/build.py",
       "bytes": 29099,
-      "sha256": "a64578851eb88758da74b429536ea047e7ab9e16769aef767719ae3546a6a8c2"
+      "sha256": "a64578851eb88758da74b429536ea047e7ab9e16769aef767719ae3546a6a8c2",
+      "tracked_after_migration": false
     },
     {
       "before": ".面包板样机_C路线采购清单.ref/build_orders.py",
       "after": "references/procurement-sources/build_orders.py",
       "bytes": 19095,
-      "sha256": "88fd2d7733018f5e597c760ebe859244aef1df84480639e1d038af52e61a99c1"
+      "sha256": "88fd2d7733018f5e597c760ebe859244aef1df84480639e1d038af52e61a99c1",
+      "tracked_after_migration": false
     },
     {
       "before": ".面包板样机_C路线采购清单.ref/build_v2.py",
       "after": "references/procurement-sources/build_v2.py",
       "bytes": 34697,
-      "sha256": "cae2ceffaa5b25c0b87618a5e82d4d960edf74e8a78cd3242aa3409c1f649a0c"
+      "sha256": "cae2ceffaa5b25c0b87618a5e82d4d960edf74e8a78cd3242aa3409c1f649a0c",
+      "tracked_after_migration": false
     },
     {
       "before": ".面包板样机_C路线采购清单.ref/build_v3.py",
       "after": "references/procurement-sources/build_v3.py",
       "bytes": 41755,
-      "sha256": "2fbb2fc1b8b6037435593c8a4567af849f806a4973fb666705514028525bfb06"
+      "sha256": "2fbb2fc1b8b6037435593c8a4567af849f806a4973fb666705514028525bfb06",
+      "tracked_after_migration": false
     },
     {
       "before": ".面包板样机_C路线采购清单.ref/build_v4_generics.py",
       "after": "references/procurement-sources/build_v4_generics.py",
       "bytes": 25168,
-      "sha256": "03c73f6ab8d3a765c6c17a23518dee855b2044fee5cf6639d7a4b9a639f231f3"
+      "sha256": "03c73f6ab8d3a765c6c17a23518dee855b2044fee5cf6639d7a4b9a639f231f3",
+      "tracked_after_migration": false
     },
     {
       "before": ".面包板样机_C路线采购清单.ref/checkpdf.py",
       "after": "references/procurement-sources/checkpdf.py",
       "bytes": 572,
-      "sha256": "564484732f15400b62881e4fb2465072f80efa80323a3e3d4d7d5cfa7394800c"
+      "sha256": "564484732f15400b62881e4fb2465072f80efa80323a3e3d4d7d5cfa7394800c",
+      "tracked_after_migration": false
     },
     {
       "before": ".面包板样机_C路线采购清单.ref/diag_pdf.py",
       "after": "references/procurement-sources/diag_pdf.py",
       "bytes": 1294,
-      "sha256": "c0215eb8b446fbab32ac269494cf56b8e6bec2ca76d5567441fd750559b778b3"
+      "sha256": "c0215eb8b446fbab32ac269494cf56b8e6bec2ca76d5567441fd750559b778b3",
+      "tracked_after_migration": false
     },
     {
       "before": ".面包板样机_C路线采购清单.ref/ds12569_mirror.pdf",
       "after": "references/procurement-sources/ds12569_mirror.pdf",
       "bytes": 1870726,
-      "sha256": "3ba84081777bf15235286c98903ffb6a55442877934fc091ea5a337939c6a3b2"
+      "sha256": "3ba84081777bf15235286c98903ffb6a55442877934fc091ea5a337939c6a3b2",
+      "tracked_after_migration": false
     },
     {
       "before": ".面包板样机_C路线采购清单.ref/ds12569_st_official.pdf",
       "after": "references/procurement-sources/ds12569_st_official.pdf",
       "bytes": 3329593,
-      "sha256": "c73d5e0c9b9ec498955e4d409d2f1009e7a7949f36194001e1bd0fadc12f44df"
+      "sha256": "c73d5e0c9b9ec498955e4d409d2f1009e7a7949f36194001e1bd0fadc12f44df",
+      "tracked_after_migration": false
     },
     {
       "before": ".面包板样机_C路线采购清单.ref/ds12569_st_official_text.txt",
       "after": "references/procurement-sources/ds12569_st_official_text.txt",
       "bytes": 388582,
-      "sha256": "3200a96cbf3e9efd85f081850b7c7932e105f13571c0ab33b0aea057d7a1d841"
+      "sha256": "3200a96cbf3e9efd85f081850b7c7932e105f13571c0ab33b0aea057d7a1d841",
+      "tracked_after_migration": false
     },
     {
       "before": ".面包板样机_C路线采购清单.ref/ds12569_st_official_text_clean.txt",
       "after": "references/procurement-sources/ds12569_st_official_text_clean.txt",
       "bytes": 388110,
-      "sha256": "517473262529e7fafbf24cba3fa90179ee7f7b5a0d29beb4ffbcb7e7c61e3035"
+      "sha256": "517473262529e7fafbf24cba3fa90179ee7f7b5a0d29beb4ffbcb7e7c61e3035",
+      "tracked_after_migration": false
     },
     {
       "before": ".面包板样机_C路线采购清单.ref/extract_dil24.py",
       "after": "references/procurement-sources/extract_dil24.py",
       "bytes": 3618,
-      "sha256": "aa3535bdd3a2997b633c8b94d577dab21f0e51afe23bc84b4bf3fc0bf9088888"
+      "sha256": "aa3535bdd3a2997b633c8b94d577dab21f0e51afe23bc84b4bf3fc0bf9088888",
+      "tracked_after_migration": false
     },
     {
       "before": ".面包板样机_C路线采购清单.ref/extract_ina.py",
       "after": "references/procurement-sources/extract_ina.py",
       "bytes": 2157,
-      "sha256": "bbc33779ab6207c8d2fc007d7008aa6e32faf00f4ad98ab79ddbd1890da0a3fb"
+      "sha256": "bbc33779ab6207c8d2fc007d7008aa6e32faf00f4ad98ab79ddbd1890da0a3fb",
+      "tracked_after_migration": false
     },
     {
       "before": ".面包板样机_C路线采购清单.ref/extract_pdf.py",
       "after": "references/procurement-sources/extract_pdf.py",
       "bytes": 3010,
-      "sha256": "a736bc11283118fb03a4169623d7ad13409a3fef3ddf2a1745aecc65f44de741"
+      "sha256": "a736bc11283118fb03a4169623d7ad13409a3fef3ddf2a1745aecc65f44de741",
+      "tracked_after_migration": false
     },
     {
       "before": ".面包板样机_C路线采购清单.ref/lcsc_price.py",
       "after": "references/procurement-sources/lcsc_price.py",
       "bytes": 1936,
-      "sha256": "884f41ce0930d61bb0afeee774ecaec5eb3236434d942362237594b6e1cf1180"
+      "sha256": "884f41ce0930d61bb0afeee774ecaec5eb3236434d942362237594b6e1cf1180",
+      "tracked_after_migration": false
     },
     {
       "before": ".面包板样机_C路线采购清单.ref/mkigibv2_pos.txt",
       "after": "references/procurement-sources/mkigibv2_pos.txt",
       "bytes": 184,
-      "sha256": "c7d49ffd255bc06298e85045e371c9d3f24bbc522e67ee137e925cccd14a40e5"
+      "sha256": "c7d49ffd255bc06298e85045e371c9d3f24bbc522e67ee137e925cccd14a40e5",
+      "tracked_after_migration": false
     },
     {
       "before": ".面包板样机_C路线采购清单.ref/mkigibv2_schematic.pdf",
       "after": "references/procurement-sources/mkigibv2_schematic.pdf",
       "bytes": 103090,
-      "sha256": "ed0f12cf43020f348b3b98efbf35ceecd38493b80821451be3d98a7d0d408502"
+      "sha256": "ed0f12cf43020f348b3b98efbf35ceecd38493b80821451be3d98a7d0d408502",
+      "tracked_after_migration": false
     },
     {
       "before": ".面包板样机_C路线采购清单.ref/pdftext_INA226.txt",
       "after": "references/procurement-sources/pdftext_INA226.txt",
       "bytes": 5577472,
-      "sha256": "4b690f0f763151a3cefac42cfd495535eebae8b2e2fa74e2bbadc9359a0188fe"
+      "sha256": "4b690f0f763151a3cefac42cfd495535eebae8b2e2fa74e2bbadc9359a0188fe",
+      "tracked_after_migration": false
     },
     {
       "before": ".面包板样机_C路线采购清单.ref/pdftext_STEVAL.txt",
       "after": "references/procurement-sources/pdftext_STEVAL.txt",
       "bytes": 4971,
-      "sha256": "093bef372f39d0dbf896b159cd26e405e59aa8f3d1071a718d332fc06207488d"
+      "sha256": "093bef372f39d0dbf896b159cd26e405e59aa8f3d1071a718d332fc06207488d",
+      "tracked_after_migration": false
     },
     {
       "before": ".面包板样机_C路线采购清单.ref/probe_lcsc.py",
       "after": "references/procurement-sources/probe_lcsc.py",
       "bytes": 1061,
-      "sha256": "7698c8b4584ac38111f79b57b67f7277dca900daf3a81267a40e388eaffba62d"
+      "sha256": "7698c8b4584ac38111f79b57b67f7277dca900daf3a81267a40e388eaffba62d",
+      "tracked_after_migration": false
     },
     {
       "before": ".面包板样机_C路线采购清单.ref/verify.py",
       "after": "references/procurement-sources/verify.py",
       "bytes": 1058,
-      "sha256": "f1ac8d2cad054c2fde457e80594a604befb0e63959648acc33d8623cd0f131c9"
+      "sha256": "f1ac8d2cad054c2fde457e80594a604befb0e63959648acc33d8623cd0f131c9",
+      "tracked_after_migration": false
     },
     {
       "before": ".面包板样机_C路线采购清单.ref/verify2.py",
       "after": "references/procurement-sources/verify2.py",
       "bytes": 1129,
-      "sha256": "32afcb52dfdc0f4f023910c020af9af06fd875e132ff066d9a8cd4c16078bc95"
+      "sha256": "32afcb52dfdc0f4f023910c020af9af06fd875e132ff066d9a8cd4c16078bc95",
+      "tracked_after_migration": false
     },
     {
       "before": ".面包板样机_C路线采购清单.ref/verify3.py",
       "after": "references/procurement-sources/verify3.py",
       "bytes": 1044,
-      "sha256": "64a03feec30488af0b9fa33f1a9a06adf2fddb64a2033d73bb45026a07175c1e"
+      "sha256": "64a03feec30488af0b9fa33f1a9a06adf2fddb64a2033d73bb45026a07175c1e",
+      "tracked_after_migration": false
     },
     {
       "before": ".面包板样机_C路线采购清单.ref/verify_orders.py",
       "after": "references/procurement-sources/verify_orders.py",
       "bytes": 1436,
-      "sha256": "26ab4001cec1d3ec7f5ccb5289915217398ce905ad6c67cf914c3a2e7d957ce4"
+      "sha256": "26ab4001cec1d3ec7f5ccb5289915217398ce905ad6c67cf914c3a2e7d957ce4",
+      "tracked_after_migration": false
     },
     {
       "before": ".面包板样机_C路线采购清单.ref/backup_v3/面包板样机_C路线采购清单_v3.xlsx",
       "after": "references/procurement-sources/backup_v3/面包板样机_C路线采购清单_v3.xlsx",
       "bytes": 26854,
-      "sha256": "6526c81deb6890721d375ae1ae43b6ba7a1b0d39cf9d3793767eac07cc8b34c7"
+      "sha256": "6526c81deb6890721d375ae1ae43b6ba7a1b0d39cf9d3793767eac07cc8b34c7",
+      "tracked_after_migration": false
     },
     {
       "before": ".面包板样机_C路线采购清单.ref/backup_v3/面包板样机_立创BOM表_v3.xlsx",
       "after": "references/procurement-sources/backup_v3/面包板样机_立创BOM表_v3.xlsx",
       "bytes": 11168,
-      "sha256": "3de18df75f55ab718b9569dc47c59bbd565c1a146b1ca95e7e0ec7c781e1cb09"
+      "sha256": "3de18df75f55ab718b9569dc47c59bbd565c1a146b1ca95e7e0ec7c781e1cb09",
+      "tracked_after_migration": false
     },
     {
       "before": "PPT素材/ESP32S3R8N8开发板.png",
       "after": "references/presentation-assets/ESP32S3R8N8开发板.png",
       "bytes": 1225439,
-      "sha256": "bb67446e8dba044b53f86f98ef56e3b8295bd77582dcedd781779558f7098386"
+      "sha256": "bb67446e8dba044b53f86f98ef56e3b8295bd77582dcedd781779558f7098386",
+      "tracked_after_migration": false
     },
     {
       "before": "PPT素材/IIS3DWB评估板.png",
       "after": "references/presentation-assets/IIS3DWB评估板.png",
       "bytes": 936521,
-      "sha256": "91ecc39c1d145ee74325c96d7d22eb95e7e876a5f286218fbb5439a5b2c6813b"
+      "sha256": "91ecc39c1d145ee74325c96d7d22eb95e7e876a5f286218fbb5439a5b2c6813b",
+      "tracked_after_migration": false
     },
     {
       "before": "PPT素材/INA226模块_R100.jpg",
       "after": "references/presentation-assets/INA226模块_R100.jpg",
       "bytes": 103890,
-      "sha256": "2cc4803fd2b83526200dd182209607839d3a63cac8c416fe7799f5c11c574599"
+      "sha256": "2cc4803fd2b83526200dd182209607839d3a63cac8c416fe7799f5c11c574599",
+      "tracked_after_migration": false
     },
     {
       "before": "PPT素材/TF卡座转接板.jpg",
       "after": "references/presentation-assets/TF卡座转接板.jpg",
       "bytes": 184432,
-      "sha256": "34e4a5cd7e22478c9f5855a6240bf6849f98575872daffed10db132114c50239"
+      "sha256": "34e4a5cd7e22478c9f5855a6240bf6849f98575872daffed10db132114c50239",
+      "tracked_after_migration": false
     },
     {
       "before": "PPT素材/合成数据分析.png",
       "after": "references/presentation-assets/合成数据分析.png",
       "bytes": 256867,
-      "sha256": "62ca0a18caad590d09a607f1d32298bfed469e72aa797ddb9c5751c8135b7fa2"
+      "sha256": "62ca0a18caad590d09a607f1d32298bfed469e72aa797ddb9c5751c8135b7fa2",
+      "tracked_after_migration": false
     },
     {
       "before": "PPT素材/无线充电模块.jpg",
       "after": "references/presentation-assets/无线充电模块.jpg",
       "bytes": 134345,
-      "sha256": "6334546d76acfe73de362f9f109f55a4da6640706ec335c5ded74bd18dc5877a"
+      "sha256": "6334546d76acfe73de362f9f109f55a4da6640706ec335c5ded74bd18dc5877a",
+      "tracked_after_migration": false
     },
     {
       "before": "_原装置解析/add_purchase_sheet.py",
       "after": "references/original-design/add_purchase_sheet.py",
       "bytes": 6737,
-      "sha256": "fdc4770c6d2809962cc286599b00d2e030c7f77769b65615d681f7e07ff8f830"
+      "sha256": "fdc4770c6d2809962cc286599b00d2e030c7f77769b65615d681f7e07ff8f830",
+      "tracked_after_migration": false
     },
     {
       "before": "_原装置解析/gen_deliverables.py",
       "after": "references/original-design/gen_deliverables.py",
       "bytes": 19645,
-      "sha256": "a6866ce063f522281020f07980777d3c1203fd4d0428c9346c84292ca2580c10"
+      "sha256": "a6866ce063f522281020f07980777d3c1203fd4d0428c9346c84292ca2580c10",
+      "tracked_after_migration": false
     },
     {
       "before": "_原装置解析/网表_原始解析.md",
       "after": "references/original-design/网表_原始解析.md",
       "bytes": 7300,
-      "sha256": "67a8cd3da456a0e1b2cc8a754cb7e0e5c8dc32987ff0514709d838d132222206"
+      "sha256": "67a8cd3da456a0e1b2cc8a754cb7e0e5c8dc32987ff0514709d838d132222206",
+      "tracked_after_migration": false
     },
     {
       "before": "tmp/MeasureSolidworks.cs",
       "after": "local-data/installers-and-temp/MeasureSolidworks.cs",
       "bytes": 4142,
-      "sha256": "9e3bbe127d513822234cf8898b168dbad756a6f78b53a8b733279eb1440fc356"
+      "sha256": "9e3bbe127d513822234cf8898b168dbad756a6f78b53a8b733279eb1440fc356",
+      "tracked_after_migration": false
     },
     {
       "before": "tmp/check_wsl_bounded_pwsh7.ps1",
       "after": "local-data/installers-and-temp/check_wsl_bounded_pwsh7.ps1",
       "bytes": 3478,
-      "sha256": "35b09355ebc6615df4182682eac27daff92225325b633483e3a07964417911e9"
+      "sha256": "35b09355ebc6615df4182682eac27daff92225325b633483e3a07964417911e9",
+      "tracked_after_migration": false
     },
     {
       "before": "tmp/finalize_wsl_setup_record.py",
       "after": "local-data/installers-and-temp/finalize_wsl_setup_record.py",
       "bytes": 2462,
-      "sha256": "7a00105fda930a3fe9441a641799a61a26dc82ecdcf8ae8bd56a0a42e5556aa1"
+      "sha256": "7a00105fda930a3fe9441a641799a61a26dc82ecdcf8ae8bd56a0a42e5556aa1",
+      "tracked_after_migration": false
     },
     {
       "before": "tmp/install_wsl_admin.ps1",
       "after": "local-data/installers-and-temp/install_wsl_admin.ps1",
       "bytes": 2707,
-      "sha256": "91accbfabfa972a0768bad344bc24259980da6bf878032dcaaf810bcad61c6d8"
+      "sha256": "91accbfabfa972a0768bad344bc24259980da6bf878032dcaaf810bcad61c6d8",
+      "tracked_after_migration": false
     },
     {
       "before": "tmp/install_wsl_offline_admin.ps1",
       "after": "local-data/installers-and-temp/install_wsl_offline_admin.ps1",
       "bytes": 4203,
-      "sha256": "4b2d45e18155e34cf1040c3b1d2ff76c4b8baa6d8f7f11eef84ff3ce33672765"
+      "sha256": "4b2d45e18155e34cf1040c3b1d2ff76c4b8baa6d8f7f11eef84ff3ce33672765",
+      "tracked_after_migration": false
     },
     {
       "before": "tmp/probe_wsl_environment.sh",
       "after": "local-data/installers-and-temp/probe_wsl_environment.sh",
       "bytes": 798,
-      "sha256": "0e1d9c0491f06798281462ae9c514a7fb3816927f52bd8edcf21e7441913dedc"
+      "sha256": "0e1d9c0491f06798281462ae9c514a7fb3816927f52bd8edcf21e7441913dedc",
+      "tracked_after_migration": false
     },
     {
       "before": "tmp/register_ubuntu_wsl.ps1",
       "after": "local-data/installers-and-temp/register_ubuntu_wsl.ps1",
       "bytes": 3065,
-      "sha256": "e3430018646e870e7c6be3eba445da718c326a37e1c1efac6f0fdce55794ba2b"
+      "sha256": "e3430018646e870e7c6be3eba445da718c326a37e1c1efac6f0fdce55794ba2b",
+      "tracked_after_migration": false
     },
     {
       "before": "tmp/restart_wsl_service_pwsh7.ps1",
       "after": "local-data/installers-and-temp/restart_wsl_service_pwsh7.ps1",
       "bytes": 2018,
-      "sha256": "e07222f520400bfe73e4496ab1364bdc5b0f0a6c546e2175d4189d4571a6baef"
+      "sha256": "e07222f520400bfe73e4496ab1364bdc5b0f0a6c546e2175d4189d4571a6baef",
+      "tracked_after_migration": false
     },
     {
       "before": "tmp/ubuntu-26.04.1-wsl-amd64.wsl",
       "after": "local-data/installers-and-temp/ubuntu-26.04.1-wsl-amd64.wsl",
       "bytes": 418495746,
-      "sha256": "48d56724b5c8e60f24893e83e73bbb58c60b3ca22fba3da977075420acd54104"
+      "sha256": "48d56724b5c8e60f24893e83e73bbb58c60b3ca22fba3da977075420acd54104",
+      "tracked_after_migration": false
     },
     {
       "before": "tmp/verify_wsl_environment.py",
       "after": "local-data/installers-and-temp/verify_wsl_environment.py",
       "bytes": 3159,
-      "sha256": "51ac3b37d7e3a8057d0fc1e325543605d7f5c12d88d386550b792f865b825dbd"
+      "sha256": "51ac3b37d7e3a8057d0fc1e325543605d7f5c12d88d386550b792f865b825dbd",
+      "tracked_after_migration": false
     },
     {
       "before": "tmp/wsl.3.0.1.0.x64.msi",
       "after": "local-data/installers-and-temp/wsl.3.0.1.0.x64.msi",
       "bytes": 367669248,
-      "sha256": "28b1a0d013640a2ac95898ea705fa186e5b4ff767a1c1b49257161bc106599c6"
+      "sha256": "28b1a0d013640a2ac95898ea705fa186e5b4ff767a1c1b49257161bc106599c6",
+      "tracked_after_migration": false
     },
     {
       "before": "tmp/wsl_DistributionInfo_20261012.json",
       "after": "local-data/installers-and-temp/wsl_DistributionInfo_20261012.json",
       "bytes": 18481,
-      "sha256": "cf81b7b35b213a9568f4cfeb11c90dc6f5e96065b22a1559c29631d432a39739"
+      "sha256": "cf81b7b35b213a9568f4cfeb11c90dc6f5e96065b22a1559c29631d432a39739",
+      "tracked_after_migration": false
     },
     {
       "before": "tmp/wsl_check_basic_20261014_134431.json",
       "after": "local-data/installers-and-temp/wsl_check_basic_20261014_134431.json",
       "bytes": 551,
-      "sha256": "3a8d9711d8fdd058fb07e775b4706b73ec3cc0ff9d4e85446ba787502c3dec51"
+      "sha256": "3a8d9711d8fdd058fb07e775b4706b73ec3cc0ff9d4e85446ba787502c3dec51",
+      "tracked_after_migration": false
     },
     {
       "before": "tmp/wsl_check_list_20261014_134604.json",
       "after": "local-data/installers-and-temp/wsl_check_list_20261014_134604.json",
       "bytes": 435,
-      "sha256": "511460a678179bcd796bda30c9ebc7f662f5e1818867be449451475398cd3287"
+      "sha256": "511460a678179bcd796bda30c9ebc7f662f5e1818867be449451475398cd3287",
+      "tracked_after_migration": false
     },
     {
       "before": "tmp/wsl_check_record_20261014_135005.json",
       "after": "local-data/installers-and-temp/wsl_check_record_20261014_135005.json",
       "bytes": 685,
-      "sha256": "53b4fc2f80b86bd991006f5a206f90a7e31a7c361e91459d2f4f3e036b5aeca9"
+      "sha256": "53b4fc2f80b86bd991006f5a206f90a7e31a7c361e91459d2f4f3e036b5aeca9",
+      "tracked_after_migration": false
     },
     {
       "before": "tmp/wsl_check_verify_20261014_134615.json",
       "after": "local-data/installers-and-temp/wsl_check_verify_20261014_134615.json",
       "bytes": 1634,
-      "sha256": "66c2dc823e51bc93e2303da1edf2232d1fc403d35c953de37ca2565c0da82017"
+      "sha256": "66c2dc823e51bc93e2303da1edf2232d1fc403d35c953de37ca2565c0da82017",
+      "tracked_after_migration": false
     },
     {
       "before": "tmp/wsl_check_version_20261014_134606.json",
       "after": "local-data/installers-and-temp/wsl_check_version_20261014_134606.json",
       "bytes": 593,
-      "sha256": "341d06a433057a6118488f7b0ac0dba1e65a28194f353267e75e1bee7add1f41"
+      "sha256": "341d06a433057a6118488f7b0ac0dba1e65a28194f353267e75e1bee7add1f41",
+      "tracked_after_migration": false
     },
     {
       "before": "tmp/wsl_environment_20261014.json",
       "after": "local-data/installers-and-temp/wsl_environment_20261014.json",
       "bytes": 1026,
-      "sha256": "3de24c60fc3651dc244816dbd5326c71d3f8b31100b7ec8b63efc3cfeccb148a"
+      "sha256": "3de24c60fc3651dc244816dbd5326c71d3f8b31100b7ec8b63efc3cfeccb148a",
+      "tracked_after_migration": false
     },
     {
       "before": "tmp/wsl_filesystem_probe_20261014.txt",
       "after": "local-data/installers-and-temp/wsl_filesystem_probe_20261014.txt",
       "bytes": 72,
-      "sha256": "61291844fb4c7bdd854bc623890dd06af8a390dbe9447f4c49d0bfbb54fed8bf"
+      "sha256": "61291844fb4c7bdd854bc623890dd06af8a390dbe9447f4c49d0bfbb54fed8bf",
+      "tracked_after_migration": false
     },
     {
       "before": "tmp/wsl_install_20261012_183036.json",
       "after": "local-data/installers-and-temp/wsl_install_20261012_183036.json",
       "bytes": 1227,
-      "sha256": "7687f54ea5d88ebec67af07937fdc6af4f4278c33d0a8d9735d42bb8551a204d"
+      "sha256": "7687f54ea5d88ebec67af07937fdc6af4f4278c33d0a8d9735d42bb8551a204d",
+      "tracked_after_migration": false
     },
     {
       "before": "tmp/wsl_install_20261012_183036.log",
       "after": "local-data/installers-and-temp/wsl_install_20261012_183036.log",
       "bytes": 68,
-      "sha256": "e4c434c09fa70285e9acd1306f4328e41f6d676929d7669f414a207ebacc01a9"
+      "sha256": "e4c434c09fa70285e9acd1306f4328e41f6d676929d7669f414a207ebacc01a9",
+      "tracked_after_migration": false
     },
     {
       "before": "tmp/wsl_offline_install_20261012_184213.json",
       "after": "local-data/installers-and-temp/wsl_offline_install_20261012_184213.json",
       "bytes": 941,
-      "sha256": "cce5336c8d89e567fd03faca055ef6c9beabf5932a33f8069301efbd23946fcf"
+      "sha256": "cce5336c8d89e567fd03faca055ef6c9beabf5932a33f8069301efbd23946fcf",
+      "tracked_after_migration": false
     },
     {
       "before": "tmp/wsl_offline_msi_20261012_184213.log",
       "after": "local-data/installers-and-temp/wsl_offline_msi_20261012_184213.log",
       "bytes": 1624928,
-      "sha256": "1d920bf9f2d2af6161ce049efb3366bae4c7b62428c9ac978c00dd0921287b04"
+      "sha256": "1d920bf9f2d2af6161ce049efb3366bae4c7b62428c9ac978c00dd0921287b04",
+      "tracked_after_migration": false
     },
     {
       "before": "tmp/wsl_release_3.0.1.json",
       "after": "local-data/installers-and-temp/wsl_release_3.0.1.json",
       "bytes": 11135,
-      "sha256": "c36c9da58f94065ed7c3682dd2c1b6e3572f31d5d97722808bba9e9a604b11e3"
+      "sha256": "c36c9da58f94065ed7c3682dd2c1b6e3572f31d5d97722808bba9e9a604b11e3",
+      "tracked_after_migration": false
     },
     {
       "before": "tmp/wsl_setup_status_20261012.json",
       "after": "local-data/installers-and-temp/wsl_setup_status_20261012.json",
       "bytes": 1267,
-      "sha256": "c4e9aeae5575582ac69d8105e556c41aa2ffe0bdaf7d1e5ac27f30ab151e219a"
+      "sha256": "c4e9aeae5575582ac69d8105e556c41aa2ffe0bdaf7d1e5ac27f30ab151e219a",
+      "tracked_after_migration": false
     },
     {
       "before": "tmp/wsl_setup_status_20261014.json",
       "after": "local-data/installers-and-temp/wsl_setup_status_20261014.json",
       "bytes": 2201,
-      "sha256": "8350b44de59dee2427b872f69195d780a8b4c51468708091ac6aa337761a2cbb"
+      "sha256": "8350b44de59dee2427b872f69195d780a8b4c51468708091ac6aa337761a2cbb",
+      "tracked_after_migration": false
     },
     {
       "before": "tmp/wsl_ubuntu_register_20261012_184912.json",
       "after": "local-data/installers-and-temp/wsl_ubuntu_register_20261012_184912.json",
       "bytes": 807,
-      "sha256": "cf8a15fca03501faebfccb48ceeec0556f912b885b082c9cfd54a81a266ee0e6"
+      "sha256": "cf8a15fca03501faebfccb48ceeec0556f912b885b082c9cfd54a81a266ee0e6",
+      "tracked_after_migration": false
     },
     {
       "before": "tmp/wsl_ubuntu_register_20261014_085554.json",
       "after": "local-data/installers-and-temp/wsl_ubuntu_register_20261014_085554.json",
       "bytes": 759,
-      "sha256": "95722eb5c87dc59ef1ab2240732ae993af90aa68b869b127eb247e7c066e5d98"
+      "sha256": "95722eb5c87dc59ef1ab2240732ae993af90aa68b869b127eb247e7c066e5d98",
+      "tracked_after_migration": false
     },
     {
       "before": "tmp/wsl_user_setup_window_20261014.json",
       "after": "local-data/installers-and-temp/wsl_user_setup_window_20261014.json",
       "bytes": 145,
-      "sha256": "94da4ae6955a5fd80064f2df2b1341d0877a68f3af689c2ba0ba22ceba11f36f"
+      "sha256": "94da4ae6955a5fd80064f2df2b1341d0877a68f3af689c2ba0ba22ceba11f36f",
+      "tracked_after_migration": false
     },
     {
       "before": "参考资料/AN5444_IIS3DWB_应用笔记_中文.pdf",
       "after": "references/datasheets/AN5444_IIS3DWB_应用笔记_中文.pdf",
       "bytes": 865659,
-      "sha256": "f1baca90a3861cf044317b28313b6bdd5a79430cd27d88e7b11ff7d26e17039b"
+      "sha256": "f1baca90a3861cf044317b28313b6bdd5a79430cd27d88e7b11ff7d26e17039b",
+      "tracked_after_migration": false
     },
     {
       "before": "参考资料/DS12569_IIS3DWB_数据手册_Rev8.pdf",
       "after": "references/datasheets/DS12569_IIS3DWB_数据手册_Rev8.pdf",
       "bytes": 3329593,
-      "sha256": "c73d5e0c9b9ec498955e4d409d2f1009e7a7949f36194001e1bd0fadc12f44df"
+      "sha256": "c73d5e0c9b9ec498955e4d409d2f1009e7a7949f36194001e1bd0fadc12f44df",
+      "tracked_after_migration": false
     },
     {
       "before": "成品/智能刀柄振动监测原型_数据与计算依据.docx",
       "after": "deliverables/legacy-exports/智能刀柄振动监测原型_数据与计算依据.docx",
       "bytes": 42843,
-      "sha256": "16f6669cf980521c0a97dcd37c2e9fdd152b857316ea4011f94899d698bafcf7"
+      "sha256": "16f6669cf980521c0a97dcd37c2e9fdd152b857316ea4011f94899d698bafcf7",
+      "tracked_after_migration": false
     },
     {
       "before": "面包板样机_固件/.gitignore",
       "after": "面包板样机_固件/.gitignore",
       "bytes": 99,
-      "sha256": "d952abf002d5e1ec80c8ab1bfc9f38eb5b62fc310667d501cb2ce9f21c3effb2"
+      "sha256": "d952abf002d5e1ec80c8ab1bfc9f38eb5b62fc310667d501cb2ce9f21c3effb2",
+      "tracked_after_migration": true
     },
     {
       "before": "面包板样机_固件/README.md",
-      "after": "面包板样机_固件/README.md",
+      "after": "docs/history/firmware-README.before-engineering.md",
       "bytes": 44818,
-      "sha256": "4da0544fd21b847de14d0dcedd4805cc85ffaf075b2a83d1e426e9cf864f5853"
+      "sha256": "4da0544fd21b847de14d0dcedd4805cc85ffaf075b2a83d1e426e9cf864f5853",
+      "tracked_after_migration": true
     },
     {
       "before": "面包板样机_固件/platformio.ini",
       "after": "面包板样机_固件/platformio.ini",
       "bytes": 1441,
-      "sha256": "c1f2cf8738d6674b099cd57ace66f786e7a96cb0ee0e0c4e4830d0ffbe922129"
+      "sha256": "c1f2cf8738d6674b099cd57ace66f786e7a96cb0ee0e0c4e4830d0ffbe922129",
+      "tracked_after_migration": true
     },
     {
       "before": "面包板样机_固件/platformio.tf_protocol_probe.ini",
       "after": "面包板样机_固件/platformio.tf_protocol_probe.ini",
       "bytes": 1098,
-      "sha256": "42b4bc728a7efc99056db603d0390f34401573657df34d2d7ae230c12446865e"
+      "sha256": "42b4bc728a7efc99056db603d0390f34401573657df34d2d7ae230c12446865e",
+      "tracked_after_migration": true
     },
     {
       "before": "面包板样机_固件/platformio.tf_software_probe.ini",
       "after": "面包板样机_固件/platformio.tf_software_probe.ini",
       "bytes": 698,
-      "sha256": "b330c25fb1ab419106116c3d107dc6405f995097a8993d765912dfecb7dca6f7"
+      "sha256": "b330c25fb1ab419106116c3d107dc6405f995097a8993d765912dfecb7dca6f7",
+      "tracked_after_migration": true
     },
     {
       "before": "面包板样机_固件/自动读取串口.cmd",
       "after": "面包板样机_固件/自动读取串口.cmd",
       "bytes": 132,
-      "sha256": "45a3e2ee9edf83bc84743319d213991b5d44b6f011a5f9ee13135dac63f05839"
+      "sha256": "45a3e2ee9edf83bc84743319d213991b5d44b6f011a5f9ee13135dac63f05839",
+      "tracked_after_migration": true
     },
     {
       "before": "面包板样机_固件/.vscode/c_cpp_properties.json",
       "after": "面包板样机_固件/.vscode/c_cpp_properties.json",
       "bytes": 64288,
-      "sha256": "3c85fd66f2ed1b96444222d4bb2cbe7142816857654cda229b1867ca0511167e"
+      "sha256": "3c85fd66f2ed1b96444222d4bb2cbe7142816857654cda229b1867ca0511167e",
+      "tracked_after_migration": false
     },
     {
       "before": "面包板样机_固件/.vscode/extensions.json",
       "after": "面包板样机_固件/.vscode/extensions.json",
       "bytes": 322,
-      "sha256": "31cc8f05084d96b65be8f147533017c7a1b89b055d85886a2e4ab3ce532f34fb"
+      "sha256": "31cc8f05084d96b65be8f147533017c7a1b89b055d85886a2e4ab3ce532f34fb",
+      "tracked_after_migration": false
     },
     {
       "before": "面包板样机_固件/.vscode/launch.json",
       "after": "面包板样机_固件/.vscode/launch.json",
       "bytes": 1966,
-      "sha256": "5773f91f3ebb0caccfb78c29e7e2afff3273464e57586929aa2347bc694b88b1"
+      "sha256": "5773f91f3ebb0caccfb78c29e7e2afff3273464e57586929aa2347bc694b88b1",
+      "tracked_after_migration": false
     },
     {
       "before": "面包板样机_固件/backups/tf_software_20261015_125041_550332/esp32s3_full_8MiB.bin",
       "after": "面包板样机_固件/backups/tf_software_20261015_125041_550332/esp32s3_full_8MiB.bin",
       "bytes": 8388608,
-      "sha256": "f139f2ae71a544702c96364e0085bafc249068f6c9ff44e1f88efc1c6778b3aa"
+      "sha256": "f139f2ae71a544702c96364e0085bafc249068f6c9ff44e1f88efc1c6778b3aa",
+      "tracked_after_migration": false
     },
     {
       "before": "面包板样机_固件/backups/tf_software_20261015_125041_550332/esp32s3_full_8MiB.json",
       "after": "面包板样机_固件/backups/tf_software_20261015_125041_550332/esp32s3_full_8MiB.json",
       "bytes": 1258,
-      "sha256": "53cac3106c0cee836c7162513b32c3751b1db97f8e504c6b61bf280fe8dffca1"
+      "sha256": "53cac3106c0cee836c7162513b32c3751b1db97f8e504c6b61bf280fe8dffca1",
+      "tracked_after_migration": false
     },
     {
       "before": "面包板样机_固件/diagnostics/tf_selected_firmware.json",
       "after": "面包板样机_固件/diagnostics/tf_selected_firmware.json",
       "bytes": 2710,
-      "sha256": "9168ec67eab17f771865b61b1dbd68948e6e04d5842a2a926b40ff5a25d326f2"
+      "sha256": "9168ec67eab17f771865b61b1dbd68948e6e04d5842a2a926b40ff5a25d326f2",
+      "tracked_after_migration": true
     },
     {
       "before": "面包板样机_固件/diagnostics/tf_idf_probe/CMakeLists.txt",
       "after": "面包板样机_固件/diagnostics/tf_idf_probe/CMakeLists.txt",
       "bytes": 118,
-      "sha256": "a246fd0eb95806f739bf82e7bac912d53946176dba9b13faa917c507be6464bc"
+      "sha256": "a246fd0eb95806f739bf82e7bac912d53946176dba9b13faa917c507be6464bc",
+      "tracked_after_migration": true
     },
     {
       "before": "面包板样机_固件/diagnostics/tf_idf_probe/partitions.csv",
       "after": "面包板样机_固件/diagnostics/tf_idf_probe/partitions.csv",
       "bytes": 273,
-      "sha256": "0c4e02152e1b6911d0a9b94be67d37674052fdc5c0870a5a55cc2133e65233a1"
+      "sha256": "0c4e02152e1b6911d0a9b94be67d37674052fdc5c0870a5a55cc2133e65233a1",
+      "tracked_after_migration": true
     },
     {
       "before": "面包板样机_固件/diagnostics/tf_idf_probe/platformio.ini",
       "after": "面包板样机_固件/diagnostics/tf_idf_probe/platformio.ini",
       "bytes": 480,
-      "sha256": "140c04d09907e297d7a2135949a48ff4849cfa9d647c039bd0fa043b6344c721"
+      "sha256": "140c04d09907e297d7a2135949a48ff4849cfa9d647c039bd0fa043b6344c721",
+      "tracked_after_migration": true
     },
     {
       "before": "面包板样机_固件/diagnostics/tf_idf_probe/sdkconfig.defaults",
       "after": "面包板样机_固件/diagnostics/tf_idf_probe/sdkconfig.defaults",
       "bytes": 372,
-      "sha256": "d7610876403351cf588cacf550f21cba1c24f7fa3c859b05be3b4562790f73c8"
+      "sha256": "d7610876403351cf588cacf550f21cba1c24f7fa3c859b05be3b4562790f73c8",
+      "tracked_after_migration": true
     },
     {
       "before": "面包板样机_固件/diagnostics/tf_idf_probe/src/CMakeLists.txt",
       "after": "面包板样机_固件/diagnostics/tf_idf_probe/src/CMakeLists.txt",
       "bytes": 187,
-      "sha256": "de472de5fb4d695aeb657e8622b2de5216f57a4bdf4bd29d9ffa52b426fd8bd1"
+      "sha256": "de472de5fb4d695aeb657e8622b2de5216f57a4bdf4bd29d9ffa52b426fd8bd1",
+      "tracked_after_migration": true
     },
     {
       "before": "面包板样机_固件/diagnostics/tf_idf_probe/src/serial_compat.cpp",
       "after": "面包板样机_固件/diagnostics/tf_idf_probe/src/serial_compat.cpp",
       "bytes": 608,
-      "sha256": "7a6e0b1f91138280f40dcd1160a1d78fb2ae74d59654891a3e732ccfde71a706"
+      "sha256": "7a6e0b1f91138280f40dcd1160a1d78fb2ae74d59654891a3e732ccfde71a706",
+      "tracked_after_migration": true
     },
     {
       "before": "面包板样机_固件/diagnostics/tf_idf_probe/src/serial_compat.h",
       "after": "面包板样机_固件/diagnostics/tf_idf_probe/src/serial_compat.h",
       "bytes": 752,
-      "sha256": "6822cb1d13751158c6798f5f6e2c72e6d238ac6108f0a313550fbaef910c127a"
+      "sha256": "6822cb1d13751158c6798f5f6e2c72e6d238ac6108f0a313550fbaef910c127a",
+      "tracked_after_migration": true
     },
     {
       "before": "面包板样机_固件/diagnostics/tf_protocol_probe/main.cpp",
       "after": "面包板样机_固件/diagnostics/tf_protocol_probe/main.cpp",
       "bytes": 10032,
-      "sha256": "98695a454af75ee95ccfbaa45f9628be93211dd960b1170873f90d5e9b65da41"
+      "sha256": "98695a454af75ee95ccfbaa45f9628be93211dd960b1170873f90d5e9b65da41",
+      "tracked_after_migration": true
     },
     {
       "before": "面包板样机_固件/diagnostics/tf_software_probe/main.cpp",
       "after": "面包板样机_固件/diagnostics/tf_software_probe/main.cpp",
       "bytes": 4266,
-      "sha256": "4c485734c5c7062456d99fb84b58d2e16314fb1218b9f433dbab95402bddc350"
+      "sha256": "4c485734c5c7062456d99fb84b58d2e16314fb1218b9f433dbab95402bddc350",
+      "tracked_after_migration": true
     },
     {
       "before": "面包板样机_固件/include/config.h",
       "after": "面包板样机_固件/include/config.h",
       "bytes": 10698,
-      "sha256": "bbdb1d218bd481034682ad8111e76dec93ffb14a21e78057e0b9d52c2aca9175"
+      "sha256": "bbdb1d218bd481034682ad8111e76dec93ffb14a21e78057e0b9d52c2aca9175",
+      "tracked_after_migration": true
     },
     {
       "before": "面包板样机_固件/include/disp.h",
       "after": "面包板样机_固件/include/disp.h",
       "bytes": 4308,
-      "sha256": "960e897b0587d8dc8a63ddb469ae021c534eb6f445f442ed5c59eecb9494552b"
+      "sha256": "960e897b0587d8dc8a63ddb469ae021c534eb6f445f442ed5c59eecb9494552b",
+      "tracked_after_migration": true
     },
     {
       "before": "面包板样机_固件/include/iis3dwb.h",
       "after": "面包板样机_固件/include/iis3dwb.h",
       "bytes": 6522,
-      "sha256": "7b1d24b5da72671d1eee0db81c056843de43a8cf6bbf35e65e1b8eb2777b75bc"
+      "sha256": "7b1d24b5da72671d1eee0db81c056843de43a8cf6bbf35e65e1b8eb2777b75bc",
+      "tracked_after_migration": true
     },
     {
       "before": "面包板样机_固件/include/ina226.h",
       "after": "面包板样机_固件/include/ina226.h",
       "bytes": 3735,
-      "sha256": "c18d6aa41d9b7e363714f5354b6f14786d28bef3503b5d53138304c8f07e3731"
+      "sha256": "c18d6aa41d9b7e363714f5354b6f14786d28bef3503b5d53138304c8f07e3731",
+      "tracked_after_migration": true
     },
     {
       "before": "面包板样机_固件/include/netui.h",
       "after": "面包板样机_固件/include/netui.h",
       "bytes": 4711,
-      "sha256": "a9be7f51132e5a00de0eb95159b179b7de757fef53dc4df143c2a4997c44cdeb"
+      "sha256": "a9be7f51132e5a00de0eb95159b179b7de757fef53dc4df143c2a4997c44cdeb",
+      "tracked_after_migration": true
     },
     {
       "before": "面包板样机_固件/include/power.h",
       "after": "面包板样机_固件/include/power.h",
       "bytes": 3096,
-      "sha256": "ffac249ca087b78904edc2911842976bff4c30b62928702a95bfda633cebe0c9"
+      "sha256": "ffac249ca087b78904edc2911842976bff4c30b62928702a95bfda633cebe0c9",
+      "tracked_after_migration": true
     },
     {
       "before": "面包板样机_固件/include/recorder.h",
       "after": "面包板样机_固件/include/recorder.h",
       "bytes": 4273,
-      "sha256": "d29542e49c1172158ea14abb6baa28898c76da259fbc6ea7e196314a793fa97e"
+      "sha256": "d29542e49c1172158ea14abb6baa28898c76da259fbc6ea7e196314a793fa97e",
+      "tracked_after_migration": true
     },
     {
       "before": "面包板样机_固件/include/webui_asset.h",
       "after": "面包板样机_固件/include/webui_asset.h",
       "bytes": 84694,
-      "sha256": "9a85e681fd3d8151e79c47d2191c8415136c98546c30be07beb2a49d9f19d0c4"
+      "sha256": "9a85e681fd3d8151e79c47d2191c8415136c98546c30be07beb2a49d9f19d0c4",
+      "tracked_after_migration": true
     },
     {
       "before": "面包板样机_固件/logs/assembly_check_20261012_COM6.log",
       "after": "面包板样机_固件/logs/assembly_check_20261012_COM6.log",
       "bytes": 29900,
-      "sha256": "74ffb604b045ebad9aa928837e5ac52c27dbb7319a006cfb8ba8327b811bc9a0"
+      "sha256": "74ffb604b045ebad9aa928837e5ac52c27dbb7319a006cfb8ba8327b811bc9a0",
+      "tracked_after_migration": false
     },
     {
       "before": "面包板样机_固件/logs/firmware_before_card_identity_diag_20261012.bin",
       "after": "面包板样机_固件/logs/firmware_before_card_identity_diag_20261012.bin",
       "bytes": 960224,
-      "sha256": "2a08924884621fa2a6a79dcee1c93b75fd29a83a92eecd2e0d06c1cf3dfc9223"
+      "sha256": "2a08924884621fa2a6a79dcee1c93b75fd29a83a92eecd2e0d06c1cf3dfc9223",
+      "tracked_after_migration": false
     },
     {
       "before": "面包板样机_固件/logs/iis3dwb_readcheck_20261014_140008_COM6.json",
       "after": "面包板样机_固件/logs/iis3dwb_readcheck_20261014_140008_COM6.json",
       "bytes": 1007,
-      "sha256": "a5b728199e97be5d48227b0dead6b4e8b1beab73c078a02300d8a1729e7f9482"
+      "sha256": "a5b728199e97be5d48227b0dead6b4e8b1beab73c078a02300d8a1729e7f9482",
+      "tracked_after_migration": false
     },
     {
       "before": "面包板样机_固件/logs/iis3dwb_readcheck_20261014_140008_COM6.log",
       "after": "面包板样机_固件/logs/iis3dwb_readcheck_20261014_140008_COM6.log",
       "bytes": 8420,
-      "sha256": "0027a62c35fc7944fbcc51b48eb7c2090fe0d76b92b5dbfd38b944ebe9e8f36f"
+      "sha256": "0027a62c35fc7944fbcc51b48eb7c2090fe0d76b92b5dbfd38b944ebe9e8f36f",
+      "tracked_after_migration": false
     },
     {
       "before": "面包板样机_固件/logs/iis3dwb_readcheck_20261014_140531_COM6.json",
       "after": "面包板样机_固件/logs/iis3dwb_readcheck_20261014_140531_COM6.json",
       "bytes": 916,
-      "sha256": "dbb9a0e0fbd6ea3ad447fc7c312cb7dc15b104a8999d1f09cb405a68f6b59e10"
+      "sha256": "dbb9a0e0fbd6ea3ad447fc7c312cb7dc15b104a8999d1f09cb405a68f6b59e10",
+      "tracked_after_migration": false
     },
     {
       "before": "面包板样机_固件/logs/iis3dwb_readcheck_20261014_140531_COM6.log",
       "after": "面包板样机_固件/logs/iis3dwb_readcheck_20261014_140531_COM6.log",
       "bytes": 8578,
-      "sha256": "c2151532152a0e475a7ca4edd2f11fb08097c040f80c075b31c281c458246045"
+      "sha256": "c2151532152a0e475a7ca4edd2f11fb08097c040f80c075b31c281c458246045",
+      "tracked_after_migration": false
     },
     {
       "before": "面包板样机_固件/logs/iis3dwb_readcheck_20261014_141308_COM6.json",
       "after": "面包板样机_固件/logs/iis3dwb_readcheck_20261014_141308_COM6.json",
       "bytes": 951,
-      "sha256": "76f24d69722bdcdf6e766ccd39244eaec195e21799fd4234b23595c2de4b9ce3"
+      "sha256": "76f24d69722bdcdf6e766ccd39244eaec195e21799fd4234b23595c2de4b9ce3",
+      "tracked_after_migration": false
     },
     {
       "before": "面包板样机_固件/logs/iis3dwb_readcheck_20261014_141308_COM6.log",
       "after": "面包板样机_固件/logs/iis3dwb_readcheck_20261014_141308_COM6.log",
       "bytes": 8786,
-      "sha256": "d7f1643a5023cd4f84f89f8ef119152b1f2d5304fa3da0275962d9d7020b331c"
+      "sha256": "d7f1643a5023cd4f84f89f8ef119152b1f2d5304fa3da0275962d9d7020b331c",
+      "tracked_after_migration": false
     },
     {
       "before": "面包板样机_固件/logs/iis3dwb_readcheck_20261014_141956_COM6.json",
       "after": "面包板样机_固件/logs/iis3dwb_readcheck_20261014_141956_COM6.json",
       "bytes": 931,
-      "sha256": "fc89f68196135072270b1c426044e4ded4009ba63e498ad82230f0c101c5f2c4"
+      "sha256": "fc89f68196135072270b1c426044e4ded4009ba63e498ad82230f0c101c5f2c4",
+      "tracked_after_migration": false
     },
     {
       "before": "面包板样机_固件/logs/iis3dwb_readcheck_20261014_141956_COM6.log",
       "after": "面包板样机_固件/logs/iis3dwb_readcheck_20261014_141956_COM6.log",
       "bytes": 8545,
-      "sha256": "4f3be5879cbc7859112c2616c2d08ffd465e7ee8d72813e7e058547b27b6a459"
+      "sha256": "4f3be5879cbc7859112c2616c2d08ffd465e7ee8d72813e7e058547b27b6a459",
+      "tracked_after_migration": false
     },
     {
       "before": "面包板样机_固件/logs/iis3dwb_readcheck_20261014_142312_COM6.json",
       "after": "面包板样机_固件/logs/iis3dwb_readcheck_20261014_142312_COM6.json",
       "bytes": 967,
-      "sha256": "2b71889f842f573b032d4190ba137a0d467f6be1fc41e48f29b3dcfc14fe3d76"
+      "sha256": "2b71889f842f573b032d4190ba137a0d467f6be1fc41e48f29b3dcfc14fe3d76",
+      "tracked_after_migration": false
     },
     {
       "before": "面包板样机_固件/logs/iis3dwb_readcheck_20261014_142312_COM6.log",
       "after": "面包板样机_固件/logs/iis3dwb_readcheck_20261014_142312_COM6.log",
       "bytes": 8745,
-      "sha256": "19793e073fdbff157cd54aac8bb49c494bafdaa6ee4d1ee1d3c2ede286f6ffe0"
+      "sha256": "19793e073fdbff157cd54aac8bb49c494bafdaa6ee4d1ee1d3c2ede286f6ffe0",
+      "tracked_after_migration": false
     },
     {
       "before": "面包板样机_固件/logs/iis3dwb_readcheck_20261014_142915_COM6.json",
       "after": "面包板样机_固件/logs/iis3dwb_readcheck_20261014_142915_COM6.json",
       "bytes": 936,
-      "sha256": "784c60a543eee51d09fea1a4a8d6c635746982284de851d0a606363b5d6c6c68"
+      "sha256": "784c60a543eee51d09fea1a4a8d6c635746982284de851d0a606363b5d6c6c68",
+      "tracked_after_migration": false
     },
     {
       "before": "面包板样机_固件/logs/iis3dwb_readcheck_20261014_142915_COM6.log",
       "after": "面包板样机_固件/logs/iis3dwb_readcheck_20261014_142915_COM6.log",
       "bytes": 8625,
-      "sha256": "f321d0a337a1e890ca690bb106208df8e942175a056de4afe3d034e91aed9b3e"
+      "sha256": "f321d0a337a1e890ca690bb106208df8e942175a056de4afe3d034e91aed9b3e",
+      "tracked_after_migration": false
     },
     {
       "before": "面包板样机_固件/logs/iis3dwb_readcheck_20261014_145224_COM6.json",
       "after": "面包板样机_固件/logs/iis3dwb_readcheck_20261014_145224_COM6.json",
       "bytes": 635,
-      "sha256": "a73f0a5a232d9c38c13b9c36dd0b2a51fbd602d78cb6263f017d775f812fc3a1"
+      "sha256": "a73f0a5a232d9c38c13b9c36dd0b2a51fbd602d78cb6263f017d775f812fc3a1",
+      "tracked_after_migration": false
     },
     {
       "before": "面包板样机_固件/logs/iis3dwb_readcheck_20261014_145224_COM6.log",
       "after": "面包板样机_固件/logs/iis3dwb_readcheck_20261014_145224_COM6.log",
       "bytes": 4042,
-      "sha256": "47ba5b7ee8ab1bfc93f29a9dc42d8e1ab212b50965eb24b3574da6ffb8408dca"
+      "sha256": "47ba5b7ee8ab1bfc93f29a9dc42d8e1ab212b50965eb24b3574da6ffb8408dca",
+      "tracked_after_migration": false
     },
     {
       "before": "面包板样机_固件/logs/iis3dwb_recheck_build_20261014.log",
       "after": "面包板样机_固件/logs/iis3dwb_recheck_build_20261014.log",
       "bytes": 1857,
-      "sha256": "c08527d1fe6d1ea22d4a6d2019eaee48cead26b7eaa94b719381901cc35d17f8"
+      "sha256": "c08527d1fe6d1ea22d4a6d2019eaee48cead26b7eaa94b719381901cc35d17f8",
+      "tracked_after_migration": false
     },
     {
       "before": "面包板样机_固件/logs/iis3dwb_recheck_upload_20261014.log",
       "after": "面包板样机_固件/logs/iis3dwb_recheck_upload_20261014.log",
       "bytes": 4622,
-      "sha256": "bd6d1ff7befcc00d33942e7bbd05c41bc94dd9adfb18a0ab78f1a74a3c506814"
+      "sha256": "bd6d1ff7befcc00d33942e7bbd05c41bc94dd9adfb18a0ab78f1a74a3c506814",
+      "tracked_after_migration": false
     },
     {
       "before": "面包板样机_固件/logs/iis3dwb_six_pose_summary_20261014.json",
       "after": "面包板样机_固件/logs/iis3dwb_six_pose_summary_20261014.json",
       "bytes": 3205,
-      "sha256": "1c72dede697b035ec7faa837a0a897e87309bc22d725ab907648314504982fe8"
+      "sha256": "1c72dede697b035ec7faa837a0a897e87309bc22d725ab907648314504982fe8",
+      "tracked_after_migration": false
     },
     {
       "before": "面包板样机_固件/logs/iis3dwb_z_gravity_compare_20261014.json",
       "after": "面包板样机_固件/logs/iis3dwb_z_gravity_compare_20261014.json",
       "bytes": 902,
-      "sha256": "216433a568f2de3a0efb11b29f79cd7e81e47c2c28f53a8ab559df09868b6d1e"
+      "sha256": "216433a568f2de3a0efb11b29f79cd7e81e47c2c28f53a8ab559df09868b6d1e",
+      "tracked_after_migration": false
     },
     {
       "before": "面包板样机_固件/logs/ina226_recheck_build_20261014.log",
       "after": "面包板样机_固件/logs/ina226_recheck_build_20261014.log",
       "bytes": 2156,
-      "sha256": "cfdfef64befdd2dca8df74a9570452706419b7bc55d32b0b3a781f7b4a9453b6"
+      "sha256": "cfdfef64befdd2dca8df74a9570452706419b7bc55d32b0b3a781f7b4a9453b6",
+      "tracked_after_migration": false
     },
     {
       "before": "面包板样机_固件/logs/ina226_recheck_upload_20261014.log",
       "after": "面包板样机_固件/logs/ina226_recheck_upload_20261014.log",
       "bytes": 4622,
-      "sha256": "ae671c380280dde53de94cbfa4f4dadddfe391634353eda95485f468414d5c03"
+      "sha256": "ae671c380280dde53de94cbfa4f4dadddfe391634353eda95485f468414d5c03",
+      "tracked_after_migration": false
     },
     {
       "before": "面包板样机_固件/logs/ina226_retention_20261014_144306_COM6.json",
       "after": "面包板样机_固件/logs/ina226_retention_20261014_144306_COM6.json",
       "bytes": 9942,
-      "sha256": "05f09a4dcf4a46d7181424f477b8af0180456539d3f551f2732cd72c48f97843"
+      "sha256": "05f09a4dcf4a46d7181424f477b8af0180456539d3f551f2732cd72c48f97843",
+      "tracked_after_migration": false
     },
     {
       "before": "面包板样机_固件/logs/ina226_retention_20261014_144306_COM6.log",
       "after": "面包板样机_固件/logs/ina226_retention_20261014_144306_COM6.log",
       "bytes": 4306,
-      "sha256": "4e51ce239ec459695e3705559183489019956ffdcc61afb886f6f6f89d99771e"
+      "sha256": "4e51ce239ec459695e3705559183489019956ffdcc61afb886f6f6f89d99771e",
+      "tracked_after_migration": false
     },
     {
       "before": "面包板样机_固件/logs/ina226_retention_20261014_144522_COM6.json",
       "after": "面包板样机_固件/logs/ina226_retention_20261014_144522_COM6.json",
       "bytes": 915,
-      "sha256": "48e263968dbd8844760cd56f552ee04eb9e1f23ad38c47cb06240f387c4e6c9a"
+      "sha256": "48e263968dbd8844760cd56f552ee04eb9e1f23ad38c47cb06240f387c4e6c9a",
+      "tracked_after_migration": false
     },
     {
       "before": "面包板样机_固件/logs/ina226_retention_20261014_144522_COM6.log",
       "after": "面包板样机_固件/logs/ina226_retention_20261014_144522_COM6.log",
       "bytes": 381,
-      "sha256": "a80a29e81d6ee5629bc20a2855fc2e468ff334a82571bc750c33bbde9ad10b7f"
+      "sha256": "a80a29e81d6ee5629bc20a2855fc2e468ff334a82571bc750c33bbde9ad10b7f",
+      "tracked_after_migration": false
     },
     {
       "before": "面包板样机_固件/logs/ina226_retention_20261014_145242_COM6.json",
       "after": "面包板样机_固件/logs/ina226_retention_20261014_145242_COM6.json",
       "bytes": 22611,
-      "sha256": "0d80579a846903ec30b14c86168cd7f6867890afcf4b69b05c5ada63c8792766"
+      "sha256": "0d80579a846903ec30b14c86168cd7f6867890afcf4b69b05c5ada63c8792766",
+      "tracked_after_migration": false
     },
     {
       "before": "面包板样机_固件/logs/ina226_retention_20261014_145242_COM6.log",
       "after": "面包板样机_固件/logs/ina226_retention_20261014_145242_COM6.log",
       "bytes": 9862,
-      "sha256": "a0d935ffc054280b9e17d4a3399a896fea6d89ab1097324db9a9a9882077d3af"
+      "sha256": "a0d935ffc054280b9e17d4a3399a896fea6d89ab1097324db9a9a9882077d3af",
+      "tracked_after_migration": false
     },
     {
       "before": "面包板样机_固件/logs/ina226_retention_20261014_204231_COM5.json",
       "after": "面包板样机_固件/logs/ina226_retention_20261014_204231_COM5.json",
       "bytes": 22538,
-      "sha256": "3b185b5a10a769d258e1f2274addc1dbde3c4cb61b960b9c58864be657b36013"
+      "sha256": "3b185b5a10a769d258e1f2274addc1dbde3c4cb61b960b9c58864be657b36013",
+      "tracked_after_migration": false
     },
     {
       "before": "面包板样机_固件/logs/ina226_retention_20261014_204231_COM5.log",
       "after": "面包板样机_固件/logs/ina226_retention_20261014_204231_COM5.log",
       "bytes": 9856,
-      "sha256": "b8c38e2394c5adc38e63330fcf7f35dd45ef1eb15d5a22d200f578b2ca428b86"
+      "sha256": "b8c38e2394c5adc38e63330fcf7f35dd45ef1eb15d5a22d200f578b2ca428b86",
+      "tracked_after_migration": false
     },
     {
       "before": "面包板样机_固件/logs/sd_soak_20260927_135644.log",
       "after": "面包板样机_固件/logs/sd_soak_20260927_135644.log",
       "bytes": 2596,
-      "sha256": "1f8d34d69b162624f4decb713236ed0dfad911f413e7e69f258cf04bd0b410a7"
+      "sha256": "1f8d34d69b162624f4decb713236ed0dfad911f413e7e69f258cf04bd0b410a7",
+      "tracked_after_migration": false
     },
     {
       "before": "面包板样机_固件/logs/sd_soak_20260927_143701.log",
       "after": "面包板样机_固件/logs/sd_soak_20260927_143701.log",
       "bytes": 1315,
-      "sha256": "2b174e1f04f49cc643f2ffe9d0a90d25683396780ca8cc9d815a425fac81e1ba"
+      "sha256": "2b174e1f04f49cc643f2ffe9d0a90d25683396780ca8cc9d815a425fac81e1ba",
+      "tracked_after_migration": false
     },
     {
       "before": "面包板样机_固件/logs/sd_soak_20260927_143739.log",
       "after": "面包板样机_固件/logs/sd_soak_20260927_143739.log",
       "bytes": 12144,
-      "sha256": "6c53e0992e2293357bda3725888228edcecd4ea9e926d02eaa9262631581abfd"
+      "sha256": "6c53e0992e2293357bda3725888228edcecd4ea9e926d02eaa9262631581abfd",
+      "tracked_after_migration": false
     },
     {
       "before": "面包板样机_固件/logs/sd_soak_20260927_172424.log",
       "after": "面包板样机_固件/logs/sd_soak_20260927_172424.log",
       "bytes": 1313,
-      "sha256": "2ab8816397c2972f3228f73b3c8770016b77ff1a196133d3d1daefc2ae67d86e"
+      "sha256": "2ab8816397c2972f3228f73b3c8770016b77ff1a196133d3d1daefc2ae67d86e",
+      "tracked_after_migration": false
     },
     {
       "before": "面包板样机_固件/logs/tf_card_identity_diag_build_20261012.log",
       "after": "面包板样机_固件/logs/tf_card_identity_diag_build_20261012.log",
       "bytes": 6588,
-      "sha256": "ca71cbdb28fa7f961789399e10501fc470ff711affcb7e71ff08e355df67bc17"
+      "sha256": "ca71cbdb28fa7f961789399e10501fc470ff711affcb7e71ff08e355df67bc17",
+      "tracked_after_migration": false
     },
     {
       "before": "面包板样机_固件/logs/tf_card_identity_diag_link_20261012.log",
       "after": "面包板样机_固件/logs/tf_card_identity_diag_link_20261012.log",
       "bytes": 107,
-      "sha256": "e06d2e210df573316e288ced4d21da77e3f06039e17baa2fc97ddfa3d0d8a750"
+      "sha256": "e06d2e210df573316e288ced4d21da77e3f06039e17baa2fc97ddfa3d0d8a750",
+      "tracked_after_migration": false
     },
     {
       "before": "面包板样机_固件/logs/tf_card_identity_diag_mount_call_20261012.log",
       "after": "面包板样机_固件/logs/tf_card_identity_diag_mount_call_20261012.log",
       "bytes": 66,
-      "sha256": "4500ca73de3f8a551b233bd0dbd6d63f2fed895c802a636d3b22fdb85d344d2c"
+      "sha256": "4500ca73de3f8a551b233bd0dbd6d63f2fed895c802a636d3b22fdb85d344d2c",
+      "tracked_after_migration": false
     },
     {
       "before": "面包板样机_固件/logs/tf_card_identity_upload_20261014.log",
       "after": "面包板样机_固件/logs/tf_card_identity_upload_20261014.log",
       "bytes": 4621,
-      "sha256": "17208879bf5f2a3c50d4d3982de09ba66b70a0cb76e38579715aea6631f4628e"
+      "sha256": "17208879bf5f2a3c50d4d3982de09ba66b70a0cb76e38579715aea6631f4628e",
+      "tracked_after_migration": false
     },
     {
       "before": "面包板样机_固件/logs/tf_chkdsk_readonly_20261012_F.log",
       "after": "面包板样机_固件/logs/tf_chkdsk_readonly_20261012_F.log",
       "bytes": 2336,
-      "sha256": "4ce3c0cf244509d58c28776e598b620ed878a269f6d24b5fb067559a423b0177"
+      "sha256": "4ce3c0cf244509d58c28776e598b620ed878a269f6d24b5fb067559a423b0177",
+      "tracked_after_migration": false
     },
     {
       "before": "面包板样机_固件/logs/tf_fresh_access_20261014_231046_503936_COM5.log",
       "after": "面包板样机_固件/logs/tf_fresh_access_20261014_231046_503936_COM5.log",
       "bytes": 2094,
-      "sha256": "8e34b7c4dd59fa98b1817367e1eedcbd1e0ef608075300b6c3df99b63dbaadd4"
+      "sha256": "8e34b7c4dd59fa98b1817367e1eedcbd1e0ef608075300b6c3df99b63dbaadd4",
+      "tracked_after_migration": false
     },
     {
       "before": "面包板样机_固件/logs/tf_fresh_mount_retry_20261015_084929_028378_COM5.log",
       "after": "面包板样机_固件/logs/tf_fresh_mount_retry_20261015_084929_028378_COM5.log",
       "bytes": 11918,
-      "sha256": "935059bfca23ce7edc32dc11a57c4917e64602368deef23e2d354a1345b94a16"
+      "sha256": "935059bfca23ce7edc32dc11a57c4917e64602368deef23e2d354a1345b94a16",
+      "tracked_after_migration": false
     },
     {
       "before": "面包板样机_固件/logs/tf_fresh_pc_reader_20261015_085806_932112.json",
       "after": "面包板样机_固件/logs/tf_fresh_pc_reader_20261015_085806_932112.json",
       "bytes": 1716,
-      "sha256": "b79bf5b5f75013c1ead93e717b829fd31680706285f280c87bb71bde3484af35"
+      "sha256": "b79bf5b5f75013c1ead93e717b829fd31680706285f280c87bb71bde3484af35",
+      "tracked_after_migration": false
     },
     {
       "before": "面包板样机_固件/logs/tf_fresh_recheck_20261015_085442_599012_COM5.log",
       "after": "面包板样机_固件/logs/tf_fresh_recheck_20261015_085442_599012_COM5.log",
       "bytes": 12033,
-      "sha256": "4aadbe97a84f291dad00c6ffc8fe40cc891e2b23702257ae9755cc08ac30810e"
+      "sha256": "4aadbe97a84f291dad00c6ffc8fe40cc891e2b23702257ae9755cc08ac30810e",
+      "tracked_after_migration": false
     },
     {
       "before": "面包板样机_固件/logs/tf_fresh_repower_probe_20261015_084316_679331_COM5.log",
       "after": "面包板样机_固件/logs/tf_fresh_repower_probe_20261015_084316_679331_COM5.log",
       "bytes": 10497,
-      "sha256": "557b70b97428cd14d64c146f2afbaaace9bf3ef89089d5a42e8b71c6d9e7af89"
+      "sha256": "557b70b97428cd14d64c146f2afbaaace9bf3ef89089d5a42e8b71c6d9e7af89",
+      "tracked_after_migration": false
     },
     {
       "before": "面包板样机_固件/logs/tf_fresh_return_from_reader_20261015_090206_923816_COM5.log",
       "after": "面包板样机_固件/logs/tf_fresh_return_from_reader_20261015_090206_923816_COM5.log",
       "bytes": 2116,
-      "sha256": "9bd1e59c85c1169c79d059a4b8eef76ad2c963cae5461d5318ebb772f246cbff"
+      "sha256": "9bd1e59c85c1169c79d059a4b8eef76ad2c963cae5461d5318ebb772f246cbff",
+      "tracked_after_migration": false
     },
     {
       "before": "面包板样机_固件/logs/tf_fresh_shortwrite_20261015_084201_526361_COM5.log",
       "after": "面包板样机_固件/logs/tf_fresh_shortwrite_20261015_084201_526361_COM5.log",
       "bytes": 2018,
-      "sha256": "2e261e0cd587eb7901c6802e10f6724c7f6ab2265de8b8b6387e859059b0f08d"
+      "sha256": "2e261e0cd587eb7901c6802e10f6724c7f6ab2265de8b8b6387e859059b0f08d",
+      "tracked_after_migration": false
     },
     {
       "before": "面包板样机_固件/logs/tf_gpio_trace_upload_20261014.log",
       "after": "面包板样机_固件/logs/tf_gpio_trace_upload_20261014.log",
       "bytes": 4918,
-      "sha256": "91ace8e2f97cf6811833742cc670acbb4d1ac639b450c1380bb389ae5e584407"
+      "sha256": "91ace8e2f97cf6811833742cc670acbb4d1ac639b450c1380bb389ae5e584407",
+      "tracked_after_migration": false
     },
     {
       "before": "面包板样机_固件/logs/tf_idf542_probe_build_20261015_130811.log",
       "after": "面包板样机_固件/logs/tf_idf542_probe_build_20261015_130811.log",
       "bytes": 868,
-      "sha256": "c72134bc2ed990756ca7bc923c3abf82b0475bb2fe7f0cbfae89efab0c2ea261"
+      "sha256": "c72134bc2ed990756ca7bc923c3abf82b0475bb2fe7f0cbfae89efab0c2ea261",
+      "tracked_after_migration": false
     },
     {
       "before": "面包板样机_固件/logs/tf_idf542_probe_build_20261015_131522.log",
       "after": "面包板样机_固件/logs/tf_idf542_probe_build_20261015_131522.log",
       "bytes": 16834,
-      "sha256": "c4cb30df02ed349b92622ee3f2a50e685ad84f050a80147f183df04a0819b98a"
+      "sha256": "c4cb30df02ed349b92622ee3f2a50e685ad84f050a80147f183df04a0819b98a",
+      "tracked_after_migration": false
     },
     {
       "before": "面包板样机_固件/logs/tf_idf542_probe_build_20261015_132059.log",
       "after": "面包板样机_固件/logs/tf_idf542_probe_build_20261015_132059.log",
       "bytes": 86046,
-      "sha256": "43465a85d622f1234e1ae3365a60aacfa9e9aa3e85835a1cf8bf00be16bea802"
+      "sha256": "43465a85d622f1234e1ae3365a60aacfa9e9aa3e85835a1cf8bf00be16bea802",
+      "tracked_after_migration": false
     },
     {
       "before": "面包板样机_固件/logs/tf_pc_admin_readonly_20261012.log",
       "after": "面包板样机_固件/logs/tf_pc_admin_readonly_20261012.log",
       "bytes": 1427,
-      "sha256": "45c5a8239482030def919ed03aa7e6124b82afa120b8a17cf29e904c5fb0ed1b"
+      "sha256": "45c5a8239482030def919ed03aa7e6124b82afa120b8a17cf29e904c5fb0ed1b",
+      "tracked_after_migration": false
     },
     {
       "before": "面包板样机_固件/logs/tf_pc_admin_readonly_20261012_180014.log",
       "after": "面包板样机_固件/logs/tf_pc_admin_readonly_20261012_180014.log",
       "bytes": 1236,
-      "sha256": "76c50ebd4f6b5a9f8b5c7d7a407822e08eb3d0a2075ea23b1290cf08a9c82367"
+      "sha256": "76c50ebd4f6b5a9f8b5c7d7a407822e08eb3d0a2075ea23b1290cf08a9c82367",
+      "tracked_after_migration": false
     },
     {
       "before": "面包板样机_固件/logs/tf_pc_admin_readonly_20261012_182130.log",
       "after": "面包板样机_固件/logs/tf_pc_admin_readonly_20261012_182130.log",
       "bytes": 1427,
-      "sha256": "45c5a8239482030def919ed03aa7e6124b82afa120b8a17cf29e904c5fb0ed1b"
+      "sha256": "45c5a8239482030def919ed03aa7e6124b82afa120b8a17cf29e904c5fb0ed1b",
+      "tracked_after_migration": false
     },
     {
       "before": "面包板样机_固件/logs/tf_pc_boot_compare_20261012_175411.json",
       "after": "面包板样机_固件/logs/tf_pc_boot_compare_20261012_175411.json",
       "bytes": 1017,
-      "sha256": "7c9b0c27b650e6e16b7ebfb16211d471a8e30d2fb00eacf6a7b199161b34cb69"
+      "sha256": "7c9b0c27b650e6e16b7ebfb16211d471a8e30d2fb00eacf6a7b199161b34cb69",
+      "tracked_after_migration": false
     },
     {
       "before": "面包板样机_固件/logs/tf_pc_boot_compare_20261012_180014.json",
       "after": "面包板样机_固件/logs/tf_pc_boot_compare_20261012_180014.json",
       "bytes": 1410,
-      "sha256": "640b6ec21073ae28b80d2995e48417af2c3abd0d0a899aaf2a48b37bdc854d9f"
+      "sha256": "640b6ec21073ae28b80d2995e48417af2c3abd0d0a899aaf2a48b37bdc854d9f",
+      "tracked_after_migration": false
     },
     {
       "before": "面包板样机_固件/logs/tf_pc_boot_compare_20261012_182130.json",
       "after": "面包板样机_固件/logs/tf_pc_boot_compare_20261012_182130.json",
       "bytes": 2322,
-      "sha256": "3b7833322f851e0c5be429256e5c6e1058c7ee6754e5302fa09c006965bc6151"
+      "sha256": "3b7833322f851e0c5be429256e5c6e1058c7ee6754e5302fa09c006965bc6151",
+      "tracked_after_migration": false
     },
     {
       "before": "面包板样机_固件/logs/tf_pc_physical_lba0_20261012_180014.bin",
       "after": "面包板样机_固件/logs/tf_pc_physical_lba0_20261012_180014.bin",
       "bytes": 512,
-      "sha256": "f8165fca011f09f5f5d89d0747da1d1a20cad8b18258e3df43ce3e3dab1c65a7"
+      "sha256": "f8165fca011f09f5f5d89d0747da1d1a20cad8b18258e3df43ce3e3dab1c65a7",
+      "tracked_after_migration": false
     },
     {
       "before": "面包板样机_固件/logs/tf_pc_physical_lba0_20261012_182130.bin",
       "after": "面包板样机_固件/logs/tf_pc_physical_lba0_20261012_182130.bin",
       "bytes": 512,
-      "sha256": "f8165fca011f09f5f5d89d0747da1d1a20cad8b18258e3df43ce3e3dab1c65a7"
+      "sha256": "f8165fca011f09f5f5d89d0747da1d1a20cad8b18258e3df43ce3e3dab1c65a7",
+      "tracked_after_migration": false
     },
     {
       "before": "面包板样机_固件/logs/tf_pc_readonly_verified_20261012_182130.json",
       "after": "面包板样机_固件/logs/tf_pc_readonly_verified_20261012_182130.json",
       "bytes": 991,
-      "sha256": "7a2f3114644a6d8e3511f34ab964e638d81a606907d34ce13df96e320a4de735"
+      "sha256": "7a2f3114644a6d8e3511f34ab964e638d81a606907d34ce13df96e320a4de735",
+      "tracked_after_migration": false
     },
     {
       "before": "面包板样机_固件/logs/tf_pc_volume_boot_20261012_175411.bin",
       "after": "面包板样机_固件/logs/tf_pc_volume_boot_20261012_175411.bin",
       "bytes": 512,
-      "sha256": "f8165fca011f09f5f5d89d0747da1d1a20cad8b18258e3df43ce3e3dab1c65a7"
+      "sha256": "f8165fca011f09f5f5d89d0747da1d1a20cad8b18258e3df43ce3e3dab1c65a7",
+      "tracked_after_migration": false
     },
     {
       "before": "面包板样机_固件/logs/tf_pc_volume_boot_20261012_180014.bin",
       "after": "面包板样机_固件/logs/tf_pc_volume_boot_20261012_180014.bin",
       "bytes": 512,
-      "sha256": "f8165fca011f09f5f5d89d0747da1d1a20cad8b18258e3df43ce3e3dab1c65a7"
+      "sha256": "f8165fca011f09f5f5d89d0747da1d1a20cad8b18258e3df43ce3e3dab1c65a7",
+      "tracked_after_migration": false
     },
     {
       "before": "面包板样机_固件/logs/tf_pc_volume_boot_20261012_182130.bin",
       "after": "面包板样机_固件/logs/tf_pc_volume_boot_20261012_182130.bin",
       "bytes": 512,
-      "sha256": "f8165fca011f09f5f5d89d0747da1d1a20cad8b18258e3df43ce3e3dab1c65a7"
+      "sha256": "f8165fca011f09f5f5d89d0747da1d1a20cad8b18258e3df43ce3e3dab1c65a7",
+      "tracked_after_migration": false
     },
     {
       "before": "面包板样机_固件/logs/tf_probe_20261014_102933_COM6.log",
       "after": "面包板样机_固件/logs/tf_probe_20261014_102933_COM6.log",
       "bytes": 4236,
-      "sha256": "ef6d0e3f4a43516bb4201c257c8721adcbca8ba70447ac2b0fcef3c984538601"
+      "sha256": "ef6d0e3f4a43516bb4201c257c8721adcbca8ba70447ac2b0fcef3c984538601",
+      "tracked_after_migration": false
     },
     {
       "before": "面包板样机_固件/logs/tf_probe_20261014_103856_COM6.log",
       "after": "面包板样机_固件/logs/tf_probe_20261014_103856_COM6.log",
       "bytes": 6990,
-      "sha256": "1064dacb4a67639e868a2bfdb0c48638008d5bce3a79423898eb603e4896434b"
+      "sha256": "1064dacb4a67639e868a2bfdb0c48638008d5bce3a79423898eb603e4896434b",
+      "tracked_after_migration": false
     },
     {
       "before": "面包板样机_固件/logs/tf_probe_20261014_104158_COM6.log",
       "after": "面包板样机_固件/logs/tf_probe_20261014_104158_COM6.log",
       "bytes": 6921,
-      "sha256": "94018543c19ca95f3006eec68e500cc6827cd86b1d86a78e134948b6d8111151"
+      "sha256": "94018543c19ca95f3006eec68e500cc6827cd86b1d86a78e134948b6d8111151",
+      "tracked_after_migration": false
     },
     {
       "before": "面包板样机_固件/logs/tf_probe_20261014_104502_COM6.log",
       "after": "面包板样机_固件/logs/tf_probe_20261014_104502_COM6.log",
       "bytes": 6993,
-      "sha256": "ec42fb5762d5c873cdc8d4947371e2f256cc0a9a3f0c9bdf9fd83081d9a27c0e"
+      "sha256": "ec42fb5762d5c873cdc8d4947371e2f256cc0a9a3f0c9bdf9fd83081d9a27c0e",
+      "tracked_after_migration": false
     },
     {
       "before": "面包板样机_固件/logs/tf_probe_20261014_112402_COM6.log",
       "after": "面包板样机_固件/logs/tf_probe_20261014_112402_COM6.log",
       "bytes": 3544,
-      "sha256": "c84c285e35444f38335962e74bf94f83d6f37a159bdcc49b51a0ee2aee68cf38"
+      "sha256": "c84c285e35444f38335962e74bf94f83d6f37a159bdcc49b51a0ee2aee68cf38",
+      "tracked_after_migration": false
     },
     {
       "before": "面包板样机_固件/logs/tf_probe_20261014_113601_COM6.log",
       "after": "面包板样机_固件/logs/tf_probe_20261014_113601_COM6.log",
       "bytes": 3527,
-      "sha256": "da2a412a5595aab1c2bb35864125fd2aadef046c0f72de1fdf26c1d640a8f9dd"
+      "sha256": "da2a412a5595aab1c2bb35864125fd2aadef046c0f72de1fdf26c1d640a8f9dd",
+      "tracked_after_migration": false
     },
     {
       "before": "面包板样机_固件/logs/tf_protocol_probe_build_20261015_125520.log",
       "after": "面包板样机_固件/logs/tf_protocol_probe_build_20261015_125520.log",
       "bytes": 29420,
-      "sha256": "6839c9bf4a272aef7a98ea9a74d995ed5ccf85a850c7bf6211e7b126a382cdef"
+      "sha256": "6839c9bf4a272aef7a98ea9a74d995ed5ccf85a850c7bf6211e7b126a382cdef",
+      "tracked_after_migration": false
     },
     {
       "before": "面包板样机_固件/logs/tf_protocol_probe_build_20261015_130341.log",
       "after": "面包板样机_固件/logs/tf_protocol_probe_build_20261015_130341.log",
       "bytes": 9153,
-      "sha256": "1846b3cb049f2485b39d2bac06892fa156ea827e2b5f540dd72350af70ce7f21"
+      "sha256": "1846b3cb049f2485b39d2bac06892fa156ea827e2b5f540dd72350af70ce7f21",
+      "tracked_after_migration": false
     },
     {
       "before": "面包板样机_固件/logs/tf_protocol_probe_build_20261015_130409.log",
       "after": "面包板样机_固件/logs/tf_protocol_probe_build_20261015_130409.log",
       "bytes": 10245,
-      "sha256": "bfd35b06789c6e37762c580894f194023faf28c963598c28baa33472d64cd7b0"
+      "sha256": "bfd35b06789c6e37762c580894f194023faf28c963598c28baa33472d64cd7b0",
+      "tracked_after_migration": false
     },
     {
       "before": "面包板样机_固件/logs/tf_readcheck_20261014_112654_COM6.log",
       "after": "面包板样机_固件/logs/tf_readcheck_20261014_112654_COM6.log",
       "bytes": 2152,
-      "sha256": "a74c08d185018157a1e868d587ce39159f05304082aad798164e663cd9ae5f2c"
+      "sha256": "a74c08d185018157a1e868d587ce39159f05304082aad798164e663cd9ae5f2c",
+      "tracked_after_migration": false
     },
     {
       "before": "面包板样机_固件/logs/tf_readcheck_20261014_114505_COM6.log",
       "after": "面包板样机_固件/logs/tf_readcheck_20261014_114505_COM6.log",
       "bytes": 11725,
-      "sha256": "656fcbfbf0c94ecf87df66bdfd33bffca1ef5975fb62a111722f20d06f85f280"
+      "sha256": "656fcbfbf0c94ecf87df66bdfd33bffca1ef5975fb62a111722f20d06f85f280",
+      "tracked_after_migration": false
     },
     {
       "before": "面包板样机_固件/logs/tf_readcheck_20261014_115112_COM6.log",
       "after": "面包板样机_固件/logs/tf_readcheck_20261014_115112_COM6.log",
       "bytes": 9758,
-      "sha256": "cb02fe9aeaff11003ee23934c6df68b9d13842542531a88440dbc05a38c094bd"
+      "sha256": "cb02fe9aeaff11003ee23934c6df68b9d13842542531a88440dbc05a38c094bd",
+      "tracked_after_migration": false
     },
     {
       "before": "面包板样机_固件/logs/tf_readcheck_20261014_121141_COM6.log",
       "after": "面包板样机_固件/logs/tf_readcheck_20261014_121141_COM6.log",
       "bytes": 18621,
-      "sha256": "1966a93d465a2c2d370ddd45d5b93820ab6d10dc5c4425c8cea56bcfdcb7f0d2"
+      "sha256": "1966a93d465a2c2d370ddd45d5b93820ab6d10dc5c4425c8cea56bcfdcb7f0d2",
+      "tracked_after_migration": false
     },
     {
       "before": "面包板样机_固件/logs/tf_readcheck_20261014_123718_COM6.log",
       "after": "面包板样机_固件/logs/tf_readcheck_20261014_123718_COM6.log",
       "bytes": 18619,
-      "sha256": "bd24fb3c0749def3141a1c57d2ff4f8531f568cf8eceba180b2623b42c414aa1"
+      "sha256": "bd24fb3c0749def3141a1c57d2ff4f8531f568cf8eceba180b2623b42c414aa1",
+      "tracked_after_migration": false
     },
     {
       "before": "面包板样机_固件/logs/tf_readcheck_20261014_150640_COM6.log",
       "after": "面包板样机_固件/logs/tf_readcheck_20261014_150640_COM6.log",
       "bytes": 8652,
-      "sha256": "3133b161ca034c4c9b8b6db611989056c69fc1480b76869352e2e7d003a168aa"
+      "sha256": "3133b161ca034c4c9b8b6db611989056c69fc1480b76869352e2e7d003a168aa",
+      "tracked_after_migration": false
     },
     {
       "before": "面包板样机_固件/logs/tf_readcheck_20261014_152456_COM6.log",
       "after": "面包板样机_固件/logs/tf_readcheck_20261014_152456_COM6.log",
       "bytes": 11709,
-      "sha256": "30ab6dd63912b8a7f17a1d1aefd2a412b4d12d6d2941c757f26cf42ccd654188"
+      "sha256": "30ab6dd63912b8a7f17a1d1aefd2a412b4d12d6d2941c757f26cf42ccd654188",
+      "tracked_after_migration": false
     },
     {
       "before": "面包板样机_固件/logs/tf_readcheck_20261014_152753_COM5.log",
       "after": "面包板样机_固件/logs/tf_readcheck_20261014_152753_COM5.log",
       "bytes": 11705,
-      "sha256": "b1525dcf7ec7f12366348e77b55a89033dfcabe003baf1d2e178b627aa2589b8"
+      "sha256": "b1525dcf7ec7f12366348e77b55a89033dfcabe003baf1d2e178b627aa2589b8",
+      "tracked_after_migration": false
     },
     {
       "before": "面包板样机_固件/logs/tf_readcheck_20261014_153309_COM5.log",
       "after": "面包板样机_固件/logs/tf_readcheck_20261014_153309_COM5.log",
       "bytes": 11710,
-      "sha256": "6a4fd4062a331479142217cee09c8525f5d73c5c85261d0c565d50bd61cdf6d5"
+      "sha256": "6a4fd4062a331479142217cee09c8525f5d73c5c85261d0c565d50bd61cdf6d5",
+      "tracked_after_migration": false
     },
     {
       "before": "面包板样机_固件/logs/tf_readcheck_20261014_153737_COM5.log",
       "after": "面包板样机_固件/logs/tf_readcheck_20261014_153737_COM5.log",
       "bytes": 3731,
-      "sha256": "dce6fff9ac2ddfaf5b8f36ac11d3151ba808e61aa3ccf239debebff8e3dcdfd8"
+      "sha256": "dce6fff9ac2ddfaf5b8f36ac11d3151ba808e61aa3ccf239debebff8e3dcdfd8",
+      "tracked_after_migration": false
     },
     {
       "before": "面包板样机_固件/logs/tf_readcheck_20261014_154415_COM5.log",
       "after": "面包板样机_固件/logs/tf_readcheck_20261014_154415_COM5.log",
       "bytes": 11719,
-      "sha256": "11d2de03634b9b53f322de1e74531a43671e2024964cd80259b99b6ca265d472"
+      "sha256": "11d2de03634b9b53f322de1e74531a43671e2024964cd80259b99b6ca265d472",
+      "tracked_after_migration": false
     },
     {
       "before": "面包板样机_固件/logs/tf_readcheck_20261014_203832_COM5.log",
       "after": "面包板样机_固件/logs/tf_readcheck_20261014_203832_COM5.log",
       "bytes": 1850,
-      "sha256": "7d91053570f56964e411337654fa6a1b0156c6fe5675efc932d34328a7d59c37"
+      "sha256": "7d91053570f56964e411337654fa6a1b0156c6fe5675efc932d34328a7d59c37",
+      "tracked_after_migration": false
     },
     {
       "before": "面包板样机_固件/logs/tf_readcheck_20261014_204710_COM5.log",
       "after": "面包板样机_固件/logs/tf_readcheck_20261014_204710_COM5.log",
       "bytes": 7882,
-      "sha256": "90d75faeb085566cd046f20abc56a37a81c9363b5c3b2c59cb9f3a755b35aed2"
+      "sha256": "90d75faeb085566cd046f20abc56a37a81c9363b5c3b2c59cb9f3a755b35aed2",
+      "tracked_after_migration": false
     },
     {
       "before": "面包板样机_固件/logs/tf_readcheck_20261014_205440_COM5.log",
       "after": "面包板样机_固件/logs/tf_readcheck_20261014_205440_COM5.log",
       "bytes": 3663,
-      "sha256": "e28d95a05c51eeced1b57c330610db3f42b4a40e8d9add1e19294af30f301a3d"
+      "sha256": "e28d95a05c51eeced1b57c330610db3f42b4a40e8d9add1e19294af30f301a3d",
+      "tracked_after_migration": false
     },
     {
       "before": "面包板样机_固件/logs/tf_readcheck_20261014_210238_COM5.log",
       "after": "面包板样机_固件/logs/tf_readcheck_20261014_210238_COM5.log",
       "bytes": 11646,
-      "sha256": "130caa5e3e38fabfa8f35baf449183fb31853e5c1dbf3e9a703e8f6630620b54"
+      "sha256": "130caa5e3e38fabfa8f35baf449183fb31853e5c1dbf3e9a703e8f6630620b54",
+      "tracked_after_migration": false
     },
     {
       "before": "面包板样机_固件/logs/tf_readcheck_20261014_211134_COM5.log",
       "after": "面包板样机_固件/logs/tf_readcheck_20261014_211134_COM5.log",
       "bytes": 11634,
-      "sha256": "31b02c1de3007c29d28db84b886b3c4709f7cd5d47412c9c1054ba3b4652538d"
+      "sha256": "31b02c1de3007c29d28db84b886b3c4709f7cd5d47412c9c1054ba3b4652538d",
+      "tracked_after_migration": false
     },
     {
       "before": "面包板样机_固件/logs/tf_recheck_20260927_172412.log",
       "after": "面包板样机_固件/logs/tf_recheck_20260927_172412.log",
       "bytes": 3203,
-      "sha256": "e1d977cb16c9a3f0a4799ff635e5a1fbb5822dedc50b869b1682e1304306437c"
+      "sha256": "e1d977cb16c9a3f0a4799ff635e5a1fbb5822dedc50b869b1682e1304306437c",
+      "tracked_after_migration": false
     },
     {
       "before": "面包板样机_固件/logs/tf_reinitialize_20261014.log",
       "after": "面包板样机_固件/logs/tf_reinitialize_20261014.log",
       "bytes": 352,
-      "sha256": "6b2ae9216f5b1946850054ad113113cfa7bb397e6b6b0d093e57f595ae40de08"
+      "sha256": "6b2ae9216f5b1946850054ad113113cfa7bb397e6b6b0d093e57f595ae40de08",
+      "tracked_after_migration": false
     },
     {
       "before": "面包板样机_固件/logs/tf_rewire_boot_20261015_151823.log",
       "after": "面包板样机_固件/logs/tf_rewire_boot_20261015_151823.log",
       "bytes": 1076,
-      "sha256": "78ac82f2b5314a7b3a6ce0f811c16eb2da9197a30647a4949afdc02690e6d5f7"
+      "sha256": "78ac82f2b5314a7b3a6ce0f811c16eb2da9197a30647a4949afdc02690e6d5f7",
+      "tracked_after_migration": false
     },
     {
       "before": "面包板样机_固件/logs/tf_software_artifacts_20261015.json",
       "after": "面包板样机_固件/logs/tf_software_artifacts_20261015.json",
       "bytes": 5643,
-      "sha256": "5e6bde734ba7ef09d6f625d1279f7afc0497e8c16a55175f7e228fbccb783304"
+      "sha256": "5e6bde734ba7ef09d6f625d1279f7afc0497e8c16a55175f7e228fbccb783304",
+      "tracked_after_migration": false
     },
     {
       "before": "面包板样机_固件/logs/tf_software_backup_controller_20261015_125041_550332.log",
       "after": "面包板样机_固件/logs/tf_software_backup_controller_20261015_125041_550332.log",
       "bytes": 59847,
-      "sha256": "5d03091238b340a3696dc8644e8b9edee5b68b8c910d18cad9e2eee582fdf38e"
+      "sha256": "5d03091238b340a3696dc8644e8b9edee5b68b8c910d18cad9e2eee582fdf38e",
+      "tracked_after_migration": false
     },
     {
       "before": "面包板样机_固件/logs/tf_software_capture_controller_20261015_125350_655039.log",
       "after": "面包板样机_固件/logs/tf_software_capture_controller_20261015_125350_655039.log",
       "bytes": 1643,
-      "sha256": "378de598b4be638d855f93890ec8d598c911fc19a0538feadbb713d180025615"
+      "sha256": "378de598b4be638d855f93890ec8d598c911fc19a0538feadbb713d180025615",
+      "tracked_after_migration": false
     },
     {
       "before": "面包板样机_固件/logs/tf_software_capture_controller_20261015_125803_869739.log",
       "after": "面包板样机_固件/logs/tf_software_capture_controller_20261015_125803_869739.log",
       "bytes": 1146,
-      "sha256": "263da44d3d6f6ebe7772c30634aca57c8c9d8c5770f005a9873ad9b3676f0f6a"
+      "sha256": "263da44d3d6f6ebe7772c30634aca57c8c9d8c5770f005a9873ad9b3676f0f6a",
+      "tracked_after_migration": false
     },
     {
       "before": "面包板样机_固件/logs/tf_software_capture_controller_20261015_125952_899744.log",
       "after": "面包板样机_固件/logs/tf_software_capture_controller_20261015_125952_899744.log",
       "bytes": 1146,
-      "sha256": "18c86292ea3e06788afeb9627c307d745b689af2ae73ccd42b4ba9e805f0c71b"
+      "sha256": "18c86292ea3e06788afeb9627c307d745b689af2ae73ccd42b4ba9e805f0c71b",
+      "tracked_after_migration": false
     },
     {
       "before": "面包板样机_固件/logs/tf_software_capture_controller_20261015_130632_059914.log",
       "after": "面包板样机_固件/logs/tf_software_capture_controller_20261015_130632_059914.log",
       "bytes": 1720,
-      "sha256": "7c90bd6b2ccab47cd9d8e674544619b4b54feb931cc57abeef4b261c13ee9858"
+      "sha256": "7c90bd6b2ccab47cd9d8e674544619b4b54feb931cc57abeef4b261c13ee9858",
+      "tracked_after_migration": false
     },
     {
       "before": "面包板样机_固件/logs/tf_software_capture_controller_20261015_134510_583236.log",
       "after": "面包板样机_固件/logs/tf_software_capture_controller_20261015_134510_583236.log",
       "bytes": 1054,
-      "sha256": "1e61aab3ca591517c958f4ebc22f171ab8c653e76f39a5832afd94b1fd9ec67e"
+      "sha256": "1e61aab3ca591517c958f4ebc22f171ab8c653e76f39a5832afd94b1fd9ec67e",
+      "tracked_after_migration": false
     },
     {
       "before": "面包板样机_固件/logs/tf_software_capture_controller_20261015_135346_713818.log",
       "after": "面包板样机_固件/logs/tf_software_capture_controller_20261015_135346_713818.log",
       "bytes": 1054,
-      "sha256": "4ea9537e4a2a8d5cd6a61c5ad219d31143de996ee6e916468b8a87342b0499ba"
+      "sha256": "4ea9537e4a2a8d5cd6a61c5ad219d31143de996ee6e916468b8a87342b0499ba",
+      "tracked_after_migration": false
     },
     {
       "before": "面包板样机_固件/logs/tf_software_capture_controller_20261015_151715_515309.log",
       "after": "面包板样机_固件/logs/tf_software_capture_controller_20261015_151715_515309.log",
       "bytes": 510,
-      "sha256": "ff5cfddfaca121a40734ae630f60c8682030cd214a54744176795f4e2d9bc89e"
+      "sha256": "ff5cfddfaca121a40734ae630f60c8682030cd214a54744176795f4e2d9bc89e",
+      "tracked_after_migration": false
     },
     {
       "before": "面包板样机_固件/logs/tf_software_capture_controller_20261015_152633_431742.log",
       "after": "面包板样机_固件/logs/tf_software_capture_controller_20261015_152633_431742.log",
       "bytes": 510,
-      "sha256": "93a0a3bb430763779f749e5e471842ce58d5a866a98dc2b3fe01eae7284dfd75"
+      "sha256": "93a0a3bb430763779f749e5e471842ce58d5a866a98dc2b3fe01eae7284dfd75",
+      "tracked_after_migration": false
     },
     {
       "before": "面包板样机_固件/logs/tf_software_capture_controller_20261015_153147_355088.log",
       "after": "面包板样机_固件/logs/tf_software_capture_controller_20261015_153147_355088.log",
       "bytes": 2136,
-      "sha256": "0dbb31621df584118f452edeec7caeb6b4a41818e5db0add646b5f21ddaf1b32"
+      "sha256": "0dbb31621df584118f452edeec7caeb6b4a41818e5db0add646b5f21ddaf1b32",
+      "tracked_after_migration": false
     },
     {
       "before": "面包板样机_固件/logs/tf_software_capture_controller_20261015_153255_128860.log",
       "after": "面包板样机_固件/logs/tf_software_capture_controller_20261015_153255_128860.log",
       "bytes": 7280,
-      "sha256": "4c611db00fd2d7a82aec2a78c95f4fc0be3e1e2c41868f84f46295cab0df6a34"
+      "sha256": "4c611db00fd2d7a82aec2a78c95f4fc0be3e1e2c41868f84f46295cab0df6a34",
+      "tracked_after_migration": false
     },
     {
       "before": "面包板样机_固件/logs/tf_software_capture_controller_20261015_153406_884020.log",
       "after": "面包板样机_固件/logs/tf_software_capture_controller_20261015_153406_884020.log",
       "bytes": 2136,
-      "sha256": "f38f7f2502478e3500904a4ad18070ff97d7504d5906b9f9fcaea45b8a197be0"
+      "sha256": "f38f7f2502478e3500904a4ad18070ff97d7504d5906b9f9fcaea45b8a197be0",
+      "tracked_after_migration": false
     },
     {
       "before": "面包板样机_固件/logs/tf_software_flash_tf_1bit_20m_20261015_130035_178240.log",
       "after": "面包板样机_固件/logs/tf_software_flash_tf_1bit_20m_20261015_130035_178240.log",
       "bytes": 4986,
-      "sha256": "9428b826ba1c777e19b9067c9a09406856bed466a22b963e6b9894ec07cbeb05"
+      "sha256": "9428b826ba1c777e19b9067c9a09406856bed466a22b963e6b9894ec07cbeb05",
+      "tracked_after_migration": false
     },
     {
       "before": "面包板样机_固件/logs/tf_software_flash_tf_1bit_400k_20261015_130136_723449.log",
       "after": "面包板样机_固件/logs/tf_software_flash_tf_1bit_400k_20261015_130136_723449.log",
       "bytes": 5089,
-      "sha256": "cdbfd6b56eae1f754615efe3e1b1693a7efb03991ab4ad3fc88a3d013ea8c346"
+      "sha256": "cdbfd6b56eae1f754615efe3e1b1693a7efb03991ab4ad3fc88a3d013ea8c346",
+      "tracked_after_migration": false
     },
     {
       "before": "面包板样机_固件/logs/tf_software_flash_tf_4bit_400k_20261015_130201_413140.log",
       "after": "面包板样机_固件/logs/tf_software_flash_tf_4bit_400k_20261015_130201_413140.log",
       "bytes": 5082,
-      "sha256": "b37257b5e54f8637245055c2f9578bb3513dc39f9f4c36d4757eb29bb802a17f"
+      "sha256": "b37257b5e54f8637245055c2f9578bb3513dc39f9f4c36d4757eb29bb802a17f",
+      "tracked_after_migration": false
     },
     {
       "before": "面包板样机_固件/logs/tf_software_flash_tf_arduino_spi_1m_20261015_130502_831474.log",
       "after": "面包板样机_固件/logs/tf_software_flash_tf_arduino_spi_1m_20261015_130502_831474.log",
       "bytes": 5058,
-      "sha256": "85c130bcc156e4b99c8d61492a6f926068bca56ebca08b9a1c24b3ae63f78c7f"
+      "sha256": "85c130bcc156e4b99c8d61492a6f926068bca56ebca08b9a1c24b3ae63f78c7f",
+      "tracked_after_migration": false
     },
     {
       "before": "面包板样机_固件/logs/tf_software_flash_tf_arduino_spi_400k_20261015_130527_927832.log",
       "after": "面包板样机_固件/logs/tf_software_flash_tf_arduino_spi_400k_20261015_130527_927832.log",
       "bytes": 5072,
-      "sha256": "1942835dd50770a798a3abee715d575251ee1b6e58f584d8c11965c9b04f4ea0"
+      "sha256": "1942835dd50770a798a3abee715d575251ee1b6e58f584d8c11965c9b04f4ea0",
+      "tracked_after_migration": false
     },
     {
       "before": "面包板样机_固件/logs/tf_software_flash_tf_idf542_4bit_20m_20261015_132312_514997.log",
       "after": "面包板样机_固件/logs/tf_software_flash_tf_idf542_4bit_20m_20261015_132312_514997.log",
       "bytes": 219,
-      "sha256": "1d66fe20740e9f487391fa2d4b8f528016c2ba57faec76bc9d6c088eaed22daa"
+      "sha256": "1d66fe20740e9f487391fa2d4b8f528016c2ba57faec76bc9d6c088eaed22daa",
+      "tracked_after_migration": false
     },
     {
       "before": "面包板样机_固件/logs/tf_software_flash_tf_idf542_4bit_20m_20261015_152536_241099.log",
       "after": "面包板样机_固件/logs/tf_software_flash_tf_idf542_4bit_20m_20261015_152536_241099.log",
       "bytes": 8096,
-      "sha256": "2f0aa8a5cb5a6fc40377fa783d234ed080a790f0ac5272ec70f0788b5743e3b3"
+      "sha256": "2f0aa8a5cb5a6fc40377fa783d234ed080a790f0ac5272ec70f0788b5743e3b3",
+      "tracked_after_migration": false
     },
     {
       "before": "面包板样机_固件/logs/tf_software_flash_tf_spi_1m_20261015_130253_832157.log",
       "after": "面包板样机_固件/logs/tf_software_flash_tf_spi_1m_20261015_130253_832157.log",
       "bytes": 5088,
-      "sha256": "36228d47e02a3382799c9961e2f72149cc18396e779bbb08d885498de3480794"
+      "sha256": "36228d47e02a3382799c9961e2f72149cc18396e779bbb08d885498de3480794",
+      "tracked_after_migration": false
     },
     {
       "before": "面包板样机_固件/logs/tf_software_flash_tf_spi_4m_20261015_130318_591246.log",
       "after": "面包板样机_固件/logs/tf_software_flash_tf_spi_4m_20261015_130318_591246.log",
       "bytes": 5111,
-      "sha256": "511c70ddcf0f7fa1b06ce17e55777b756bad363a1e40dcc94a5412ec7a5aa4be"
+      "sha256": "511c70ddcf0f7fa1b06ce17e55777b756bad363a1e40dcc94a5412ec7a5aa4be",
+      "tracked_after_migration": false
     },
     {
       "before": "面包板样机_固件/logs/tf_software_flash_tf_wait_300ms_20261015_125258_898740.log",
       "after": "面包板样机_固件/logs/tf_software_flash_tf_wait_300ms_20261015_125258_898740.log",
       "bytes": 5058,
-      "sha256": "2c9605dd862859ef737605cc9cc0ee3ae54bfe817f8a82f1aaafcdb21186ba39"
+      "sha256": "2c9605dd862859ef737605cc9cc0ee3ae54bfe817f8a82f1aaafcdb21186ba39",
+      "tracked_after_migration": false
     },
     {
       "before": "面包板样机_固件/logs/tf_software_flash_tf_wait_5000ms_20261015_125636_641598.log",
       "after": "面包板样机_固件/logs/tf_software_flash_tf_wait_5000ms_20261015_125636_641598.log",
       "bytes": 5087,
-      "sha256": "4e680e8a2ffbae82d1dd1bdda30d5a2117a26eefd26cd7219bfa8d5d1e4fd5ed"
+      "sha256": "4e680e8a2ffbae82d1dd1bdda30d5a2117a26eefd26cd7219bfa8d5d1e4fd5ed",
+      "tracked_after_migration": false
     },
     {
       "before": "面包板样机_固件/logs/tf_software_probe_build_20261015_091646.log",
       "after": "面包板样机_固件/logs/tf_software_probe_build_20261015_091646.log",
       "bytes": 12184,
-      "sha256": "f9b2b44df4efd2c30116ea574e337e093ce0cc5c5df895b94cbd362238d068fa"
+      "sha256": "f9b2b44df4efd2c30116ea574e337e093ce0cc5c5df895b94cbd362238d068fa",
+      "tracked_after_migration": false
     },
     {
       "before": "面包板样机_固件/logs/tf_status_20261014_095535_COM6.log",
       "after": "面包板样机_固件/logs/tf_status_20261014_095535_COM6.log",
       "bytes": 1819,
-      "sha256": "a19ebe8c358c71975373ac7049059257b22dab2246fd949507c548fe86de91ed"
+      "sha256": "a19ebe8c358c71975373ac7049059257b22dab2246fd949507c548fe86de91ed",
+      "tracked_after_migration": false
     },
     {
       "before": "面包板样机_固件/logs/tf_status_20261014_102811_COM6.log",
       "after": "面包板样机_固件/logs/tf_status_20261014_102811_COM6.log",
       "bytes": 1923,
-      "sha256": "2539d53bb1ecfc0461f07de4a5bf376d26346eb362af49bda3f59f5794b4231d"
+      "sha256": "2539d53bb1ecfc0461f07de4a5bf376d26346eb362af49bda3f59f5794b4231d",
+      "tracked_after_migration": false
     },
     {
       "before": "面包板样机_固件/logs/tf_status_20261014_113442_COM6.log",
       "after": "面包板样机_固件/logs/tf_status_20261014_113442_COM6.log",
       "bytes": 2013,
-      "sha256": "030eed89cec6e9ca31ab6bd169bb697c71970ef03083401c18934be977d10ce5"
+      "sha256": "030eed89cec6e9ca31ab6bd169bb697c71970ef03083401c18934be977d10ce5",
+      "tracked_after_migration": false
     },
     {
       "before": "面包板样机_固件/logs/tf_status_20261014_135536_COM6.log",
       "after": "面包板样机_固件/logs/tf_status_20261014_135536_COM6.log",
       "bytes": 89,
-      "sha256": "0cbdeed0887e244cadfb2388298d9e3f073e32411a2ca121ebd2668592805101"
+      "sha256": "0cbdeed0887e244cadfb2388298d9e3f073e32411a2ca121ebd2668592805101",
+      "tracked_after_migration": false
     },
     {
       "before": "面包板样机_固件/logs/tf_status_20261014_135554_COM6.log",
       "after": "面包板样机_固件/logs/tf_status_20261014_135554_COM6.log",
       "bytes": 1921,
-      "sha256": "10dd1500e97dd05cb17791e528408cf2577bc8d8eaef57527d137b2f9276eb01"
+      "sha256": "10dd1500e97dd05cb17791e528408cf2577bc8d8eaef57527d137b2f9276eb01",
+      "tracked_after_migration": false
     },
     {
       "before": "面包板样机_固件/logs/tf_status_20261014_140437_COM6.log",
       "after": "面包板样机_固件/logs/tf_status_20261014_140437_COM6.log",
       "bytes": 1817,
-      "sha256": "94c1df8f8417578cd56c9d5a5bc2d719821fabba33e4c27b9f0105740a061824"
+      "sha256": "94c1df8f8417578cd56c9d5a5bc2d719821fabba33e4c27b9f0105740a061824",
+      "tracked_after_migration": false
     },
     {
       "before": "面包板样机_固件/logs/tf_status_20261014_144652_COM6.log",
       "after": "面包板样机_固件/logs/tf_status_20261014_144652_COM6.log",
       "bytes": 1916,
-      "sha256": "8dfcdbd81c90d156d5901baf22391ee3fd8680577bb209121afa9a3ebcad87e3"
+      "sha256": "8dfcdbd81c90d156d5901baf22391ee3fd8680577bb209121afa9a3ebcad87e3",
+      "tracked_after_migration": false
     },
     {
       "before": "面包板样机_固件/logs/tf_status_20261014_145048_COM6.log",
       "after": "面包板样机_固件/logs/tf_status_20261014_145048_COM6.log",
       "bytes": 8842,
-      "sha256": "c9fad6672536e5f3ae3dced0317f0a712534cbc713b5d51d5c7594e533736db2"
+      "sha256": "c9fad6672536e5f3ae3dced0317f0a712534cbc713b5d51d5c7594e533736db2",
+      "tracked_after_migration": false
     },
     {
       "before": "面包板样机_固件/logs/tf_status_20261014_150158_COM6.log",
       "after": "面包板样机_固件/logs/tf_status_20261014_150158_COM6.log",
       "bytes": 1818,
-      "sha256": "9aeede0b7015d8e4c448e57aa4bca681ca13dd263b3610c3097ee27b7e8d3970"
+      "sha256": "9aeede0b7015d8e4c448e57aa4bca681ca13dd263b3610c3097ee27b7e8d3970",
+      "tracked_after_migration": false
     },
     {
       "before": "面包板样机_固件/logs/tf_status_20261014_155145_COM5.log",
       "after": "面包板样机_固件/logs/tf_status_20261014_155145_COM5.log",
       "bytes": 1820,
-      "sha256": "7ef5a50ea8c337512c6b272a3297213adc4fff5a89896700e68087a7c2f658af"
+      "sha256": "7ef5a50ea8c337512c6b272a3297213adc4fff5a89896700e68087a7c2f658af",
+      "tracked_after_migration": false
     },
     {
       "before": "面包板样机_固件/logs/tf_supply_compare_20261014_115112.json",
       "after": "面包板样机_固件/logs/tf_supply_compare_20261014_115112.json",
       "bytes": 823,
-      "sha256": "15861edd5242f512118b5c63d66046c2cdadb1cd0dd9f9ed953919355dbd9a62"
+      "sha256": "15861edd5242f512118b5c63d66046c2cdadb1cd0dd9f9ed953919355dbd9a62",
+      "tracked_after_migration": false
     },
     {
       "before": "面包板样机_固件/logs/tf_wsl_mount_retry_20261015_091005_103726_COM5.log",
       "after": "面包板样机_固件/logs/tf_wsl_mount_retry_20261015_091005_103726_COM5.log",
       "bytes": 12269,
-      "sha256": "88e4a34c3c070be02acaee2f832665a738fbfa43acc657b8716d7aaa3d30542b"
+      "sha256": "88e4a34c3c070be02acaee2f832665a738fbfa43acc657b8716d7aaa3d30542b",
+      "tracked_after_migration": false
     },
     {
       "before": "面包板样机_固件/samples/vib_test.bin",
       "after": "面包板样机_固件/samples/vib_test.bin",
       "bytes": 320036,
-      "sha256": "f93b72d58c821f8d1997c29b9fb9c28a566004e1b51fc51f240135879ef4e98a"
+      "sha256": "f93b72d58c821f8d1997c29b9fb9c28a566004e1b51fc51f240135879ef4e98a",
+      "tracked_after_migration": false
     },
     {
       "before": "面包板样机_固件/samples/vib_test.csv",
       "after": "面包板样机_固件/samples/vib_test.csv",
       "bytes": 2736231,
-      "sha256": "b253b6dc5cd6b79e9d9738630583bd101f3e02189a3362db3fa6c12da6fab975"
+      "sha256": "b253b6dc5cd6b79e9d9738630583bd101f3e02189a3362db3fa6c12da6fab975",
+      "tracked_after_migration": true
     },
     {
       "before": "面包板样机_固件/samples/vib_test_analysis.png",
       "after": "面包板样机_固件/samples/vib_test_analysis.png",
       "bytes": 256867,
-      "sha256": "62ca0a18caad590d09a607f1d32298bfed469e72aa797ddb9c5751c8135b7fa2"
+      "sha256": "62ca0a18caad590d09a607f1d32298bfed469e72aa797ddb9c5751c8135b7fa2",
+      "tracked_after_migration": true
     },
     {
       "before": "面包板样机_固件/samples/vib_ui_synthetic_1000hz.bin",
       "after": "面包板样机_固件/samples/vib_ui_synthetic_1000hz.bin",
       "bytes": 160034,
-      "sha256": "9f37a3cc1e4a26bec1184a01731db73bbff48857f9971460689409ef8b0d8812"
+      "sha256": "9f37a3cc1e4a26bec1184a01731db73bbff48857f9971460689409ef8b0d8812",
+      "tracked_after_migration": false
     },
     {
       "before": "面包板样机_固件/src/disp.cpp",
       "after": "面包板样机_固件/src/disp.cpp",
       "bytes": 4933,
-      "sha256": "662e1da65618213a3209eaebe8585fa71b61c1fc8e0dbdb459953b5b0e39ad5b"
+      "sha256": "662e1da65618213a3209eaebe8585fa71b61c1fc8e0dbdb459953b5b0e39ad5b",
+      "tracked_after_migration": true
     },
     {
       "before": "面包板样机_固件/src/iis3dwb.cpp",
       "after": "面包板样机_固件/src/iis3dwb.cpp",
       "bytes": 4465,
-      "sha256": "2929b75bfff1dda49f9aa63bc7239212c2c40d2e7932a1557193dfc8be236279"
+      "sha256": "2929b75bfff1dda49f9aa63bc7239212c2c40d2e7932a1557193dfc8be236279",
+      "tracked_after_migration": true
     },
     {
       "before": "面包板样机_固件/src/ina226.cpp",
       "after": "面包板样机_固件/src/ina226.cpp",
       "bytes": 3485,
-      "sha256": "dcbb5b28f40fdbefa12e293c7ef67940252446edf6fa61e5ec05ff0bcead1f73"
+      "sha256": "dcbb5b28f40fdbefa12e293c7ef67940252446edf6fa61e5ec05ff0bcead1f73",
+      "tracked_after_migration": true
     },
     {
       "before": "面包板样机_固件/src/main.cpp",
       "after": "面包板样机_固件/src/main.cpp",
       "bytes": 39351,
-      "sha256": "85917923501121b579d1ff68688caa64412e5c742286079d41da0294df02dbd5"
+      "sha256": "85917923501121b579d1ff68688caa64412e5c742286079d41da0294df02dbd5",
+      "tracked_after_migration": true
     },
     {
       "before": "面包板样机_固件/src/netui.cpp",
       "after": "面包板样机_固件/src/netui.cpp",
       "bytes": 21480,
-      "sha256": "7e5ce6ba081bc3508a3bc40320b917274e737caa30ab671a68db82fd34a7a9ba"
+      "sha256": "7e5ce6ba081bc3508a3bc40320b917274e737caa30ab671a68db82fd34a7a9ba",
+      "tracked_after_migration": true
     },
     {
       "before": "面包板样机_固件/src/power.cpp",
       "after": "面包板样机_固件/src/power.cpp",
       "bytes": 4547,
-      "sha256": "60644f8813e45aad4b962646b1d97078129b986da7636fed17eceaa6974b86a0"
+      "sha256": "60644f8813e45aad4b962646b1d97078129b986da7636fed17eceaa6974b86a0",
+      "tracked_after_migration": true
     },
     {
       "before": "面包板样机_固件/src/recorder.cpp",
       "after": "面包板样机_固件/src/recorder.cpp",
       "bytes": 27128,
-      "sha256": "40c383ac357ca636408a22a3f7b10ca17894025313c24db01ed5cdf613e44b74"
+      "sha256": "40c383ac357ca636408a22a3f7b10ca17894025313c24db01ed5cdf613e44b74",
+      "tracked_after_migration": true
     },
     {
       "before": "面包板样机_固件/tools/analyze.py",
       "after": "面包板样机_固件/tools/analyze.py",
       "bytes": 6977,
-      "sha256": "4218b6726bcf45a1c387ffdf69e8a7a5555429aa258dc4d7c639a41540cf1030"
+      "sha256": "4218b6726bcf45a1c387ffdf69e8a7a5555429aa258dc4d7c639a41540cf1030",
+      "tracked_after_migration": true
     },
     {
       "before": "面包板样机_固件/tools/bin2csv.py",
       "after": "面包板样机_固件/tools/bin2csv.py",
       "bytes": 4000,
-      "sha256": "666a8e96636da45dcd7151a5cfe39a0ee30d211405e91ce6a83b73dd0ec6739e"
+      "sha256": "666a8e96636da45dcd7151a5cfe39a0ee30d211405e91ce6a83b73dd0ec6739e",
+      "tracked_after_migration": true
     },
     {
       "before": "面包板样机_固件/tools/build_webui.py",
       "after": "面包板样机_固件/tools/build_webui.py",
       "bytes": 2851,
-      "sha256": "3b12a9a0b137a0e434de1151371fa9fde2eb0b9ea52e0d80d8a8c7d2a2f2be49"
+      "sha256": "3b12a9a0b137a0e434de1151371fa9fde2eb0b9ea52e0d80d8a8c7d2a2f2be49",
+      "tracked_after_migration": true
     },
     {
       "before": "面包板样机_固件/tools/capture_iis3dwb_readonly.py",
       "after": "面包板样机_固件/tools/capture_iis3dwb_readonly.py",
       "bytes": 6116,
-      "sha256": "4779e902d88bb32fd9b0b3f1cc69ec8e294cefe4ddc8a6ac8f8a3145bf7f0534"
+      "sha256": "4779e902d88bb32fd9b0b3f1cc69ec8e294cefe4ddc8a6ac8f8a3145bf7f0534",
+      "tracked_after_migration": true
     },
     {
       "before": "面包板样机_固件/tools/capture_ina226_readonly.py",
       "after": "面包板样机_固件/tools/capture_ina226_readonly.py",
       "bytes": 5356,
-      "sha256": "65e31c1a95c487371ea9f4b759f548576705d3db5b68d1946f56ad68d88d44d1"
+      "sha256": "65e31c1a95c487371ea9f4b759f548576705d3db5b68d1946f56ad68d88d44d1",
+      "tracked_after_migration": true
     },
     {
       "before": "面包板样机_固件/tools/capture_tf_status_readonly.py",
       "after": "面包板样机_固件/tools/capture_tf_status_readonly.py",
       "bytes": 2867,
-      "sha256": "500b4ebbecd6a14bf160b63ee6eda222b6ef88c5cc66ec2e9c6491ac75ceb372"
+      "sha256": "500b4ebbecd6a14bf160b63ee6eda222b6ef88c5cc66ec2e9c6491ac75ceb372",
+      "tracked_after_migration": true
     },
     {
       "before": "面包板样机_固件/tools/check_tf_boot_admin_readonly.ps1",
       "after": "面包板样机_固件/tools/check_tf_boot_admin_readonly.ps1",
       "bytes": 2612,
-      "sha256": "51492d1ac338424558c8ebcbcf1d753653c9224263ed033215d5578ea4b30087"
+      "sha256": "51492d1ac338424558c8ebcbcf1d753653c9224263ed033215d5578ea4b30087",
+      "tracked_after_migration": true
     },
     {
       "before": "面包板样机_固件/tools/check_tf_boot_readonly.ps1",
       "after": "面包板样机_固件/tools/check_tf_boot_readonly.ps1",
       "bytes": 5478,
-      "sha256": "b148fab3c2a7e22ff9a462e4c75610ff85eec62ffcaa0c0ce4acef795e766425"
+      "sha256": "b148fab3c2a7e22ff9a462e4c75610ff85eec62ffcaa0c0ce4acef795e766425",
+      "tracked_after_migration": true
     },
     {
       "before": "面包板样机_固件/tools/make_testbin.py",
       "after": "面包板样机_固件/tools/make_testbin.py",
       "bytes": 2788,
-      "sha256": "ada478550cd472348ef932cde44ffde5baad3f0bb107ba69fc40e23d2f7f1deb"
+      "sha256": "ada478550cd472348ef932cde44ffde5baad3f0bb107ba69fc40e23d2f7f1deb",
+      "tracked_after_migration": true
     },
     {
       "before": "面包板样机_固件/tools/read_serial_once.py",
       "after": "面包板样机_固件/tools/read_serial_once.py",
       "bytes": 2101,
-      "sha256": "0e8736e4e770574ee1ad2f2416d6527b0dc5c6bd144958c14e347a7390f1df6e"
+      "sha256": "0e8736e4e770574ee1ad2f2416d6527b0dc5c6bd144958c14e347a7390f1df6e",
+      "tracked_after_migration": true
     },
     {
       "before": "面包板样机_固件/tools/sd_soak.py",
       "after": "面包板样机_固件/tools/sd_soak.py",
       "bytes": 2713,
-      "sha256": "c71693d7c290230fa678cfa2e3650e5b490f3a3b8ec503ab7da3f8d6c9c7bfa9"
+      "sha256": "c71693d7c290230fa678cfa2e3650e5b490f3a3b8ec503ab7da3f8d6c9c7bfa9",
+      "tracked_after_migration": true
     },
     {
       "before": "面包板样机_固件/tools/start_tf_boot_check_pwsh7.ps1",
       "after": "面包板样机_固件/tools/start_tf_boot_check_pwsh7.ps1",
       "bytes": 796,
-      "sha256": "6d9df72147bb8272781b4243f463debc0b8f2af6b128049698400d8133f7b7b5"
+      "sha256": "6d9df72147bb8272781b4243f463debc0b8f2af6b128049698400d8133f7b7b5",
+      "tracked_after_migration": true
     },
     {
       "before": "面包板样机_固件/tools/ui_selftest.js",
       "after": "面包板样机_固件/tools/ui_selftest.js",
       "bytes": 16409,
-      "sha256": "9f402e89986ddd91527b1e00bebcb3ce54b23dd9162d9a025f0a3e9e51740e4d"
+      "sha256": "9f402e89986ddd91527b1e00bebcb3ce54b23dd9162d9a025f0a3e9e51740e4d",
+      "tracked_after_migration": true
     },
     {
       "before": "面包板样机_固件/webui/index.html",
       "after": "面包板样机_固件/webui/index.html",
       "bytes": 85228,
-      "sha256": "df8e7801f280bdd52179e0a9891be2a9929e238ecafa169cd0c41d991458eb7a"
+      "sha256": "df8e7801f280bdd52179e0a9891be2a9929e238ecafa169cd0c41d991458eb7a",
+      "tracked_after_migration": true
     }
-  ]
+  ],
+  "authorized_edits": {
+    "AGENTS.md": "Project operating entry and canonical context order",
+    "面包板样机_固件/platformio.ini": "Add explicit legacy-upload guard; preserve existing business configuration",
+    "面包板样机_固件/diagnostics/tf_idf_probe/platformio.ini": "Add generic upload guard; frozen baseline source remains unchanged"
+  }
 }
