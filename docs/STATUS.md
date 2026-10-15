@@ -13,10 +13,10 @@
 | 目录迁移 | 原清单 443 项校验通过；后续主动修订在迁移清单中另列 |
 | GitHub 远端 | 用户确认改为公开：[breadboard_engineering_migrate.](https://github.com/zushhx/breadboard_engineering_migrate.)；原始备份、私人资料和本机全局规则仓库未上传 |
 | main 服务端保护 | 已设置并读回核验：要求 PR、分支保持最新及两项 CI；约束管理员，禁止强推/删除，要求讨论已解决；独立审查人数为 0，用户合并确认另行执行 |
-| PR、CI | 整理分支准备推送；CI 结果以 PR 检查记录为准，尚未记为通过 |
+| PR、CI | [PR #1](https://github.com/zushhx/breadboard_engineering_migrate./pull/1) 已建立；最新提交的 CI 结果在 [PR 检查页](https://github.com/zushhx/breadboard_engineering_migrate./pull/1/checks)维护，两项检查均为合并门槛 |
 | 本机全局规范 | engineering-policy-1.0.0 已部署，当前会话已重新载入；规则源单独本地 Git 管理 |
 | 本轮硬件操作 | 未连接串口、未复位、未烧录、未写 TF 卡；不据此更新实物状态 |
-| 本轮工程验证 | 443 项迁移原始清单、冻结文件哈希、文档路径及 6 项操作门槛测试已通过；Windows 冻结构建通过，新产物未试烧；见[整改检查](reports/ENGINEERING_BASELINE_REVIEW_20261015.md) |
+| 本轮工程验证 | 443 项迁移原始清单、冻结文件哈希、文档路径、6 项操作门槛测试及干净检出验证已通过；Windows 冻结构建通过，新产物未试烧；见[整改检查](reports/ENGINEERING_BASELINE_REVIEW_20261015.md) |
 
 ## 最后一次已验证的主控程序
 

@@ -6,6 +6,8 @@
 
 - [TF 访问异常复盘](TF_ACCESS_POSTMORTEM_20261015.md)
 - [整改检查与审查记录](ENGINEERING_BASELINE_REVIEW_20261015.md)
+- [独立构建产物与来源清单](ENGINEERING_BUILD_20261015.json)
+- [GitHub 公开状态与分支保护核验](GITHUB_POLICY_20261015.json)
 
 ## TF 对照证据
 

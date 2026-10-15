@@ -18,7 +18,8 @@
 | 本地推送 hook | 模拟 `refs/heads/main` 被拒绝，任务分支被允许；已按仓库安装 `.githooks`，提交中保留可执行权限 |
 | 冻结构建 | PowerShell 7.6.6、PlatformIO Core 6.2.0、ESP-IDF 5.4.2，源提交 `abfdafb912dc4a926800c1135fee0d8308d03da3`，独立目录编译通过，用时 92.40 秒；无串口操作 |
 | 正常产物保护 | 选定的 firmware/bootloader/partitions 与清单哈希仍匹配；新构建写入 `local-data/build/`，未覆盖正常产物 |
-| 干净检出 | 待执行；不能用工作区校验替代干净检出验证 |
+| 干净检出 | 从 `f1b4d2aad30a496b638211786483345adc4a01a4` 重新克隆后，项目检查、6 项门槛测试、冻结输入准备通过；仅破坏克隆目录的暂存区冻结文件而保持工作区正常，检查成功拒绝，随后按原 blob 恢复暂存区，克隆目录仍干净 |
+| GitHub CI 首次运行 | 源分支提交 `f1b4d2aad30a496b638211786483345adc4a01a4` 的 [Actions 运行 38712987809](https://github.com/zushhx/breadboard_engineering_migrate./actions/runs/38712987809) 中，`files-and-guards`、`frozen-firmware-build` 均 success；后续提交仍须检查对应的新运行 |
 | 业务影响 | `src/`、`include/` 没有业务源码变更；原 Web UI、样例及历史资料按迁移清单核对原始字节 |
 
 新构建清单见 [ENGINEERING_BUILD_20261015.json](ENGINEERING_BUILD_20261015.json)。新 firmware 的 SHA-256 为 `187ae13ff03982bc79cd848a75e9c53ef92ef207d646ff653d19aa9a454a7fe5`，与已通过实机测试的旧产物不同。当前只证明冻结输入能够重建，未证明新产物与旧产物逐位一致或功能验收通过。构建时间、路径等均可能影响镜像；具体字节差异原因本轮未定位。
@@ -39,6 +40,8 @@
 
 ## 审查方式与发布边界
 
-本轮已开展执行代理的实际 diff、配置与数据路径静态复核；未将其描述为独立审查。可调用的 Code Review 工具用于读取远端 CI 诊断，不等于已启用独立 AI 代码审查。GitHub 自动代码审查未核验为已启用，CI 运行以真实 PR 结果为准。候选工程尚未合并 main，未发布 v0.1.0 稳定标签。
+本轮已开展执行代理的实际 diff、配置与数据路径静态复核；未将其描述为独立审查。调用 Code Review 的 CI 诊断工具时返回 GitHub 连接失败，随后使用 GitHub MCP 读取实际工作流及任务结果。该诊断工具不等于独立 AI 代码审查，GitHub 自动代码审查未核验为已启用。远端 CI 的最新执行记录与源码关联见 [PR #1 检查页](https://github.com/zushhx/breadboard_engineering_migrate./pull/1/checks)，不得用本地结果替代。候选工程尚未合并 main，未发布 v0.1.0 稳定标签。
+
+本机原始检查输出保留在 `local-data/reports/project-check.json`、`local-data/reports/clean-checkout.json` 及独立构建的 `build.log`；它们是本机证据，不要求远端存在相同本地资料。干净检出只验证 Git 收录范围，完整 443 项及原主控备份由 `--local` 检查覆盖。
 
 本轮未操作串口、复位、烧录或读写 TF。原业务源码功能、写入、长时运行与原固件恢复均未在本轮重新验收。
