@@ -1,7 +1,6 @@
 """Build only the frozen TF input; never opens a serial port or invokes upload."""
 from pathlib import Path
 import argparse
-import hashlib
 import json
 import os
 import shutil
@@ -17,6 +16,8 @@ def main():
     errors = baseline_errors()
     if errors:
         raise SystemExit('\n'.join(errors))
+    head = subprocess.run(['git', 'rev-parse', 'HEAD'], cwd=ROOT, check=True, capture_output=True, text=True).stdout.strip()
+    dirty = bool(subprocess.run(['git', 'status', '--porcelain'], cwd=ROOT, check=True, capture_output=True, text=True).stdout.strip())
     manifest_hash = sha(BUNDLE / 'manifest.json')
     if os.name == 'nt':
         stage = Path.home() / '.platformio/breadboard_baseline_builds' / manifest_hash[:16]
@@ -51,8 +52,7 @@ def main():
         destination.parent.mkdir(parents=True, exist_ok=True)
         shutil.copy2(source, destination)
         artifacts.append({'path': str(destination.relative_to(ROOT)), 'bytes': destination.stat().st_size, 'sha256': sha(destination)})
-    head = subprocess.run(['git', 'rev-parse', 'HEAD'], cwd=ROOT, check=True, capture_output=True, text=True).stdout.strip()
-    record = {'source_commit': head, 'frozen_manifest_sha256': manifest_hash, 'command': command,
+    record = {'source_commit': head, 'working_tree_dirty_at_start': dirty, 'frozen_manifest_sha256': manifest_hash, 'command': command,
               'artifacts': artifacts, 'build_passed': True, 'hardware_tested': False,
               'note': 'New build, not flashed; original tested artifacts remain unchanged'}
     (output / 'build_manifest.json').write_text(json.dumps(record, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')

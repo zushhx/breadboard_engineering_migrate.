@@ -36,6 +36,15 @@ def check(local=False):
     errors = baseline_errors()
     checks = []
     tracked = [s for s in git('ls-files', '-z').decode('utf-8').split('\0') if s]
+    manifest_name = 'baselines/tf-readonly-20261015/manifest.json'
+    indexed_manifest_data = git('show', ':' + manifest_name)
+    indexed_manifest = json.loads(indexed_manifest_data)
+    if indexed_manifest_data != (ROOT / manifest_name).read_bytes():
+        errors.append('Frozen manifest differs between Git index and working tree')
+    indexed_expected = {'baselines/tf-readonly-20261015/' + item['path']: item
+                        for item in indexed_manifest['files']}
+    for name in indexed_expected.keys() - set(tracked):
+        errors.append('Frozen file missing from Git index: ' + name)
     migration = json.loads((ROOT / 'docs/MIGRATION.json').read_text(encoding='utf-8'))
     for item in migration['files']:
         if item['after'] in migration.get('authorized_edits', {}):
@@ -69,11 +78,14 @@ def check(local=False):
         if any(s in parts for s in ['local-data', '.pio', 'node_modules', 'backups', 'logs', 'PowerShell-7.6.6']):
             errors.append('Local/private/generated path tracked: ' + name)
         data = git('show', ':' + name)
+        expected = indexed_expected.get(name)
+        if expected and (len(data) != expected['bytes'] or hashlib.sha256(data).hexdigest() != expected['sha256']):
+            errors.append('Frozen file mismatch in Git index: ' + name)
         if len(data) > 10 * 1024 * 1024:
             errors.append('Unexpected large tracked file: ' + name)
         if secret.search(data):
             errors.append('Credential pattern in Git index: ' + name)
-    checks.append('tracked_path_size_and_credential_patterns')
+    checks.append('git_index_frozen_hashes_paths_size_and_credential_patterns')
     for name in ['platformio.ini', 'platformio.tf_protocol_probe.ini', 'platformio.tf_software_probe.ini', 'diagnostics/tf_idf_probe/platformio.ini']:
         text = (ROOT / '面包板样机_固件' / name).read_text(encoding='utf-8-sig')
         if 'block_implicit_upload.py' not in text:

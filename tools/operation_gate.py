@@ -19,7 +19,8 @@ def require_approval(root, record_path, operation, expected_mac, files):
         raise RuntimeError('Approval requires a clean, matching source commit')
     if record.get('operation') != operation or record.get('controller_mac') != expected_mac:
         raise RuntimeError('Approval operation or controller identity mismatch')
-    if not str(record.get('user_confirmation', '')).strip():
+    confirmation = record.get('user_confirmation')
+    if not isinstance(confirmation, str) or not confirmation.strip():
         raise RuntimeError('Missing genuine user confirmation reference')
     expiry = datetime.datetime.fromisoformat(record['expires_at'])
     now = datetime.datetime.now(datetime.timezone.utc)

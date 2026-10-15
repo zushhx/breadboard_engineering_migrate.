@@ -66,6 +66,13 @@ class ApprovalGuardTest(unittest.TestCase):
         with self.assertRaisesRegex(RuntimeError, 'commit'):
             self.invoke()
 
+    def test_null_or_nontext_confirmation_is_rejected(self):
+        for value in [None, False, 123, '', '   ']:
+            with self.subTest(value=value):
+                self.record['user_confirmation'] = value
+                with self.assertRaisesRegex(RuntimeError, 'confirmation'):
+                    self.invoke()
+
     def test_matching_record_is_only_a_file_validation(self):
         import hashlib
         self.record['files']['image.bin'] = hashlib.sha256(self.file.read_bytes()).hexdigest()
