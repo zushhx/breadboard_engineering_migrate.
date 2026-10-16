@@ -28,6 +28,8 @@ struct Guard { Guard() { portENTER_CRITICAL(&mux); } ~Guard() { portEXIT_CRITICA
 static httpd_handle_t server;
 static char key[33];
 static uint64_t lastPreview;
+static bool addressLogPending;
+static esp_err_t connectLogPending = ESP_OK;
 static const char* const pageStart = webPage;
 static const char* const pageEnd = webPage + sizeof(webPage);
 void initialize(bool ready, uint32_t serial, uint64_t capacity) {
@@ -151,13 +153,20 @@ static void networkEvent(void*, esp_event_base_t base, int32_t id, void* data) {
     { Guard g; model.s.connected = false; model.s.ip[0] = 0; }
     // Retries are paced by the driver's scan/connect cycle, never a recording restart.
     esp_err_t error = esp_wifi_connect();
-    if (error != ESP_OK) Serial.printf("[web] connect request=%s\n", esp_err_to_name(error));
+    if (error != ESP_OK) { Guard g; connectLogPending = error; }
   } else if (base == IP_EVENT && id == IP_EVENT_STA_GOT_IP) {
     auto* event = static_cast<ip_event_got_ip_t*>(data);
-    char ip[16]; snprintf(ip, sizeof(ip), IPSTR, IP2STR(&event->ip_info.ip));
-    { Guard g; model.s.connected = true; snprintf(model.s.ip, sizeof(model.s.ip), "%s", ip); }
-    Serial.printf("[web] address=http://%s/ hotspot_client_isolation=UNTESTED\n", ip);
+    char ip[16] = {};
+    esp_ip4addr_ntoa(&event->ip_info.ip, ip, sizeof(ip));
+    { Guard g; model.s.connected = true; memcpy(model.s.ip, ip, sizeof(ip)); addressLogPending = true; }
   }
+}
+void pollNetworkLog() {
+  char ip[16] = {}; bool addressPending; esp_err_t error;
+  { Guard g; addressPending = addressLogPending; addressLogPending = false;
+    memcpy(ip, model.s.ip, sizeof(ip)); error = connectLogPending; connectLogPending = ESP_OK; }
+  if (addressPending && ip[0]) Serial.printf("[web] address=http://%s/ hotspot_client_isolation=UNTESTED\n", ip);
+  if (error != ESP_OK) Serial.printf("[web] connect request=%s\n", esp_err_to_name(error));
 }
 void startNetwork() {
   for (unsigned i = 0; i < 4; ++i) snprintf(key + i * 8, 9, "%08" PRIx32, esp_random());

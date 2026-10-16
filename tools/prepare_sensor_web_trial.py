@@ -54,7 +54,7 @@ def prepare(manifest):
             'flash_write_offset': '0x10000', 'flash_write_scope': 'app0 only; keep current bootloader/partition/NVS',
             'required_prewrite_backup_bytes': extent, 'required_prewrite_backup_hex_end_exclusive': hex(extent),
             'recovery': recovery, 'recovery_source': old['source_commit'],
-            'scope_proposed': {'read_only_startup_seconds_each': 90, 'read_only_preflight_mcu_reset': True,
+            'scope_proposed': {'read_only_startup_seconds_each': 15, 'read_only_preflight_mcu_reset': True,
                 'main_record_seconds': 300, 'browser_disconnect_reconnect': True,
                 'early_stop_record_approx_seconds': 10, 'duplicate_start_rejected': True,
                 'mcu_only_reset': True, 'warm_record_seconds': 10, 'user_confirmed_full_power_offs': 2,
