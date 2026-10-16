@@ -1,6 +1,5 @@
 #include "web_control.h"
 #include "vibration_trend.h"
-#include "vibration_wave.h"
 #include "wifi_credentials.h"
 #include "web_asset.h"
 #include "serial_compat.h"
@@ -32,8 +31,6 @@ static char key[33];
 static uint64_t lastPreview;
 static TrendAccumulator trendAccumulator;
 static TrendHistory trendHistory;
-static WaveAccumulator waveAccumulator;
-static WaveHistory waveHistory;
 static char historyOut[2048]; // Reused by serialized HTTP handlers, never acquisition.
 static char trendRun[9];
 static bool addressLogPending;
@@ -44,12 +41,12 @@ void initialize(bool ready, uint32_t serial, uint64_t capacity) {
   Guard g; model.s.ready = ready; model.s.serial = serial; model.s.capacity = capacity;
   if (!ready) { model.s.phase = Phase::Failed; snprintf(model.s.detail, sizeof(model.s.detail), "TF或采集池不可用；禁止录制"); }
 }
+void storageSpace(bool valid, uint64_t bytes) { Guard g; model.storageSpace(valid, bytes); }
 bool take(char* run, unsigned& seconds) { Guard g; return model.take(run, seconds); }
 bool begin(const char* run, unsigned seconds) {
   Guard g;
   if (!model.begin(run, seconds)) return false;
   lastPreview = 0; trendAccumulator.reset(); trendHistory.reset();
-  waveAccumulator.reset(); waveHistory.reset();
   snprintf(trendRun, sizeof(trendRun), "%s", run);
   return true;
 }
@@ -67,19 +64,17 @@ void progress(uint64_t written, uint64_t elapsed, uint32_t errors, uint32_t queu
 }
 void preview(const uint8_t* frames, unsigned count, uint64_t firstUs) {
   // This function already receives every dequeued block on the recording owner.
-  // Accumulate before limiting the separate raw snapshot to 5Hz/96 points.
+  // Accumulate before limiting the separate continuous raw snapshot to 5Hz/272 points.
   for (unsigned i = 0; i < count; ++i) {
     int16_t sample[3];
     for (unsigned a = 0; a < 3; ++a) sample[a] = modules::leSigned16(frames + i * 7 + 1 + a * 2);
     TrendPoint point;
     if (trendAccumulator.add(sample, point)) { Guard g; trendHistory.push(point); }
-    WaveBucket bucket;
-    if (waveAccumulator.add(sample, bucket)) { Guard g; waveHistory.push(bucket); }
   }
   uint64_t stamp = esp_timer_get_time();
   if (lastPreview && stamp - lastPreview < 200000) return;
   lastPreview = stamp; count = count < kPreview ? count : kPreview;
-  int16_t xyz[kPreview][3];
+  static int16_t xyz[kPreview][3]; // Recording owner only; do not grow its task stack.
   for (unsigned i = 0; i < count; ++i)
     for (unsigned a = 0; a < 3; ++a) xyz[i][a] = modules::leSigned16(frames + i * 7 + 1 + a * 2);
   Guard g; memcpy(model.s.xyz, xyz, count * sizeof(xyz[0])); model.s.previewCount = count;
@@ -109,17 +104,18 @@ static esp_err_t page(httpd_req_t* r) {
 static esp_err_t status(httpd_req_t* r) {
   Snapshot s; { Guard g; s = model.s; }
   headers(r, "application/json");
-  // Bound output to < 6 KiB; values inserted into strings are firmware-owned enums/hex/IP/messages.
-  static char out[6144]; // HTTP handlers run on one server task, never on acquisition tasks.
+  // 272 signed XYZ rows need < 6KiB; reserve metadata space without growing the task stack.
+  static char out[8192]; // HTTP handlers run on one server task, never on acquisition tasks.
+  static_assert(kPreview * 24 + 1200 < sizeof(out), "Status JSON worst-case bound");
   int n = snprintf(out, sizeof(out),
       "{\"boot\":\"%s\",\"phase\":\"%s\",\"ready\":%s,\"connected\":%s,\"ip\":\"%s\","
-      "\"card_serial\":\"%08" PRIX32 "\",\"card_bytes\":\"%" PRIu64 "\",\"run\":\"%s\",\"seconds\":%u,"
+      "\"card_serial\":\"%08" PRIX32 "\",\"card_bytes\":\"%" PRIu64 "\",\"space_valid\":%s,\"free_bytes\":\"%" PRIu64 "\",\"run\":\"%s\",\"seconds\":%u,"
       "\"written\":%" PRIu64 ",\"elapsed_us\":%" PRIu64 ",\"errors\":%u,\"queue\":%u,"
       "\"fifo_high\":%u,\"queue_high\":%u,\"write_us\":%u,\"sync_us\":%u,\"free_heap\":%u,"
       "\"ina_valid\":%s,\"ina_us\":%" PRIu64 ",\"bus_mv\":%" PRId32 ",\"current_ua\":%" PRId32 ",\"power_uw\":%" PRId32 ","
       "\"detail\":\"%s\",\"sha256\":\"%s\",\"preview_seq\":%u,\"preview_us\":%" PRIu64 ",\"preview\":[",
       key, phaseName(s.phase), s.ready ? "true" : "false", s.connected ? "true" : "false", s.ip,
-      s.serial, s.capacity, s.run, (unsigned)s.seconds, s.written, s.elapsedUs, (unsigned)s.errors, (unsigned)s.queue,
+      s.serial, s.capacity, s.spaceValid ? "true" : "false", s.freeBytes, s.run, (unsigned)s.seconds, s.written, s.elapsedUs, (unsigned)s.errors, (unsigned)s.queue,
       (unsigned)s.fifoHigh, (unsigned)s.queueHigh, (unsigned)s.maxWriteUs, (unsigned)s.maxSyncUs, (unsigned)s.freeHeap,
       s.inaValid ? "true" : "false", s.inaUs, s.busMv, s.currentUa, s.powerUw, s.detail, s.sha, (unsigned)s.previewSeq, s.previewUs);
   for (unsigned i = 0; i < s.previewCount && n > 0 && n < static_cast<int>(sizeof(out)); ++i)
@@ -149,30 +145,6 @@ static esp_err_t trend(httpd_req_t* r) {
         static_cast<unsigned long>(p.endSample), static_cast<unsigned long>(p.rmsUg[0]),
         static_cast<unsigned long>(p.rmsUg[1]), static_cast<unsigned long>(p.rmsUg[2]),
         static_cast<unsigned long>(p.nearFullScale));
-  }
-  memcpy(out + n, "]}", 2); n += 2;
-  const esp_err_t error = httpd_resp_send_chunk(r, out, n);
-  return error == ESP_OK ? httpd_resp_send_chunk(r, nullptr, 0) : error;
-}
-static esp_err_t wave(httpd_req_t* r) {
-  static WaveBucket points[kWavePoints]; // Keep 8KiB copy off HTTP task stack.
-  auto& out = historyOut;
-  char run[9]; unsigned count;
-  { Guard g; count = waveHistory.copy(points); memcpy(run, trendRun, sizeof(run)); }
-  headers(r, "application/json");
-  int n = snprintf(out, sizeof(out),
-      "{\"boot\":\"%s\",\"run\":\"%s\",\"sample_rate\":%lu,\"bin_samples\":%lu,\"points\":[",
-      key, run, static_cast<unsigned long>(kNominalRate), static_cast<unsigned long>(kWaveBin));
-  for (unsigned i = 0; i < count; ++i) {
-    if (n > static_cast<int>(sizeof(out)) - 160) {
-      const esp_err_t error = httpd_resp_send_chunk(r, out, n);
-      if (error != ESP_OK) return error;
-      n = 0;
-    }
-    const auto& p = points[i];
-    n += snprintf(out + n, sizeof(out) - n, "%s[%lu,%d,%d,%d,%d,%d,%d]", i ? "," : "",
-        static_cast<unsigned long>(p.endSample), p.minimum[0], p.maximum[0],
-        p.minimum[1], p.maximum[1], p.minimum[2], p.maximum[2]);
   }
   memcpy(out + n, "]}", 2); n += 2;
   const esp_err_t error = httpd_resp_send_chunk(r, out, n);
@@ -273,13 +245,11 @@ void startNetwork() {
     httpd_uri_t root = {}; root.uri = "/"; root.method = HTTP_GET; root.handler = page;
     httpd_uri_t stats = {}; stats.uri = "/api/status"; stats.method = HTTP_GET; stats.handler = status;
     httpd_uri_t history = {}; history.uri = "/api/trend"; history.method = HTTP_GET; history.handler = trend;
-    httpd_uri_t waveform = {}; waveform.uri = "/api/wave"; waveform.method = HTTP_GET; waveform.handler = wave;
     httpd_uri_t begin = {}; begin.uri = "/api/start"; begin.method = HTTP_POST; begin.handler = start;
     httpd_uri_t end = {}; end.uri = "/api/stop"; end.method = HTTP_POST; end.handler = stop;
     error = httpd_register_uri_handler(server, &root);
     if (error == ESP_OK) error = httpd_register_uri_handler(server, &stats);
     if (error == ESP_OK) error = httpd_register_uri_handler(server, &history);
-    if (error == ESP_OK) error = httpd_register_uri_handler(server, &waveform);
     if (error == ESP_OK) error = httpd_register_uri_handler(server, &begin);
     if (error == ESP_OK) error = httpd_register_uri_handler(server, &end);
   }

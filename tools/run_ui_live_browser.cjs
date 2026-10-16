@@ -29,7 +29,7 @@ function emit(type,data){const entry={time:new Date().toISOString(),type,...data
    assert(!['failed','rejected'].includes(current.phase),current.detail);
    if(Date.now()>=next){emit('state',current);next=Date.now()+5000;}
    const live=await page.evaluate(()=>({raw:latestRaw.length,windows:latestTrend.length,ina:snapshot.ina_valid,stamp:snapshot.ina_us}));
-    if(current.phase==='recording'&&live.raw===96&&live.windows>=20&&live.ina&&live.stamp>0){
+    if(current.phase==='recording'&&live.raw===272&&live.windows>=20&&live.ina&&live.stamp>0){
     liveChecks=true;
     if(!screenshot){await page.screenshot({path:path.join(folder,'actual-recording.png'),fullPage:true});screenshot=true;emit('live_signals',live);}
    }
@@ -44,22 +44,16 @@ function emit(type,data){const entry={time:new Date().toISOString(),type,...data
   assert(trend.points.length>=140&&trend.points.length<=150);
   trend.points.forEach((p,i)=>{assert.equal(p.length,5);assert(p.every(v=>Number.isSafeInteger(v)&&v>=0));if(i)assert.equal(p[0]-trend.points[i-1][0],5333);});
   assert(trend.points.at(-1)[0]<=current.written);assert(current.written-trend.points.at(-1)[0]<5333);
-  const wave=await page.evaluate(async()=>{const r=await fetch('/api/wave',{cache:'no-store'});if(!r.ok)throw Error('wave HTTP');return r.json();});
-  assert.equal(wave.boot,boot);assert.equal(wave.run,run);assert.equal(wave.sample_rate,26667);assert.equal(wave.bin_samples,533);
-  assert.equal(wave.points.length,512);
-  wave.points.forEach((p,i)=>{assert.equal(p.length,7);assert(p.every(Number.isSafeInteger));if(i)assert.equal(p[0]-wave.points[i-1][0],533);
-    for(let a=0;a<3;a++)assert(p[1+a*2]>=-32768&&p[2+a*2]<=32767&&p[1+a*2]<=p[2+a*2]);});
-  assert(wave.points.at(-1)[0]<=current.written);assert(current.written-wave.points.at(-1)[0]<533);
-  for(const span of ['1','1000','10000']){
+  for(const span of ['1','5','10']){
     await page.locator('[data-span="'+span+'"]').click();
     assert.deepEqual(await page.evaluate(()=>[views.get($('wave')).min,views.get($('wave')).max,views.get($('trend')).min,views.get($('trend')).max]),[-2000,2000,0,2000]);
     await page.locator('#wave').focus();await page.locator('#wave').press('End');
     assert(await page.locator('.raw-plot .chart-tip').isVisible());
-    assert.match(await page.locator('.raw-plot .chart-tip').innerText(),span==='1'?/原始样本/:/区间极值/);
+    assert.match(await page.locator('.raw-plot .chart-tip').innerText(),/原始样本/);
     await page.locator('#wave').press('Escape');
   }
   assert.deepEqual(errors,[]);await page.screenshot({path:path.join(folder,'actual-passed.png'),fullPage:true});
-  const result={passed:true,hardware_accessed:true,simulated:false,url,run,final:current,trend,wave,live_signals_verified:liveChecks,page_errors:errors,browser:await browser.version(),events};
+  const result={passed:true,hardware_accessed:true,simulated:false,url,run,final:current,trend,live_signals_verified:liveChecks,page_errors:errors,browser:await browser.version(),events};
   fs.writeFileSync(path.join(folder,'result.json'),JSON.stringify(result,null,2));emit('passed',{run,samples:current.written,windows:trend.points.length,sha256:current.sha256});
  }finally{if(browser)await browser.close();}
 })().catch(e=>{console.error(e);process.exitCode=1;});
