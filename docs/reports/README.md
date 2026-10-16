@@ -4,6 +4,10 @@
 
 ## 本次工程整理
 
+- [新版UI真实联机与30秒记录检查](REALTIME_UI_LIVE_20261016.md)
+- [UI联机实机证据清单](REALTIME_UI_LIVE_EVIDENCE_20261016.json)
+- [联机工具控制台编码故障与恢复](UI_LIVE_LOG_ENCODING_FIX_20261016.md)
+
 - [实时监测UI与连续RMS统计软件复核](REALTIME_UI_REVIEW_20261016.md)
 - [UI候选构建、测试与边界证据](REALTIME_UI_EVIDENCE_20261016.json)
 
