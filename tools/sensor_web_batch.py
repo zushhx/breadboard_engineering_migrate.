@@ -18,21 +18,23 @@ from prepare_sensor_web_trial import prepare
 import tf_write_batch as tf
 import sensor_recorder_batch as base
 
-PUBLIC = ROOT/'docs/reports/SENSOR_WEB_BUILD_20261016.json'
+PUBLIC = ROOT/'docs/reports/WIFI_NOTIFY_FIX_BUILD_20261016.json'
 NODE = Path.home()/'.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node.exe'
 NODE_MODULES = NODE.parent.parent/'node_modules'
 BROWSER = ROOT/'tools/run_sensor_web_browser.cjs'
-CANDIDATE_SHA = 'e1dae22f0714218c7961519be1b9f9af1c52062982e4619609b0019b37387a68'
-SOURCE = 'c921bef8f14e8c18ce06cd5574c241377562e971'
+CANDIDATE_SHA = '1a240e44ddceb6d706df4d74110e00a61d59376cff833f365cf3b59a9f5daed3'
+SOURCE = '9c906cc41dee6da48d407203ca008388fc60ef0f'
 OPERATION = 'sensor-web-round'
-REJECTED = ROOT/'docs/reports/SENSOR_WEB_FIRST_TRIAL_EVIDENCE_20261016.json'
+REJECTED = ROOT/'docs/reports/WIFI_DISCONNECTED_PM_TRIAL_EVIDENCE_20261016.json'
+REJECTED_PREVIOUS = ROOT/'docs/reports/SENSOR_WEB_FIRST_TRIAL_EVIDENCE_20261016.json'
 
 
 def inputs():
-    if REJECTED.is_file():
-        known=json.loads(REJECTED.read_text(encoding='utf-8'))
-        if known.get('candidate_sha256')==CANDIDATE_SHA and known.get('passed') is False:
-            raise RuntimeError('Known failed web candidate; no repeat without a new controlled plan/candidate')
+    for evidence in (REJECTED, REJECTED_PREVIOUS):
+        if evidence.is_file():
+            known=json.loads(evidence.read_text(encoding='utf-8'))
+            if known.get('candidate_sha256')==CANDIDATE_SHA and known.get('passed') is False:
+                raise RuntimeError('Known failed web candidate; no repeat without a new controlled plan/candidate')
     errors = baseline_errors()
     if errors: raise RuntimeError('; '.join(errors))
     public = json.loads(PUBLIC.read_text(encoding='utf-8'))
@@ -151,6 +153,31 @@ def collect_startup(session,port,seconds):
     return text
 
 
+def check_idle(info, boot):
+    if (info.get('boot') != boot or not info.get('connected') or not info.get('ready') or
+            info.get('phase') != 'idle' or info.get('errors') != 0):
+        raise RuntimeError('Read-only startup gate lost idle/readiness/boot identity')
+
+
+def read_only_gate(session,port,url,info,label,seconds=15):
+    deadline=time.monotonic()+seconds; next_poll=0; text=''; samples=[]
+    session.emit(f'READ_ONLY_GATE_START label={label} seconds={seconds}; no REC_START')
+    while time.monotonic()<deadline:
+        chunk=port.read(4096).decode('utf-8',errors='replace')
+        if chunk:session.emit(chunk.rstrip('\r\n'));text=(text+chunk)[-8192:]
+        if any(token in text for token in ('assert failed:','Guru Meditation','rst:')):
+            session.collect(port,.5)
+            raise RuntimeError('Panic/reset during read-only startup gate')
+        if time.monotonic()>=next_poll:
+            current=status(url);check_idle(current,info['boot']);samples.append(current)
+            next_poll=time.monotonic()+.5
+            if len(samples)%20==1:session.emit('READ_ONLY_GATE_PROGRESS='+json.dumps({'label':label,'polls':len(samples),'boot':info['boot']}))
+    if not samples:raise RuntimeError('No read-only HTTP samples')
+    (session.folder/f'read-only-{label}.json').write_text(json.dumps(samples,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
+    session.emit(f'READ_ONLY_GATE_PASS label={label} polls={len(samples)}')
+    return {'passed':True,'seconds':seconds,'polls':len(samples),'boot':info['boot']}
+
+
 def initial(path):
     packet,candidate,recovery,approval=approved(path)
     stamp=datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=8))).strftime('%Y%m%d_%H%M%S')
@@ -175,6 +202,16 @@ def initial(path):
         with session.serial() as port:
             collect_startup(session,port,10); base.boot_check(session,port,SOURCE)
             url,info=address(session,port); result['initial_web']=info; result['initial_url']=url
+            result['initial_read_only']=read_only_gate(session,port,url,info,'initial')
+            session.emit('Diagnostic MCU-only EN reset before any recording; not full power-off')
+            port.rts=True;time.sleep(.1);port.rts=False;collect_startup(session,port,10)
+            # No recording has configured sensors yet: the old post-recording
+            # warm=True register expectations do not apply at this gate.
+            base.boot_check(session,port,SOURCE)
+            url,preflight=address(session,port,url)
+            if preflight['boot']==info['boot']:raise RuntimeError('Boot token unchanged after diagnostic reset')
+            result['reset_read_only']=read_only_gate(session,port,url,preflight,'reset')
+            info=preflight
             recording_may_have_started=True
             result['main_record']=run_browser(session,port,url,'main',300,path)
             browser_main=json.loads((ROOT/result['main_record']['browser_result']).read_text(encoding='utf-8'))

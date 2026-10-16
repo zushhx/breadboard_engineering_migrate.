@@ -4,6 +4,14 @@
 
 ## 本次工程整理
 
+- [WiFi通知断言修复及网页录制验收](WIFI_NOTIFY_FIX_20261016.md)
+- [栈现场与5文件独立校验证据](WIFI_NOTIFY_FIX_EVIDENCE_20261016.json)
+
+- [关闭WiFi断连省电的实机对照、失败与恢复](WIFI_DISCONNECTED_PM_TRIAL_20261016.md)
+- [断连省电对照的原始证据清单](WIFI_DISCONNECTED_PM_TRIAL_EVIDENCE_20261016.json)
+- [断连省电对照的软件复核](WIFI_DISCONNECTED_PM_SOFTWARE_REVIEW_20261016.md)
+- [断连省电对照的公开构建摘要](WIFI_DISCONNECTED_PM_BUILD_20261016.json)
+
 - [手机热点网页候选首轮启动失败与恢复](SENSOR_WEB_FIRST_TRIAL_20261016.md)
 - [网页首轮失败、备份、回溯与恢复证据](SENSOR_WEB_FIRST_TRIAL_EVIDENCE_20261016.json)
 

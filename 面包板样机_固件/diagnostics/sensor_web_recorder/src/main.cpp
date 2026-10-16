@@ -168,7 +168,9 @@ static bool mountReadOnly() {
 static bool hashSample(char* digestText) {
   char path[512];
   snprintf(path, sizeof(path), "%s/%s", driveName, sampleName);
-  FIL file;
+  // FIL embeds a 4 KiB sector buffer. Only app_main calls this function;
+  // keep it off the 8 KiB main stack, including nested FatFS/SDMMC calls.
+  static FIL file;
   FRESULT result = f_open(&file, path, FA_READ | FA_OPEN_EXISTING);
   Serial.printf("[tfmatrix] sample open=%u\n", (unsigned)result);
   if (result != FR_OK) return false;
@@ -398,6 +400,10 @@ void setup() {
   Serial.printf("[tfmatrix] card init=%s (0x%X)\n", esp_err_to_name(error), (unsigned)error);
   ready = error == ESP_OK;
   metadata(); bootSector(); files();
+  bool heapIntact = heap_caps_check_integrity_all(true);
+  Serial.printf("[startup] heap_integrity=%u main_stack_min=%u\n", heapIntact,
+      (unsigned)uxTaskGetStackHighWaterMark(nullptr));
+  ESP_ERROR_CHECK(heapIntact ? ESP_OK : ESP_FAIL);
   modules::beginReadOnly();
   bool poolReady = recorder::reservePool();
   control::initialize(ready && poolReady, static_cast<uint32_t>(card.cid.serial),
@@ -407,6 +413,7 @@ void setup() {
 }
 
 void loop() {
+  control::pollNetworkLog();
   char run[9]; unsigned seconds = 0;
   if (control::take(run, seconds)) {
     if (mountReadOnly()) {
