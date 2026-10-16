@@ -16,15 +16,15 @@ import tf_write_batch as tf
 import sensor_recorder_batch as base
 import sensor_web_batch as web
 
-SOURCE = '1f6917870705b29d8697e20ad1f72c09ca4baf3a'
-CANDIDATE = 'fd9dd5d241301f68b56664c3fcf02cc8fc143a2bfcde5f57172570bb028aac54'
-OLD_SOURCE = 'db2876629963e4427f735c0b4db376d8322f2887'
-OLD_SHA = '5e99903005fc570936ce55ca6f833309028c6681398c4937ef6f718b3bea94d6'
-MANIFEST = ROOT/'local-data/build/sensor-web/283bc785448319fb/20261016_203738_082076/build_manifest.json'
-OLD_PUBLIC = ROOT/'docs/reports/REALTIME_UI_FIXED_SCALE_EVIDENCE_20261016.json'
+SOURCE = 'eb4aba6340ba26093cd8f1849714b8f335bf4792'
+CANDIDATE = '400192859ee7e4ac3723120397af1e804bec8c0baea5545bac07b46f8c65dc16'
+OLD_SOURCE = '1f6917870705b29d8697e20ad1f72c09ca4baf3a'
+OLD_SHA = 'fd9dd5d241301f68b56664c3fcf02cc8fc143a2bfcde5f57172570bb028aac54'
+MANIFEST = ROOT/'local-data/build/sensor-web/2bdecf2aaa77fc65/20261016_210308_503769/build_manifest.json'
+OLD_PUBLIC = ROOT/'docs/reports/UI_RAW_WINDOW_STORAGE_EVIDENCE_20261016.json'
 BROWSER = ROOT/'tools/run_ui_live_browser.cjs'
 OPERATION = 'ui-live-30s'
-SCOPE = dict(seconds=30, app0_only=True, backup_end=0x101000, restore_before_flash_on_failure=True,
+SCOPE = dict(seconds=30, app0_only=True, backup_end=0x102000, restore_before_flash_on_failure=True,
              preserve_existing_files=True, format_delete_repair=False, cold_starts=0,
              main_merge_release=False)
 
