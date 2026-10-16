@@ -4,6 +4,9 @@
 
 ## 本次工程整理
 
+- [实时监测UI与连续RMS统计软件复核](REALTIME_UI_REVIEW_20261016.md)
+- [UI候选构建、测试与边界证据](REALTIME_UI_EVIDENCE_20261016.json)
+
 - [WiFi通知断言修复及网页录制验收](WIFI_NOTIFY_FIX_20261016.md)
 - [栈现场与5文件独立校验证据](WIFI_NOTIFY_FIX_EVIDENCE_20261016.json)
 

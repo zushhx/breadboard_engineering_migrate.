@@ -20,6 +20,14 @@ control::preview在既有记录所有者每块调用点，对全部样本先做�
 
 自行审查发现并处理：设备重启时旧页面曾可能接受新boot同run的趋势；现要求趋势boot等于页面会话令牌。浏览器检查最初因诊断区改为折叠而读不到隐藏摘要，改为展开后核验。默认无凭据构建会裁剪网络链接路径，不能用其RAM/大小代表联网候选；最终另外构建带本地凭据的软件产物，不公布凭据或该二进制。
 
+## 干净提交构建与PR
+
+源码f09027903fa0f66bea3b4fb2d55db41b08433a98，从干净工作区以PowerShell7.6.6执行`.shell-tools/build_sensor_web_recorder_pwsh7.ps1 -WifiConfig local-data/config/sensor-web-wifi.json`通过。ESP-IDF5.4.2、PlatformIO6.2.0；输入聚合c326da7a168504374578a2f7df541773cb44bc7db449dca151c35eb7b282c7dc。固件980432字节，SHA-256 `428d0933850617bfc5d8e5589db42977adbe0d843471b14a723985521b93a5ff`；含本地凭据，只存忽略目录，不上传。静态RAM77852字节，链接Flash980028字节；这不是运行期堆/栈余量验收。SDK有效差异门槛和冻结分区摘要核对通过。公开摘要、源码与测试文件哈希见[证据清单](REALTIME_UI_EVIDENCE_20261016.json)，本地完整构建日志路径也在其中。
+
+[草稿PR #10](https://github.com/zushhx/breadboard_engineering_migrate./pull/10)目标为原网页任务分支，不是main。Code Review工具已实际返回f090279的CI诊断：files-and-guards通过，五项固件任务在当次快照仍运行中；最新以[PR检查页](https://github.com/zushhx/breadboard_engineering_migrate./pull/10/checks)为准。这不提供独立源码审查结论。
+
+本机提交钩子最初命中WindowsApps的python3空入口而失败。本次命令PATH加入本地python3转接，仍执行原有project_check.py及全部钩子检查，没有跳过或修改钩子。Git直连失败后，仅该push命令使用系统已有127.0.0.1:7897代理成功，未修改系统或仓库代理配置。
+
 ## 审查和未测边界
 
 已自行检查实际diff、所有者/网络锁边界、顺序、整数上界、原始预览独立节流、状态机与控制请求。独立源码审查尚未取得；可用Code Review工具仅提供PR/CI诊断，实际调用及可用性在最终证据记录，不能冒充源码独立审查。
