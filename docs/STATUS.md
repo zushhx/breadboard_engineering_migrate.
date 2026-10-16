@@ -4,7 +4,7 @@
 
 ## 当前任务：手机热点实时界面与录制控制软件开发
 
-2026-10-16，用户确认[具体软件方案](plans/SENSOR_WEB_CONTROL_20261016.md)，电脑与主控同连手机2.4GHz热点；凭据仅保存在忽略的本地配置，未进入Git。工作分支codex/sensor-web-control，从0872243派生，独立sensor_web_recorder候选。网页提供状态、短窗口预览、INA未校准遥测及1..300秒开始/停止；原记录目录和冻结基线不变。软件检查及未测范围见[复核报告](reports/SENSOR_WEB_SOFTWARE_REVIEW_20261016.md)。
+2026-10-16，用户确认[具体软件方案](plans/SENSOR_WEB_CONTROL_20261016.md)，电脑与主控同连手机2.4GHz热点；凭据仅保存在忽略的本地配置，未进入Git。工作分支codex/sensor-web-control，从0872243派生，独立sensor_web_recorder候选。网页提供状态、短窗口预览、INA未校准遥测及1..300秒开始/停止；原记录目录和冻结基线不变。37项软件测试、13项浏览器模拟场景和干净源码3a330a3带本地凭据构建通过，固件958320字节、SHA-256 a890b098561b72fc4e7c9532b4fa778ee4958ba4940cde52222a2871eb24559a；[构建摘要](reports/SENSOR_WEB_BUILD_20261016.json)与[复核报告](reports/SENSOR_WEB_SOFTWARE_REVIEW_20261016.md)保留证据和未测范围。[草稿PR #6](https://github.com/zushhx/breadboard_engineering_migrate./pull/6)叠加于PR #5，CI看[检查页](https://github.com/zushhx/breadboard_engineering_migrate./pull/6/checks)；Code Review连接失败，独立源码审查未取得。
 
 新增WiFi/HTTP任务、命令队列/状态快照和启动时预留原40块缓冲；固定SDK版本和采集配置，唯一明确SDK有效配置变化为关闭PHY射频校准NVS存储，WiFi配置另用RAM。手机互访、联网负载、启动与供电效果未测。新候选未试烧，未连接串口/复位/写卡；主控最后已验证版本及TF位置仍如下。main合并和正式发布未授权，精度排查继续暂停。
 

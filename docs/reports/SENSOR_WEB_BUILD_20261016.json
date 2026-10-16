@@ -1,0 +1,62 @@
+{
+  "date": "2026-10-16",
+  "source_commit": "3a330a3ba832b2f18c1b89fa2ffe08edb95b360e",
+  "working_tree_dirty_at_start": false,
+  "input_sha256": "d737fb7937fec13d33e7d28ade1e63d38371f932e1ca8573dcfe5511b3e55cdb",
+  "build_passed": true,
+  "hardware_tested": false,
+  "credentials_present_in_private_firmware": true,
+  "private_firmware_do_not_publish": true,
+  "manifest_local_path": "local-data/build/sensor-web/d737fb7937fec13d/20261016_102200_902343/build_manifest.json",
+  "sdkconfig_differences": {
+    "CONFIG_ESP_PHY_CALIBRATION_AND_DATA_STORAGE": {
+      "before": "CONFIG_ESP_PHY_CALIBRATION_AND_DATA_STORAGE=y",
+      "after": null
+    }
+  },
+  "firmware": {
+    "path": "local-data/build/sensor-web/d737fb7937fec13d/20261016_102200_902343/artifacts/firmware.bin",
+    "bytes": 958320,
+    "sha256": "a890b098561b72fc4e7c9532b4fa778ee4958ba4940cde52222a2871eb24559a"
+  },
+  "partition_sha256": "1d9cca96de0fe07ad7fc0648b9878ddecd9ce565e38b589ad20fea698ed4c80c",
+  "partition_matches_frozen": true,
+  "static_ram_bytes": 63876,
+  "static_ram_is_not_runtime_acceptance": true,
+  "unit_tests": 37,
+  "browser_mock_scenarios": 13,
+  "browser": "Edge155.0.4283.45",
+  "playwright": "1.62.1",
+  "evidence": [
+    {
+      "path": "local-data/validation/sensor-web/unit-tests.log",
+      "sha256": "24d76caae6faaae613bbbe97caa523c23cc370d10f42548e930fa1162f8c1a88"
+    },
+    {
+      "path": "local-data/validation/sensor-web/browser-tests.log",
+      "sha256": "addb2e354e728c3661753bad58c6b4104a92c572cdb1d07c5e6520ec0211f0b5"
+    },
+    {
+      "path": "local-data/validation/sensor-web-ui/desktop-simulated.png",
+      "sha256": "92a725f242f3c2ec7d67515b35819df6ea464e021d07248fee9c66cba11af85d"
+    },
+    {
+      "path": "local-data/validation/sensor-web-ui/mobile-simulated.png",
+      "sha256": "46b7ed5a5bb56ecdeeff656b014082d95d8a42b642559f65820309ab9d60d8f5"
+    },
+    {
+      "path": "local-data/build/sensor-web/d737fb7937fec13d/20261016_102200_902343/build.log",
+      "sha256": "7f9d0be88218e46962d9f1918f426a2d5a33d22effd4e009ef670e668baf735b"
+    }
+  ],
+  "initial_clean_build_failed_log": "local-data/build/sensor-web/d737fb7937fec13d/20261016_102043_966043/build.log",
+  "failure_note": "GCC internal compiler error in SDK LCD source; identical inputs retried successfully. Root cause unproven.",
+  "draft_pr": "https://github.com/zushhx/breadboard_engineering_migrate./pull/6",
+  "code_review_tool": "pull_requests_checks returned Can't connect to GitHub. Try again.",
+  "independent_source_review_passed": false,
+  "recovery_source": "203a60b563708ec96d1e7a883faff059af4a9a7c",
+  "recovery_firmware_sha256": "f84a235cdde8ca5bf89a5c1bf1c78fc218a8a98d72ecd35d7c4a1777cb81b1ba",
+  "trial_packet_local_path": "local-data/validation/sensor-web/trial-packet.json",
+  "next_flash_requires_explicit_authorization": true,
+  "note": "Public metadata only. Full inputs, credentials header and firmware remain private. No serial/reset/flash/card access; no phone hotspot or WiFi recording acceptance. Bootloader artifact is not to be flashed."
+}
