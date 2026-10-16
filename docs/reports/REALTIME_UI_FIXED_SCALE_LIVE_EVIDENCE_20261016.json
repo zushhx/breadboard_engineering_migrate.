@@ -1,0 +1,97 @@
+{
+  "date": "2026-10-16",
+  "passed": true,
+  "candidate_source": "db2876629963e4427f735c0b4db376d8322f2887",
+  "candidate_sha256": "5e99903005fc570936ce55ca6f833309028c6681398c4937ef6f718b3bea94d6",
+  "operation_commit": "795fbcde3ab8a72605ff531f423b5d61e4fb7820",
+  "controller_mac": "44:1b:f6:81:91:10",
+  "card_serial": "10044BA5",
+  "card_bytes": "7948206080",
+  "url": "http://172.28.247.119/?ui=db28766",
+  "record": {
+    "run": "F9651FF6",
+    "seconds": 30.002982,
+    "samples": 800906,
+    "sha256": "2547e91ee7f4eff07d046e035ff456ee20a68ae708d323f39d39dc6dc560a305",
+    "terminal": "[rec] PASS run=F9651FF6 samples=800906 errors=0 fifo_high=411 queue_high=6 write_us=68006 sync_us=42152 sha256=2547e91ee7f4eff07d046e035ff456ee20a68ae708d323f39d39dc6dc560a305 write_gate=0 precision_accepted=0"
+  },
+  "errors": 0,
+  "fifo_high": 411,
+  "queue_high": 6,
+  "write_us": 68006,
+  "sync_us": 42152,
+  "last_reported_free_heap": 39884,
+  "heap_min_not_measured": true,
+  "ina_records": 301,
+  "ina_invalid": 0,
+  "trend_windows": 150,
+  "trend_step": 5333,
+  "near_full_scale_axis_values": 0,
+  "wave_buckets": 512,
+  "wave_step": 533,
+  "wave_last_end": 800566,
+  "written_samples": 800906,
+  "real_browser_checked": [
+    "fixed raw +/-2000mg and RMS 0..2000mg",
+    "1ms/1s/10s buttons",
+    "sample/interval tooltips",
+    "Esc clear",
+    "raw/RMS/INA simultaneously live",
+    "boot/run isolation",
+    "complete trend and wave sequences and incomplete-tail exclusion"
+  ],
+  "page_errors": [],
+  "browser": "155.0.4283.45",
+  "backup": {
+    "bytes": 1052672,
+    "sha256": "3f86fbc04b6dd006442dd332af103824229ebcd4eb84fb470db9e5342950338c",
+    "matched_old_source": "f09027903fa0f66bea3b4fb2d55db41b08433a98",
+    "path": "local-data/hardware/ui-live/20261016_201858/controller_prefix.bin"
+  },
+  "scope": {
+    "cold_starts": 0,
+    "five_minute_tested": false,
+    "accuracy_accepted": false,
+    "actual_cutting_tested": false,
+    "main_merge_release": false
+  },
+  "failed_attempts": [
+    {
+      "folder": "local-data/hardware/ui-live/20261016_201355",
+      "failure": "startup HTTP RemoteDisconnected",
+      "candidate_written": true,
+      "recording_started": false,
+      "restored_f090279": true
+    },
+    {
+      "folder": "local-data/hardware/ui-live/20261016_201642",
+      "failure": "prewrite backup read corrupt at 921600",
+      "candidate_written": false,
+      "recording_started": false
+    }
+  ],
+  "recovery_reference": "local-data/hardware/ui-live/20261016_201858/controller_prefix.bin",
+  "evidence": [
+    {
+      "path": "local-data/hardware/ui-live/20261016_201858/hardware.log",
+      "sha256": "fdd148f1081adfb1045a7d90b98da71fa6a983eefdcc29206fb4460ec29a11a9"
+    },
+    {
+      "path": "local-data/hardware/ui-live/20261016_201858/result.json",
+      "sha256": "63ec3f9a73ebb79e311494e4abfb46bc2487c19a8498fcd0944f8461e7a900f0"
+    },
+    {
+      "path": "local-data/hardware/ui-live/20261016_201858/browser/result.json",
+      "sha256": "75a27f4e21c6a2d490a59967a0eafe75aa0df9d87dd2cb7add7db24daf950a6b"
+    },
+    {
+      "path": "local-data/hardware/ui-live/20261016_201858/browser/actual-recording.png",
+      "sha256": "41e20ae51ae62efd2bb08d19d2fcc1df8923fe4c938341ef975bc939a729a8ed"
+    },
+    {
+      "path": "local-data/hardware/ui-live/20261016_201858/browser/actual-passed.png",
+      "sha256": "162e6f453ccf9c31b57a59b94dcc16260f2b505237e41b3edcf2122d61994e3a"
+    }
+  ],
+  "review": "self-review of final diff and targeted checks; no independent source approval"
+}

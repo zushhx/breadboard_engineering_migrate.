@@ -1,0 +1,135 @@
+{
+  "date": "2026-10-16",
+  "passed": true,
+  "candidate_source": "1f6917870705b29d8697e20ad1f72c09ca4baf3a",
+  "candidate_sha256": "fd9dd5d241301f68b56664c3fcf02cc8fc143a2bfcde5f57172570bb028aac54",
+  "operation_commit": "2bd714e10baef746dc8475c53ec9c07d5afec1e5",
+  "url": "http://172.28.247.119/?ui=1f69178",
+  "controller_mac": "44:1b:f6:81:91:10",
+  "card_serial": "10044BA5",
+  "card_bytes": "7948206080",
+  "record": {
+    "run": "FF1C4A97",
+    "seconds": 30.005062,
+    "samples": 799654,
+    "sha256": "d00a0e40930281837abf659080a1198c05dbe7d1b85a571b40ccf578e0141c4d",
+    "terminal": "[rec] PASS run=FF1C4A97 samples=799654 errors=0 fifo_high=347 queue_high=12 write_us=100422 sync_us=181790 sha256=d00a0e40930281837abf659080a1198c05dbe7d1b85a571b40ccf578e0141c4d write_gate=0 precision_accepted=0"
+  },
+  "errors": 0,
+  "fifo_high": 347,
+  "queue_high": 12,
+  "write_us": 100422,
+  "sync_us": 181790,
+  "last_reported_free_heap": 72740,
+  "heap_min_not_measured": true,
+  "ina_records": 301,
+  "ina_invalid": 0,
+  "free_before": "6785372160",
+  "free_after": "6779662336",
+  "free_bytes_decrease": 5709824,
+  "free_samples": [
+    {
+      "time": "2026-10-16T12:53:51.668Z",
+      "phase": "recording",
+      "free_bytes": "6785372160"
+    },
+    {
+      "time": "2026-10-16T12:53:56.857Z",
+      "phase": "recording",
+      "free_bytes": "6784409600"
+    },
+    {
+      "time": "2026-10-16T12:54:01.870Z",
+      "phase": "recording",
+      "free_bytes": "6783639552"
+    },
+    {
+      "time": "2026-10-16T12:54:06.931Z",
+      "phase": "recording",
+      "free_bytes": "6782668800"
+    },
+    {
+      "time": "2026-10-16T12:54:11.971Z",
+      "phase": "recording",
+      "free_bytes": "6781702144"
+    },
+    {
+      "time": "2026-10-16T12:54:17.064Z",
+      "phase": "recording",
+      "free_bytes": "6780690432"
+    },
+    {
+      "time": "2026-10-16T12:54:22.125Z",
+      "phase": "verifying",
+      "free_bytes": "6779723776"
+    },
+    {
+      "time": "2026-10-16T12:54:27.158Z",
+      "phase": "verifying",
+      "free_bytes": "6779723776"
+    }
+  ],
+  "raw_preview_points": 272,
+  "trend_windows": 149,
+  "near_full_scale_axis_values": 0,
+  "real_browser_checked": [
+    "raw 272-sample continuous packet",
+    "fixed raw +/-2000mg and RMS 0..2000mg",
+    "1/5/10ms buttons",
+    "original-sample tooltip in all modes",
+    "Esc clear",
+    "raw/RMS/INA simultaneously live",
+    "free capacity valid before and after, decreased during recording",
+    "complete RMS sequence and incomplete-tail exclusion"
+  ],
+  "page_errors": [],
+  "browser": "155.0.4283.45",
+  "backup": {
+    "bytes": 1052672,
+    "sha256": "9da31e327e97d0396a6f61e9df11a28be3da8fc4a988b06a19f5b5ece5b0d83c",
+    "matched_old_source": "db2876629963e4427f735c0b4db376d8322f2887",
+    "path": "local-data/hardware/ui-live/20261016_205240/controller_prefix.bin"
+  },
+  "scope": {
+    "cold_starts": 0,
+    "five_minute_tested": false,
+    "accuracy_accepted": false,
+    "actual_cutting_tested": false,
+    "main_merge_release": false
+  },
+  "failed_attempt": {
+    "folder": "local-data/hardware/ui-live/20261016_204641",
+    "run": "649FCEF9",
+    "error_bits": 2,
+    "meaning": "sensor FIFO overflow",
+    "samples": 418967,
+    "ina_records": 158,
+    "ina_invalid": 0,
+    "restored_db28766": true
+  },
+  "controlled_condition": "User closed all three old monitoring pages before retry; same candidate and duration. Single successful retry does not prove unique root cause or multi-client stability.",
+  "recovery_reference": "local-data/hardware/ui-live/20261016_205240/controller_prefix.bin",
+  "evidence": [
+    {
+      "path": "local-data/hardware/ui-live/20261016_205240/hardware.log",
+      "sha256": "38f0a4e7bd393f5cc15a5b7a2485e3d4d36a68b1299e17c155fac79c9605a2bb"
+    },
+    {
+      "path": "local-data/hardware/ui-live/20261016_205240/result.json",
+      "sha256": "9e55d638e112c5dd8f9b2878d6a92542ecd050e49fbc80821ab1c6b7f2091ed1"
+    },
+    {
+      "path": "local-data/hardware/ui-live/20261016_205240/browser/result.json",
+      "sha256": "0cc3e4b1bd842ac942df78a56bfb5b1e23bf763a857b21670eee45bcf47fccbf"
+    },
+    {
+      "path": "local-data/hardware/ui-live/20261016_205240/browser/actual-recording.png",
+      "sha256": "338e2122ae8ef24b2e4d55bd8623fb46b97076e0493597aaaa67101426b5b7c4"
+    },
+    {
+      "path": "local-data/hardware/ui-live/20261016_205240/browser/actual-passed.png",
+      "sha256": "7dfc3111bf76422b3fd13dcb7f1acbad85b0bd5397cfc74e96b8a07d80b8817d"
+    }
+  ],
+  "review": "self-review and targeted checks; no independent source approval"
+}

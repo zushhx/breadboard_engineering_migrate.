@@ -20,6 +20,7 @@
 #include "modules.h"
 #include "recorder.h"
 #include "web_control.h"
+#include "storage_space.h"
 #include "esp_mac.h"
 #if defined(TF_ARDUINO_SPI) && TF_ARDUINO_SPI
 #include <SD.h>
@@ -163,6 +164,15 @@ static bool mountReadOnly() {
   Serial.printf("[tfmatrix] default_READ_ONLY FatFS mount=%u\n", (unsigned)result);
   mounted = result == FR_OK;
   return mounted;
+}
+
+// Main/storage owner only, at startup and after a command completes. Never HTTP or acquisition.
+static void refreshStorageSpace() {
+  DWORD clusters = 0; FATFS* fs = nullptr; uint64_t bytes = 0;
+  const bool valid = mounted && f_getfree(driveName, &clusters, &fs) == FR_OK && fs &&
+      control::freeBytesFromClusters(clusters, fs->csize,
+          static_cast<uint64_t>(card.csd.capacity) * card.csd.sector_size, bytes);
+  control::storageSpace(valid, bytes);
 }
 
 static bool hashSample(char* digestText) {
@@ -408,6 +418,7 @@ void setup() {
   bool poolReady = recorder::reservePool();
   control::initialize(ready && poolReady, static_cast<uint32_t>(card.cid.serial),
       static_cast<uint64_t>(card.csd.capacity) * card.csd.sector_size);
+  refreshStorageSpace();
   control::startNetwork();
   help();
 }
@@ -423,6 +434,7 @@ void loop() {
       recorder::Store store{driveName, static_cast<uint32_t>(card.cid.serial),
           static_cast<uint64_t>(card.csd.capacity) * card.csd.sector_size, [](bool enabled) { writeEnabled = enabled; }};
       recorder::command(request, store);
+      refreshStorageSpace();
     } else control::result(false, true, "TF挂载失败，禁止录制");
     delay(5); return;
   }
@@ -436,6 +448,7 @@ void loop() {
             static_cast<uint64_t>(card.csd.capacity) * card.csd.sector_size,
             [](bool enabled) { writeEnabled = enabled; }};
           recorder::command(lineInput.line(), store);
+          refreshStorageSpace();
         }
         delay(5); return;
       }

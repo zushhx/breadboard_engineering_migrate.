@@ -1,0 +1,86 @@
+{
+  "date": "2026-10-16",
+  "source_commit": "1f6917870705b29d8697e20ad1f72c09ca4baf3a",
+  "input_sha256": "283bc785448319fb3758d5ad81d67ab9662c16366f8ebf53a84517707802c482",
+  "build_manifest_local": "local-data/build/sensor-web/283bc785448319fb/20261016_203738_082076/build_manifest.json",
+  "working_tree_dirty_at_start": false,
+  "build_passed": true,
+  "hardware_tested": false,
+  "artifacts": [
+    {
+      "path": "local-data/build/sensor-web/283bc785448319fb/20261016_203738_082076/artifacts/firmware.bin",
+      "bytes": 985904,
+      "sha256": "fd9dd5d241301f68b56664c3fcf02cc8fc143a2bfcde5f57172570bb028aac54"
+    },
+    {
+      "path": "local-data/build/sensor-web/283bc785448319fb/20261016_203738_082076/artifacts/bootloader.bin",
+      "bytes": 22368,
+      "sha256": "028dde3537d035ebc14fb8e264765ec0ee6f4b2a0b73dc35319818f620ef3195"
+    },
+    {
+      "path": "local-data/build/sensor-web/283bc785448319fb/20261016_203738_082076/artifacts/partitions.bin",
+      "bytes": 3072,
+      "sha256": "1d9cca96de0fe07ad7fc0648b9878ddecd9ce565e38b589ad20fea698ed4c80c"
+    },
+    {
+      "path": "local-data/build/sensor-web/283bc785448319fb/20261016_203738_082076/artifacts/firmware.elf",
+      "bytes": 10222568,
+      "sha256": "55cc1e927581b2645a9b728ff298e7a9c1e55adf6133d7eb8b43d1859c5212a5"
+    }
+  ],
+  "sdkconfig_differences": {
+    "CONFIG_ESP32_PHY_CALIBRATION_AND_DATA_STORAGE": {
+      "before": "CONFIG_ESP32_PHY_CALIBRATION_AND_DATA_STORAGE=y",
+      "after": null
+    },
+    "CONFIG_ESP_PHY_CALIBRATION_AND_DATA_STORAGE": {
+      "before": "CONFIG_ESP_PHY_CALIBRATION_AND_DATA_STORAGE=y",
+      "after": null
+    },
+    "CONFIG_ESP_SYSTEM_PANIC_GDBSTUB": {
+      "before": null,
+      "after": "CONFIG_ESP_SYSTEM_PANIC_GDBSTUB=y"
+    },
+    "CONFIG_ESP_SYSTEM_PANIC_PRINT_REBOOT": {
+      "before": "CONFIG_ESP_SYSTEM_PANIC_PRINT_REBOOT=y",
+      "after": null
+    },
+    "CONFIG_ESP_SYSTEM_PANIC_REBOOT_DELAY_SECONDS": {
+      "before": "CONFIG_ESP_SYSTEM_PANIC_REBOOT_DELAY_SECONDS=0",
+      "after": null
+    },
+    "CONFIG_ESP_WIFI_STA_DISCONNECTED_PM_ENABLE": {
+      "before": "CONFIG_ESP_WIFI_STA_DISCONNECTED_PM_ENABLE=y",
+      "after": null
+    }
+  },
+  "static_ram_bytes": 82604,
+  "previous_static_ram_bytes": 94268,
+  "native_control_tests": 5,
+  "trial_tool_tests": 7,
+  "browser": {
+    "simulated_only": true,
+    "hardware_accessed": false,
+    "browser": "155.0.4283.45",
+    "playwright": "1.62.1",
+    "assertions": 24,
+    "posts": 3,
+    "status_requests": 53,
+    "max_parallel_status": 1,
+    "page_errors": [],
+    "screenshots": [
+      "desktop-simulated.png",
+      "mobile-simulated.png"
+    ]
+  },
+  "browser_result_sha256": "60ddecd1998e60bc0ebcb1492e6e0a638d070ddcec0ef3dd5fdbe9660eba89a2",
+  "hardware_accessed_this_change": false,
+  "device_unchanged_source": "db2876629963e4427f735c0b4db376d8322f2887",
+  "review": "self-reviewed actual source diff; Code Review CI diagnostics only, no independent source approval",
+  "global_policy": {
+    "version": "engineering-policy-1.0.2",
+    "commit": "bb514636f7c752395f1a59358d4aafe09d84109a",
+    "sha256": "6595affb225db13bfd00ee7cbad3bc15568679daf1a3450b85c7c677e6b25929",
+    "deployed": true
+  }
+}
