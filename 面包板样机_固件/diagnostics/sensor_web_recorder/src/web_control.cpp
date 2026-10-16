@@ -1,5 +1,6 @@
 #include "web_control.h"
 #include "vibration_trend.h"
+#include "vibration_wave.h"
 #include "wifi_credentials.h"
 #include "web_asset.h"
 #include "serial_compat.h"
@@ -31,6 +32,9 @@ static char key[33];
 static uint64_t lastPreview;
 static TrendAccumulator trendAccumulator;
 static TrendHistory trendHistory;
+static WaveAccumulator waveAccumulator;
+static WaveHistory waveHistory;
+static char historyOut[2048]; // Reused by serialized HTTP handlers, never acquisition.
 static char trendRun[9];
 static bool addressLogPending;
 static esp_err_t connectLogPending = ESP_OK;
@@ -45,6 +49,7 @@ bool begin(const char* run, unsigned seconds) {
   Guard g;
   if (!model.begin(run, seconds)) return false;
   lastPreview = 0; trendAccumulator.reset(); trendHistory.reset();
+  waveAccumulator.reset(); waveHistory.reset();
   snprintf(trendRun, sizeof(trendRun), "%s", run);
   return true;
 }
@@ -68,6 +73,8 @@ void preview(const uint8_t* frames, unsigned count, uint64_t firstUs) {
     for (unsigned a = 0; a < 3; ++a) sample[a] = modules::leSigned16(frames + i * 7 + 1 + a * 2);
     TrendPoint point;
     if (trendAccumulator.add(sample, point)) { Guard g; trendHistory.push(point); }
+    WaveBucket bucket;
+    if (waveAccumulator.add(sample, bucket)) { Guard g; waveHistory.push(bucket); }
   }
   uint64_t stamp = esp_timer_get_time();
   if (lastPreview && stamp - lastPreview < 200000) return;
@@ -124,7 +131,7 @@ static esp_err_t status(httpd_req_t* r) {
 static esp_err_t trend(httpd_req_t* r) {
   // HTTP handlers share one server task. Keep the bounded copy off its stack.
   static TrendPoint points[kTrendPoints];
-  static char out[2048];
+  auto& out = historyOut;
   char run[9]; unsigned count;
   { Guard g; count = trendHistory.copy(points); memcpy(run, trendRun, sizeof(run)); }
   headers(r, "application/json");
@@ -142,6 +149,30 @@ static esp_err_t trend(httpd_req_t* r) {
         static_cast<unsigned long>(p.endSample), static_cast<unsigned long>(p.rmsUg[0]),
         static_cast<unsigned long>(p.rmsUg[1]), static_cast<unsigned long>(p.rmsUg[2]),
         static_cast<unsigned long>(p.nearFullScale));
+  }
+  memcpy(out + n, "]}", 2); n += 2;
+  const esp_err_t error = httpd_resp_send_chunk(r, out, n);
+  return error == ESP_OK ? httpd_resp_send_chunk(r, nullptr, 0) : error;
+}
+static esp_err_t wave(httpd_req_t* r) {
+  static WaveBucket points[kWavePoints]; // Keep 8KiB copy off HTTP task stack.
+  auto& out = historyOut;
+  char run[9]; unsigned count;
+  { Guard g; count = waveHistory.copy(points); memcpy(run, trendRun, sizeof(run)); }
+  headers(r, "application/json");
+  int n = snprintf(out, sizeof(out),
+      "{\"boot\":\"%s\",\"run\":\"%s\",\"sample_rate\":%lu,\"bin_samples\":%lu,\"points\":[",
+      key, run, static_cast<unsigned long>(kNominalRate), static_cast<unsigned long>(kWaveBin));
+  for (unsigned i = 0; i < count; ++i) {
+    if (n > static_cast<int>(sizeof(out)) - 160) {
+      const esp_err_t error = httpd_resp_send_chunk(r, out, n);
+      if (error != ESP_OK) return error;
+      n = 0;
+    }
+    const auto& p = points[i];
+    n += snprintf(out + n, sizeof(out) - n, "%s[%lu,%d,%d,%d,%d,%d,%d]", i ? "," : "",
+        static_cast<unsigned long>(p.endSample), p.minimum[0], p.maximum[0],
+        p.minimum[1], p.maximum[1], p.minimum[2], p.maximum[2]);
   }
   memcpy(out + n, "]}", 2); n += 2;
   const esp_err_t error = httpd_resp_send_chunk(r, out, n);
@@ -242,11 +273,13 @@ void startNetwork() {
     httpd_uri_t root = {}; root.uri = "/"; root.method = HTTP_GET; root.handler = page;
     httpd_uri_t stats = {}; stats.uri = "/api/status"; stats.method = HTTP_GET; stats.handler = status;
     httpd_uri_t history = {}; history.uri = "/api/trend"; history.method = HTTP_GET; history.handler = trend;
+    httpd_uri_t waveform = {}; waveform.uri = "/api/wave"; waveform.method = HTTP_GET; waveform.handler = wave;
     httpd_uri_t begin = {}; begin.uri = "/api/start"; begin.method = HTTP_POST; begin.handler = start;
     httpd_uri_t end = {}; end.uri = "/api/stop"; end.method = HTTP_POST; end.handler = stop;
     error = httpd_register_uri_handler(server, &root);
     if (error == ESP_OK) error = httpd_register_uri_handler(server, &stats);
     if (error == ESP_OK) error = httpd_register_uri_handler(server, &history);
+    if (error == ESP_OK) error = httpd_register_uri_handler(server, &waveform);
     if (error == ESP_OK) error = httpd_register_uri_handler(server, &begin);
     if (error == ESP_OK) error = httpd_register_uri_handler(server, &end);
   }
