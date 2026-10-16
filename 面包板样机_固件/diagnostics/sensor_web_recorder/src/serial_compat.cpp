@@ -2,7 +2,10 @@
 
 SerialCompat Serial;
 void SerialCompat::begin(int baud) {
-  setvbuf(stdout, nullptr, _IONBF, 0);
+  // Unbuffered newlib printf uses an extra BUFSIZ-sized stack buffer and a
+  // nested formatter. Keep newline flushing without that per-call stack cost.
+  static char outputBuffer[256];
+  setvbuf(stdout, outputBuffer, _IOLBF, sizeof(outputBuffer));
   uart_set_baudrate(UART_NUM_0, baud);
   if (!uart_is_driver_installed(UART_NUM_0)) uart_driver_install(UART_NUM_0, 2048, 0, 0, nullptr, 0);
 }

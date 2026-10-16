@@ -413,6 +413,7 @@ void setup() {
 }
 
 void loop() {
+  control::pollNetworkLog();
   char run[9]; unsigned seconds = 0;
   if (control::take(run, seconds)) {
     if (mountReadOnly()) {
