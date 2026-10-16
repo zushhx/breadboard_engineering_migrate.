@@ -22,8 +22,8 @@ PUBLIC = ROOT/'docs/reports/WIFI_DISCONNECTED_PM_BUILD_20261016.json'
 NODE = Path.home()/'.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node.exe'
 NODE_MODULES = NODE.parent.parent/'node_modules'
 BROWSER = ROOT/'tools/run_sensor_web_browser.cjs'
-CANDIDATE_SHA = 'UNBOUND_NEW_DIAGNOSTIC_CANDIDATE'
-SOURCE = 'UNBOUND_NEW_DIAGNOSTIC_SOURCE'
+CANDIDATE_SHA = '572f7f6e1b6e66e25cef41b2069a951e81d1fc120d53d1e7d590f45b7085a0bc'
+SOURCE = '8866c4d15bf456944a350ce244026bacdb1fcc59'
 OPERATION = 'sensor-web-round'
 REJECTED = ROOT/'docs/reports/SENSOR_WEB_FIRST_TRIAL_EVIDENCE_20261016.json'
 
@@ -203,7 +203,9 @@ def initial(path):
             result['initial_read_only']=read_only_gate(session,port,url,info,'initial')
             session.emit('Diagnostic MCU-only EN reset before any recording; not full power-off')
             port.rts=True;time.sleep(.1);port.rts=False;collect_startup(session,port,10)
-            base.boot_check(session,port,SOURCE,warm=True)
+            # No recording has configured sensors yet: the old post-recording
+            # warm=True register expectations do not apply at this gate.
+            base.boot_check(session,port,SOURCE)
             url,preflight=address(session,port,url)
             if preflight['boot']==info['boot']:raise RuntimeError('Boot token unchanged after diagnostic reset')
             result['reset_read_only']=read_only_gate(session,port,url,preflight,'reset')

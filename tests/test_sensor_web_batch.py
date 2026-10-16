@@ -11,6 +11,14 @@ import sensor_web_batch as web
 
 
 class WebBatchGuards(unittest.TestCase):
+    def test_read_only_gate_panic_stops_without_http_or_recording(self):
+        port=Mock();port.read.return_value=b'assert failed: task notification\n'
+        session=Mock()
+        with patch.object(web.time,'monotonic',side_effect=[0,.1]),patch.object(web,'status') as status:
+            with self.assertRaisesRegex(RuntimeError,'Panic/reset during read-only'):
+                web.read_only_gate(session,port,'http://192.168.1.2/',{'boot':'abc'},'test')
+            status.assert_not_called()
+        session.collect.assert_called_once_with(port,.5)
     def test_read_only_gate_rejects_unrequested_recording_or_reset(self):
         idle={'boot':'abc','connected':True,'ready':True,'phase':'idle','errors':0}
         web.check_idle(idle,'abc')
