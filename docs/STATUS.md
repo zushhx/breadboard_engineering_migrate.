@@ -8,6 +8,8 @@
 
 用户2026-10-16在[方案](plans/SENSOR_TF_RECORDER_20261015.md)备齐后要求“继续”，已在 `codex/sensor-tf-recorder` 分支完成独立 `sensor_tf_recorder` 软件首版：FIFO/8 MHz SPI、约128 KiB内部缓冲预算、独立写卡任务路径、INA约10 Hz原始/有效性记录、分块CRC/尾部/SHA完整回读、主机解析与受控批处理。干净提交 `203a60b` 构建通过，固件387616字节、SHA-256 `f84a235cdde8ca5bf89a5c1bf1c78fc218a8a98d72ecd35d7c4a1777cb81b1ba`，SDK键值和分区与冻结基线匹配；[构建清单](reports/SENSOR_RECORDER_BUILD_20261016.json)保留输入及产物。32项本地软件测试通过，模拟文件CSV/PNG导出通过，CI待核验。审查方式和限制见[软件复核](reports/SENSOR_RECORDER_SOFTWARE_REVIEW_20261016.md)。本阶段未连接设备、复位、初始化、烧录或写TF；实机仍是7994b9d，最后检查为本次启动未初始化状态，不能把软件实现当作满速实测通过。
 
+[草稿PR #5](https://github.com/zushhx/breadboard_engineering_migrate./pull/5)以未合并精度记录分支为base，保留叠加关系；最新五项CI状态统一看[检查页](https://github.com/zushhx/breadboard_engineering_migrate./pull/5/checks)。Code Review的CI诊断工具本次仍无法连接GitHub，不计为独立源码审查通过。具体新候选试烧、整轮实机和main合并尚待各自授权。
+
 ## 前置精度核验记录（暂缓）
 
 用户在基础联调后要求“继续”，随后指出“电压、电流精度尚未验收”；当时优先做[工作点核验](plans/INA226_PRECISION_CHECK_20261015.md)，真实采集开发尚未开始。该任务分支 `codex/ina226-precision-check` 从 `23efd51` 派生，主控仍运行下述已验收模块诊断候选，未由软件操作改变接线。

@@ -28,6 +28,10 @@
 
 可选绘图环境单独安装于ignored local-data/tooling，锁定matplotlib3.10.7及依赖版本，不改PlatformIO环境。平台默认及应用捆绑Python原先均没有matplotlib，已补齐独立依赖。实际C++模拟文件通过完整校验、CSV导出及PNG生成，人工查看图像坐标/图例和输出；模拟文件仅2点用于协议与边界，绝非真实振动证据。文件SHA为 `1ef925271ab7cefa87f0d83c269842752d946e50dae8b60eff8454f5bdbe7931`，输出位于local-data/context-audit/20261016/simulated-export。CI与Code Review工具结果待PR准备后核验，未取得独立源码审查通过证据。
 
+已建立[草稿PR #5](https://github.com/zushhx/breadboard_engineering_migrate./pull/5)，五项CI以其[检查页](https://github.com/zushhx/breadboard_engineering_migrate./pull/5/checks)对应HEAD结果为准。Code Review的pull_requests_checks调用返回“Can't connect to GitHub”，另用GitHub连接器读取CI，不能将后者当作独立源码审查。
+
+本地证据SHA-256：32项测试日志 `544fd0289622d4bd81f59be746691ce1dfbbe40b07169a9320abd554bb3340f7`；干净构建日志 `0184aa50d6c4c25d597cc8aaa81d1472441f7d2eba19d533e600700f469d5652`；模拟PNG `ccb3ae56ae037840d9841a1b16b5526a209f18c91a16bbc355c9d05ad9b83299`。原始输出保留本地，不上传构建运行时或原始设备备份。
+
 ## 实机边界
 
 31项测试不覆盖FreeRTOS调度、FIFO真实语义、8 MHz信号质量、TF长尾、可用内部堆/栈或满速无丢样。约127 KiB动态池只是预算，构建静态RAM占用不能代替运行分配。无INT服务和逐帧SPI事务能否达标属于主要待测项，不自动降采样/改PSRAM以通过。工作点±5%计数/时间门槛仅为功能检查，非采样时基校准；电压、电流计量精度仍未验收。
