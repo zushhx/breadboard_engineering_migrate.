@@ -26,6 +26,8 @@ Windows 工具链构建从 WSL 调用：
 
 ## 历史业务与实验
 
+真实采集记录候选见 [sensor_tf_recorder](diagnostics/sensor_tf_recorder/README.md)，独立构建入口为 `.shell-tools/build_sensor_tf_recorder_pwsh7.ps1`；默认不记录、不自动上传，具体试烧另行授权。
+
 模块接入候选见 [sensor_monitor_probe](diagnostics/sensor_monitor_probe/README.md)，独立构建入口为 `.shell-tools/build_sensor_monitor_probe_pwsh7.ps1`，不自动访问硬件。[接入计划](../docs/plans/SENSOR_MONITOR_BRINGUP_20261015.md)规定影响、验收和回退。
 
 独立写入诊断的软件候选见 [tf_write_probe](diagnostics/tf_write_probe/README.md)，开发与验收范围见[本次计划](../docs/plans/TF_WRITE_DIAGNOSTIC_20261015.md)。构建入口为工作区根目录 `.shell-tools/build_tf_write_probe_pwsh7.ps1`；不执行烧录或写卡，不替换冻结基线。

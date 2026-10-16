@@ -1,0 +1,361 @@
+{
+  "date": "2026-10-16",
+  "round_passed": true,
+  "hardware_tested": true,
+  "candidate_source": "203a60b563708ec96d1e7a883faff059af4a9a7c",
+  "operation_commit": "6805f16b6a4c7f2da114c635cbb8f097581b0432",
+  "candidate_sha256": "f84a235cdde8ca5bf89a5c1bf1c78fc218a8a98d72ecd35d7c4a1777cb81b1ba",
+  "input_sha256": "98594a067b30c8bf84e7272b5df57dc34d532b37db86253248f415cd00771383",
+  "ci": {
+    "commit": "6805f16b6a4c7f2da114c635cbb8f097581b0432",
+    "run": 38833864097,
+    "all_five_success": true
+  },
+  "controller_mac": "44:1b:f6:81:91:10",
+  "card_serial": "10044BA5",
+  "card_capacity": 7948206080,
+  "user_authorization": "call_5467722d9817462f8a892756d4b72831: 确认，整轮执行",
+  "cold_confirmations": [
+    "call_3fe5c8c1d5bf4733bc19763bd4412189: 第1次已完成",
+    "call_55e2221d8564498c86f23552ba0b3f7a: 第2次已完成"
+  ],
+  "reader_confirmation": "call_894d293d43c7476daadd0ce7950b7cf0: TF 已接到电脑读卡器",
+  "conditions": {
+    "tf_direct_3v3": true,
+    "sensor_branch_only": true,
+    "spi_mode": 3,
+    "spi_configured_hz": 8000000,
+    "tf_width": 4,
+    "tf_requested_khz": 20000,
+    "cpu_mhz": 160,
+    "psram_enabled": false,
+    "idf": "5.4.2",
+    "new_record_files": 4
+  },
+  "records": [
+    {
+      "complete": true,
+      "structural_integrity_passed": true,
+      "hardware_accuracy_accepted": false,
+      "metadata": {
+        "card_serial": "10044BA5",
+        "card_bytes": 7948206080,
+        "requested_seconds": 300,
+        "odr": 26667,
+        "spi_hz": 8000000,
+        "scale_micro_g": 61,
+        "ina_precision_accepted": false,
+        "source": "203a60b563708ec96d1e7a883faff059af4a9a7c",
+        "inputs": "98594a067b30c8bf84e7272b5df57dc34d532b37db86253248f415cd00771383",
+        "mac": "44:1b:f6:81:91:10",
+        "wiring": "20261015-IO13-TFdirect",
+        "shunt_micro_ohm": 100000,
+        "current_lsb_nA": 25000,
+        "power_lsb_nW": 625000,
+        "ina_address": 68
+      },
+      "blocks": 20813,
+      "footer": {
+        "samples": 7978903,
+        "start_us": 14549436,
+        "stop_us": 314550348,
+        "ina_samples": 3001,
+        "ina_invalid": 0,
+        "errors": 0,
+        "saturation": 0,
+        "fifo_high": 134,
+        "queue_high": 10,
+        "max_write_us": 155434,
+        "max_sync_us": 111534,
+        "min_heap": 200024,
+        "sensor_stack": 1272,
+        "ina_stack": 2824,
+        "observed_samples_per_second": 26596.262480695394
+      },
+      "sha256": "b8650caad45db752f358cfc4524d1822a97e61a38f11850136307b8c750d6ec6",
+      "time_note": "XYZ time is sample index / nominal ODR; block MCU times are read windows",
+      "record": "A0A83E05",
+      "bytes": 56923661
+    },
+    {
+      "complete": true,
+      "structural_integrity_passed": true,
+      "hardware_accuracy_accepted": false,
+      "metadata": {
+        "card_serial": "10044BA5",
+        "card_bytes": 7948206080,
+        "requested_seconds": 10,
+        "odr": 26667,
+        "spi_hz": 8000000,
+        "scale_micro_g": 61,
+        "ina_precision_accepted": false,
+        "source": "203a60b563708ec96d1e7a883faff059af4a9a7c",
+        "inputs": "98594a067b30c8bf84e7272b5df57dc34d532b37db86253248f415cd00771383",
+        "mac": "44:1b:f6:81:91:10",
+        "wiring": "20261015-IO13-TFdirect",
+        "shunt_micro_ohm": 100000,
+        "current_lsb_nA": 25000,
+        "power_lsb_nW": 625000,
+        "ina_address": 68
+      },
+      "blocks": 696,
+      "footer": {
+        "samples": 266054,
+        "start_us": 81281435,
+        "stop_us": 91283343,
+        "ina_samples": 101,
+        "ina_invalid": 0,
+        "errors": 0,
+        "saturation": 0,
+        "fifo_high": 134,
+        "queue_high": 4,
+        "max_write_us": 45654,
+        "max_sync_us": 9847,
+        "min_heap": 199808,
+        "sensor_stack": 1272,
+        "ina_stack": 2824,
+        "observed_samples_per_second": 26600.324658055244
+      },
+      "sha256": "7b0bef700e32c14dbd0b961d15d7b374e23ba30b3927050003745c239e61bebe",
+      "time_note": "XYZ time is sample index / nominal ODR; block MCU times are read windows",
+      "record": "FE0A607A",
+      "bytes": 1898502
+    },
+    {
+      "complete": true,
+      "structural_integrity_passed": true,
+      "hardware_accuracy_accepted": false,
+      "metadata": {
+        "card_serial": "10044BA5",
+        "card_bytes": 7948206080,
+        "requested_seconds": 10,
+        "odr": 26667,
+        "spi_hz": 8000000,
+        "scale_micro_g": 61,
+        "ina_precision_accepted": false,
+        "source": "203a60b563708ec96d1e7a883faff059af4a9a7c",
+        "inputs": "98594a067b30c8bf84e7272b5df57dc34d532b37db86253248f415cd00771383",
+        "mac": "44:1b:f6:81:91:10",
+        "wiring": "20261015-IO13-TFdirect",
+        "shunt_micro_ohm": 100000,
+        "current_lsb_nA": 25000,
+        "power_lsb_nW": 625000,
+        "ina_address": 68
+      },
+      "blocks": 699,
+      "footer": {
+        "samples": 267316,
+        "start_us": 89385436,
+        "stop_us": 99386399,
+        "ina_samples": 101,
+        "ina_invalid": 0,
+        "errors": 0,
+        "saturation": 0,
+        "fifo_high": 136,
+        "queue_high": 4,
+        "max_write_us": 52809,
+        "max_sync_us": 14732,
+        "min_heap": 200024,
+        "sensor_stack": 1272,
+        "ina_stack": 2824,
+        "observed_samples_per_second": 26729.025994796702
+      },
+      "sha256": "45aae59de3299d5182af0ba0dcd0f3fe2571f240539b2bbbf7b341ce5fd1cfce",
+      "time_note": "XYZ time is sample index / nominal ODR; block MCU times are read windows",
+      "record": "00CB4A6E",
+      "bytes": 1907480
+    },
+    {
+      "complete": true,
+      "structural_integrity_passed": true,
+      "hardware_accuracy_accepted": false,
+      "metadata": {
+        "card_serial": "10044BA5",
+        "card_bytes": 7948206080,
+        "requested_seconds": 10,
+        "odr": 26667,
+        "spi_hz": 8000000,
+        "scale_micro_g": 61,
+        "ina_precision_accepted": false,
+        "source": "203a60b563708ec96d1e7a883faff059af4a9a7c",
+        "inputs": "98594a067b30c8bf84e7272b5df57dc34d532b37db86253248f415cd00771383",
+        "mac": "44:1b:f6:81:91:10",
+        "wiring": "20261015-IO13-TFdirect",
+        "shunt_micro_ohm": 100000,
+        "current_lsb_nA": 25000,
+        "power_lsb_nW": 625000,
+        "ina_address": 68
+      },
+      "blocks": 699,
+      "footer": {
+        "samples": 267388,
+        "start_us": 84343436,
+        "stop_us": 94346343,
+        "ina_samples": 101,
+        "ina_invalid": 0,
+        "errors": 0,
+        "saturation": 0,
+        "fifo_high": 137,
+        "queue_high": 4,
+        "max_write_us": 49591,
+        "max_sync_us": 9843,
+        "min_heap": 200024,
+        "sensor_stack": 1272,
+        "ina_stack": 2824,
+        "observed_samples_per_second": 26731.02928978546
+      },
+      "sha256": "54f9f6dda95107aa675bbbb7dd1045e091aa1cdd9085a6d1c5dfa17686fe473e",
+      "time_note": "XYZ time is sample index / nominal ODR; block MCU times are read windows",
+      "record": "3EFB07B0",
+      "bytes": 1907984
+    }
+  ],
+  "device_full_verifies": 7,
+  "main_device_full_verifies": 4,
+  "host_full_verifies": 4,
+  "reference_hash_matches": 12,
+  "ina_cal_writes": 4,
+  "ina_automatic_repair": false,
+  "recovery_executed": false,
+  "precision_accepted": false,
+  "power_loss_during_write_tested": false,
+  "stable_branch_merged": false,
+  "handoff_state": "controller powered off; candidate retained; TF in user-connected PC reader",
+  "files": [
+    {
+      "path": "local-data/hardware/sensor-recorder/20261016_091647/hardware.log",
+      "bytes": 51457,
+      "sha256": "9667e1dff64fb98caee0d3a053814344c68bc76ce486410b79e55eaaf4e04bbd"
+    },
+    {
+      "path": "local-data/hardware/sensor-recorder/20261016_091647/cold-1/hardware.log",
+      "bytes": 6252,
+      "sha256": "01c69b6502c0ce860860b1fefc45dc89800454193f5d99dc4ff5eaa810bd3e20"
+    },
+    {
+      "path": "local-data/hardware/sensor-recorder/20261016_091647/cold-2/hardware.log",
+      "bytes": 6281,
+      "sha256": "01aac75108b6ab86b974613f9efc8a81a2d068ae8c5bc1cd5b3cc514b0ef93a2"
+    },
+    {
+      "path": "local-data/hardware/sensor-recorder/20261016_091647/initial_result_before_cold.json",
+      "bytes": 1221,
+      "sha256": "6e42e2ac7f9e7b6dd53b9bc0535f7d9a5b912d33713a31002394b250428f0605"
+    },
+    {
+      "path": "local-data/hardware/sensor-recorder/20261016_091647/device_result_before_export.json",
+      "bytes": 1294,
+      "sha256": "c776385858a5f41143674bf8ec6800316c2d9af31312daa3413f90f6c84bf3c2"
+    },
+    {
+      "path": "local-data/hardware/sensor-recorder/20261016_091647/result.json",
+      "bytes": 1549,
+      "sha256": "a237bd3d54ec4003a914eab492ab5c96191c8afac4adce298ed7a00ebaa42504"
+    },
+    {
+      "path": "local-data/hardware/sensor-recorder/20261016_091647/cold-1/result.json",
+      "bytes": 660,
+      "sha256": "31faef71db39d366a0cf6665a26e62535e365e656a778e742689a87545680eda"
+    },
+    {
+      "path": "local-data/hardware/sensor-recorder/20261016_091647/cold-2/result.json",
+      "bytes": 659,
+      "sha256": "d86c2a8154dac43f58b6e9a650dcd5c9e95ed6cc51dc3c07a6769dadc7b18a56"
+    },
+    {
+      "path": "local-data/hardware/sensor-recorder/20261016_091647/host-export/export_result.json",
+      "bytes": 6137,
+      "sha256": "4aa24657f2ef246c87a0ee9334e5a3dd3762717d3d23ce9a494ac437587f23d3"
+    },
+    {
+      "path": "local-data/hardware/sensor-recorder/20261016_091647/host-export/REC_A0A83E05/actual-preview.png",
+      "bytes": 355256,
+      "sha256": "a44bd4922770d1c6cf362e3747915bc01343f94ab1fd5803c723191ffe44f725"
+    },
+    {
+      "path": "local-data/hardware/sensor-recorder/20261016_091647/controller_prefix.bin",
+      "bytes": 454656,
+      "sha256": "430f11c3045b60df0a05bd417e89823c3ea0b6b024bfe6e550289b043f6ab037"
+    },
+    {
+      "path": "local-data/hardware/sensor-recorder/20261016_091647/host-export/REC_A0A83E05/DATA.BIN",
+      "bytes": 56923661,
+      "sha256": "b8650caad45db752f358cfc4524d1822a97e61a38f11850136307b8c750d6ec6"
+    },
+    {
+      "path": "local-data/hardware/sensor-recorder/20261016_091647/host-export/REC_A0A83E05/summary.json",
+      "bytes": 1323,
+      "sha256": "d3d6a1cd1dd0105966de25152a620999572e2d3164c73314c6fbe1c26857454c"
+    },
+    {
+      "path": "local-data/hardware/sensor-recorder/20261016_091647/host-export/REC_A0A83E05/ina.csv",
+      "bytes": 199174,
+      "sha256": "6fac022f0010d63fb690dd7b0fa9154aa8177d82d947e48d98a0f0f45a242af3"
+    },
+    {
+      "path": "local-data/hardware/sensor-recorder/20261016_091647/host-export/REC_A0A83E05/preview_xyz.csv",
+      "bytes": 137740,
+      "sha256": "688f4c3b88c7477890fe0efa101ae71c96933bd50c2c39e5ee443ae26d0598e4"
+    },
+    {
+      "path": "local-data/hardware/sensor-recorder/20261016_091647/host-export/REC_FE0A607A/DATA.BIN",
+      "bytes": 1898502,
+      "sha256": "7b0bef700e32c14dbd0b961d15d7b374e23ba30b3927050003745c239e61bebe"
+    },
+    {
+      "path": "local-data/hardware/sensor-recorder/20261016_091647/host-export/REC_FE0A607A/summary.json",
+      "bytes": 1312,
+      "sha256": "5069b45b94d91b39f6217cc10014278ce15d298d8dc7d8c0023e6a1d08ae1833"
+    },
+    {
+      "path": "local-data/hardware/sensor-recorder/20261016_091647/host-export/REC_FE0A607A/ina.csv",
+      "bytes": 5860,
+      "sha256": "79194f7802d74f86ea0705cdb8d05b037fcd2fba61cd7769154ae53048fe4daa"
+    },
+    {
+      "path": "local-data/hardware/sensor-recorder/20261016_091647/host-export/REC_FE0A607A/preview_xyz.csv",
+      "bytes": 137505,
+      "sha256": "50682a619f67d786985c3ed5ac6799781683857740d131ffe52a038a3dfcdc0a"
+    },
+    {
+      "path": "local-data/hardware/sensor-recorder/20261016_091647/host-export/REC_00CB4A6E/DATA.BIN",
+      "bytes": 1907480,
+      "sha256": "45aae59de3299d5182af0ba0dcd0f3fe2571f240539b2bbbf7b341ce5fd1cfce"
+    },
+    {
+      "path": "local-data/hardware/sensor-recorder/20261016_091647/host-export/REC_00CB4A6E/summary.json",
+      "bytes": 1313,
+      "sha256": "c375e0cbf890dadd3b40d5efecb62b59b542c9496fae26d49056ff65f1ae10c8"
+    },
+    {
+      "path": "local-data/hardware/sensor-recorder/20261016_091647/host-export/REC_00CB4A6E/ina.csv",
+      "bytes": 5845,
+      "sha256": "35e91657d6efe7b90fd91602fe6a885b3630bfe650813cc0d51ff37a2dd91601"
+    },
+    {
+      "path": "local-data/hardware/sensor-recorder/20261016_091647/host-export/REC_00CB4A6E/preview_xyz.csv",
+      "bytes": 137661,
+      "sha256": "2487562d881d7d0cf3b27f8617d58ce599122c30401401b2604afab5ab3191cb"
+    },
+    {
+      "path": "local-data/hardware/sensor-recorder/20261016_091647/host-export/REC_3EFB07B0/DATA.BIN",
+      "bytes": 1907984,
+      "sha256": "54f9f6dda95107aa675bbbb7dd1045e091aa1cdd9085a6d1c5dfa17686fe473e"
+    },
+    {
+      "path": "local-data/hardware/sensor-recorder/20261016_091647/host-export/REC_3EFB07B0/summary.json",
+      "bytes": 1311,
+      "sha256": "9fcded9ca9e1508a09f6b557bfd856426b8cd306d58842364174b103d44d8085"
+    },
+    {
+      "path": "local-data/hardware/sensor-recorder/20261016_091647/host-export/REC_3EFB07B0/ina.csv",
+      "bytes": 5762,
+      "sha256": "1c9fbf96638ec0e583de542037971960461a0f2a360966b18fcbe47661c74a58"
+    },
+    {
+      "path": "local-data/hardware/sensor-recorder/20261016_091647/host-export/REC_3EFB07B0/preview_xyz.csv",
+      "bytes": 137803,
+      "sha256": "3f832133eb29b98ee84641abe6de2a9d26f78a67bd3ea2aef470a44e55c3bb5a"
+    }
+  ]
+}

@@ -62,7 +62,9 @@ def check(local=False):
                  '面包板样机_固件/diagnostics/tf_write_probe/README.md',
                  'docs/plans/SENSOR_MONITOR_BRINGUP_20261015.md',
                  'docs/hardware/wiring/传感器与电流监测接入_2026-10-15.md',
-                 '面包板样机_固件/diagnostics/sensor_monitor_probe/README.md']
+                 '面包板样机_固件/diagnostics/sensor_monitor_probe/README.md',
+                 'docs/plans/SENSOR_TF_RECORDER_20261015.md',
+                 '面包板样机_固件/diagnostics/sensor_tf_recorder/README.md']
     for name in documents:
         path = ROOT / name
         if not path.is_file():
@@ -93,7 +95,8 @@ def check(local=False):
     checks.append('git_index_frozen_hashes_paths_size_and_credential_patterns')
     for name in ['platformio.ini', 'platformio.tf_protocol_probe.ini', 'platformio.tf_software_probe.ini',
                  'diagnostics/tf_idf_probe/platformio.ini', 'diagnostics/tf_write_probe/platformio.ini',
-                 'diagnostics/sensor_monitor_probe/platformio.ini']:
+                 'diagnostics/sensor_monitor_probe/platformio.ini',
+                 'diagnostics/sensor_tf_recorder/platformio.ini']:
         text = (ROOT / '面包板样机_固件' / name).read_text(encoding='utf-8-sig')
         if 'block_implicit_upload.py' not in text:
             errors.append('Missing upload guard: ' + name)
