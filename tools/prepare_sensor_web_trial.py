@@ -18,6 +18,10 @@ def prepare(manifest):
         raise ValueError('Expected clean, local-credential software candidate, untested on hardware')
     if build.get('sdkconfig_differences') != EXPECTED_SDKCONFIG_DIFF:
         raise ValueError('Unexpected SDK configuration difference')
+    generated = build.get('staged_generated_sha256', {})
+    if (generated.get('wifi_credentials.h') != build['inputs'].get('PRIVATE_GENERATED/wifi_credentials.h') or
+            not all(len(generated.get(name, '')) == 64 for name in ['wifi_credentials.h', 'web_asset.h', 'build_identity.h'])):
+        raise ValueError('Generated build input byte hashes missing or inconsistent')
     subprocess.run(['git', 'merge-base', '--is-ancestor', build['source_commit'], 'HEAD'], cwd=ROOT, check=True)
     for name, digest in build['inputs'].items():
         if name == 'PRIVATE_GENERATED/wifi_credentials.h':
