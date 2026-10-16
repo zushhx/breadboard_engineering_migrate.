@@ -17,6 +17,9 @@
 #if defined(CONFIG_ESP_PHY_CALIBRATION_AND_DATA_STORAGE) || defined(CONFIG_ESP32_PHY_CALIBRATION_AND_DATA_STORAGE)
 #error "Web recorder must not persist RF calibration to NVS"
 #endif
+#if defined(CONFIG_ESP_WIFI_STA_DISCONNECTED_PM_ENABLE)
+#error "Controlled WiFi diagnostic requires disconnected power management disabled"
+#endif
 
 namespace control {
 static Model model;

@@ -19,7 +19,8 @@ SOURCE = ROOT / '面包板样机_固件/diagnostics/sensor_web_recorder'
 ENVIRONMENT = 'sensor_web_recorder_idf542'
 EXPECTED_SDKCONFIG_DIFF = {name: {'before': name+'=y', 'after': None} for name in (
     'CONFIG_ESP_PHY_CALIBRATION_AND_DATA_STORAGE',
-    'CONFIG_ESP32_PHY_CALIBRATION_AND_DATA_STORAGE')}
+    'CONFIG_ESP32_PHY_CALIBRATION_AND_DATA_STORAGE',
+    'CONFIG_ESP_WIFI_STA_DISCONNECTED_PM_ENABLE')}
 
 
 def credentials(path):

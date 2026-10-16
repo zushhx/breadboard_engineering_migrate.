@@ -11,6 +11,12 @@ import sensor_web_batch as web
 
 
 class WebBatchGuards(unittest.TestCase):
+    def test_read_only_gate_rejects_unrequested_recording_or_reset(self):
+        idle={'boot':'abc','connected':True,'ready':True,'phase':'idle','errors':0}
+        web.check_idle(idle,'abc')
+        for key,value in [('boot','different'),('phase','recording'),('errors',1),('ready',False),('connected',False)]:
+            with self.subTest(key=key),self.assertRaisesRegex(RuntimeError,'Read-only startup gate'):
+                web.check_idle(dict(idle,**{key:value}),'abc')
     def test_known_failed_candidate_stops_before_baseline_or_hardware(self):
         with tempfile.TemporaryDirectory() as directory:
             failure=Path(directory)/'failure.json'
