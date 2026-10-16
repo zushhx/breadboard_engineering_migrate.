@@ -19,13 +19,13 @@ class UiLiveTrialTests(unittest.TestCase):
                 session.log.close()
 
     def test_missing_approval_before_inputs_or_hardware(self):
-        with patch.object(trial,'inputs') as inputs,patch.object(trial.tf,'Session') as session:
+        with patch.object(trial,'inputs') as inputs,patch.object(trial,'TrialSession') as session:
             with self.assertRaisesRegex(RuntimeError,'explicit approval'):trial.run(None)
             inputs.assert_not_called();session.assert_not_called()
 
     def test_wrong_scope_or_readiness_before_hardware(self):
         for record in ({'scope':{}},{'scope':trial.SCOPE}):
-            with patch.object(trial,'inputs',return_value=(None,None,[])),patch.object(trial,'require_approval',return_value=record),patch.object(trial.tf,'Session') as session:
+            with patch.object(trial,'inputs',return_value=(None,None,[])),patch.object(trial,'require_approval',return_value=record),patch.object(trial,'TrialSession') as session:
                 with self.assertRaisesRegex(RuntimeError,'scope/readiness'):trial.run(Path('fixture'))
                 session.assert_not_called()
 
