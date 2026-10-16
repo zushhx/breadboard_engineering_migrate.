@@ -1,13 +1,18 @@
 {
-  "source_commit": "acbf8452103c8408701d3a3e18577ba11d412901",
-  "manifest_local_path": "local-data/build/sensor-web/c212329903cde531/20261016_145549_238383/build_manifest.json",
-  "firmware_sha256": "e0d55734eba0e10ebbd948444833805666407595cc17a06445759fb03f74df93",
-  "firmware_bytes": 963536,
+  "source_commit": "9c906cc41dee6da48d407203ca008388fc60ef0f",
+  "manifest_local_path": "local-data/build/sensor-web/a1146d0265e285b1/20261016_150348_483186/build_manifest.json",
+  "firmware_sha256": "1a240e44ddceb6d706df4d74110e00a61d59376cff833f365cf3b59a9f5daed3",
+  "firmware_bytes": 963808,
   "build_passed": true,
   "hardware_tested_at_build": false,
   "hashSample_stack_frame_before_bytes": 5872,
   "hashSample_stack_frame_after_bytes": 1744,
-  "change": "Move 4KiB FatFS FIL off main stack; startup heap integrity and stack watermark checks",
+  "change": "Static FIL, static line-buffered stdout, deferred WiFi callback logging; startup heap integrity check",
   "diagnostic_panic_mode": "GDB stop retained for failure inspection; no auto reboot on panic",
-  "private_firmware_do_not_publish": true
+  "private_firmware_do_not_publish": true,
+  "superseded_partial_fix_sha256": "e0d55734eba0e10ebbd948444833805666407595cc17a06445759fb03f74df93",
+  "diagnostic_evidence_local": [
+    "local-data/hardware/wifi-notify/20261016_145255/gdb.txt",
+    "local-data/hardware/wifi-notify/20261016_150137/gdb.txt"
+  ]
 }
