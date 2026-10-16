@@ -1,5 +1,4 @@
 #include "vibration_trend.h"
-#include "vibration_wave.h"
 #include <cassert>
 #include <cstdio>
 int main() {
@@ -38,25 +37,5 @@ int main() {
   history.reset(); assert(history.copy(copy) == 0);
   accumulator.reset();
   assert(!accumulator.add(dc, point));
-  WaveAccumulator wave; WaveBucket bucket;
-  for (unsigned i = 1; i < kWaveBin; ++i) assert(!wave.add(dc, bucket));
-  const int16_t hit[3] = {-32768, 32767, -123};
-  assert(wave.add(hit, bucket)); assert(bucket.endSample == kWaveBin);
-  assert(bucket.minimum[0] == -32768 && bucket.maximum[0] == 1234);
-  assert(bucket.minimum[1] == -2345 && bucket.maximum[1] == 32767);
-  assert(bucket.minimum[2] == -123 && bucket.maximum[2] == 32767);
-  // Next interval must not inherit extrema. Incomplete tail stays unpublished.
-  for (unsigned i = 1; i < kWaveBin; ++i) assert(!wave.add(dc, bucket));
-  assert(wave.add(dc, bucket)); assert(bucket.endSample == 2 * kWaveBin);
-  for (unsigned a = 0; a < 3; ++a) assert(bucket.minimum[a] == dc[a] && bucket.maximum[a] == dc[a]);
-  WaveHistory wh; static WaveBucket wc[kWavePoints];
-  assert(wh.copy(wc) == 0);
-  for (unsigned i = 1; i <= kWavePoints + 9; ++i) { bucket.endSample = i; wh.push(bucket); }
-  assert(wh.copy(wc) == kWavePoints);
-  assert(wc[0].endSample == 10 && wc[kWavePoints-1].endSample == kWavePoints + 9);
-  wh.reset(); assert(wh.copy(wc) == 0);
-  wave.reset();
-  for (unsigned i = 0; i < kWaveBin; ++i) wave.add(dc, bucket);
-  assert(bucket.endSample == kWaveBin);
-  puts("PASS: RMS/DC/extremes/windows/reset; wave signed extrema/DC/peak preservation/bounded ring/reset");
+  puts("PASS: DC/known RMS/extremes/windows/ring/reset");
 }

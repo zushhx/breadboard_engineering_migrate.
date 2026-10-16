@@ -9,11 +9,11 @@ const root = path.resolve(__dirname, '..');
 const output = path.join(root, 'local-data', 'validation', 'sensor-web-ui');
 fs.mkdirSync(output, {recursive:true});
 const boot='abcdefabcdefabcdefabcdefabcdefab';
-let s={boot,phase:'idle',ready:true,connected:true,ip:'192.168.1.23',card_serial:'10044BA5',card_bytes:'7948206080',
+let s={boot,phase:'idle',ready:true,connected:true,ip:'192.168.1.23',card_serial:'10044BA5',card_bytes:'7948206080',space_valid:true,free_bytes:'6144000000',
   run:'',seconds:0,written:0,elapsed_us:0,errors:0,queue:0,fifo_high:0,queue_high:0,write_us:0,sync_us:0,free_heap:150000,
   ina_valid:false,ina_us:0,bus_mv:0,current_ua:0,power_uw:0,detail:'软件模拟状态；非实机数据',sha256:'',preview_seq:0,preview_us:0,preview:[]};
 let posts=[], unavailable=false, requests=0, outstanding=0,maxOutstanding=0,delayAck=false;
-let trendUnavailable=false,trendRun=null,trendBoot=null,waveUnavailable=false,waveMalformed=false;
+let trendUnavailable=false,trendRun=null,trendBoot=null;
 const html=fs.readFileSync(path.join(root,'面包板样机_固件/diagnostics/sensor_web_recorder/src/index.html'),'utf8').replace('{{KEY}}',boot);
 const server=http.createServer(async(req,res)=>{
   res.setHeader('Cache-Control','no-store');
@@ -28,11 +28,6 @@ const server=http.createServer(async(req,res)=>{
     const run=trendRun===null?s.run:trendRun;
     res.end(JSON.stringify({boot:trendBoot===null?s.boot:trendBoot,run,sample_rate:26667,window_samples:5333,
       points:run?Array.from({length:150},(_,i)=>[(i+1)*5333,12000+i*10,14000+i*8,16000+i*6,i===40?2:0]):[]}));return;
-  }
-  if(req.url==='/api/wave'){
-    res.statusCode=waveUnavailable?404:200;res.setHeader('Content-Type','application/json');
-    res.end(JSON.stringify({boot:trendBoot===null?s.boot:trendBoot,run:trendRun===null?s.run:trendRun,sample_rate:26667,bin_samples:533,
-      points:waveMalformed?[[533,10,-10,0,0,0,0]]:s.run?Array.from({length:512},(_,i)=>[(i+1)*533,-1000-i,1000+i,-500,500,16000,17000]):[]}));return;
   }
   if(req.method==='POST'){
     let body='';for await(const data of req)body+=data;
@@ -78,11 +73,11 @@ async function main(){
     });
     s={...s,phase:'recording',written:2630000,elapsed_us:100000000,queue:4,write_us:155434,sync_us:111534,
       ina_valid:true,ina_us:100000000,bus_mv:3290,current_ua:750,power_uw:2500,preview_seq:1,preview_us:99997000,
-      preview:Array.from({length:96},(_,i)=>[Math.round(Math.sin(i/7)*5000),Math.round(Math.cos(i/9)*3000),16384+Math.round(Math.sin(i/3)*1500)])};
+      preview:Array.from({length:272},(_,i)=>[Math.round(Math.sin(i/7)*5000),Math.round(Math.cos(i/9)*3000),16384+Math.round(Math.sin(i/3)*1500)])};
     await page.waitForFunction(()=>document.getElementById('phase').textContent==='正在录制');
     await check('recording shows actual server state and preview',async()=>{
       assert.equal(await page.locator('#voltage').innerText(),'3.290');
-      assert.match(await page.locator('#previewLabel').innerText(),/96 点/);
+      assert.match(await page.locator('#previewLabel').innerText(),/源片段 272 点/);
       assert.equal(await page.locator('#start').isDisabled(),true);assert.equal(await page.locator('#stop').isEnabled(),true);
     });
     await check('continuous trend and near-full-scale flag; duration locked while busy',async()=>{
@@ -93,7 +88,7 @@ async function main(){
       assert.equal(await page.locator('.prototype').count(),0);
     });
     await check('fixed common scales survive amplitude changes and all time modes',async()=>{
-      for(const span of ['1','1000','10000']){
+      for(const span of ['1','5','10']){
         await page.locator('[data-span="'+span+'"]').click();
         assert.deepEqual(await page.evaluate(()=>[views.get($('wave')).min,views.get($('wave')).max,views.get($('trend')).min,views.get($('trend')).max]),[-2000,2000,0,2000]);
       }
@@ -115,27 +110,34 @@ async function main(){
       assert(t.x>=b.x&&t.x+t.width<=b.x+b.width+1);
       await page.locator('#wave').press('Escape');assert(await page.locator('.raw-plot .chart-tip').isHidden());
     });
-    await check('long mode uses actual interval extrema, never interpolated raw samples',async()=>{
-      await page.waitForFunction(()=>shownWave.length===512);
-      await page.locator('[data-span="1000"]').click();
-      await page.locator('#wave').focus();await page.locator('#wave').press('End');
-      assert.match(await page.locator('.raw-plot .chart-tip').innerText(),/区间极值/);
-      assert.match(await page.locator('.raw-plot .chart-tip').innerText(),/～/);
-      assert.equal(await page.evaluate(()=>views.get($('wave')).end-views.get($('wave')).begin),1);
-      await page.locator('[data-span="10000"]').click();
-      assert.equal(await page.evaluate(()=>views.get($('wave')).end-views.get($('wave')).begin),10);
-      waveMalformed=true;await page.waitForFunction(()=>$('previewLabel').textContent.includes('不可用'));
-      assert.equal(await page.evaluate(()=>shownWave.length),512);waveMalformed=false;
-      waveUnavailable=true;await new Promise(r=>setTimeout(r,1400));assert(await page.locator('#stop').isEnabled());waveUnavailable=false;
-      await page.waitForFunction(()=>!$('previewLabel').textContent.includes('不可用'));
-      await page.locator('[data-span="1"]').click();
+    await check('1/5/10ms use real consecutive samples with correct counts and actual tooltip values',async()=>{
+      await page.locator('#pause').click();
+      await page.evaluate(()=>{shownRaw=latestRaw;paint();});
+      for(const [span,count] of [[1,27],[5,134],[10,267]]){
+        await page.locator('[data-span="'+span+'"]').click();
+        assert.match(await page.locator('#previewLabel').innerText(),new RegExp('^'+count+' 点 / '+span+' ms'));
+        assert.equal(await page.evaluate(()=>views.get($('wave')).end),span);
+        await page.locator('#wave').focus();await page.locator('#wave').press('End');
+        const expected=await page.evaluate(n=>(shownRaw[n-1][0]*.061).toFixed(2),count);
+        const tip=await page.locator('.raw-plot .chart-tip').innerText();assert.match(tip,/原始样本/);assert.deepEqual(tip.split('\n')[1].trim().split(/\s+/),['X',expected,'mg']);assert(!tip.includes('区间'));
+      }
+      await page.evaluate(()=>{shownRaw=shownRaw.slice(0,96);paint();});
+      assert.match(await page.locator('#previewLabel').innerText(),/^96 点 \/ 10 ms.*96 点 \/ 3.56 ms/);
+      assert.equal(await page.evaluate(()=>views.get($('wave')).pts.length),96);
+      await page.locator('#pause').click();await page.locator('[data-span="1"]').click();
+    });
+    await check('remaining capacity uses valid filesystem bytes; zero differs from unavailable and legacy',async()=>{
+      await page.waitForFunction(()=>$('remaining').textContent==='6.144 GB');
+      for(const [valid,bytes,expected] of [[true,'0','0.000 GB'],[false,'0','—'],[true,'9999999999','—'],[true,'-1','—'],[true,'not-a-number','—'],[undefined,undefined,'—'],[true,'6144000000','6.144 GB']]){
+        s.space_valid=valid;s.free_bytes=bytes;await page.waitForFunction(v=>snapshot.space_valid===v[0]&&snapshot.free_bytes===v[1],[valid,bytes]);await page.waitForFunction(v=>$('remaining').textContent===v,expected);
+      }
     });
     await check('touch tap pins a readable cursor without blocking page scrolling',async()=>{
       const touch=await browser.newContext({viewport:{width:390,height:844},hasTouch:true,isMobile:true});
       const tp=await touch.newPage();
       // Separate browser client: do not count its requests as overlap in the main client's serial polling check.
       await tp.route('**/api/status',r=>r.fulfill({contentType:'application/json',body:JSON.stringify(s)}));
-      await tp.goto(address);await tp.waitForFunction(()=>shownRaw.length===96);
+      await tp.goto(address);await tp.waitForFunction(()=>shownRaw.length===272);
       await tp.locator('#wave').tap({position:{x:130,y:90}});
       assert.equal(await tp.evaluate(()=>cursor.pinned),true);
       assert(await tp.locator('.raw-plot .chart-tip').isVisible());
@@ -203,7 +205,6 @@ async function main(){
       s.phase='idle';s.boot='f'.repeat(32);await page.waitForFunction(()=>document.getElementById('bootWarning').style.display==='block');
       assert.equal(await page.locator('#start').isDisabled(),true);assert.equal(posts.length,3);
       assert.equal(await page.evaluate(()=>shownTrend.length),0);
-      assert.equal(await page.evaluate(()=>shownWave.length),0);
     });
     await check('old run/boot trend cannot populate a new empty run; missing endpoint remains optional',async()=>{
       trendRun='DEADBEEF';trendBoot=boot;s.run='CAFEBABE';s.preview=[];s.preview_seq=0;

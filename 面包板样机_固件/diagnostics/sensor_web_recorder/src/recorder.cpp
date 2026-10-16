@@ -6,6 +6,7 @@
 #include "build_identity.h"
 #include "tf_test_core.h"
 #include "web_control.h"
+#include "storage_space.h"
 #include "ff.h"
 #include "esp_heap_caps.h"
 #include "esp_mac.h"
@@ -211,8 +212,11 @@ static void record(const Store& store, const char* run, unsigned seconds) {
   if (exists != FR_NO_FILE) { Serial.printf("[rec] rejected existing/unknown directory fatfs=%u\n", exists);
     control::result(false, false, "目录已存在或查询失败，未开始录制"); return; }
   DWORD clusters = 0; FATFS* fs = nullptr;
-  if (f_getfree(store.drive, &clusters, &fs) != FR_OK || !fs ||
-      static_cast<uint64_t>(clusters) * fs->csize * 512 < static_cast<uint64_t>(seconds) * 200000 + 2097152) {
+  uint64_t freeBytes = 0;
+  const bool spaceValid = f_getfree(store.drive, &clusters, &fs) == FR_OK && fs &&
+      control::freeBytesFromClusters(clusters, fs->csize, store.capacity, freeBytes);
+  control::storageSpace(spaceValid, freeBytes);
+  if (!spaceValid || freeBytes < static_cast<uint64_t>(seconds) * 200000 + 2097152) {
     Serial.println("[rec] rejected insufficient/free-space query failed");
     control::result(false, false, "空间不足或查询失败，未开始录制"); return;
   }
@@ -284,6 +288,11 @@ static void record(const Store& store, const char* run, unsigned seconds) {
     if (sensorDone.load() && monitorDone.load() && !uxQueueMessagesWaiting(dataQ) && !uxQueueMessagesWaiting(inaQ)) break;
     if (now() >= nextSync && ok) { ok = sync(); nextSync = now() + 1000000; }
     if (now() >= nextReport) {
+      // FatFS updates this cache on allocation. Do not trigger a FAT scan during recording.
+      uint64_t available = 0;
+      const bool cached = fs->free_clst <= fs->n_fatent - 2 &&
+          control::freeBytesFromClusters(fs->free_clst, fs->csize, store.capacity, available);
+      control::storageSpace(cached, available);
       control::progress(writtenSamples, now() - totals.startUs, errors.load(), uxQueueMessagesWaiting(dataQ),
           totals.maxWriteUs, totals.maxSyncUs);
       Serial.printf("[rec] progress written_samples=%llu queue=%u errors=%lu\n", (unsigned long long)writtenSamples,

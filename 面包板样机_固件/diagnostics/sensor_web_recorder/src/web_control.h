@@ -2,6 +2,7 @@
 #include "web_model.h"
 namespace control {
 void initialize(bool ready, uint32_t serial, uint64_t capacity);
+void storageSpace(bool valid, uint64_t bytes);
 void startNetwork();
 void pollNetworkLog();
 bool take(char* run, unsigned& seconds);

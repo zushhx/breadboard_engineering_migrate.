@@ -16,12 +16,12 @@ import tf_write_batch as tf
 import sensor_recorder_batch as base
 import sensor_web_batch as web
 
-SOURCE = 'db2876629963e4427f735c0b4db376d8322f2887'
-CANDIDATE = '5e99903005fc570936ce55ca6f833309028c6681398c4937ef6f718b3bea94d6'
-OLD_SOURCE = 'f09027903fa0f66bea3b4fb2d55db41b08433a98'
-OLD_SHA = '428d0933850617bfc5d8e5589db42977adbe0d843471b14a723985521b93a5ff'
-MANIFEST = ROOT/'local-data/build/sensor-web/882c03c3a7eaf54b/20261016_200648_785830/build_manifest.json'
-OLD_PUBLIC = ROOT/'docs/reports/REALTIME_UI_EVIDENCE_20261016.json'
+SOURCE = '1f6917870705b29d8697e20ad1f72c09ca4baf3a'
+CANDIDATE = 'fd9dd5d241301f68b56664c3fcf02cc8fc143a2bfcde5f57172570bb028aac54'
+OLD_SOURCE = 'db2876629963e4427f735c0b4db376d8322f2887'
+OLD_SHA = '5e99903005fc570936ce55ca6f833309028c6681398c4937ef6f718b3bea94d6'
+MANIFEST = ROOT/'local-data/build/sensor-web/283bc785448319fb/20261016_203738_082076/build_manifest.json'
+OLD_PUBLIC = ROOT/'docs/reports/REALTIME_UI_FIXED_SCALE_EVIDENCE_20261016.json'
 BROWSER = ROOT/'tools/run_ui_live_browser.cjs'
 OPERATION = 'ui-live-30s'
 SCOPE = dict(seconds=30, app0_only=True, backup_end=0x101000, restore_before_flash_on_failure=True,
