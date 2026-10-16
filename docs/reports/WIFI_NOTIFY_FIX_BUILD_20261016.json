@@ -1,0 +1,13 @@
+{
+  "source_commit": "acbf8452103c8408701d3a3e18577ba11d412901",
+  "manifest_local_path": "local-data/build/sensor-web/c212329903cde531/20261016_145549_238383/build_manifest.json",
+  "firmware_sha256": "e0d55734eba0e10ebbd948444833805666407595cc17a06445759fb03f74df93",
+  "firmware_bytes": 963536,
+  "build_passed": true,
+  "hardware_tested_at_build": false,
+  "hashSample_stack_frame_before_bytes": 5872,
+  "hashSample_stack_frame_after_bytes": 1744,
+  "change": "Move 4KiB FatFS FIL off main stack; startup heap integrity and stack watermark checks",
+  "diagnostic_panic_mode": "GDB stop retained for failure inspection; no auto reboot on panic",
+  "private_firmware_do_not_publish": true
+}

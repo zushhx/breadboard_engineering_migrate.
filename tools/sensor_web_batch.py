@@ -18,12 +18,12 @@ from prepare_sensor_web_trial import prepare
 import tf_write_batch as tf
 import sensor_recorder_batch as base
 
-PUBLIC = ROOT/'docs/reports/WIFI_DISCONNECTED_PM_BUILD_20261016.json'
+PUBLIC = ROOT/'docs/reports/WIFI_NOTIFY_FIX_BUILD_20261016.json'
 NODE = Path.home()/'.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node.exe'
 NODE_MODULES = NODE.parent.parent/'node_modules'
 BROWSER = ROOT/'tools/run_sensor_web_browser.cjs'
-CANDIDATE_SHA = '572f7f6e1b6e66e25cef41b2069a951e81d1fc120d53d1e7d590f45b7085a0bc'
-SOURCE = '8866c4d15bf456944a350ce244026bacdb1fcc59'
+CANDIDATE_SHA = 'e0d55734eba0e10ebbd948444833805666407595cc17a06445759fb03f74df93'
+SOURCE = 'acbf8452103c8408701d3a3e18577ba11d412901'
 OPERATION = 'sensor-web-round'
 REJECTED = ROOT/'docs/reports/WIFI_DISCONNECTED_PM_TRIAL_EVIDENCE_20261016.json'
 REJECTED_PREVIOUS = ROOT/'docs/reports/SENSOR_WEB_FIRST_TRIAL_EVIDENCE_20261016.json'
@@ -159,7 +159,7 @@ def check_idle(info, boot):
         raise RuntimeError('Read-only startup gate lost idle/readiness/boot identity')
 
 
-def read_only_gate(session,port,url,info,label,seconds=90):
+def read_only_gate(session,port,url,info,label,seconds=15):
     deadline=time.monotonic()+seconds; next_poll=0; text=''; samples=[]
     session.emit(f'READ_ONLY_GATE_START label={label} seconds={seconds}; no REC_START')
     while time.monotonic()<deadline:
