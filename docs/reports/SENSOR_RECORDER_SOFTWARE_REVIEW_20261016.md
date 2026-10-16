@@ -20,7 +20,15 @@
 
 本轮修订包括：严格REC_START分隔符及容量溢出拒绝；整轮INA全无效必须失败；头部补齐R100/Current_LSB/Power_LSB/实际地址；记录最终同步耗时与尾部写入前统计的边界。最终产物与CI在后续具体记录追加，不用开发构建哈希申请试烧。
 
-## 尚未验证与恢复
+## 最终软件候选及主机导出检查
+
+从干净提交 `203a60b563708ec96d1e7a883faff059af4a9a7c` 构建通过，输入聚合 `98594a067b30c8bf84e7272b5df57dc34d532b37db86253248f415cd00771383`；固件387616字节，SHA-256 `f84a235cdde8ca5bf89a5c1bf1c78fc218a8a98d72ecd35d7c4a1777cb81b1ba`。生成SDK键值差异为空、分区哈希一致，静态RAM35648字节；动态池分配仍待运行检查。见[完整构建清单](SENSOR_RECORDER_BUILD_20261016.json)。构建清单的hardware_tested=false保持原始含义。
+
+补充MCU-only复位后先只读核对保留CONFIG/CAL，再允许下一次显式REC_START；异常则停止，不重写初始化掩盖。加入对应门槛测试后总计32项通过。`sensor_recorder_batch.py --prepare-only`已核对原候选、正常恢复产物、新候选及输入哈希，不访问设备。
+
+可选绘图环境单独安装于ignored local-data/tooling，锁定matplotlib3.10.7及依赖版本，不改PlatformIO环境。平台默认及应用捆绑Python原先均没有matplotlib，已补齐独立依赖。实际C++模拟文件通过完整校验、CSV导出及PNG生成，人工查看图像坐标/图例和输出；模拟文件仅2点用于协议与边界，绝非真实振动证据。文件SHA为 `1ef925271ab7cefa87f0d83c269842752d946e50dae8b60eff8454f5bdbe7931`，输出位于local-data/context-audit/20261016/simulated-export。CI与Code Review工具结果待PR准备后核验，未取得独立源码审查通过证据。
+
+## 实机边界
 
 31项测试不覆盖FreeRTOS调度、FIFO真实语义、8 MHz信号质量、TF长尾、可用内部堆/栈或满速无丢样。约127 KiB动态池只是预算，构建静态RAM占用不能代替运行分配。无INT服务和逐帧SPI事务能否达标属于主要待测项，不自动降采样/改PSRAM以通过。工作点±5%计数/时间门槛仅为功能检查，非采样时基校准；电压、电流计量精度仍未验收。
 

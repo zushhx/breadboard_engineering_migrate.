@@ -2,6 +2,7 @@ from pathlib import Path
 import sys
 import unittest
 from unittest.mock import patch
+from unittest.mock import MagicMock
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]/'tools'))
 import sensor_recorder_batch as batch
 
@@ -26,6 +27,19 @@ class RecorderBatch(unittest.TestCase):
                     text.replace('write_gate=0', 'write_gate=1'), text.replace('samples=266670', 'samples=20'),
                     text.rstrip('\n'), text.replace('sha256='+('a'*64), 'sha256=BAD')):
             with self.subTest(bad=bad), self.assertRaises(RuntimeError): batch.accepted_reply(bad, 'DEADBEEF', 10)
+
+    def test_warm_reset_register_loss_stops_without_initialization(self):
+        source = 'a'*40
+        identity = f'identity source={source} mac_status=ESP_OK mac={batch.tf.MAC}'
+        session = MagicMock()
+        session.query.side_effect = lambda port, command, seconds: {
+            'help': identity,
+            'l': 'root open=0 PC_MATCH=1 PC_MATCH=1 sample reads consistent=1',
+            'm': 'init_attempted=0 IIS ctrl1=00 ctrl3=44 ctrl6=00 INA transport=1 config=4127 cal=0000',
+        }[command]
+        with self.assertRaisesRegex(RuntimeError, 'register loss'):
+            batch.boot_check(session, object(), source, warm=True)
+        self.assertEqual([call.args[1] for call in session.query.call_args_list], ['help', 'l', 'm'])
 
 
 if __name__ == '__main__': unittest.main()

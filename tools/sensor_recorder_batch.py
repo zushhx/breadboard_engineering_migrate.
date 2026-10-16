@@ -51,7 +51,7 @@ def approved(path):
     return candidate, old, build, approval
 
 
-def boot_check(session, port, source, cold=False):
+def boot_check(session, port, source, cold=False, warm=False):
     session.collect(port, 1)
     text = session.query(port, 'help', 1)
     if f'identity source={source} ' not in text or f'mac_status=ESP_OK mac={tf.MAC}' not in text:
@@ -65,6 +65,11 @@ def boot_check(session, port, source, cold=False):
         if ('init_attempted=0' not in text or 'IIS ctrl1=00 ctrl3=04 ctrl6=00' not in text or
                 'INA transport=1 config=4127 cal=0000' not in text):
             raise RuntimeError('Registers inconsistent with confirmed full power-off; preserve evidence')
+    if warm:
+        text = session.query(port, 'm', 1)
+        if ('init_attempted=0' not in text or 'IIS ctrl1=00 ctrl3=44 ctrl6=00' not in text or
+                'INA transport=1 config=4527 cal=0800' not in text):
+            raise RuntimeError('Unexpected register loss across MCU-only reset; no reinitialization')
 
 
 def accepted_reply(text, run, seconds):
@@ -141,7 +146,7 @@ def initial(approval_path):
             result['main_record'] = capture(session, port, SCOPE['seconds'])
             session.emit('MCU EN reset, card/modules remain powered; not a cold start')
             port.rts = True; time.sleep(.1); port.rts = False; session.collect(port, 8)
-            boot_check(session, port, build['source_commit'])
+            boot_check(session, port, build['source_commit'], warm=True)
             verify(session, port, result['main_record'])
             result['after_reset_record'] = capture(session, port, SCOPE['short_seconds'])
         result['passed'] = True

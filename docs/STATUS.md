@@ -6,7 +6,7 @@
 
 用户最新更正此前“2.29”为 **3.29 V**，并明确要求“差不多，不用管，规划下一步”。据此暂停精度排查，不再要求接线照片或串联参考测量；电压、电流精度仍为未验收，之前3.22 V窗口的差异记录不作废，也不把新3.29 V与旧软件值跨窗口配对。更正及范围调整见[对照报告](reports/INA226_PRECISION_OBSERVATION_20261015.md)。
 
-用户2026-10-16在[方案](plans/SENSOR_TF_RECORDER_20261015.md)备齐后要求“继续”，已在 `codex/sensor-tf-recorder` 分支开发独立 `sensor_tf_recorder` 工程：FIFO/8 MHz SPI、约127 KiB内部缓冲、独立写卡任务路径、INA约10 Hz原始/有效性记录、分块CRC/尾部/SHA完整回读、主机解析与受控批处理。第一轮开发构建通过，31项本地软件测试通过；最终干净提交产物及CI尚待整理。审查方式和限制见[软件复核](reports/SENSOR_RECORDER_SOFTWARE_REVIEW_20261016.md)。本阶段未连接设备、复位、初始化、烧录或写TF；实机仍是7994b9d，最后检查为本次启动未初始化状态，不能把软件实现当作满速实测通过。
+用户2026-10-16在[方案](plans/SENSOR_TF_RECORDER_20261015.md)备齐后要求“继续”，已在 `codex/sensor-tf-recorder` 分支完成独立 `sensor_tf_recorder` 软件首版：FIFO/8 MHz SPI、约128 KiB内部缓冲预算、独立写卡任务路径、INA约10 Hz原始/有效性记录、分块CRC/尾部/SHA完整回读、主机解析与受控批处理。干净提交 `203a60b` 构建通过，固件387616字节、SHA-256 `f84a235cdde8ca5bf89a5c1bf1c78fc218a8a98d72ecd35d7c4a1777cb81b1ba`，SDK键值和分区与冻结基线匹配；[构建清单](reports/SENSOR_RECORDER_BUILD_20261016.json)保留输入及产物。32项本地软件测试通过，模拟文件CSV/PNG导出通过，CI待核验。审查方式和限制见[软件复核](reports/SENSOR_RECORDER_SOFTWARE_REVIEW_20261016.md)。本阶段未连接设备、复位、初始化、烧录或写TF；实机仍是7994b9d，最后检查为本次启动未初始化状态，不能把软件实现当作满速实测通过。
 
 ## 前置精度核验记录（暂缓）
 

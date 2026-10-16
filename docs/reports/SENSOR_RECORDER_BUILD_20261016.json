@@ -1,0 +1,68 @@
+{
+  "source_commit": "203a60b563708ec96d1e7a883faff059af4a9a7c",
+  "working_tree_dirty_at_start": false,
+  "input_sha256": "98594a067b30c8bf84e7272b5df57dc34d532b37db86253248f415cd00771383",
+  "inputs": {
+    "面包板样机_固件/diagnostics/sensor_tf_recorder/block_implicit_upload.py": "c42921770acde18eff80aab917d144e7b2f320e92da836b4653cb7b76bc611b9",
+    "面包板样机_固件/diagnostics/sensor_tf_recorder/CMakeLists.txt": "71ed3bdcc629649f5bc3d37f1ce315890a9b22f9707633f97e7782f07b0c95bb",
+    "面包板样机_固件/diagnostics/sensor_tf_recorder/partitions.csv": "0c4e02152e1b6911d0a9b94be67d37674052fdc5c0870a5a55cc2133e65233a1",
+    "面包板样机_固件/diagnostics/sensor_tf_recorder/platformio.ini": "aa6b2ec1d8a492e46a3aeb71dce572122fc433ee2de043d909d39b6b7bc004a3",
+    "面包板样机_固件/diagnostics/sensor_tf_recorder/README.md": "6faac1c5de75538e81894539e192a24ef1a6577beccc01a4f5b51fd058b0600e",
+    "面包板样机_固件/diagnostics/sensor_tf_recorder/sdkconfig.defaults": "d7610876403351cf588cacf550f21cba1c24f7fa3c859b05be3b4562790f73c8",
+    "面包板样机_固件/diagnostics/sensor_tf_recorder/sdkconfig.sensor_recorder_idf542": "7c1175f80b103a3ea7aa7e4d5b2fc4c658dee6ba32cb4971b0073690fbf28c45",
+    "面包板样机_固件/diagnostics/sensor_tf_recorder/src/build_identity.h": "d62ddc63024702fa0befdd176e6dac4b6d1b0420f78fe6d8e61239d0f9f2cdcf",
+    "面包板样机_固件/diagnostics/sensor_tf_recorder/src/CMakeLists.txt": "3a139a1075b6be052639ac55fb189c5a1725f01ef2eb5ac8fc671ac583db13a5",
+    "面包板样机_固件/diagnostics/sensor_tf_recorder/src/main.cpp": "df049ff838430ecc58d6c61f58fa6513cfdce0d8ce54976a48974411e72ab6aa",
+    "面包板样机_固件/diagnostics/sensor_tf_recorder/src/module_values.h": "ab7390efd879defd5f4731b646dc007a4507e7239a685baed1fb62e5c9bc0fce",
+    "面包板样机_固件/diagnostics/sensor_tf_recorder/src/modules.cpp": "305c9b5b609b66d5c635932b3886107997951aa07b696b6ec80e72ba6f696700",
+    "面包板样机_固件/diagnostics/sensor_tf_recorder/src/modules.h": "a21a8d255de7998aefe3f8ced84af90c45e724b19e35e8b4ca8518cdf6fb14f6",
+    "面包板样机_固件/diagnostics/sensor_tf_recorder/src/record_format.h": "ac305adefbebbfd56de8d8c797e5dfa2290b2358944d92605fd3a62f97bd0023",
+    "面包板样机_固件/diagnostics/sensor_tf_recorder/src/record_request.h": "cbf1dc50efd75152599f55b657483295947690298941bd89cc12dc03639f99ac",
+    "面包板样机_固件/diagnostics/sensor_tf_recorder/src/recorder.cpp": "1b9cc3128c82d42bebfa28eaf653ed9a0106a4cdd4c80f11bc362a80e901d46b",
+    "面包板样机_固件/diagnostics/sensor_tf_recorder/src/recorder.h": "da21c7dd7a0a7742f135a8e8f6db916dd556bf56ca1c212284045123e56bec7d",
+    "面包板样机_固件/diagnostics/sensor_tf_recorder/src/serial_compat.cpp": "7a6e0b1f91138280f40dcd1160a1d78fb2ae74d59654891a3e732ccfde71a706",
+    "面包板样机_固件/diagnostics/sensor_tf_recorder/src/serial_compat.h": "6822cb1d13751158c6798f5f6e2c72e6d238ac6108f0a313550fbaef910c127a",
+    "面包板样机_固件/diagnostics/sensor_tf_recorder/src/tf_test_core.cpp": "f3d2077e5807836d49ced6e6df011ebbfb3443791fb4921f9307b33fb5bec9ed",
+    "面包板样机_固件/diagnostics/sensor_tf_recorder/src/tf_test_core.h": "99745aee6f44a126784e37e7fb8612788759e4d576429665ea84c992aff66b05",
+    "tools/build_sensor_tf_recorder.py": "4a64cb5254bef9e6a5dd25582a13ccee29bc0d807877789ed0ebc4f1d093eb95"
+  },
+  "staged_identity_sha256": "e9c8a21d64d4ddc252e59cbd318e7677547156841965c0d1268aad69f46589af",
+  "baseline_manifest_sha256": "785d6d1e76037737cbf4f5410208691b2ebeac4fd31f147c054db575736b5426",
+  "command": [
+    "C:\\Users\\acer\\.platformio\\penv\\Scripts\\python.exe",
+    "-m",
+    "platformio",
+    "run",
+    "--project-dir",
+    "C:\\Users\\acer\\.platformio\\breadboard_recorder_builds\\98594a067b30c8bf",
+    "--environment",
+    "sensor_recorder_idf542"
+  ],
+  "sdkconfig_differences": [],
+  "sdkconfig_generated_sha256": "7c1175f80b103a3ea7aa7e4d5b2fc4c658dee6ba32cb4971b0073690fbf28c45",
+  "artifacts": [
+    {
+      "path": "local-data/build/sensor-recorder/98594a067b30c8bf/20261016_085844_685383/artifacts/firmware.bin",
+      "bytes": 387616,
+      "sha256": "f84a235cdde8ca5bf89a5c1bf1c78fc218a8a98d72ecd35d7c4a1777cb81b1ba"
+    },
+    {
+      "path": "local-data/build/sensor-recorder/98594a067b30c8bf/20261016_085844_685383/artifacts/bootloader.bin",
+      "bytes": 22368,
+      "sha256": "7db1be87727415900fe346012e81f34b91168ea54334f7b98fc24954084251a4"
+    },
+    {
+      "path": "local-data/build/sensor-recorder/98594a067b30c8bf/20261016_085844_685383/artifacts/partitions.bin",
+      "bytes": 3072,
+      "sha256": "1d9cca96de0fe07ad7fc0648b9878ddecd9ce565e38b589ad20fea698ed4c80c"
+    },
+    {
+      "path": "local-data/build/sensor-recorder/98594a067b30c8bf/20261016_085844_685383/artifacts/firmware.elf",
+      "bytes": 5462984,
+      "sha256": "53b35fe642c799896322c30e309e35621785dc1d981b6203c2e839149aea7216"
+    }
+  ],
+  "build_passed": true,
+  "hardware_tested": false,
+  "note": "Recorder software candidate only; not flashed, modules/TF regression untested"
+}
