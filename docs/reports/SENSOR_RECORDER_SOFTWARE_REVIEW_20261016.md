@@ -32,7 +32,11 @@
 
 本地证据SHA-256：32项测试日志 `544fd0289622d4bd81f59be746691ce1dfbbe40b07169a9320abd554bb3340f7`；干净构建日志 `0184aa50d6c4c25d597cc8aaa81d1472441f7d2eba19d533e600700f469d5652`；模拟PNG `ccb3ae56ae037840d9841a1b16b5526a209f18c91a16bbc355c9d05ad9b83299`。原始输出保留本地，不上传构建运行时或原始设备备份。
 
-## 实机边界
+## CI 结果追加
+
+GitHub连接器核对软件操作提交 `4e280577dcb3349c4b4ee1ab3f0085fffaa91896`，run `38833274776` 的files-and-guards、frozen-firmware-build、tf-write-diagnostic-build、sensor-monitor-diagnostic-build、sensor-recorder-build五项均success，整体completed/success。原始响应保存本地local-data/context-audit/20261016/recorder_ci_38833274776.json。本条追加只修改文档，不修改固件、构建输入或硬件批处理；后续提交状态仍看PR检查页。
+
+## 未验收范围
 
 31项测试不覆盖FreeRTOS调度、FIFO真实语义、8 MHz信号质量、TF长尾、可用内部堆/栈或满速无丢样。约127 KiB动态池只是预算，构建静态RAM占用不能代替运行分配。无INT服务和逐帧SPI事务能否达标属于主要待测项，不自动降采样/改PSRAM以通过。工作点±5%计数/时间门槛仅为功能检查，非采样时基校准；电压、电流计量精度仍未验收。
 
