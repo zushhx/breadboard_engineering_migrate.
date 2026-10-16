@@ -46,7 +46,8 @@ def run(manifest,approval):
             'target remote '+tf.unique_port(),'info threads','thread apply all bt',
             "p 'esp_timer.c'::s_timer_task","p *'esp_timer.c'::s_timer_task",
             "p 'tasks.c'::xPendingReadyList","p 'tasks.c'::uxSchedulerSuspended",
-            "p 'tasks.c'::pxCurrentTCBs",'info registers']
+            "p 'tasks.c'::pxCurrentTCBs", "p *'tasks.c'::pxCurrentTCBs[0]",
+            "x/24wx ('tasks.c'::pxCurrentTCBs[0])->pxStack",'info registers']
         argv=[str(GDB),'-nx','-batch','-q',str(elf)]
         for command in commands:argv+=['-ex',command]
         debug=subprocess.run(argv,capture_output=True,text=True,encoding='utf-8',errors='replace',timeout=80)
