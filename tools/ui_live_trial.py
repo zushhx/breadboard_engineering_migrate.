@@ -1,6 +1,7 @@
 """One approved UI flash + 30s real recording. Never called by build or CI."""
 import argparse
 import datetime
+from http.client import RemoteDisconnected
 import json
 import os
 from pathlib import Path
@@ -29,6 +30,8 @@ SCOPE = dict(seconds=30, app0_only=True, backup_end=0x101000, restore_before_fla
 
 
 class TrialSession(tf.Session):
+    # Reduce only this trial's USB transfer rate after a corrupted prewrite read.
+    esptool_baud = 460800
     def emit(self, value):
         # Preserve evidence before best-effort terminal output. A Windows console
         # encoding failure must never abort the hardware recovery path.
@@ -84,6 +87,20 @@ def check_quiescent(before):
     if (before.get('phase') not in ('idle', 'passed') or before.get('errors') != 0 or
             not before.get('connected') or not before.get('ready')):
         raise RuntimeError('Current device busy, failed or not ready; no write')
+
+
+def startup_gate(session, port, url, initial):
+    # A peer may close a socket (the firmware has three HTTP slots and LRU purge).
+    # Retry only this observed transport exception. Wrong boot/state, panic/reset,
+    # HTTP errors and repeated disconnects still fail and restore the candidate.
+    for attempt in range(3):
+        try:
+            return web.read_only_gate(session, port, url, initial, 'ui-startup', seconds=3)
+        except RemoteDisconnected as error:
+            session.emit(f'STARTUP_HTTP_DISCONNECT attempt={attempt+1} error={error!r}')
+            if attempt == 2:
+                raise
+            time.sleep(.5)
 
 
 def browser(session, port, url, approval):
@@ -150,7 +167,7 @@ def run(path):
             url, initial = web.address(session, port, initial_url)
             web.check_idle(initial, initial['boot'])
             result['url'] = url; result['initial'] = initial
-            web.read_only_gate(session, port, url, initial, 'ui-startup', seconds=3)
+            startup_gate(session, port, url, initial)
             recording_possible = True
             result['browser'], result['record'] = browser(session, port, url, path)
             # The recording already closes and fully reads back its file; preserve its terminal evidence.
