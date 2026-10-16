@@ -4,6 +4,12 @@
 
 ## 本次工程整理
 
+- [手机热点网页候选首轮启动失败与恢复](SENSOR_WEB_FIRST_TRIAL_20261016.md)
+- [网页首轮失败、备份、回溯与恢复证据](SENSOR_WEB_FIRST_TRIAL_EVIDENCE_20261016.json)
+
+- [手机热点实时界面与录制控制软件复核](SENSOR_WEB_SOFTWARE_REVIEW_20261016.md)
+- [手机热点记录候选公开构建摘要（不含私人固件/凭据）](SENSOR_WEB_BUILD_20261016.json)
+
 - [真实采集到TF首轮实机验收及电脑导出](SENSOR_RECORDER_HARDWARE_20261016.md)
 - [真实采集实机与电脑完整校验证据清单](SENSOR_RECORDER_HARDWARE_EVIDENCE_20261016.json)
 

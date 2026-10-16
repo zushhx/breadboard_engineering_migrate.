@@ -26,6 +26,8 @@ Windows 工具链构建从 WSL 调用：
 
 ## 历史业务与实验
 
+手机热点网页候选见[sensor_web_recorder](diagnostics/sensor_web_recorder/README.md)，独立构建入口`.shell-tools/build_sensor_web_recorder_pwsh7.ps1`。带凭据本地构建与默认无凭据CI明确区分；含凭据产物不得公开发布，不自动试烧。
+
 真实采集记录候选见 [sensor_tf_recorder](diagnostics/sensor_tf_recorder/README.md)，独立构建入口为 `.shell-tools/build_sensor_tf_recorder_pwsh7.ps1`；默认不记录、不自动上传，具体试烧另行授权。
 
 模块接入候选见 [sensor_monitor_probe](diagnostics/sensor_monitor_probe/README.md)，独立构建入口为 `.shell-tools/build_sensor_monitor_probe_pwsh7.ps1`，不自动访问硬件。[接入计划](../docs/plans/SENSOR_MONITOR_BRINGUP_20261015.md)规定影响、验收和回退。
@@ -37,6 +39,8 @@ Windows 工具链构建从 WSL 调用：
 默认 PlatformIO 上传将被阻止，以免把旧业务程序覆盖到主控。需要开发业务功能时，按[工程流程](../docs/WORKFLOW.md)建立任务、审查并取得具体试烧确认。
 
 ## 本地硬件工具
+
+- `.shell-tools/run_sensor_web_batch_pwsh7.ps1 -PrepareOnly`仅校验指定网页候选并列出输入，不发现或连接设备；实际网页试烧/冷启动入口需要整轮批准记录，浏览器子进程也先验证同一批准，不由构建/CI启动。手机热点实机范围见[计划](../docs/plans/SENSOR_WEB_CONTROL_20261016.md)。
 
 - `.shell-tools/run_tf_software_trials_pwsh7.ps1` 是工作区根目录下的历史串口/备份/烧录入口；写设备动作需要明确候选与批准记录，不能因编译完成自动执行。
 - `tools/start_tf_boot_check_pwsh7.ps1 -VerifyHost` 只验证管理员 PowerShell 入口；普通模式会读取卡片，不能将二者混用。
