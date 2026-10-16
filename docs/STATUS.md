@@ -2,7 +2,17 @@
 
 更新日期：2026-10-16。当前事实唯一入口。历史测试结果保留其适用条件，不自动延伸至其他固件或接法。
 
-## 当前任务：手机热点实时界面整轮试烧已授权，准备执行
+## 当前任务：网页候选首轮试烧失败，已恢复记录基线
+
+2026-10-16，按用户对指定c921bef/e1dae22f0714218c7961519be1b9f9af1c52062982e4619609b0019b37387a68的整轮授权执行。操作提交eafa49e的六项CI通过后，完成身份/卡片核对、0..0xFA000备份和仅app0试烧；候选在WiFi启动阶段触发FreeRTOS vTaskGenericNotifyGiveFromISR断言，现场3次相同自动重启，未取得稳定HTTP/IP。没有发出REC_START或进入浏览器录制，本轮验收未通过。详见[失败与恢复报告](reports/SENSOR_WEB_FIRST_TRIAL_20261016.md)及[证据清单](reports/SENSOR_WEB_FIRST_TRIAL_EVIDENCE_20261016.json)。
+
+已按授权恢复烧录前的应用扇区备份，写入摘要校验、旧203a60b身份、TF容量/根目录及参考摘要复核通过。当前主控保留203a60b、仍供电，TF装在主控，接线未由软件改变。五分钟联网记录、早停/页面重连、MCU-only记录复核、两次真断电和读卡器导出均未完成；精度排查继续暂停，main合并和发布未授权。
+
+离线回溯指向系统定时器ISR通知，被中断的WiFi栈涉及断连省电及PHY定时器删除；这是排查线索，不是单一根因证明。未见brownout不等于供电已排除，原largest疑点仍未定位。停止追加实机测试，不再次试烧此失败候选；新候选需具体受控方案及另行确认。软件构建/CI历史通过不覆盖本次启动失败。
+
+## 前置软件交付与实机准备记录
+
+以下保留试烧前的软件与准备范围；试烧结果和实物状态以本页首项为准。
 
 2026-10-16，用户确认[具体软件方案](plans/SENSOR_WEB_CONTROL_20261016.md)，电脑与主控同连手机2.4GHz热点；凭据仅保存在忽略的本地配置，未进入Git。工作分支codex/sensor-web-control，从0872243派生，独立sensor_web_recorder候选。网页提供状态、短窗口预览、INA未校准遥测及1..300秒开始/停止；原记录目录和冻结基线不变。37项软件测试、13项浏览器模拟场景和干净源码c921bef带本地凭据构建通过，固件958320字节、SHA-256 e1dae22f0714218c7961519be1b9f9af1c52062982e4619609b0019b37387a68；[构建摘要](reports/SENSOR_WEB_BUILD_20261016.json)与[复核报告](reports/SENSOR_WEB_SOFTWARE_REVIEW_20261016.md)保留证据和未测范围。[草稿PR #6](https://github.com/zushhx/breadboard_engineering_migrate./pull/6)叠加于PR #5，CI看[检查页](https://github.com/zushhx/breadboard_engineering_migrate./pull/6/checks)；Code Review连接失败，独立源码审查未取得。
 

@@ -2,6 +2,8 @@
 
 2026-10-16。范围及授权见[计划](../plans/SENSOR_WEB_CONTROL_20261016.md)，当前事实见[STATUS](../STATUS.md)。本阶段仅软件，不连接串口、不复位/烧录、不读写实物TF，不代表手机兼容性或联网记录通过。
 
+后续按指定候选另获整轮授权后，c921bef实际在WiFi启动阶段失败并恢复203a60b，见[失败与恢复报告](SENSOR_WEB_FIRST_TRIAL_20261016.md)。本文件的软件阶段通过不扩展为实机通过。
+
 ## 实现和变更边界
 
 从0872243独立复制sensor_tf_recorder至sensor_web_recorder，原候选文件不变。保留IDF5.4.2/PlatformIO6.2.0/espressif32@6.11.0、CPU160MHz、PSRAM关闭、分区、引脚、TF四位20MHz及五秒等待、SPI Mode3/8MHz、IIS量程/ODR、INA配置/换算、I3REC001格式。新增STA、DHCP、HTTP、5Hz只读快照和限速96点短窗口、单槽开始请求、停止标志。仍由app_main唯一访问FatFS；网络不直接调用模块或文件API，预览取已出队块，采集/INA任务不等待网络。启动前预留同样126720字节池，后续保留以避免联网后的碎片，不扩大缓冲。

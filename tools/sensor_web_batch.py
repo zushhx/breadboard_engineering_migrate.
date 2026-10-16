@@ -25,9 +25,14 @@ BROWSER = ROOT/'tools/run_sensor_web_browser.cjs'
 CANDIDATE_SHA = 'e1dae22f0714218c7961519be1b9f9af1c52062982e4619609b0019b37387a68'
 SOURCE = 'c921bef8f14e8c18ce06cd5574c241377562e971'
 OPERATION = 'sensor-web-round'
+REJECTED = ROOT/'docs/reports/SENSOR_WEB_FIRST_TRIAL_EVIDENCE_20261016.json'
 
 
 def inputs():
+    if REJECTED.is_file():
+        known=json.loads(REJECTED.read_text(encoding='utf-8'))
+        if known.get('candidate_sha256')==CANDIDATE_SHA and known.get('passed') is False:
+            raise RuntimeError('Known failed web candidate; no repeat without a new controlled plan/candidate')
     errors = baseline_errors()
     if errors: raise RuntimeError('; '.join(errors))
     public = json.loads(PUBLIC.read_text(encoding='utf-8'))
@@ -135,13 +140,24 @@ def stop_before_restore(session):
     except Exception as e: session.emit('STOP_BEFORE_RESTORE='+repr(e))
 
 
+def collect_startup(session,port,seconds):
+    deadline=time.monotonic()+seconds; text=''
+    while time.monotonic()<deadline:
+        chunk=port.read(4096).decode('utf-8',errors='replace')
+        if chunk:session.emit(chunk.rstrip('\r\n'));text+=chunk
+        if 'assert failed:' in text or 'Guru Meditation' in text:
+            session.collect(port,.5) # Preserve panic/backtrace before restoring; do not wait for identity queries.
+            raise RuntimeError('Candidate startup panic detected; stop before identity/browser/recording')
+    return text
+
+
 def initial(path):
     packet,candidate,recovery,approval=approved(path)
     stamp=datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=8))).strftime('%Y%m%d_%H%M%S')
     session=tf.Session(ROOT/'local-data/hardware/sensor-web'/stamp)
     result=dict(passed=False,source_commit=SOURCE,operation_commit=approval['source_commit'],
         candidate_sha256=sha(candidate),cold_starts_completed=0,host_real_file_parse_passed=False)
-    snapshot=session.folder/'controller_prefix.bin'; changed=False
+    snapshot=session.folder/'controller_prefix.bin'; changed=False;recording_may_have_started=False
     try:
         with session.serial() as port:
             session.collect(port,1); base.boot_check(session,port,'203a60b563708ec96d1e7a883faff059af4a9a7c')
@@ -157,14 +173,15 @@ def initial(path):
         changed=True
         session.esptool(tf.unique_port(),['write_flash','--flash_mode','keep','--flash_freq','keep','--flash_size','keep','0x10000',str(candidate)])
         with session.serial() as port:
-            session.collect(port,10); base.boot_check(session,port,SOURCE)
+            collect_startup(session,port,10); base.boot_check(session,port,SOURCE)
             url,info=address(session,port); result['initial_web']=info; result['initial_url']=url
+            recording_may_have_started=True
             result['main_record']=run_browser(session,port,url,'main',300,path)
             browser_main=json.loads((ROOT/result['main_record']['browser_result']).read_text(encoding='utf-8'))
             result['public_network_access_verified']=browser_main['public_connect_test_success']
             result['early_record']=run_browser(session,port,url,'early',300,path)
             session.emit('MCU-only EN reset; card/modules remain powered; not full power-off')
-            port.rts=True;time.sleep(.1);port.rts=False;session.collect(port,10)
+            port.rts=True;time.sleep(.1);port.rts=False;collect_startup(session,port,10)
             base.boot_check(session,port,SOURCE,warm=True)
             url,warm=address(session,port,result['initial_url'])
             if warm['boot']==info['boot']: raise RuntimeError('Web boot token did not change across MCU reset')
@@ -174,7 +191,7 @@ def initial(path):
     except Exception as e:
         result['error']=repr(e);session.emit('FAIL='+repr(e))
         if changed:
-            stop_before_restore(session)
+            if recording_may_have_started:stop_before_restore(session)
             try: restore(session,snapshot);result['restored_previous']=True
             except Exception as r: result['recovery_error']=repr(r)
         raise
