@@ -8,6 +8,21 @@ sys.path.insert(0,str(Path(__file__).resolve().parents[1]/'tools'))
 import ui_live_trial as trial
 
 class UiLiveTrialTests(unittest.TestCase):
+    def test_startup_transient_disconnect_retry_is_bounded_and_records_failure(self):
+        from http.client import RemoteDisconnected
+        from unittest.mock import Mock
+        session=Mock()
+        with patch.object(trial.web,'read_only_gate',side_effect=[RemoteDisconnected('closed'),{'passed':True}]) as gate,patch.object(trial.time,'sleep'):
+            self.assertEqual(trial.startup_gate(session,None,'url',{}),{'passed':True})
+            self.assertEqual(gate.call_count,2);session.emit.assert_called_once()
+        with patch.object(trial.web,'read_only_gate',side_effect=RemoteDisconnected('closed')) as gate,patch.object(trial.time,'sleep'):
+            with self.assertRaises(RemoteDisconnected):trial.startup_gate(session,None,'url',{})
+            self.assertEqual(gate.call_count,3)
+        for error in (RuntimeError('wrong boot or panic'),ValueError('invalid JSON')):
+            with patch.object(trial.web,'read_only_gate',side_effect=error) as gate:
+                with self.assertRaises(type(error)):trial.startup_gate(session,None,'url',{})
+                self.assertEqual(gate.call_count,1)
+
     def test_completed_record_allowed_but_active_or_failed_device_rejected(self):
         ready=dict(phase='passed',errors=0,connected=True,ready=True)
         trial.check_quiescent(ready)
