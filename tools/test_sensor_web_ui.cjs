@@ -56,6 +56,26 @@ async function main(){
       await page.waitForFunction(()=>!document.getElementById('start').disabled);
       assert.equal(posts.length,0);assert.equal(await page.locator('#voltage').innerText(),'—');
     });
+    await check('readable errors decode every flag, combinations and unknown bits without false healthy state',async()=>{
+      assert.match(await page.locator('#errors').innerText(),/待机/);
+      const labels=['传感器通信异常','传感器 FIFO 溢出','采样帧标识异常','采集缓冲或完整性异常','供电监测读取异常','TF 写入或同步异常','采集配置异常','停止采集异常','采样率超出允许范围','内存异常'];
+      for(let bit=0;bit<labels.length;bit++){
+        s.errors=1<<bit;
+        await page.waitForFunction(label=>document.getElementById('errors').textContent.includes(label),labels[bit]);
+        assert.equal(await page.locator('#errorCode').textContent(),'0x'+s.errors.toString(16).toUpperCase());
+      }
+      s.errors=2|32|1024;
+      await page.waitForFunction(()=>document.getElementById('errors').textContent.includes('3 项'));
+      assert.equal(await page.locator('#errorItems li').count(),3);
+      assert.match(await page.locator('#errorItems').innerText(),/未知错误：0x400/);
+      await page.locator('.metrics').screenshot({path:path.join(output,'errors-simulated.png')});
+      s.errors=0;s.phase='failed';s.detail='模块准备失败（模拟）';
+      await page.waitForFunction(()=>document.getElementById('errors').textContent.includes('本轮失败'));
+      assert.equal(await page.locator('#errorItems li').count(),0);
+      assert.match(await page.locator('#errorHint').innerText(),/模块准备失败/);
+      s.phase='rejected';await page.waitForFunction(()=>document.getElementById('errors').textContent.includes('请求未执行'));
+      s.phase='idle';await page.waitForFunction(()=>document.getElementById('errors').textContent.includes('待机'));
+    });
     await check('invalid duration rejects locally',async()=>{
       await page.locator('#seconds').fill('301');await page.locator('#start').click();assert.equal(posts.length,0);
     });
@@ -172,7 +192,7 @@ async function main(){
     await page.setViewportSize({width:1360,height:1080});
     await check('network loss disables control and reconnect never replays start',async()=>{
       unavailable=true;await page.waitForFunction(()=>document.getElementById('connection').textContent.includes('连接中断'));
-      assert.equal(await page.locator('#stop').isDisabled(),true);assert.equal(posts.length,1);
+      assert.equal(await page.locator('#stop').isDisabled(),true);assert.equal(posts.length,1);assert.match(await page.locator('#errors').innerText(),/连接中断/);
       unavailable=false;await page.waitForFunction(()=>!document.getElementById('stop').disabled);assert.equal(posts.length,1);
     });
     await check('stop is a separate empty request',async()=>{
@@ -204,7 +224,7 @@ async function main(){
     await check('reboot invalidates old page control session',async()=>{
       s.phase='idle';s.boot='f'.repeat(32);await page.waitForFunction(()=>document.getElementById('bootWarning').style.display==='block');
       assert.equal(await page.locator('#start').isDisabled(),true);assert.equal(posts.length,3);
-      assert.equal(await page.evaluate(()=>shownTrend.length),0);
+      assert.equal(await page.evaluate(()=>shownTrend.length),0);assert.match(await page.locator('#errors').innerText(),/设备已重启/);
     });
     await check('old run/boot trend cannot populate a new empty run; missing endpoint remains optional',async()=>{
       trendRun='DEADBEEF';trendBoot=boot;s.run='CAFEBABE';s.preview=[];s.preview_seq=0;
