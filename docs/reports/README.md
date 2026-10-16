@@ -4,6 +4,9 @@
 
 ## 本次工程整理
 
+- [真实采集到TF首轮实机验收及电脑导出](SENSOR_RECORDER_HARDWARE_20261016.md)
+- [真实采集实机与电脑完整校验证据清单](SENSOR_RECORDER_HARDWARE_EVIDENCE_20261016.json)
+
 - [真实采集与TF记录软件复核（未试烧）](SENSOR_RECORDER_SOFTWARE_REVIEW_20261016.md)
 - [真实采集候选干净构建清单（未试烧）](SENSOR_RECORDER_BUILD_20261016.json)
 
