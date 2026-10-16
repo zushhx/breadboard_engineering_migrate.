@@ -18,11 +18,14 @@ function emit(type,data){const entry={time:new Date().toISOString(),type,...data
   assert.equal(await page.locator('#scenario').count(),0);
   await page.locator('[data-seconds="30"]').click();assert.equal(await page.locator('#seconds').inputValue(),'30');
   const initial=await page.evaluate(()=>snapshot);assert.equal(initial.phase,'idle');
+  assert.match(await page.locator('#errors').innerText(),/待机/);
+  assert.equal(await page.locator('#errorCode').textContent(),'0x0');
   assert.equal(initial.space_valid,true);assert(Number(initial.free_bytes)>0);
   assert.equal(initial.card_serial,'10044BA5');assert.equal(initial.card_bytes,'7948206080');
   await page.locator('#start').click();
   await page.waitForFunction(()=>snapshot&&['recording','failed','rejected'].includes(snapshot.phase),null,{timeout:20000});
   let current=await page.evaluate(()=>snapshot);assert.equal(current.phase,'recording');
+  assert.match(await page.locator('#errors').innerText(),/未检测到采集错误/);
   const run=current.run,boot=current.boot;emit('started',{run,boot,seconds:30});
   const deadline=Date.now()+150000;let screenshot=false,liveChecks=false,next=0;
   while(Date.now()<deadline){
@@ -38,6 +41,9 @@ function emit(type,data){const entry={time:new Date().toISOString(),type,...data
    await delay(200);
   }
   assert.equal(current.phase,'passed');assert.equal(current.errors,0);assert(liveChecks,'no simultaneous raw/RMS/INA live evidence');
+  assert.match(await page.locator('#errors').innerText(),/未检测到采集错误/);
+  assert.equal(await page.locator('#errorItems li').count(),0);
+  assert.equal(await page.locator('#errorCode').textContent(),'0x0');
   assert(current.elapsed_us>=29000000&&current.elapsed_us<=32000000);
   assert(/^[a-f0-9]{64}$/.test(current.sha256));assert(current.written>30*25333);
   const trend=await page.evaluate(async()=>{const r=await fetch('/api/trend',{cache:'no-store'});if(!r.ok)throw Error('trend HTTP');return r.json();});
