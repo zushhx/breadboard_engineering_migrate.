@@ -25,14 +25,16 @@ BROWSER = ROOT/'tools/run_sensor_web_browser.cjs'
 CANDIDATE_SHA = '572f7f6e1b6e66e25cef41b2069a951e81d1fc120d53d1e7d590f45b7085a0bc'
 SOURCE = '8866c4d15bf456944a350ce244026bacdb1fcc59'
 OPERATION = 'sensor-web-round'
-REJECTED = ROOT/'docs/reports/SENSOR_WEB_FIRST_TRIAL_EVIDENCE_20261016.json'
+REJECTED = ROOT/'docs/reports/WIFI_DISCONNECTED_PM_TRIAL_EVIDENCE_20261016.json'
+REJECTED_PREVIOUS = ROOT/'docs/reports/SENSOR_WEB_FIRST_TRIAL_EVIDENCE_20261016.json'
 
 
 def inputs():
-    if REJECTED.is_file():
-        known=json.loads(REJECTED.read_text(encoding='utf-8'))
-        if known.get('candidate_sha256')==CANDIDATE_SHA and known.get('passed') is False:
-            raise RuntimeError('Known failed web candidate; no repeat without a new controlled plan/candidate')
+    for evidence in (REJECTED, REJECTED_PREVIOUS):
+        if evidence.is_file():
+            known=json.loads(evidence.read_text(encoding='utf-8'))
+            if known.get('candidate_sha256')==CANDIDATE_SHA and known.get('passed') is False:
+                raise RuntimeError('Known failed web candidate; no repeat without a new controlled plan/candidate')
     errors = baseline_errors()
     if errors: raise RuntimeError('; '.join(errors))
     public = json.loads(PUBLIC.read_text(encoding='utf-8'))

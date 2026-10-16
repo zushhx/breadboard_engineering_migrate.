@@ -1,0 +1,76 @@
+{
+  "passed": false,
+  "source_commit": "8866c4d15bf456944a350ce244026bacdb1fcc59",
+  "operation_commit": "77064750bd36290041f321b17a72602088d5130a",
+  "candidate_sha256": "572f7f6e1b6e66e25cef41b2069a951e81d1fc120d53d1e7d590f45b7085a0bc",
+  "cold_starts_completed": 0,
+  "host_real_file_parse_passed": false,
+  "snapshot_bytes": 1024000,
+  "snapshot_sha256": "3d1166143a0b41bf464857470f59bfc3ff02f356e412a678e88c257b99519d1f",
+  "error": "RuntimeError('Candidate startup panic detected; stop before identity/browser/recording')",
+  "restored_previous": true,
+  "date": "2026-10-16",
+  "ci_run_before_device": 38861636130,
+  "only_effective_configuration_change": "CONFIG_ESP_WIFI_STA_DISCONNECTED_PM_ENABLE=y -> disabled",
+  "actual_candidate_flash_attempts": 1,
+  "assertion_count_observed": 1,
+  "automatic_panic_reboots_observed": 1,
+  "http_service_start_returned_ok": true,
+  "stable_ip_observed": false,
+  "browser_trial_started": false,
+  "read_only_90s_started": false,
+  "record_start_commands_sent": 0,
+  "new_record_files_observed": 0,
+  "public_proxy_causality_proven": false,
+  "root_cause_proven": false,
+  "trigger": "timer_alarm_handler -> vTaskGenericNotifyGiveFromISR, tasks.c:6204",
+  "interrupted_task": "WiFi beacon parsing -> timer_arm_wrapper -> ets_timer_arm -> esp_timer_start_once",
+  "comparison": "Same assertion after disabling disconnected PM; prior interrupted PHY timer deletion is not established as the unique cause",
+  "recovery_app_range_bytes": 958464,
+  "recovery_app_range_sha256": "09ca453a4da21a515427f4f2cb400a28ddc8cc165560f75490c72ec643d3692c",
+  "backup_app_matches_recovery": true,
+  "backup_boot_matches_frozen": true,
+  "backup_partitions_match_frozen": true,
+  "restored_identity_observed": true,
+  "recovery_reference_matches": 4,
+  "reference_matches_whole_trial": 8,
+  "recovery_scope": "Application sectors 0x10000..0xFA000 restored and esptool hash checked; old identity/card/reference read passed; no full-flash or cold-start proof",
+  "current_hardware": "203a60b powered, TF in controller, wiring unchanged; no further device I/O after recovery",
+  "evidence": [
+    {
+      "path": "local-data/hardware/sensor-web/20261016_143351/hardware.log",
+      "bytes": 42499,
+      "sha256": "754c35aaf5d417258c313d326b5dcf0ec583df5d36c0626a03b55140a55bb526"
+    },
+    {
+      "path": "local-data/hardware/sensor-web/20261016_143351/result.json",
+      "bytes": 573,
+      "sha256": "2172cb8daad06fd5078f52640b1613d34d2f492f11d68e51068c39650ad6aa32"
+    },
+    {
+      "path": "local-data/hardware/sensor-web/20261016_143351/controller_prefix.bin",
+      "bytes": 1024000,
+      "sha256": "3d1166143a0b41bf464857470f59bfc3ff02f356e412a678e88c257b99519d1f"
+    },
+    {
+      "path": "local-data/hardware/sensor-web/20261016_143351/restore_app_range.bin",
+      "bytes": 958464,
+      "sha256": "09ca453a4da21a515427f4f2cb400a28ddc8cc165560f75490c72ec643d3692c"
+    },
+    {
+      "path": "local-data/hardware/sensor-web/20261016_143351/assert-symbols.txt",
+      "bytes": 2303,
+      "sha256": "4eece5c6bf8927f7a49f1d73ca5554a2e1aaf0646c723dc4cd793f985602ed7d"
+    },
+    {
+      "path": "local-data/validation/wifi-pm/generated-config-comparison.json",
+      "bytes": 144,
+      "sha256": "908fa15c2f34a6e24500c79e40d4be54ea37621920dd276ea0bdb33fed08ffde"
+    },
+    {
+      "path": "local-data/validation/wifi-pm/ci-operation.json",
+      "bytes": 9850,
+      "sha256": "25fd0208e12769d79465398fe3638f199ee49aee9d12cce203eed8d7efe6b0f4"
+    }
+  ]
+}
