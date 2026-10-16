@@ -79,14 +79,16 @@ def main():
         target = stage/source.relative_to(SOURCE)
         target.parent.mkdir(parents=True, exist_ok=True)
         shutil.copy2(source, target)
-    (stage/'src/wifi_credentials.h').write_text(secret_header, encoding='utf-8')
+    (stage/'src/wifi_credentials.h').write_text(secret_header, encoding='utf-8', newline='\n')
+    if sha(stage/'src/wifi_credentials.h') != input_record['PRIVATE_GENERATED/wifi_credentials.h']:
+        raise SystemExit('Generated credentials bytes differ from the bound input hash')
     page = (SOURCE/'src/index.html').read_text(encoding='utf-8')
     if ')I3PAGE"' in page or page.count('{{KEY}}') != 1:
         raise SystemExit('Invalid page delimiter/session placeholder')
-    (stage/'src/web_asset.h').write_text('#pragma once\nstatic constexpr char webPage[] = R"I3PAGE(' + page + ')I3PAGE";\n', encoding='utf-8')
+    (stage/'src/web_asset.h').write_text('#pragma once\nstatic constexpr char webPage[] = R"I3PAGE(' + page + ')I3PAGE";\n', encoding='utf-8', newline='\n')
     (stage/'src/build_identity.h').write_text(
         '#pragma once\n#define TF_SOURCE_COMMIT ' + json.dumps(head) +
-        '\n#define TF_INPUT_SHA256 ' + json.dumps(input_hash) + '\n', encoding='utf-8')
+        '\n#define TF_INPUT_SHA256 ' + json.dumps(input_hash) + '\n', encoding='utf-8', newline='\n')
     print('SOURCE_COMMIT=' + head, flush=True)
     print('WORKING_TREE_DIRTY=' + str(dirty), flush=True)
     print('INPUT_SHA256=' + input_hash, flush=True)
@@ -129,6 +131,8 @@ def main():
     if sha(output/'artifacts/partitions.bin') != sha(BUNDLE/'artifacts/partitions.bin'):
         raise SystemExit('Candidate partition table differs from frozen baseline')
     record = {'source_commit': head, 'working_tree_dirty_at_start': dirty, 'input_sha256': input_hash,
+              'staged_generated_sha256': {name: sha(stage/'src'/name) for name in
+                  ['wifi_credentials.h', 'web_asset.h', 'build_identity.h']},
               'inputs': input_record, 'command': command, 'sdkconfig_differences': changed,
               'sdkconfig_generated_sha256': sha(actual_config), 'artifacts': artifacts,
               'build_passed': True, 'hardware_tested': False, 'credentials_present': bool(ssid),

@@ -26,13 +26,15 @@ Playwright1.62.1/Edge155.0.4283.45真实浏览器运行实际HTML，服务端为
 
 ## 最终构建、CI与证据
 
-干净源码3a330a3ba832b2f18c1b89fa2ffe08edb95b360e固定环境本地构建通过，固件958320字节，SHA-256 a890b098561b72fc4e7c9532b4fa778ee4958ba4940cde52222a2871eb24559a。输入聚合d737fb7937fec13d33e7d28ade1e63d38371f932e1ca8573dcfe5511b3e55cdb，SDK唯一允许差异及冻结分区核对通过；静态RAM63876字节不代表动态余量。完整清单及私人产物保留local-data，[公开构建摘要](SENSOR_WEB_BUILD_20261016.json)只收必要元数据与证据哈希。
+最终干净源码18ab3cb32bbe76feb4c34405f98d91ac10c974af固定环境带本地凭据构建通过，固件958320字节，SHA-256 0a5bb5940df22b990e49392739f7d404702c4174762c87cb5b083a76fd23b06c。输入聚合2d6628b12d7ad5fbbfcbfe67e69a58691e32945802a9f03e0833796c36283b22，SDK精确白名单及冻结分区核对通过；静态RAM63876字节不代表动态余量。完整清单及私人产物保留local-data，[公开构建摘要](SENSOR_WEB_BUILD_20261016.json)只收必要元数据与证据哈希。
 
-首次干净构建在SDK esp_lcd_panel_rgb.c编译时触发GCC内部Segmentation fault，相同源码/配置/工具链输入重试通过，失败与成功分别保留102043_966043和102200_902343目录。未更换编译器、修改SDK源码或关闭检查；本次重试恢复不能定位内部崩溃根因。此前WSL存在但缺原生编译器，沿用固定Windows Zig及显式PowerShell7.6.6。提交hook首次受WindowsApps的Python启动别名影响未运行成功，后在该命令进程PATH排除别名并优先固定Python，hook实际检查通过；未跳过hook或降低规则。
+首版CI run38840225224的web构建编译成功，但配置门拒绝；增加诊断后run38840664332及Windows无凭据构建复现两个差异：关闭新名称时生成器还清除了CONFIG_ESP32_PHY_CALIBRATION_AND_DATA_STORAGE。固定SDK components/esp_phy/sdkconfig.rename第8行明确映射到CONFIG_ESP_PHY_CALIBRATION_AND_DATA_STORAGE，两者为同一逻辑选项。新候选显式关闭两键，编译断言检查两键，构建与准备工具共享精确的两键白名单；没有放宽到其他配置。修正后37项测试复跑通过，18ab3cb带凭据本地完整构建及Linux无凭据CI web构建通过。3a330a3/a890b098旧候选已被替代，不能用于下一轮试烧；开发与失败记录保留。
+
+旧3a330a3首次干净构建在SDK esp_lcd_panel_rgb.c编译时触发GCC内部Segmentation fault，相同源码/配置/工具链输入重试通过，失败与成功分别保留102043_966043和102200_902343目录。未更换编译器、修改SDK源码或关闭检查；本次重试恢复不能定位内部崩溃根因。此前WSL存在但缺原生编译器，沿用固定Windows Zig及显式PowerShell7.6.6。提交hook首次受WindowsApps的Python启动别名影响未运行成功，后在该命令进程PATH排除别名并优先固定Python，hook实际检查通过；未跳过hook或降低规则。最终18ab3cb干净构建首次即通过，日志在103333_994864目录。
 
 [草稿PR #6](https://github.com/zushhx/breadboard_engineering_migrate./pull/6)基于未合并的PR #5，CI新增独立无凭据web构建；本地带凭据构建不能由无凭据CI替代，CI更不能代替手机测试。最新各项结果以[对应HEAD检查页](https://github.com/zushhx/breadboard_engineering_migrate./pull/6/checks)为准，原始CI响应保留local-data/validation/sensor-web。Code Review的pull_requests_checks实际返回“Can't connect to GitHub. Try again.”，独立源码审查仍未取得。Git直连超时，使用Windows已有127.0.0.1:7897代理的单命令参数成功推送，未修改全局代理。
 
-只读执行tools/prepare_sensor_web_trial.py，对当前构建输入、候选/恢复产物及分区哈希复核通过，输出local-data/validation/sensor-web/trial-packet.json；未创建实机批准。下一轮候选覆盖至0xFA000，备份必须覆盖0..0xFA000共1024000字节，并在写入前比对现有203a60b应用、实际boot/分区。只写app0，保持NVS/boot/分区；失败按受影响应用扇区备份恢复，旧批处理针对不同候选和SDK白名单，不原样复用。
+只读执行tools/prepare_sensor_web_trial.py，对当前构建输入、候选/恢复产物及分区哈希复核通过，输出local-data/validation/sensor-web/trial-packet-final.json；未创建实机批准。下一轮候选覆盖至0xFA000，备份必须覆盖0..0xFA000共1024000字节，并在写入前比对现有203a60b应用、实际boot/分区。只写app0，保持NVS/boot/分区；失败按受影响应用扇区备份恢复，旧批处理针对不同候选和SDK白名单，不原样复用。
 
 ## 未验证与恢复
 

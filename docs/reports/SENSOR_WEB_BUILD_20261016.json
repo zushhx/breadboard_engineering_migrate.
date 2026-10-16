@@ -1,23 +1,27 @@
 {
   "date": "2026-10-16",
-  "source_commit": "3a330a3ba832b2f18c1b89fa2ffe08edb95b360e",
+  "source_commit": "18ab3cb32bbe76feb4c34405f98d91ac10c974af",
   "working_tree_dirty_at_start": false,
-  "input_sha256": "d737fb7937fec13d33e7d28ade1e63d38371f932e1ca8573dcfe5511b3e55cdb",
+  "input_sha256": "2d6628b12d7ad5fbbfcbfe67e69a58691e32945802a9f03e0833796c36283b22",
   "build_passed": true,
   "hardware_tested": false,
   "credentials_present_in_private_firmware": true,
   "private_firmware_do_not_publish": true,
-  "manifest_local_path": "local-data/build/sensor-web/d737fb7937fec13d/20261016_102200_902343/build_manifest.json",
+  "manifest_local_path": "local-data/build/sensor-web/2d6628b12d7ad5fb/20261016_103333_994864/build_manifest.json",
   "sdkconfig_differences": {
+    "CONFIG_ESP32_PHY_CALIBRATION_AND_DATA_STORAGE": {
+      "before": "CONFIG_ESP32_PHY_CALIBRATION_AND_DATA_STORAGE=y",
+      "after": null
+    },
     "CONFIG_ESP_PHY_CALIBRATION_AND_DATA_STORAGE": {
       "before": "CONFIG_ESP_PHY_CALIBRATION_AND_DATA_STORAGE=y",
       "after": null
     }
   },
   "firmware": {
-    "path": "local-data/build/sensor-web/d737fb7937fec13d/20261016_102200_902343/artifacts/firmware.bin",
+    "path": "local-data/build/sensor-web/2d6628b12d7ad5fb/20261016_103333_994864/artifacts/firmware.bin",
     "bytes": 958320,
-    "sha256": "a890b098561b72fc4e7c9532b4fa778ee4958ba4940cde52222a2871eb24559a"
+    "sha256": "0a5bb5940df22b990e49392739f7d404702c4174762c87cb5b083a76fd23b06c"
   },
   "partition_sha256": "1d9cca96de0fe07ad7fc0648b9878ddecd9ce565e38b589ad20fea698ed4c80c",
   "partition_matches_frozen": true,
@@ -29,8 +33,8 @@
   "playwright": "1.62.1",
   "evidence": [
     {
-      "path": "local-data/validation/sensor-web/unit-tests.log",
-      "sha256": "24d76caae6faaae613bbbe97caa523c23cc370d10f42548e930fa1162f8c1a88"
+      "path": "local-data/validation/sensor-web/unit-tests-alias-fix.log",
+      "sha256": "4d3ca98c845d42e1e42bcdae494822658a2a1878bc73222a1936548de2d7dd5a"
     },
     {
       "path": "local-data/validation/sensor-web/browser-tests.log",
@@ -45,18 +49,20 @@
       "sha256": "46b7ed5a5bb56ecdeeff656b014082d95d8a42b642559f65820309ab9d60d8f5"
     },
     {
-      "path": "local-data/build/sensor-web/d737fb7937fec13d/20261016_102200_902343/build.log",
-      "sha256": "7f9d0be88218e46962d9f1918f426a2d5a33d22effd4e009ef670e668baf735b"
+      "path": "local-data/build/sensor-web/2d6628b12d7ad5fb/20261016_103333_994864/build.log",
+      "sha256": "77fe6f5b5756d30df5922563302d3459318267043799fe0b2a7b1b4ea489ac5a"
     }
   ],
   "initial_clean_build_failed_log": "local-data/build/sensor-web/d737fb7937fec13d/20261016_102043_966043/build.log",
-  "failure_note": "GCC internal compiler error in SDK LCD source; identical inputs retried successfully. Root cause unproven.",
+  "failure_note": "Earlier superseded 3a330a3 build had GCC internal compiler error in SDK LCD source; identical inputs retried successfully. Root cause unproven. Final 18ab3cb clean build passed first attempt.",
   "draft_pr": "https://github.com/zushhx/breadboard_engineering_migrate./pull/6",
   "code_review_tool": "pull_requests_checks returned Can't connect to GitHub. Try again.",
   "independent_source_review_passed": false,
   "recovery_source": "203a60b563708ec96d1e7a883faff059af4a9a7c",
   "recovery_firmware_sha256": "f84a235cdde8ca5bf89a5c1bf1c78fc218a8a98d72ecd35d7c4a1777cb81b1ba",
-  "trial_packet_local_path": "local-data/validation/sensor-web/trial-packet.json",
+  "trial_packet_local_path": "local-data/validation/sensor-web/trial-packet-final.json",
   "next_flash_requires_explicit_authorization": true,
-  "note": "Public metadata only. Full inputs, credentials header and firmware remain private. No serial/reset/flash/card access; no phone hotspot or WiFi recording acceptance. Bootloader artifact is not to be flashed."
+  "note": "Public metadata only. Full inputs, credentials header and firmware remain private. No serial/reset/flash/card access; no phone hotspot or WiFi recording acceptance. Bootloader artifact is not to be flashed.",
+  "sdk_alias_evidence": "Fixed SDK components/esp_phy/sdkconfig.rename maps ESP32_PHY legacy name to ESP_PHY canonical name; one logical option, two normalized disabled keys.",
+  "superseded_candidate_sha256_do_not_flash": "a890b098561b72fc4e7c9532b4fa778ee4958ba4940cde52222a2871eb24559a"
 }
