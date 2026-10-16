@@ -40,6 +40,8 @@ Windows 工具链构建从 WSL 调用：
 
 ## 本地硬件工具
 
+- `.shell-tools/run_sensor_web_batch_pwsh7.ps1 -PrepareOnly`仅校验指定网页候选并列出输入，不发现或连接设备；实际网页试烧/冷启动入口需要整轮批准记录，浏览器子进程也先验证同一批准，不由构建/CI启动。手机热点实机范围见[计划](../docs/plans/SENSOR_WEB_CONTROL_20261016.md)。
+
 - `.shell-tools/run_tf_software_trials_pwsh7.ps1` 是工作区根目录下的历史串口/备份/烧录入口；写设备动作需要明确候选与批准记录，不能因编译完成自动执行。
 - `tools/start_tf_boot_check_pwsh7.ps1 -VerifyHost` 只验证管理员 PowerShell 入口；普通模式会读取卡片，不能将二者混用。
 - 固件目录的 `logs/`、`backups/` 保留本地原始数据并排除于 Git；正常基线使用单独收录的只读证据。
