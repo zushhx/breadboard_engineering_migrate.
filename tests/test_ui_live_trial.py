@@ -8,6 +8,19 @@ sys.path.insert(0,str(Path(__file__).resolve().parents[1]/'tools'))
 import ui_live_trial as trial
 
 class UiLiveTrialTests(unittest.TestCase):
+    def test_only_ui_transfer_baud_changes_and_mac_check_remains(self):
+        from types import SimpleNamespace
+        self.assertEqual(trial.tf.Session.esptool_baud,921600)
+        with tempfile.TemporaryDirectory() as directory:
+            session=trial.TrialSession(Path(directory)/'capture')
+            try:
+                with patch.object(trial.subprocess,'run',return_value=SimpleNamespace(returncode=0,stdout='MAC: '+trial.tf.MAC,stderr='')) as run:
+                    session.esptool('COM-fixture',['read_flash','0','4096','fixture.bin'])
+                    argv=run.call_args.args[0];self.assertEqual(argv[argv.index('--baud')+1],'460800')
+                with patch.object(trial.subprocess,'run',return_value=SimpleNamespace(returncode=0,stdout='MAC: 00:00:00:00:00:00',stderr='')):
+                    with self.assertRaisesRegex(RuntimeError,'MAC mismatch'):session.esptool('COM-fixture',['flash_id'])
+            finally:session.log.close()
+
     def test_startup_transient_disconnect_retry_is_bounded_and_records_failure(self):
         from http.client import RemoteDisconnected
         from unittest.mock import Mock

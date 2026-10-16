@@ -56,6 +56,7 @@ def unique_port():
 
 
 class Session:
+    esptool_baud = 921600
     def __init__(self, folder):
         self.folder = folder
         folder.mkdir(parents=True, exist_ok=False)
@@ -69,7 +70,7 @@ class Session:
 
     def esptool(self, port, command):
         argv = [sys.executable, str(ESPTOOL), '--chip', 'esp32s3', '--port', port,
-                '--baud', '921600', '--before', 'default_reset', '--after', 'hard_reset', *command]
+                '--baud', str(self.esptool_baud), '--before', 'default_reset', '--after', 'hard_reset', *command]
         self.emit('ESPTOOL: ' + repr(argv))
         result = subprocess.run(argv, capture_output=True, text=True, encoding='utf-8', errors='replace', timeout=180)
         self.emit(result.stdout)

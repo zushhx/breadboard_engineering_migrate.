@@ -30,6 +30,8 @@ SCOPE = dict(seconds=30, app0_only=True, backup_end=0x101000, restore_before_fla
 
 
 class TrialSession(tf.Session):
+    # Reduce only this trial's USB transfer rate after a corrupted prewrite read.
+    esptool_baud = 460800
     def emit(self, value):
         # Preserve evidence before best-effort terminal output. A Windows console
         # encoding failure must never abort the hardware recovery path.
