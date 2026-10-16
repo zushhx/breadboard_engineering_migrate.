@@ -26,6 +26,8 @@ Windows 工具链构建从 WSL 调用：
 
 ## 历史业务与实验
 
+手机热点网页候选见[sensor_web_recorder](diagnostics/sensor_web_recorder/README.md)，独立构建入口`.shell-tools/build_sensor_web_recorder_pwsh7.ps1`。带凭据本地构建与默认无凭据CI明确区分；含凭据产物不得公开发布，不自动试烧。
+
 真实采集记录候选见 [sensor_tf_recorder](diagnostics/sensor_tf_recorder/README.md)，独立构建入口为 `.shell-tools/build_sensor_tf_recorder_pwsh7.ps1`；默认不记录、不自动上传，具体试烧另行授权。
 
 模块接入候选见 [sensor_monitor_probe](diagnostics/sensor_monitor_probe/README.md)，独立构建入口为 `.shell-tools/build_sensor_monitor_probe_pwsh7.ps1`，不自动访问硬件。[接入计划](../docs/plans/SENSOR_MONITOR_BRINGUP_20261015.md)规定影响、验收和回退。

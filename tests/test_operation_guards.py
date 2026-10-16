@@ -41,6 +41,13 @@ class UploadGuardTest(unittest.TestCase):
             with self.subTest(target=target), self.assertRaises(RuntimeError):
                 self.run_target(target, guard)
 
+    def test_web_recorder_guard_blocks_device_writes(self):
+        guard = '面包板样机_固件/diagnostics/sensor_web_recorder/block_implicit_upload.py'
+        self.run_target('buildprog', guard)
+        for target in ['upload', 'uploadfs', 'uploadfsota', 'erase', 'program']:
+            with self.subTest(target=target), self.assertRaises(RuntimeError):
+                self.run_target(target, guard)
+
 class ApprovalGuardTest(unittest.TestCase):
     def setUp(self):
         self.temp = tempfile.TemporaryDirectory()

@@ -4,6 +4,8 @@
 
 ## 本次工程整理
 
+- [手机热点实时界面与录制控制软件复核](SENSOR_WEB_SOFTWARE_REVIEW_20261016.md)
+
 - [真实采集到TF首轮实机验收及电脑导出](SENSOR_RECORDER_HARDWARE_20261016.md)
 - [真实采集实机与电脑完整校验证据清单](SENSOR_RECORDER_HARDWARE_EVIDENCE_20261016.json)
 

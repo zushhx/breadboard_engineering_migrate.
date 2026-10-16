@@ -1,0 +1,35 @@
+# 手机热点实时界面与录制控制软件复核
+
+2026-10-16。范围及授权见[计划](../plans/SENSOR_WEB_CONTROL_20261016.md)，当前事实见[STATUS](../STATUS.md)。本阶段仅软件，不连接串口、不复位/烧录、不读写实物TF，不代表手机兼容性或联网记录通过。
+
+## 实现和变更边界
+
+从0872243独立复制sensor_tf_recorder至sensor_web_recorder，原候选文件不变。保留IDF5.4.2/PlatformIO6.2.0/espressif32@6.11.0、CPU160MHz、PSRAM关闭、分区、引脚、TF四位20MHz及五秒等待、SPI Mode3/8MHz、IIS量程/ODR、INA配置/换算、I3REC001格式。新增STA、DHCP、HTTP、5Hz只读快照和限速96点短窗口、单槽开始请求、停止标志。仍由app_main唯一访问FatFS；网络不直接调用模块或文件API，预览取已出队块，采集/INA任务不等待网络。启动前预留同样126720字节池，后续保留以避免联网后的碎片，不扩大缓冲。
+
+源码自行审查发现PHY默认独立持久化RF校准，已将唯一允许的SDK差异固定为CONFIG_ESP_PHY_CALIBRATION_AND_DATA_STORAGE从y变n；每次启动做全射频校准。WiFi另设nvs_enable=0/WIFI_STORAGE_RAM，不初始化或擦除NVS。固定本机SDK依据为components/esp_phy/src/phy_init.c的esp_phy_load_cal_and_init分支及components/esp_wifi/include/esp_wifi.h；编译断言和构建差异白名单阻止误开持久化。不把此项校准与INA计量校准混同。启动耗时及供电影响待实测。
+
+本地凭据只从local-data配置读取，转为UTF8八进制C字符串注入ASCII暂存目录，不拷入公开源码、网页或CI。CI空凭据不会联网；带凭据产物标为私人，不上传。生成网页资产替代PlatformIO/Windows初次EMBED_TXTFILES路径错误；按当前工具链uint32_t类型修正格式化参数后开发构建通过，初次失败不作为候选产物。正式候选须来自干净提交。
+
+## 审查方式与处置
+
+作者自行复核原候选与新main/recorder实际diff、SDK键值、初始化顺序、写门、停止/清理/回读及跨任务所有权；不是独立审查。重点处置：保留准备阶段收到的停止请求；清除下一轮旧stop/预览/INA值；queued可无写入取消；忙/校验中拒绝新开始；失败锁定不自动重试；成功只在关闭与读写摘要一致后发布。状态短临界区不含文件、网络或分配；HTTP输出缓冲固定，JSON长度/字段/整数/卡身份/范围校验，嵌入NUL拒绝。启动随机令牌通过自定义头校验，禁CORS，页面重启后要求刷新。相同热点获准客户端可操作，不宣称有独立账户隔离。
+
+堆API检查到固定SDK的heap_caps_get_largest_free_block通过heap_caps_get_info遍历匹配堆；尚未定位旧largest=31744而后分配成功的原因。新候选对相同INTERNAL|8BIT能力记录前后值/申请成功，不更改SDK或声称疑点已解决；实机阶段结合实际申请核对。当前静态RAM不代替联网后的动态余量。
+
+## 软件验证
+
+原生C++直接执行网页控制Model，覆盖卡身份/容量、run/时长、单槽、串口不越过排队请求、取消、准备阶段停止、断网状态不变、排空/关闭/校验期间拒绝新开始、下一轮清旧值、失败锁定。凭据测试覆盖空CI配置、拒绝公开路径、C字面量注入与Unicode转义。全套结果和最终构建在下节绑定。
+
+全套37项自动化测试通过，使用Windows固定Python及Zig0.13.0直接编译C++控制模型；日志位于local-data/validation/sensor-web/unit-tests.log。新增候选的upload/uploadfs/uploadfsota/erase/program入口在设备发现前均被guard拒绝。
+
+Playwright1.62.1/Edge155.0.4283.45真实浏览器运行实际HTML，服务端为127.0.0.1软件模拟，13项场景通过：无自动录制/无效INA空值、非法时长、双击仅一次、状态与预览、390px手机无溢出、断连禁控/重连无重发、停止独立空请求、校验不冒充成功、最终结果/旧INA标注、刷新无重发、POST应答丢失不重试、失败锁定、重启旧会话禁控。无页面脚本错误，status最大并行数1。桌面1360px及手机390px截图已人工查看，无横向溢出或遮挡。截图醒目标为软件模拟，数据不是实机观测。证据位于local-data/validation/sensor-web-ui/，不作为联网负载验收；浏览器测试服务端不替代实机HTTP/JSON处理、FreeRTOS调度及内存压力验收。
+
+## 最终构建、CI与证据
+
+待干净源码提交后追加具体候选、测试日志哈希、分区对照和PR/CI结果；开发构建不申请试烧。可用Code Review检查工具在PR建立后实际调用并记录结果，不把CI检查等同独立源码审查。
+
+## 未验证与恢复
+
+未验证手机2.4GHz热点互访/电脑外网并存、DHCP地址、WiFi接入和断连、运行内存/栈、联网五分钟FIFO/TF负载、早停实物文件、复位/两次真断电与主机导出。本候选新增网络和RF启动过程，前版通过不能覆盖这些变化。电压/电流精度保持暂停且未验收；温升、长期、实际加工、写入中断电、全卡完整性和网络下载不在软件通过结论中。
+
+软件可通过撤销独立任务提交恢复，正常候选目录未改变；实机恢复目标203a60b与对应哈希/接法见STATUS，原产物保留。未执行新恢复路径。
