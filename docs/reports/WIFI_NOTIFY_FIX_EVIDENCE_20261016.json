@@ -1,0 +1,166 @@
+{
+  "date": "2026-10-16",
+  "passed": true,
+  "candidate_source": "9c906cc41dee6da48d407203ca008388fc60ef0f",
+  "operation_commit": "4406de73fd6e1a04dc57c5acaa69c5e5d8857023",
+  "candidate_sha256": "1a240e44ddceb6d706df4d74110e00a61d59376cff833f365cf3b59a9f5daed3",
+  "url": "http://172.28.247.119/",
+  "cold_starts_completed": 2,
+  "host_real_file_parse_passed": true,
+  "total_samples": 9095760,
+  "total_bytes": 64892612,
+  "total_ina_samples": 3416,
+  "files": [
+    {
+      "run": "CF816696",
+      "bytes": 57062099,
+      "sha256": "6350ff31ca370e6d656a7f0ed13178456b8778fad68c12300ffb5b639a88dd43",
+      "footer": {
+        "samples": 7998385,
+        "start_us": 34069405,
+        "stop_us": 334076256,
+        "ina_samples": 3001,
+        "ina_invalid": 0,
+        "errors": 0,
+        "saturation": 1300,
+        "fifo_high": 347,
+        "queue_high": 17,
+        "max_write_us": 156154,
+        "max_sync_us": 182330,
+        "min_heap": 31924,
+        "sensor_stack": 2076,
+        "ina_stack": 2744,
+        "observed_samples_per_second": 26660.674492396844
+      }
+    },
+    {
+      "run": "FEEA8060",
+      "bytes": 2116016,
+      "sha256": "57b3d4ad416a50f59cbe5d51628be4e5a49e065ff32a08671fc3afafa0624e1c",
+      "footer": {
+        "samples": 296548,
+        "start_us": 416637403,
+        "stop_us": 427758281,
+        "ina_samples": 112,
+        "ina_invalid": 0,
+        "errors": 0,
+        "saturation": 0,
+        "fifo_high": 297,
+        "queue_high": 3,
+        "max_write_us": 42461,
+        "max_sync_us": 10657,
+        "min_heap": 31924,
+        "sensor_stack": 2064,
+        "ina_stack": 2812,
+        "observed_samples_per_second": 26665.880158023494
+      }
+    },
+    {
+      "run": "60CAE259",
+      "bytes": 1903330,
+      "sha256": "006351cd4a9c854b5279bbb63bab45a52e5c83f0af373a0f084267e434eaa5bb",
+      "footer": {
+        "samples": 266730,
+        "start_us": 91417403,
+        "stop_us": 101420260,
+        "ina_samples": 101,
+        "ina_invalid": 0,
+        "errors": 0,
+        "saturation": 0,
+        "fifo_high": 294,
+        "queue_high": 4,
+        "max_write_us": 49473,
+        "max_sync_us": 9950,
+        "min_heap": 58260,
+        "sensor_stack": 2068,
+        "ina_stack": 2816,
+        "observed_samples_per_second": 26665.381700448183
+      }
+    },
+    {
+      "run": "784654EA",
+      "bytes": 1905101,
+      "sha256": "ac87660e4af2514f8ccdaa6fed52c24ff480ee0f7ffb8a3d403b864f52103aa4",
+      "footer": {
+        "samples": 266983,
+        "start_us": 109685408,
+        "stop_us": 119690305,
+        "ina_samples": 101,
+        "ina_invalid": 0,
+        "errors": 0,
+        "saturation": 0,
+        "fifo_high": 320,
+        "queue_high": 3,
+        "max_write_us": 37935,
+        "max_sync_us": 16950,
+        "min_heap": 66856,
+        "sensor_stack": 2068,
+        "ina_stack": 2828,
+        "observed_samples_per_second": 26685.232241771206
+      }
+    },
+    {
+      "run": "D05767D7",
+      "bytes": 1906066,
+      "sha256": "724574918d162360f69ba7dc98ceb5ee1bd8b27930262bbb09815a848a5074ae",
+      "footer": {
+        "samples": 267114,
+        "start_us": 96179402,
+        "stop_us": 106186293,
+        "ina_samples": 101,
+        "ina_invalid": 0,
+        "errors": 0,
+        "saturation": 0,
+        "fifo_high": 294,
+        "queue_high": 4,
+        "max_write_us": 49223,
+        "max_sync_us": 14339,
+        "min_heap": 64264,
+        "sensor_stack": 2068,
+        "ina_stack": 2812,
+        "observed_samples_per_second": 26693.005849668993
+      }
+    }
+  ],
+  "evidence": [
+    {
+      "path": "local-data/hardware/wifi-notify/20261016_145255/gdb.txt",
+      "sha256": "9dd17ea25149e678118abcfe3ad1e2b366112fbab05aa9ce115bbd9004308c87"
+    },
+    {
+      "path": "local-data/hardware/wifi-notify/20261016_150137/gdb.txt",
+      "sha256": "cc828422b411f493bd3128ff05b27f9479275d2e39b30835340fe7d16b250b35"
+    },
+    {
+      "path": "local-data/hardware/sensor-web/20261016_150610/hardware.log",
+      "sha256": "e043c1578ecb1722f42093b3cd0bd027d9a34b80db87e05c24dcb4c9e9306cf0"
+    },
+    {
+      "path": "local-data/hardware/sensor-web/20261016_150610/result.json",
+      "sha256": "a661bd5e0d3f768bc4d79cd3f9f79949794e1a82ab7d92d558ca98ca24a2a959"
+    },
+    {
+      "path": "local-data/hardware/sensor-web/20261016_150610/cold-1/hardware.log",
+      "sha256": "56235cf29a7dae47455726420eb70530ed37dc1330d2e77b620fded6583d3d69"
+    },
+    {
+      "path": "local-data/hardware/sensor-web/20261016_150610/cold-2/hardware.log",
+      "sha256": "d8335292159b1b69839f037316d091e8f64a5d2d9fa8ce3279fe2049859923ff"
+    },
+    {
+      "path": "local-data/hardware/sensor-web/20261016_150610/host-export/summary.json",
+      "sha256": "dc85eca2c7811435c75f3c8cef8681d67d5cabaecf0944379f7dbacdb5ad5d16"
+    },
+    {
+      "path": "local-data/hardware/sensor-web/20261016_150610/final-ready/result.json",
+      "sha256": "71d4b47a258f0b58172cad4fec9ae880b137b9010448cd0b57facbde0aa1718d"
+    }
+  ],
+  "limits": [
+    "Metering accuracy remains unaccepted",
+    "Not long-term or write-time-power-loss acceptance",
+    "Panic GDB stop and disconnected PM disabled retained",
+    "Independent source review not obtained"
+  ],
+  "current_state": "TF reinstalled, powered, fixed firmware idle; final card/reference/default-register/HTTP status checks passed; browser open requested (Codex returned queued)"
+}
