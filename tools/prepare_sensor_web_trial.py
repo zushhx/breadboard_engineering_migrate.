@@ -4,6 +4,7 @@ import json
 import subprocess
 from pathlib import Path
 from project_check import ROOT, BUNDLE, sha
+from build_sensor_web_recorder import EXPECTED_SDKCONFIG_DIFF
 
 
 def prepare(manifest):
@@ -15,9 +16,7 @@ def prepare(manifest):
             build.get('hardware_tested') is not False or build.get('credentials_present') is not True or
             build.get('private_firmware_do_not_publish') is not True):
         raise ValueError('Expected clean, local-credential software candidate, untested on hardware')
-    expected = {'CONFIG_ESP_PHY_CALIBRATION_AND_DATA_STORAGE': {
-        'before': 'CONFIG_ESP_PHY_CALIBRATION_AND_DATA_STORAGE=y', 'after': None}}
-    if build.get('sdkconfig_differences') != expected:
+    if build.get('sdkconfig_differences') != EXPECTED_SDKCONFIG_DIFF:
         raise ValueError('Unexpected SDK configuration difference')
     subprocess.run(['git', 'merge-base', '--is-ancestor', build['source_commit'], 'HEAD'], cwd=ROOT, check=True)
     for name, digest in build['inputs'].items():

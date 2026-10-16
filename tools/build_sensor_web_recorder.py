@@ -17,6 +17,9 @@ from build_sensor_tf_recorder import config_values
 
 SOURCE = ROOT / '面包板样机_固件/diagnostics/sensor_web_recorder'
 ENVIRONMENT = 'sensor_web_recorder_idf542'
+EXPECTED_SDKCONFIG_DIFF = {name: {'before': name+'=y', 'after': None} for name in (
+    'CONFIG_ESP_PHY_CALIBRATION_AND_DATA_STORAGE',
+    'CONFIG_ESP32_PHY_CALIBRATION_AND_DATA_STORAGE')}
 
 
 def credentials(path):
@@ -110,9 +113,8 @@ def main():
     changed = {key: {'before': before.get(key), 'after': after.get(key)}
                for key in sorted(before.keys() | after.keys()) if before.get(key) != after.get(key)}
     # PHY also persists calibration independently of wifi_init_config_t.nvs_enable.
-    expected = {'CONFIG_ESP_PHY_CALIBRATION_AND_DATA_STORAGE': {
-        'before': 'CONFIG_ESP_PHY_CALIBRATION_AND_DATA_STORAGE=y', 'after': None}}
-    if changed != expected:
+    # esp_phy/sdkconfig.rename maps the ESP32_ legacy name to this same option.
+    if changed != EXPECTED_SDKCONFIG_DIFF:
         (output/'unexpected_sdkconfig_diff.json').write_text(json.dumps(changed, indent=2)+'\n', encoding='utf-8')
         print('ACTUAL_SDKCONFIG_DIFF=' + json.dumps(changed, sort_keys=True), flush=True)
         raise SystemExit('Unexpected SDK configuration differences; inspect private diff before proceeding')

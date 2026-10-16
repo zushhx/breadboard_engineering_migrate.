@@ -14,7 +14,7 @@
 #include <cmath>
 #include <cstdlib>
 #include <inttypes.h>
-#ifdef CONFIG_ESP_PHY_CALIBRATION_AND_DATA_STORAGE
+#if defined(CONFIG_ESP_PHY_CALIBRATION_AND_DATA_STORAGE) || defined(CONFIG_ESP32_PHY_CALIBRATION_AND_DATA_STORAGE)
 #error "Web recorder must not persist RF calibration to NVS"
 #endif
 
