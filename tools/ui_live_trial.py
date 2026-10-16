@@ -28,6 +28,18 @@ SCOPE = dict(seconds=30, app0_only=True, backup_end=0x100000, restore_before_fla
              main_merge_release=False)
 
 
+class TrialSession(tf.Session):
+    def emit(self, value):
+        # Preserve evidence before best-effort terminal output. A Windows console
+        # encoding failure must never abort the hardware recovery path.
+        line = str(value)
+        self.log.write(line+'\n'); self.log.flush()
+        try:
+            print(line, flush=True)
+        except (UnicodeError, OSError):
+            pass
+
+
 def inputs():
     packet = prepare(MANIFEST)
     if packet['candidate_source'] != SOURCE or packet['candidate']['sha256'] != CANDIDATE:
@@ -99,7 +111,7 @@ def browser(session, port, url, approval):
 def run(path):
     candidate, old, approval = approved(path)
     stamp = datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=8))).strftime('%Y%m%d_%H%M%S')
-    session = tf.Session(ROOT/'local-data/hardware/ui-live'/stamp)
+    session = TrialSession(ROOT/'local-data/hardware/ui-live'/stamp)
     result = dict(passed=False, candidate_source=SOURCE, candidate_sha256=CANDIDATE,
                   operation_commit=approval['source_commit'], cold_starts=0,
                   five_minute_tested=False, accuracy_accepted=False)
@@ -156,6 +168,8 @@ def run(path):
 
 
 def main():
+    sys.stdout.reconfigure(encoding='utf-8', errors='replace')
+    sys.stderr.reconfigure(encoding='utf-8', errors='replace')
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--prepare-only', action='store_true')
     parser.add_argument('--validate-approval', action='store_true')

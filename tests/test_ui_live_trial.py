@@ -1,12 +1,23 @@
 from pathlib import Path
 import sys
 import unittest
+import tempfile
 from unittest.mock import patch
 
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]/'tools'))
 import ui_live_trial as trial
 
 class UiLiveTrialTests(unittest.TestCase):
+    def test_console_encoding_failure_preserves_log_and_does_not_interrupt_recovery(self):
+        with tempfile.TemporaryDirectory() as directory:
+            session=trial.TrialSession(Path(directory)/'capture')
+            try:
+                with patch('builtins.print',side_effect=UnicodeEncodeError('gbk','\ufffd',0,1,'invalid character')):
+                    session.emit('startup replacement: \ufffd; 中文日志')
+                self.assertIn('\ufffd; 中文日志',(session.folder/'hardware.log').read_text(encoding='utf-8'))
+            finally:
+                session.log.close()
+
     def test_missing_approval_before_inputs_or_hardware(self):
         with patch.object(trial,'inputs') as inputs,patch.object(trial.tf,'Session') as session:
             with self.assertRaisesRegex(RuntimeError,'explicit approval'):trial.run(None)
