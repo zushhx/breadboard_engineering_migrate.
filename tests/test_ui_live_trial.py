@@ -8,6 +8,14 @@ sys.path.insert(0,str(Path(__file__).resolve().parents[1]/'tools'))
 import ui_live_trial as trial
 
 class UiLiveTrialTests(unittest.TestCase):
+    def test_completed_record_allowed_but_active_or_failed_device_rejected(self):
+        ready=dict(phase='passed',errors=0,connected=True,ready=True)
+        trial.check_quiescent(ready)
+        trial.check_quiescent(dict(ready,phase='idle'))
+        for change in ({'phase':'recording'},{'phase':'verifying'},{'phase':'failed'},{'errors':1},{'ready':False},{'connected':False}):
+            with self.assertRaisesRegex(RuntimeError,'no write'):
+                trial.check_quiescent(dict(ready,**change))
+
     def test_console_encoding_failure_preserves_log_and_does_not_interrupt_recovery(self):
         with tempfile.TemporaryDirectory() as directory:
             session=trial.TrialSession(Path(directory)/'capture')

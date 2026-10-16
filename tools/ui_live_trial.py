@@ -15,15 +15,15 @@ import tf_write_batch as tf
 import sensor_recorder_batch as base
 import sensor_web_batch as web
 
-SOURCE = 'f09027903fa0f66bea3b4fb2d55db41b08433a98'
-CANDIDATE = '428d0933850617bfc5d8e5589db42977adbe0d843471b14a723985521b93a5ff'
-OLD_SOURCE = '9c906cc41dee6da48d407203ca008388fc60ef0f'
-OLD_SHA = '1a240e44ddceb6d706df4d74110e00a61d59376cff833f365cf3b59a9f5daed3'
-MANIFEST = ROOT/'local-data/build/sensor-web/c326da7a16850437/20261016_191850_280267/build_manifest.json'
-OLD_PUBLIC = ROOT/'docs/reports/WIFI_NOTIFY_FIX_BUILD_20261016.json'
+SOURCE = 'db2876629963e4427f735c0b4db376d8322f2887'
+CANDIDATE = '5e99903005fc570936ce55ca6f833309028c6681398c4937ef6f718b3bea94d6'
+OLD_SOURCE = 'f09027903fa0f66bea3b4fb2d55db41b08433a98'
+OLD_SHA = '428d0933850617bfc5d8e5589db42977adbe0d843471b14a723985521b93a5ff'
+MANIFEST = ROOT/'local-data/build/sensor-web/882c03c3a7eaf54b/20261016_200648_785830/build_manifest.json'
+OLD_PUBLIC = ROOT/'docs/reports/REALTIME_UI_EVIDENCE_20261016.json'
 BROWSER = ROOT/'tools/run_ui_live_browser.cjs'
 OPERATION = 'ui-live-30s'
-SCOPE = dict(seconds=30, app0_only=True, backup_end=0x100000, restore_before_flash_on_failure=True,
+SCOPE = dict(seconds=30, app0_only=True, backup_end=0x101000, restore_before_flash_on_failure=True,
              preserve_existing_files=True, format_delete_repair=False, cold_starts=0,
              main_merge_release=False)
 
@@ -45,7 +45,7 @@ def inputs():
     if packet['candidate_source'] != SOURCE or packet['candidate']['sha256'] != CANDIDATE:
         raise RuntimeError('UI candidate mismatch')
     public = json.loads(OLD_PUBLIC.read_text(encoding='utf-8'))
-    old_manifest = ROOT/public['manifest_local_path']
+    old_manifest = ROOT/public['build_manifest_local']
     old_build = json.loads(old_manifest.read_text(encoding='utf-8'))
     old = ROOT/next(a['path'] for a in old_build['artifacts'] if a['path'].endswith('/firmware.bin'))
     candidate = ROOT/packet['candidate']['path']
@@ -77,6 +77,13 @@ def check_backup(data, extent, boot, parts, old):
             data[:len(boot)] != boot or data[0x8000:0x8000+len(parts)] != parts or
             data[0x10000:0x10000+len(old)] != old):
         raise RuntimeError('Current boot/partition/app or backup coverage mismatch; no write')
+
+
+def check_quiescent(before):
+    # Preserve the user's completed record; no preflight reset is needed to make it idle.
+    if (before.get('phase') not in ('idle', 'passed') or before.get('errors') != 0 or
+            not before.get('connected') or not before.get('ready')):
+        raise RuntimeError('Current device busy, failed or not ready; no write')
 
 
 def browser(session, port, url, approval):
@@ -121,7 +128,7 @@ def run(path):
         with session.serial() as port:
             base.boot_check(session, port, OLD_SOURCE)
             initial_url, before = web.address(session, port, 'http://172.28.247.119/')
-            web.check_idle(before, before['boot'])
+            check_quiescent(before)
             result['before'] = before
         identity = session.esptool(tf.unique_port(), ['flash_id'])
         if 'Detected flash size: 8MB' not in identity:
