@@ -114,6 +114,7 @@ def main():
         'before': 'CONFIG_ESP_PHY_CALIBRATION_AND_DATA_STORAGE=y', 'after': None}}
     if changed != expected:
         (output/'unexpected_sdkconfig_diff.json').write_text(json.dumps(changed, indent=2)+'\n', encoding='utf-8')
+        print('ACTUAL_SDKCONFIG_DIFF=' + json.dumps(changed, sort_keys=True), flush=True)
         raise SystemExit('Unexpected SDK configuration differences; inspect private diff before proceeding')
     artifacts = []
     for name in ['firmware.bin', 'bootloader.bin', 'partitions.bin', 'firmware.elf']:
