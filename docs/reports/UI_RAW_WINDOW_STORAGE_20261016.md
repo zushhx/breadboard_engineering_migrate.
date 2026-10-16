@@ -15,3 +15,5 @@
 具体联机入口已绑定新候选、当前db28766恢复产物、0..0x101000备份及仅app0/一个30秒记录/异常恢复范围，保持460800主机传输速率。联机将检查启动及录制后剩余容量、记录中更新、272点真实片段、三个视窗及文件完整回读。新候选尚未获试烧授权，本轮未开串口、复位、烧录或记录；主控仍为db28766。按用户持续授权，软件相关检查及审查完成后PR仅合回UI任务分支，不合main，不把未测硬件结论改成通过。
 
 全局流程同步：用户明确要求“添加到全局”，独立engineering-policy仓库bb514636f7c752395f1a59358d4aafe09d84109a已自行审查、合回现有规则任务分支并部署engineering-policy-1.0.2。活动C:/Users/acer/.codex/AGENTS.md SHA-256 `6595affb225db13bfd00ee7cbad3bc15568679daf1a3450b85c7c677e6b25929`，旧规则备份C:/Users/acer/.codex/backups/AGENTS.20261016_203337.42d7449beb4c.md；部署字节核对一致。正常开发、具体试烧/正式发布授权边界保留。
+
+按用户精简流程，最终差异自行审查、上述相关本地检查与GitHub files-and-guards通过后，[PR #13](https://github.com/zushhx/breadboard_engineering_migrate./pull/13)已合回UI任务分支，提交64a5bb9f9bcaf8ae29a1baf0a6161fe0ffb999be。合并时其他自动CI构建进行中；本轮未等待或重跑无关诊断构建，也没有将进行中记为通过。此合并仅保存软件增量，未合main、未发布、未试烧；随后恢复标准流程。
