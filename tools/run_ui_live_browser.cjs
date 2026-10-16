@@ -18,6 +18,7 @@ function emit(type,data){const entry={time:new Date().toISOString(),type,...data
   assert.equal(await page.locator('#scenario').count(),0);
   await page.locator('[data-seconds="30"]').click();assert.equal(await page.locator('#seconds').inputValue(),'30');
   const initial=await page.evaluate(()=>snapshot);assert.equal(initial.phase,'idle');
+  assert.equal(initial.space_valid,true);assert(Number(initial.free_bytes)>0);
   assert.equal(initial.card_serial,'10044BA5');assert.equal(initial.card_bytes,'7948206080');
   await page.locator('#start').click();
   await page.waitForFunction(()=>snapshot&&['recording','failed','rejected'].includes(snapshot.phase),null,{timeout:20000});
@@ -44,6 +45,11 @@ function emit(type,data){const entry={time:new Date().toISOString(),type,...data
   assert(trend.points.length>=140&&trend.points.length<=150);
   trend.points.forEach((p,i)=>{assert.equal(p.length,5);assert(p.every(v=>Number.isSafeInteger(v)&&v>=0));if(i)assert.equal(p[0]-trend.points[i-1][0],5333);});
   assert(trend.points.at(-1)[0]<=current.written);assert(current.written-trend.points.at(-1)[0]<5333);
+  const after=await page.evaluate(async()=>{const r=await fetch('/api/status',{cache:'no-store'});if(!r.ok)throw Error('status HTTP');return r.json();});
+  assert.equal(after.boot,boot);assert.equal(after.run,run);assert.equal(after.phase,'passed');
+  assert.equal(after.space_valid,true);assert(Number(after.free_bytes)>=0&&Number(after.free_bytes)<Number(initial.free_bytes));
+  const capacityView=await page.evaluate(()=>({text:$('remaining').textContent,bytes:snapshot.free_bytes,valid:snapshot.space_valid}));
+  assert.equal(capacityView.valid,true);assert.equal(capacityView.text,(Number(capacityView.bytes)/1e9).toFixed(3)+' GB');
   for(const span of ['1','5','10']){
     await page.locator('[data-span="'+span+'"]').click();
     assert.deepEqual(await page.evaluate(()=>[views.get($('wave')).min,views.get($('wave')).max,views.get($('trend')).min,views.get($('trend')).max]),[-2000,2000,0,2000]);
@@ -53,7 +59,7 @@ function emit(type,data){const entry={time:new Date().toISOString(),type,...data
     await page.locator('#wave').press('Escape');
   }
   assert.deepEqual(errors,[]);await page.screenshot({path:path.join(folder,'actual-passed.png'),fullPage:true});
-  const result={passed:true,hardware_accessed:true,simulated:false,url,run,final:current,trend,live_signals_verified:liveChecks,page_errors:errors,browser:await browser.version(),events};
+  const result={passed:true,hardware_accessed:true,simulated:false,url,run,final:current,trend,free_before:initial.free_bytes,free_after:after.free_bytes,live_signals_verified:liveChecks,page_errors:errors,browser:await browser.version(),events};
   fs.writeFileSync(path.join(folder,'result.json'),JSON.stringify(result,null,2));emit('passed',{run,samples:current.written,windows:trend.points.length,sha256:current.sha256});
  }finally{if(browser)await browser.close();}
 })().catch(e=>{console.error(e);process.exitCode=1;});
