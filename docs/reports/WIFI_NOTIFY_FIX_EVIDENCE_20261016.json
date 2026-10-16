@@ -160,7 +160,9 @@
     "Metering accuracy remains unaccepted",
     "Not long-term or write-time-power-loss acceptance",
     "Panic GDB stop and disconnected PM disabled retained",
-    "Independent source review not obtained"
+    "Independent source review not obtained",
+    "Main record contains 1300 axis values at preset near-full-scale threshold; amplitude/overload not accepted"
   ],
-  "current_state": "TF reinstalled, powered, fixed firmware idle; final card/reference/default-register/HTTP status checks passed; browser open requested (Codex returned queued)"
+  "current_state": "TF reinstalled, powered, fixed firmware idle; final card/reference/default-register/HTTP status checks passed; browser open requested (Codex returned queued)",
+  "near_full_scale_axis_values": 1300
 }
