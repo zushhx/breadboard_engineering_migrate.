@@ -132,6 +132,10 @@ static bool resources() {
   if (xTaskCreatePinnedToCore(monitor, "ina", 4096, nullptr, 2, &monitorTask, 0) != pdPASS) return false;
   return true;
 }
+void* idleWorkspace(size_t bytes) {
+  if(!pool||sensorTask||monitorTask||freeQ||dataQ||inaQ||bytes>sizeof(Chunk)*kSlots) return nullptr;
+  return pool;
+}
 static void hex(const uint8_t* bytes, char* output) {
   for (unsigned i = 0; i < 32; ++i) sprintf(output + i * 2, "%02x", bytes[i]);
 }

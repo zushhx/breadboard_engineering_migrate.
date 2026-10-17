@@ -1,5 +1,6 @@
 #pragma once
 #include <cstdint>
+#include <cstddef>
 namespace recorder {
 struct Store {
   const char* drive;
@@ -9,4 +10,5 @@ struct Store {
 };
 void command(const char* line, const Store& store);
 bool reservePool();
+void* idleWorkspace(size_t bytes);
 }

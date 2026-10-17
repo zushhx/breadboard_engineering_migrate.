@@ -1,32 +1,37 @@
-# 主控控制台
+# 主控控制台 v2
 
-用户于 2026-10-17 确认的 Windows 桌面入口，参见[方案及范围调整](../docs/plans/DESKTOP_CONTROLLER_20261017.md)。采集和图表复用主控原检测页面。当前交付及验收只在 [STATUS](../docs/STATUS.md) 汇总。
+Windows WPF / .NET Framework 4.8 桌面入口，需要配套主控 v2 固件。用户批准范围见[任务方案](../docs/plans/CONTROLLER_V2_20261017.md)，实际交付状态只在[STATUS](../docs/STATUS.md)维护。
 
-- 原生 WPF、本机 .NET Framework 4.8，无 NuGet 或第三方运行时。
-- 保存地址、一次性只读连接检查、受限局域网发现、调用默认浏览器打开检测页。
-- Windows Wi-Fi / 移动热点设置入口、连接步骤、本机日志。
-- 不轮询、不发送 POST、不操作串口，不提供固件升级或 Wi-Fi 凭据写入接口。重复打开检测页前提醒已有页面；无法跨浏览器或进程重启保证只有一个页面。
+桌面提供原生 USB 连接、Wi-Fi 地址保存/只读检查/受限局域网查找、打开检测页和主控网络设置、Windows 网络设置及日志。不增加桌面 TF 页面；TF 管理只在主控统一网页提供。旧固件缺少 v2 能力时明确拒绝新控制入口。
+
+USB 使用 ESP32-S3 原生 Serial/JTAG 端口（VID303A/PID1001），CH340 UART 保留诊断。程序启动不打开串口；点击连接后设置 DTR/RTS=false、不发送复位/烧录命令，实际是否触发板级复位仍需实机验收。
+
+USB 和 Wi-Fi 均经随机端口的 127.0.0.1 HTTP 转接打开网页，不需要管理员 URL ACL、服务或防火墙规则。浏览器以原生 WebSocket 心跳续期；关闭所属网页、刷新、离开或关闭桌面程序释放关联会话。主控失联保护10秒发起停止，排空/同步/校验耗时另计。程序只释放自己转接页面的会话，直接局域网页面的所有者由该页面负责。后台/最小化不主动停止；不自动重发开始或恢复录制。
+
+同一局域网可直接访问主控实际 Wi-Fi/AP 地址；USB 本机地址仅当前电脑可用。网页显示网络网址和热点密码，不回显已保存的 STA 密码。按用户选择不设管理码，同网络用户具有控制和文件删除权限；热点保留 WPA2 密码。
 
 ## 分开的入口
 
 使用项目 PowerShell 7.6.6：
 
 ~~~powershell
-# 仅构建和编译测试程序，不运行、不安装、不访问设备
+# 仅编译，不访问设备或安装
 & .\desktop-controller\build.ps1
-
-# 用输出路径执行本地模拟测试；HTTP 只访问临时 loopback 服务器
-& '<build-output>\CoreTests.exe' '<build-output>'
-
-# 离线 UI 预览，输出 PNG 后退出；不访问设备、不写用户配置或启动外部程序
+# 临时 loopback 模拟服务器、协议检查
+& '<build-output>\CoreTests.exe' '<test-output>'
+# 离线 UI 预览；不访问设备
 Start-Process -FilePath '<build-output>\主控控制台.exe' -ArgumentList @('--preview', '<preview-output>') -WindowStyle Hidden -Wait
-
-# 将已核对哈希的具体产物安装到桌面；不启动程序、不改系统网络或设备
-& .\desktop-controller\install-desktop.ps1 -BuildDirectory '<build-output>' -ExpectedExecutableSha256 '<sha256>'
+# 安装具体干净候选；保留已有 v1 程序，不自动启动
+& .\desktop-controller\install-desktop.ps1 -Candidate -BuildDirectory '<build-output>' -ExpectedExecutableSha256 '<sha256>'
 ~~~
 
-toolchain.json 固定系统编译器和十个框架引用的 SHA-256；禁用隐式编译器配置/引用。构建清单记录源文件、系统引用程序集、产物及版本，不宣称不同 Windows 补丁环境字节可复现。构建和安装不互相调用。安装拒绝覆盖同名程序或快捷方式。正常启动不使用 --preview，用户可以直接双击 EXE/快捷方式。
+toolchain.json 固定编译器和系统程序集哈希，无 NuGet/第三方桌面运行时。构建清单绑定源码/引用/测试/EXE，安装核对产物并拒绝覆盖同名目标。候选安装名为“主控控制台 v2（待实机验收）”，旧版保持原处。
 
-网络查找最多四个不同地址并发，每个地址一次 GET /api/status、700ms 超时；较大网络限本机 /24，较小子网尊重掩码，另检查保存地址。手动检查 2800ms 超时。只接受局域网 IPv4/HTTP，不跟随重定向，响应上限 16KiB，验证既有 boot/卡/状态字段，只保留可显示的设备信息，不留控制令牌。单实例仅约束桌面应用；原检测页并发风险仍需用户只保留一页。
+## 相关验证
 
-源代码自行复核及可用审查工具的实际结果记录在本轮报告，模拟通过不能替代主控实机连通或采集验收。
+WSL/Linux：g++、libssl-dev、libcjson-dev；运行 python3 tools/test_controller_v2.py。
+Windows：固定 Node、Playwright1.62.1、本机 Edge；运行 tools/test_controller_v2_ui.cjs 和 tools/test_sensor_web_ui.cjs。
+
+文件底层测试编译实际 files_v2.cpp / device_v2.cpp，以临时文件系统替代 FatFS/板卡；不能替代真实介质、ESP32 调度/堆内存或断电验收。旧设备试验脚本显式拒绝 v2，不沿用“关闭页面继续采集”的旧断言。
+
+候选源码/桌面安装不代表固件已部署。烧录、真实 TF 写入/删除及稳定分支合并遵循独立门槛，见任务报告。

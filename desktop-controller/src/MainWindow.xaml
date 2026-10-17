@@ -1,4 +1,4 @@
-<Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+﻿<Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="主控控制台" Width="1160" Height="820" MinWidth="1000" MinHeight="700"
         WindowStartupLocation="CenterScreen" Background="#F5F7FB" FontFamily="Microsoft YaHei UI"
@@ -129,7 +129,7 @@
         </StackPanel>
         <StackPanel Grid.Row="3" Margin="12,0,8,0">
           <TextBlock Text="直接连接你的主控" FontSize="13" Foreground="#526179"/>
-          <TextBlock Text="本机便携版  0.1.0" FontSize="12" Foreground="#64748B" Margin="0,6,0,0"/>
+          <TextBlock Text="本机便携版  0.2.0" FontSize="12" Foreground="#64748B" Margin="0,6,0,0"/>
         </StackPanel>
       </Grid>
     </Border>
@@ -148,15 +148,27 @@
       <Grid Grid.Row="1">
         <ScrollViewer x:Name="DevicePage" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Padding="0,0,5,0">
           <StackPanel>
+            <Border Style="{StaticResource Card}" Margin="0,0,0,18">
+              <StackPanel>
+                <TextBlock Text="USB 直连主控" Style="{StaticResource SectionTitle}"/>
+                <TextBlock Text="用数据线连接 ESP32 原生 USB，选中端口后连接。无需先配置 Wi-Fi。" Style="{StaticResource MutedText}" Margin="0,0,0,12"/>
+                <WrapPanel>
+                  <ComboBox x:Name="UsbPorts" Width="180" MinHeight="42" Margin="0,0,10,8" AutomationProperties.Name="ESP32 原生 USB 端口"/>
+                  <Button x:Name="RefreshUsb" Content="刷新端口" Margin="0,0,10,8"/>
+                  <Button x:Name="ConnectUsb" Content="连接 USB" Style="{StaticResource PrimaryButton}" Margin="0,0,0,8"/>
+                </WrapPanel>
+                <TextBlock x:Name="UsbHint" Style="{StaticResource MutedText}" FontSize="12"/>
+              </StackPanel>
+            </Border>
             <Border Style="{StaticResource Card}">
               <StackPanel>
                 <TextBlock Text="检测页面，一键打开" FontSize="23" FontWeight="SemiBold" Margin="0,0,0,8"/>
                 <TextBlock Text="开始 / 停止采集、三轴曲线、电压电流、TF 空间和故障提示，&#10;继续使用主控原来的检测页面。" Style="{StaticResource MutedText}" Margin="0,0,0,24"/>
-                <Label Content="主控地址" Target="{Binding ElementName=AddressBox}" Padding="0" FontWeight="SemiBold" Margin="0,0,0,8"/>
+                <Label Content="Wi-Fi 连接地址" Target="{Binding ElementName=AddressBox}" Padding="0" FontWeight="SemiBold" Margin="0,0,0,8"/>
                 <Grid>
                   <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
                   <TextBox x:Name="AddressBox" MaxLength="256" ToolTip="输入 IP 或 http:// 开头的局域网地址；可以粘贴原来的页面链接。" AutomationProperties.Name="主控地址"/>
-                  <Button x:Name="SaveAddress" Grid.Column="1" Content="保存地址" Margin="10,0,0,0"/>
+                  <Button x:Name="SaveAddress" Grid.Column="1" Content="使用此地址" Margin="10,0,0,0"/>
                 </Grid>
                 <TextBlock x:Name="AddressHint" Text="填写主控 IP；地址会保存在本机，下次直接使用。" FontSize="12" Foreground="#526179" Margin="0,8,0,20"/>
                 <WrapPanel>
@@ -164,7 +176,7 @@
                   <Button x:Name="CheckConnection" Content="检测连接" MinHeight="50" MinWidth="120" Margin="0,0,0,8"/>
                 </WrapPanel>
                 <Border x:Name="NoticeBorder" Background="#F0F4FA" CornerRadius="6" Padding="13,11" Margin="0,12,0,0">
-                  <TextBlock x:Name="Notice" Text="首次使用：确认主控已供电，电脑和主控连接同一网络，再打开检测页面。" Style="{StaticResource MutedText}" FontSize="13"/>
+                  <TextBlock x:Name="Notice" Text="先连接 USB，或填写同一网络下的主控地址，再打开检测页面。" Style="{StaticResource MutedText}" FontSize="13"/>
                 </Border>
                 <TextBlock x:Name="DeviceSummary" Text="连接检查尚未进行。程序启动不会自动开始采集。" Foreground="#526179" FontSize="13" Margin="0,14,0,0" LineHeight="23"/>
               </StackPanel>
@@ -207,6 +219,13 @@
         </ScrollViewer>
         <ScrollViewer x:Name="NetworkPage" Visibility="Collapsed" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Padding="0,0,5,0">
           <StackPanel>
+            <Border Style="{StaticResource Card}" Margin="0,0,0,18">
+              <StackPanel>
+                <TextBlock Text="设置主控 Wi-Fi 与热点" Style="{StaticResource SectionTitle}"/>
+                <TextBlock Text="通过 USB 或当前 Wi-Fi 连接打开主控设置：扫描网络、配置接入 Wi-Fi、开启主控热点，并查看可分享的实际网址。" Style="{StaticResource MutedText}" Margin="0,0,0,16"/>
+                <Button x:Name="OpenDeviceNetwork" Content="打开主控网络设置" Style="{StaticResource PrimaryButton}" HorizontalAlignment="Left"/>
+              </StackPanel>
+            </Border>
             <Border Style="{StaticResource Card}">
               <StackPanel>
                 <TextBlock Text="方式一：电脑和主控连接同一热点" Style="{StaticResource SectionTitle}"/>
@@ -217,10 +236,10 @@
             <Border Style="{StaticResource Card}" Margin="0,18,0,0">
               <StackPanel>
                 <TextBlock Text="方式二：用电脑提供 Wi-Fi 热点" Style="{StaticResource SectionTitle}"/>
-                <TextBlock Text="在 Windows「移动热点」中设置网络名称、密码和 2.4 GHz 频段，再手动开启。名称和密码需要与主控已有配置一致，主控才能自动加入。" Style="{StaticResource MutedText}" Margin="0,0,0,16"/>
+                <TextBlock Text="在 Windows「移动热点」中设置网络名称、密码和 2.4 GHz 频段，再手动开启。然后通过「打开主控网络设置」让主控加入该网络。" Style="{StaticResource MutedText}" Margin="0,0,0,16"/>
                 <Button x:Name="OpenHotspot" Content="打开 Windows 移动热点设置" HorizontalAlignment="Left"/>
                 <Border Background="#FFF7E8" CornerRadius="6" Padding="13" Margin="0,18,0,0">
-                  <TextBlock Text="当前主控固件没有更换 Wi-Fi 或自行创建热点的接口。本程序提供系统设置入口；要让主控改连新网络，需要后续固件升级。" Foreground="#80561B" LineHeight="24" FontSize="13"/>
+                  <TextBlock Text="上面的入口用于设置主控自身的 Wi-Fi 与热点。Windows 系统设置用于电脑连接网络或共享电脑网络。" Foreground="#80561B" LineHeight="24" FontSize="13"/>
                 </Border>
               </StackPanel>
             </Border>
@@ -251,7 +270,7 @@
             <Border Style="{StaticResource Card}">
               <StackPanel>
                 <TextBlock Text="日常使用，只需这三步" Style="{StaticResource SectionTitle}"/>
-                <TextBlock Text="1   给主控供电，保持原接线和 TF 卡。&#10;2   电脑连接主控原先使用的热点。&#10;3   双击桌面的「主控控制台」，点击「打开检测页面」。" Style="{StaticResource MutedText}" LineHeight="30"/>
+                <TextBlock Text="1   给主控供电，保持原接线和 TF 卡。&#10;2   连接原生 USB，或让电脑和主控连接同一网络。&#10;3   双击桌面的「主控控制台」，点击「打开检测页面」。" Style="{StaticResource MutedText}" LineHeight="30"/>
                 <Separator Margin="0,20"/>
                 <TextBlock Text="在原检测页面完成采集与查看" FontWeight="SemiBold" FontSize="16" Margin="0,0,0,10"/>
                 <TextBlock Text="采集时长、开始 / 停止、三轴曲线、电压、电流、TF 剩余空间和中文故障提示，全部沿用原页面。软件和网页不需要 Codex 在线参与。" Style="{StaticResource MutedText}"/>
@@ -260,7 +279,7 @@
             <Border Style="{StaticResource Card}" Margin="0,18,0,0">
               <StackPanel>
                 <TextBlock Text="打不开时，按顺序检查" Style="{StaticResource SectionTitle}"/>
-                <TextBlock Text="• 主控是否供电；电脑是否接到同一个热点。&#10;• IP 是否变化：使用「查找主控」，或查看热点的已连接设备列表。&#10;• 热点是否开启了设备隔离：同一热点中的设备需要允许互相访问。&#10;• 主控已经采集中时，只保留一个检测页面，避免多页并发轮询。&#10;• 「检测连接」只读取一次状态，显示的是检查时的快照。" Style="{StaticResource MutedText}" LineHeight="29"/>
+                <TextBlock Text="• 主控是否供电；电脑是否接到同一个热点。&#10;• IP 是否变化：使用「查找主控」，或查看热点的已连接设备列表。&#10;• 热点是否开启了设备隔离：同一热点中的设备需要允许互相访问。&#10;• 多页面开始采集时，按提示选择继续接管或取消。关闭所属页面会停止该次采集。&#10;• 「检测连接」只读取一次状态，显示的是检查时的快照。" Style="{StaticResource MutedText}" LineHeight="29"/>
               </StackPanel>
             </Border>
             <Border Style="{StaticResource Card}" Margin="0,18,0,0">

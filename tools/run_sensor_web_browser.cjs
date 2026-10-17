@@ -17,6 +17,7 @@ async function main(){
   browser=await chromium.launch({headless:true,channel:'msedge',args:['--no-proxy-server']});
   const context=await browser.newContext({viewport:{width:1360,height:1080}});
   let page=await open(context);let pageErrors=[];page.on('pageerror',e=>pageErrors.push(e.message));
+  if(await page.evaluate(()=>typeof v2Ready!=='undefined'))throw Error('Legacy trial does not cover v2 close/lease semantics; use CONTROLLER_V2 plan and a version-bound approval');
   const initial=await status(page);assert.equal(initial.card_serial,'10044BA5');assert.equal(initial.card_bytes,'7948206080');
   assert(initial.ready&&['idle','passed','rejected'].includes(initial.phase));
   await page.locator('#seconds').fill(String(seconds));

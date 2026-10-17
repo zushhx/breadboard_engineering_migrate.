@@ -1,6 +1,7 @@
 param(
     [Parameter(Mandatory)][string]$BuildDirectory,
-    [Parameter(Mandatory)][string]$ExpectedExecutableSha256
+    [Parameter(Mandatory)][string]$ExpectedExecutableSha256,
+    [switch]$Candidate
 )
 $ErrorActionPreference = 'Stop'
 Set-StrictMode -Version Latest
@@ -15,8 +16,9 @@ $manifestConfig = @($manifest.artifacts | Where-Object { $_.name -eq '主控控�
 if ($manifest.source_worktree_dirty -or $manifestExe.Count -ne 1 -or $manifestExe[0].sha256 -ne $ExpectedExecutableSha256 -or $manifestConfig.Count -ne 1 -or
     (Get-FileHash -LiteralPath $sourceConfig -Algorithm SHA256).Hash -ne $manifestConfig[0].sha256) { throw 'Build manifest verification failed.' }
 $desktopPath = [Environment]::GetFolderPath('Desktop')
-$destination = Join-Path $desktopPath '主控控制台'
-$shortcutPath = Join-Path $desktopPath '主控控制台.lnk'
+$applicationName = if ($Candidate) { '主控控制台 v2（待实机验收）' } else { '主控控制台' }
+$destination = Join-Path $desktopPath $applicationName
+$shortcutPath = Join-Path $desktopPath ($applicationName + '.lnk')
 if ((Test-Path -LiteralPath $destination) -or (Test-Path -LiteralPath $shortcutPath)) {
     throw 'A desktop application or shortcut with this name already exists. Preserve/review it before installing.'
 }

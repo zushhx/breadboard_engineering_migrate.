@@ -163,6 +163,7 @@ public static class CoreTests
         Check(AppSettings.Load(settingsFolder).Address == settings.Address, "address settings replace existing file");
         File.WriteAllText(Path.Combine(settingsFolder, "settings.json"), "{broken");
         Check(AppSettings.Load(settingsFolder).Address == null, "corrupt settings recover to defaults");
+        await BridgeTests.Run(Check);
         Console.WriteLine("RESULT: " + assertions + " meaningful checks passed. All HTTP servers are loopback mocks; no board, serial, reset or TF access.");
     }
     private sealed class DirectProgress : IProgress<SearchProgress>
