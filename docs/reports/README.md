@@ -4,6 +4,7 @@
 
 ## 本次工程整理
 
+- [主控控制台 v2 软件、检查及实机门槛](CONTROLLER_V2_20261017.md)
 - [Windows 主控控制台交付、检查与边界](DESKTOP_CONTROLLER_20261017.md)
 - [桌面程序产物与软件检查证据摘要](DESKTOP_CONTROLLER_EVIDENCE_20261017.json)
 
