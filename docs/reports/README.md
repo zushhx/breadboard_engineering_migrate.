@@ -4,6 +4,9 @@
 
 ## 本次工程整理
 
+- [Windows 主控控制台交付、检查与边界](DESKTOP_CONTROLLER_20261017.md)
+- [桌面程序产物与软件检查证据摘要](DESKTOP_CONTROLLER_EVIDENCE_20261017.json)
+
 - [新版UI真实联机与30秒记录检查](REALTIME_UI_LIVE_20261016.md)
 - [UI联机实机证据清单](REALTIME_UI_LIVE_EVIDENCE_20261016.json)
 - [联机工具控制台编码故障与恢复](UI_LIVE_LOG_ENCODING_FIX_20261016.md)

@@ -9,6 +9,7 @@
 3. [工程、Git 与发布流程](docs/WORKFLOW.md)
 4. [项目操作约定](AGENTS.md)
 5. [TF 访问异常复盘](docs/reports/TF_ACCESS_POSTMORTEM_20261015.md)
+6. [Windows 主控控制台](desktop-controller/README.md)：桌面连接、网络向导和原检测页面入口。
 
 ## 文件分区
 
