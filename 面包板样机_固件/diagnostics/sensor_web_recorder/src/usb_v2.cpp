@@ -10,7 +10,10 @@ static uint8_t incoming[16+frameLimit];
 static bool writeAll(const uint8_t* data,size_t size) {
   unsigned stalled=0;
   while(size) {
-    int n=usb_serial_jtag_write_bytes(data,size,0);
+    // IDF enqueues the entire argument as one ring-buffer item; it cannot split
+    // a 2048-byte protocol payload into the configured 512-byte TX ring.
+    size_t chunk=size>128?128:size;
+    int n=usb_serial_jtag_write_bytes(data,chunk,0);
     if(n>0) {data+=n;size-=n;stalled=0;}
     else {if(++stalled>2000) return false;vTaskDelay(1);}
   }

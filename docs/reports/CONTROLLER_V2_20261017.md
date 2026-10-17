@@ -1,5 +1,7 @@
 # 主控控制台 v2 软件交付与实机门槛
 
+第三轮20261017_215427：Win32 USB打开/关闭探针在恢复旧版上通过，无复位；e470e40候选进入USB页面传输时返回空响应，按预案回退，未采集/TF写入。检查固定IDF5.4.2驱动实现确认usb_serial_jtag_write_bytes将整个参数作为ring item入队，现有TX ring512字节而协议payload2048字节，页面/状态大包无法入队。固件仅将底层每次入队限制128字节，协议帧/CRC/记录格式不变；新增编译实际usb_v2.cpp的512字节驱动替身回归，验证完整大页面/5000字节状态的CRC和结束帧。修正电脑端EXE4f6ff7e/daaf97911e80ae207d7ff5c3115e06d294b5797b974d29d52adc5209bf0297fa已单独装回v2候选入口，早期v2和v1均保留。
+
 第二轮短测20261017_214856：e470e40/d91e26a2157e6ab9fe46f34bef3e81e01e3cbe655046579f737b142303752033锁修复后UART身份/卡/目录响应恢复。打开.NET SerialPort原生USB端口时出现明确rst:0x15 (USB_UART_CHIP_RESET)，测试立即中止，未采集/TF写入，已恢复eb4aba6并核验旧文件。电脑端改为Win32 CreateFile/ReadFile/WriteFile，仅设通信超时，保持驱动DTR/RTS状态，不调用SetCommState或控制线IOCTL；实际无复位效果需探针验证。参考[Windows串口配置](https://learn.microsoft.com/en-us/windows/win32/devio/modification-of-communications-resource-settings)与[ESP32-S3 USB控制器](https://docs.espressif.com/projects/esp-idf/en/v5.4.2/esp32s3/api-guides/usb-serial-jtag-console.html)。USB扫描请求单独允许更长读取超时，不自动重试命令。
 
 首轮实机补充：授权记录绑定f3fb1e0及703086a候选。20261017_213827两次读取0..0x121000均为SHA-256 48e0da0f4a735707b6fe12daf46a0859fa9796d9f40a19c68bd9aafcbe6fa4b1，NVS为4611905a70ef9f75c94876814c6bba172eaf54d74dc5f012a6d9079eded9622c。仅app0写入摘要成功，703086a启动身份和HTTP服务启动出现，但之后UART help未响应，门槛失败。未开始采集或TF文件操作，按授权恢复eb4aba6；身份/卡/参考文件摘要复查通过，NVS前后匹配，未重写NVS。旧版恢复不等于v2验收通过。
