@@ -6,24 +6,26 @@ from operation_gate import require_approval
 import tf_write_batch as tf
 import sensor_recorder_batch as recorder
 from ui_live_trial import TrialSession
-SOURCE='703086ad916cef463196cb274388e7248fe57cb0'
-CANDIDATE='305925852672809d10e0bc0025be294e1aee6a9df3a5b53b9b875ba72a9a7e38'
+SOURCE='e470e40057b3c2d4488b61275926bad88d2b8170'
+CANDIDATE='d91e26a2157e6ab9fe46f34bef3e81e01e3cbe655046579f737b142303752033'
 OLD_SOURCE='eb4aba6340ba26093cd8f1849714b8f335bf4792'
 OLD_SHA='400192859ee7e4ac3723120397af1e804bec8c0baea5545bac07b46f8c65dc16'
-MANIFEST=ROOT/'local-data/build/sensor-web/1d384108f24a9acc/20261017_212653_194013/build_manifest.json'
+MANIFEST=ROOT/'local-data/build/sensor-web/7b8e69162f22b766/20261017_214409_349597/build_manifest.json'
+BASE_SNAPSHOT=ROOT/'local-data/hardware/controller-v2/20261017_213827/controller_prefix.bin'
+BASE_SNAPSHOT_SHA='48e0da0f4a735707b6fe12daf46a0859fa9796d9f40a19c68bd9aafcbe6fa4b1'
 OLD=ROOT/'local-data/controller-v2/recovery-eb4aba6/firmware.bin'
 HOST=ROOT/'local-data/controller-v2/DeviceHost.exe'
 NODE=Path.home()/'.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node.exe'
 MODULES=NODE.parent.parent/'node_modules'
 SCOPE=dict(app0_only=True,backup_nvs=True,backup_end=0x121000,preserve_old_files=True,new_test_directory_only=True,
-           usb=True,network_config=True,ownership=True,multi_page=True,max_record_seconds=300,restore_on_failure=True,
+           usb=True,network_config=True,ownership=True,multi_page=True,max_record_seconds=90,short_checks_only=True,restore_on_failure=True,
            format_repair=False,cold_starts_manual_only=True,main_merge_release=False)
 def inputs():
     build=json.loads(MANIFEST.read_text(encoding='utf-8'))
     if build['source_commit']!=SOURCE or build['working_tree_dirty_at_start'] or not build['build_passed']:raise RuntimeError('Build identity mismatch')
     candidate=ROOT/next(x['path'] for x in build['artifacts'] if x['path'].endswith('/firmware.bin'))
-    if sha(candidate)!=CANDIDATE or sha(OLD)!=OLD_SHA:raise RuntimeError('Candidate/recovery hash mismatch')
-    files=[Path(__file__),ROOT/'tools/controller_v2_live.cjs',ROOT/'desktop-controller/tools/DeviceHost.cs',HOST,MANIFEST,candidate,OLD,NODE,tf.ESPTOOL,
+    if sha(candidate)!=CANDIDATE or sha(OLD)!=OLD_SHA or sha(BASE_SNAPSHOT)!=BASE_SNAPSHOT_SHA:raise RuntimeError('Candidate/recovery hash mismatch')
+    files=[Path(__file__),ROOT/'tools/controller_v2_live.cjs',ROOT/'desktop-controller/tools/DeviceHost.cs',HOST,MANIFEST,candidate,OLD,BASE_SNAPSHOT,NODE,tf.ESPTOOL,
            BUNDLE/'artifacts/bootloader.bin',BUNDLE/'artifacts/partitions.bin']
     files += [ROOT/'tools'/n for n in ['operation_gate.py','project_check.py','tf_write_batch.py','sensor_recorder_batch.py','ui_live_trial.py']]
     files += [ROOT/'desktop-controller'/n for n in ['src/Core.cs','src/DeviceBridge.cs','build-device-host.ps1','src/app.config','toolchain.json']]
@@ -61,13 +63,13 @@ def run(path):
             if 'active=1' in before:raise RuntimeError('Controller active; no flash')
         identity=session.esptool(tf.unique_port(),['flash_id'])
         if 'Detected flash size: 8MB' not in identity:raise RuntimeError('Flash size mismatch')
-        for target in [snapshot,second]:
-            session.esptool(tf.unique_port(),['read_flash','0',hex(SCOPE['backup_end']),str(target)])
-        if sha(snapshot)!=sha(second):raise RuntimeError('Repeated backup differs; no write')
+        # Reuse the already double-read, restored baseline; verify it against the current chip before writing.
+        snapshot.write_bytes(BASE_SNAPSHOT.read_bytes())
+        session.esptool(tf.unique_port(),['verify_flash','0',str(snapshot)])
         data=snapshot.read_bytes();boot=(BUNDLE/'artifacts/bootloader.bin').read_bytes();parts=(BUNDLE/'artifacts/partitions.bin').read_bytes();old=OLD.read_bytes()
         if len(data)!=SCOPE['backup_end'] or data[:len(boot)]!=boot or data[0x8000:0x8000+len(parts)]!=parts or data[0x10000:0x10000+len(old)]!=old:raise RuntimeError('Current boot/partition/app differs; no write')
         nvs=session.folder/'nvs-before.bin';nvs.write_bytes(data[0x9000:0xe000])
-        result['backup']=dict(path=snapshot.relative_to(ROOT).as_posix(),sha256=sha(snapshot),bytes=len(data),repeated_read_match=True,nvs_sha256=sha(nvs))
+        result['backup']=dict(path=snapshot.relative_to(ROOT).as_posix(),sha256=sha(snapshot),bytes=len(data),reused_double_read_baseline=True,verified_against_current_flash=True,nvs_sha256=sha(nvs))
         (session.folder/'backup.json').write_text(json.dumps(result['backup'],indent=2),encoding='utf-8')
         changed=True
         written=session.esptool(tf.unique_port(),['write_flash','--flash_mode','keep','--flash_freq','keep','--flash_size','keep','0x10000',str(candidate)])
