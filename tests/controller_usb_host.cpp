@@ -1,6 +1,7 @@
 // Compile the real USB writer against a driver that refuses items larger than its TX ring.
 #include "device_v2.h"
 #include <vector>
+#include <cstdint>
 #include <cassert>
 #include <cstring>
 #include <cstdio>
