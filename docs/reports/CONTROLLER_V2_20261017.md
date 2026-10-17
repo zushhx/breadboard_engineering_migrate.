@@ -1,5 +1,9 @@
 # 主控控制台 v2 软件交付与实机门槛
 
+最终短测通过：65bb1f8/71d54a1f1702ef75e7597db6da6d5c9661a53234bd24f52dd0b7584b2ff3faaf已保留在主控。20261017_220409实际USB页面、心跳、单页及四页各10秒、接管继续/取消、页面关闭、共享桌面转接关闭停采通过；六份记录errors0，完整回读与摘要一致。USB打开/关闭和重开boot不变。扫描16项、AP配置保存，以及5001字节中文文件完整操作和PC下载摘要通过，旧参考样本两次相同；文件测试目录清理，采集目录保留。本轮只做用户要求的短测，STA加入、实际AP/LAN访问、Wi-Fi四页负载、五分钟、纯断线10秒注入和真断电未测；桌面关闭测试使用与WPF共享的DeviceBridge.Dispose诊断宿主，未额外做完整WPF采集GUI联测。详见[可核验证据](CONTROLLER_V2_EVIDENCE_20261017.json)。
+
+最终桌面程序为4f6ff7e构建/99328字节/SHA-256 daaf97911e80ae207d7ff5c3115e06d294b5797b974d29d52adc5209bf0297fa，原“主控控制台”快捷方式已指向“主控控制台 v2”；v1原文件未变，原快捷方式保存在local-data/desktop-controller/previous-desktop-links。早期v2候选保存在local-data/desktop-controller/replaced-703086a。以下为分轮过程与原软件边界，当前结果以本段和STATUS为准。
+
 第三轮20261017_215427：Win32 USB打开/关闭探针在恢复旧版上通过，无复位；e470e40候选进入USB页面传输时返回空响应，按预案回退，未采集/TF写入。检查固定IDF5.4.2驱动实现确认usb_serial_jtag_write_bytes将整个参数作为ring item入队，现有TX ring512字节而协议payload2048字节，页面/状态大包无法入队。固件仅将底层每次入队限制128字节，协议帧/CRC/记录格式不变；新增编译实际usb_v2.cpp的512字节驱动替身回归，验证完整大页面/5000字节状态的CRC和结束帧。修正电脑端EXE4f6ff7e/daaf97911e80ae207d7ff5c3115e06d294b5797b974d29d52adc5209bf0297fa已单独装回v2候选入口，早期v2和v1均保留。
 
 第二轮短测20261017_214856：e470e40/d91e26a2157e6ab9fe46f34bef3e81e01e3cbe655046579f737b142303752033锁修复后UART身份/卡/目录响应恢复。打开.NET SerialPort原生USB端口时出现明确rst:0x15 (USB_UART_CHIP_RESET)，测试立即中止，未采集/TF写入，已恢复eb4aba6并核验旧文件。电脑端改为Win32 CreateFile/ReadFile/WriteFile，仅设通信超时，保持驱动DTR/RTS状态，不调用SetCommState或控制线IOCTL；实际无复位效果需探针验证。参考[Windows串口配置](https://learn.microsoft.com/en-us/windows/win32/devio/modification-of-communications-resource-settings)与[ESP32-S3 USB控制器](https://docs.espressif.com/projects/esp-idf/en/v5.4.2/esp32s3/api-guides/usb-serial-jtag-console.html)。USB扫描请求单独允许更长读取超时，不自动重试命令。
