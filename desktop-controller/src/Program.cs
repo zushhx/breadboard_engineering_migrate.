@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
@@ -20,8 +20,8 @@ using Microsoft.Win32;
 [assembly: AssemblyTitle("主控控制台")]
 [assembly: AssemblyDescription("直插式面包板样机桌面连接助手")]
 [assembly: AssemblyProduct("主控控制台")]
-[assembly: AssemblyVersion("0.1.0.0")]
-[assembly: AssemblyFileVersion("0.1.0.0")]
+[assembly: AssemblyVersion("0.2.0.0")]
+[assembly: AssemblyFileVersion("0.2.0.0")]
 
 namespace BreadboardController
 {
@@ -53,7 +53,9 @@ namespace BreadboardController
         private CancellationTokenSource operation;
         private bool working, closed, populating;
         private DeviceInfo lastDevice;
-        private string lastOpened;
+        private DeviceBridge bridge;
+        private IDeviceBackend backend;
+        private string backendTarget;
         public readonly Window Window;
         private TextBox Address { get { return Find<TextBox>("AddressBox"); } }
         private T Find<T>(string name) where T : class { return Window.FindName(name) as T; }
@@ -74,9 +76,13 @@ namespace BreadboardController
             Address.TextChanged += delegate
             {
                 lastDevice = null;
+                if (backend is UsbBackend) { if (bridge != null) bridge.Dispose(); bridge = null; backend = null; }
                 Badge("尚未检测", "#E9EDF4", "#526179");
                 Text("DeviceSummary", "地址已变更，请重新检测。");
             };
+            Bind("RefreshUsb", delegate { RefreshUsb(); return Task.FromResult(0); }, delegate { return !working; });
+            Bind("ConnectUsb", ConnectUsbAsync, delegate { return !working; });
+            Bind("OpenDeviceNetwork", delegate { return OpenPageAsync("network"); }, delegate { return !working; });
             Bind("SaveAddress", SaveAddressAsync, delegate { return !working; });
             Bind("CheckConnection", CheckAsync, delegate { return !working; });
             Bind("OpenDetection", OpenDetectionAsync, delegate { return !working; });
@@ -123,12 +129,14 @@ namespace BreadboardController
                 {
                     Uri uri;
                     if (TryAddress(out uri)) Save(uri, false);
-                    AddLog("程序已关闭；主控运行状态未改变。");
+                    if (bridge != null) bridge.Dispose();
+                    AddLog("程序已关闭，已释放本程序打开的页面会话；失联保护最多10秒发起安全停采。");
                 }
             };
             RefreshNetworks();
-            Text("AboutText", "版本：0.1.0 · Windows 本机便携版\n快捷键：Ctrl + O 打开检测页面；F5 检测连接。\n设置与连接日志：" +
-                storage + "\n主控网络凭据仍由现有固件管理。本软件不保存 Wi-Fi 密码。");
+            RefreshUsb();
+            Text("AboutText", "版本：0.2.0 · Windows 本机便携版\n快捷键：Ctrl + O 打开检测页面；F5 检测连接。\n设置与连接日志：" +
+                storage + "\n主控 Wi-Fi 和热点在统一网页设置。本软件不保存 Wi-Fi 密码。关闭本程序会断开本程序打开页面的控制会话。");
             AddLog(preview ? "界面预览：离线模拟，不访问实机、不打开外部程序。" : "程序启动。等待用户操作，未查询设备。");
             if (preview) { Window.Title += " · 离线界面预览"; Text("FooterText", "离线界面预览 · 没有实机数据"); }
         }
@@ -197,7 +205,10 @@ namespace BreadboardController
         private Task SaveAddressAsync()
         {
             Uri uri;
-            if (TryAddress(out uri)) Save(uri, true);
+            if (TryAddress(out uri)) {
+                if (backend is UsbBackend) { if (bridge != null) bridge.Dispose(); bridge = null; backend = null; Text("UsbHint", "已切换到 Wi-Fi 地址；需要直连时重新点击连接 USB。"); }
+                Save(uri, true);
+            }
             return Task.FromResult(0);
         }
         private void BeginWork(string message)
@@ -255,6 +266,15 @@ namespace BreadboardController
         }
         private async Task CheckAsync()
         {
+            if (backend is UsbBackend && !preview) {
+                BeginWork("正在读取 USB 主控状态……");
+                try { var response = await Task.Run(() => backend.Request("GET", "/api/status", "", ""));
+                    if (response.Code != 200) throw new IOException("主控状态读取失败");
+                    if (!closed) Present(StatusParser.Parse(response.Text, bridge.Address));
+                } catch (Exception error) { if (!closed) Notify("USB 状态读取失败：" + error.Message, true); }
+                finally { EndWork(); }
+                return;
+            }
             Uri uri;
             if (!TryAddress(out uri)) return;
             Save(uri, false);
@@ -263,28 +283,72 @@ namespace BreadboardController
             catch (OperationCanceledException) { }
             finally { EndWork(); }
         }
-        private async Task OpenDetectionAsync()
+        private void RefreshUsb()
         {
-            Uri uri;
-            if (!TryAddress(out uri)) return;
-            if (lastOpened == uri.AbsoluteUri && !preview)
-            {
-                var answer = MessageBox.Show(Window, "本程序已经打开过这个检测页面，请先从任务栏切换到浏览器。\n\n如果页面已关闭，可以重新打开。多个检测页面同时轮询可能影响采集。\n\n仍要再次打开吗？",
-                    "检测页面可能已经打开", MessageBoxButton.YesNo, MessageBoxImage.Information, MessageBoxResult.No);
-                if (answer != MessageBoxResult.Yes) return;
-            }
-            Save(uri, false);
-            BeginWork("检查主控后打开检测页面……");
+            var ports = preview ? new[] { "COM4（模拟）" } : UsbBackend.Ports();
+            Find<ComboBox>("UsbPorts").ItemsSource = ports;
+            if (ports.Length > 0) Find<ComboBox>("UsbPorts").SelectedIndex = 0;
+            Text("UsbHint", ports.Length > 0 ? "选择 ESP32 原生 USB 端口；连接需要主控 v2 固件。" : "未找到 ESP32 原生 USB。请连接带数据功能的 USB 线，再刷新。");
+        }
+        private async Task ConnectUsbAsync()
+        {
+            if (preview) { Notify("离线预览：USB 不会打开。", false); return; }
+            string name = Find<ComboBox>("UsbPorts").SelectedItem as string;
+            if (String.IsNullOrEmpty(name)) { Notify("请选择 ESP32 原生 USB 串口。", true); return; }
+            BeginWork("正在连接 USB……");
+            IDeviceBackend candidate = null;
             try
             {
-                if (!await CheckInternalAsync(uri) || closed) return;
-                if (preview) { Notify("离线界面预览：这里会打开主控原检测页；当前未打开浏览器。", false); return; }
-                Shell(uri.AbsoluteUri);
-                lastOpened = uri.AbsoluteUri;
-                Notify("已交给默认浏览器打开原检测页面。请保留一个检测页；本程序不会在后台轮询主控。", false);
-                AddLog("已请求默认浏览器打开检测页面 " + AddressPolicy.Display(uri) + "。页面实际加载结果请在浏览器确认。");
+                candidate = await Task.Run<IDeviceBackend>(() => new UsbBackend(name));
+                await Task.Run(() => ValidateV2(candidate));
+                if (closed) return;
+                if (bridge != null) bridge.Dispose();
+                backend = candidate; candidate = null;
+                bridge = new DeviceBridge(backend); backendTarget = name;
+                Text("UsbHint", "已连接 " + name + "；不需要电脑连接 Wi-Fi。");
+                Text("DeviceSummary", "USB 本机检测网址：" + bridge.Address.AbsoluteUri);
+                Badge("USB 已连接", "#E7F5EF", "#176248");
+                Notify("USB 已连接。点击「打开检测页面」或进入「Wi-Fi 与热点」配置主控。", false);
             }
-            catch (OperationCanceledException) { }
+            catch (Exception error) { Notify("USB 连接未完成：" + error.Message + "。旧固件须先完成升级。", true); }
+            finally { if (candidate != null) candidate.Dispose(); EndWork(); }
+        }
+        private static void ValidateV2(IDeviceBackend candidate)
+        {
+            var response = candidate.Request("GET", "/api/v2/capabilities", "", "");
+            if (response.Code != 200 || !response.Text.Contains("\"version\":2"))
+                throw new IOException("主控未提供 v2 控制接口");
+        }
+        private Task OpenDetectionAsync() { return OpenPageAsync(""); }
+        private async Task OpenPageAsync(string panel)
+        {
+            if (preview) { Notify("离线预览：这里会打开统一网页；未访问主控。", false); return; }
+            BeginWork("正在准备主控网页……");
+            try
+            {
+                if (backend == null || !(backend is UsbBackend))
+                {
+                    Uri uri;
+                    if (!TryAddress(out uri)) return;
+                    if (bridge == null || backendTarget != uri.AbsoluteUri)
+                    {
+                        var candidate = new NetworkBackend(uri);
+                        try { await Task.Run(() => ValidateV2(candidate)); }
+                        catch { candidate.Dispose(); throw; }
+                        if (closed) { candidate.Dispose(); return; }
+                        if (bridge != null) bridge.Dispose();
+                        backend = candidate; bridge = new DeviceBridge(backend); backendTarget = uri.AbsoluteUri;
+                    }
+                    Save(uri, false);
+                }
+                if (closed) return;
+                string url = bridge.Address.AbsoluteUri + (panel.Length == 0 ? "" : "?panel=" + panel);
+                Shell(url);
+                Text("DeviceSummary", backend.Description + "\n本机网页：" + bridge.Address.AbsoluteUri);
+                Notify("已打开网页。关闭采集页面或本程序会触发安全停采；保存完成时间另计。", false);
+                AddLog("已打开统一网页，连接方式：" + backend.Description);
+            }
+            catch (Exception error) { Notify("无法打开 v2 网页：" + error.Message + "。请检查连接和主控固件版本。", true); }
             finally { EndWork(); }
         }
         private void RefreshNetworks()
@@ -307,7 +371,7 @@ namespace BreadboardController
         {
             var network = Find<ComboBox>("Networks").SelectedItem as NetworkChoice;
             if (network == null) return;
-            if (lastOpened != null && !preview && MessageBox.Show(Window, "请先关闭已有的检测页面，再查找主控，避免在采集中增加网络负载。\n\n现在开始查找吗？",
+            if (bridge != null && !preview && MessageBox.Show(Window, "请先关闭已有的检测页面，再查找主控，避免在采集中增加网络负载。\n\n现在开始查找吗？",
                 "查找前确认", MessageBoxButton.YesNo, MessageBoxImage.Information, MessageBoxResult.No) != MessageBoxResult.Yes) return;
             Uri saved = null;
             try { saved = AddressPolicy.Normalize(Address.Text, false); } catch (ArgumentException) { }
@@ -371,7 +435,7 @@ namespace BreadboardController
         {
             Uri uri;
             string target = TryAddress(out uri) ? AddressPolicy.Display(uri) : "无效地址";
-            return "主控控制台 0.1.0\n生成时间：" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss zzz") + "\n主控地址：" + target +
+            return "主控控制台 0.2.0\n生成时间：" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss zzz") + "\n主控地址：" + target +
                 "\n最近检查：" + Find<TextBlock>("DeviceSummary").Text + "\n电脑网络：" + Find<TextBlock>("NetworkInfo").Text +
                 "\n说明：程序只做按需连接检查，采集与图表在原检测页面。\n\n本次记录：\n" + String.Join("\n", log);
         }
@@ -445,7 +509,7 @@ namespace BreadboardController
                 checks.Add("PASS: " + message);
             };
             await Task.Delay(250);
-            verify(lastDevice == null && lastOpened == null && !working, "startup does not query or open a device");
+            verify(lastDevice == null && bridge == null && !working, "startup does not query or open a device");
             verify(Window.InputBindings.Count == 2, "keyboard shortcuts are wired");
             Badge("尚未检测", "#E9EDF4", "#526179");
             Notify("离线界面预览 · 本页没有实机数据。", false);
@@ -462,7 +526,7 @@ namespace BreadboardController
             await CheckAsync();
             verify(lastDevice != null && lastDevice.Ready && !working, "connection check command renders device snapshot");
             await OpenDetectionAsync();
-            verify(lastOpened == null && Find<TextBlock>("Notice").Text.Contains("未打开浏览器"), "preview open command does not launch a browser");
+            verify(bridge == null && Find<TextBlock>("Notice").Text.Contains("未访问主控"), "preview open command does not launch a browser");
             Notify("离线界面预览 · 以下连接信息为模拟数据。", false);
             Capture(Path.Combine(folder, "02-device-connected-simulated.png"));
             ShowPage("Network"); await Task.Delay(50);
@@ -502,7 +566,7 @@ namespace BreadboardController
             bool preview = args.Length == 2 && args[0] == "--preview";
             if (args.Length != 0 && !preview) { MessageBox.Show("支持的参数：--preview <输出文件夹>。正常使用请直接双击程序。", "主控控制台"); return 2; }
             bool created;
-            using (var mutex = new Mutex(true, "Local\\BreadboardController" + (preview ? "-preview" : ""), out created))
+            using (var mutex = new Mutex(true, "Local\\BreadboardControllerV2" + (preview ? "-preview" : ""), out created))
             {
                 if (!created)
                 {
@@ -522,7 +586,7 @@ namespace BreadboardController
                     var window = new ControllerWindow(preview);
                     app.DispatcherUnhandledException += delegate(object sender, System.Windows.Threading.DispatcherUnhandledExceptionEventArgs e)
                     {
-                        MessageBox.Show(window.Window, "操作未完成：" + e.Exception.GetType().Name + "。\n请重新打开程序，主控运行状态未改变。", "主控控制台", MessageBoxButton.OK, MessageBoxImage.Warning);
+                        MessageBox.Show(window.Window, "操作未完成：" + e.Exception.GetType().Name + "。\n请在主控网页检查当前状态；失联后会触发安全停采。", "主控控制台", MessageBoxButton.OK, MessageBoxImage.Warning);
                         e.Handled = true;
                     };
                     if (preview) window.Window.Loaded += async delegate

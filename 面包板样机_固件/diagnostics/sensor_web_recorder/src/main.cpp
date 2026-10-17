@@ -1,5 +1,6 @@
 #if defined(TF_NATIVE_IDF) && TF_NATIVE_IDF
 #include "serial_compat.h"
+#include "device_v2.h"
 #else
 #include <Arduino.h>
 #endif
@@ -425,6 +426,8 @@ void setup() {
 
 void loop() {
   control::pollNetworkLog();
+  devicev2::pollWifi();
+  devicev2::pollStorage(driveName);
   char run[9]; unsigned seconds = 0;
   if (control::take(run, seconds)) {
     if (mountReadOnly()) {
@@ -442,6 +445,8 @@ void loop() {
     int event = lineInput.push(Serial.read());
     if (event < 0) Serial.println("[tfrw] rejected invalid/overlong line; no action");
     if (event > 0) {
+      if(control::busyNow()) { Serial.println("[rec] v2 storage/control task active; legacy command rejected"); delay(5); return; }
+      if (strncmp(lineInput.line(), "REC_START", 9) == 0) { Serial.println("[rec] v2 session required; start through the controller page"); delay(5); return; }
       if (strncmp(lineInput.line(), "REC_", 4) == 0) {
         if (mountReadOnly()) {
           recorder::Store store{driveName, static_cast<uint32_t>(card.cid.serial),
@@ -467,4 +472,10 @@ void loop() {
     }
   }
   delay(5);
+}
+
+namespace devicev2 {
+bool mountStorage() { return mountReadOnly(); }
+void writeGate(bool enabled) { writeEnabled=enabled; }
+void updateSpace() { refreshStorageSpace(); }
 }

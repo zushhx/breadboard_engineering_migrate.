@@ -14,7 +14,7 @@ let s={boot,phase:'idle',ready:true,connected:true,ip:'192.168.1.23',card_serial
   ina_valid:false,ina_us:0,bus_mv:0,current_ua:0,power_uw:0,detail:'软件模拟状态；非实机数据',sha256:'',preview_seq:0,preview_us:0,preview:[]};
 let posts=[], unavailable=false, requests=0, outstanding=0,maxOutstanding=0,delayAck=false;
 let trendUnavailable=false,trendRun=null,trendBoot=null;
-const html=fs.readFileSync(path.join(root,'面包板样机_固件/diagnostics/sensor_web_recorder/src/index.html'),'utf8').replace('{{KEY}}',boot);
+const html=fs.readFileSync(path.join(root,'面包板样机_固件/diagnostics/sensor_web_recorder/src/index.html'),'utf8').replace('/*CONTROLLER_V2*/', ['sha256.js','controller_v2.js'].map(n=>fs.readFileSync(path.join(root,'面包板样机_固件/diagnostics/sensor_web_recorder/src',n),'utf8')).join('\n')+'\nv2Bootstrap();').replace('{{KEY}}',boot);
 const server=http.createServer(async(req,res)=>{
   res.setHeader('Cache-Control','no-store');
   if(req.url==='/'){res.setHeader('Content-Type','text/html; charset=utf-8');res.end(html);return;}
@@ -29,16 +29,18 @@ const server=http.createServer(async(req,res)=>{
     res.end(JSON.stringify({boot:trendBoot===null?s.boot:trendBoot,run,sample_rate:26667,window_samples:5333,
       points:run?Array.from({length:150},(_,i)=>[(i+1)*5333,12000+i*10,14000+i*8,16000+i*6,i===40?2:0]):[]}));return;
   }
+  if(req.url==='/api/v2/capabilities'){res.end('{"version":2}');return;}
+  if(req.url?.startsWith('/api/v2/session/')&&!['/api/v2/session/start','/api/v2/session/stop'].includes(req.url)){req.resume();res.end('{"accepted":true}');return;}
   if(req.method==='POST'){
     let body='';for await(const data of req)body+=data;
     posts.push({url:req.url,key:req.headers['x-record-key'],body});
     assert.equal(req.headers['x-record-key'],boot);
-    if(req.url==='/api/start'){
+    if(req.url==='/api/v2/session/start'){
       assert(!['queued','recording'].includes(s.phase));
       const r=JSON.parse(body);assert.equal(r.card_serial,s.card_serial);assert.equal(r.card_bytes,s.card_bytes);
-      assert.match(r.run,/^[0-9A-F]{8}$/);s={...s,run:r.run,seconds:r.seconds,phase:'queued'};
+      assert.match(r.run,/^[0-9A-F]{8}$/);s={...s,run:r.run,seconds:r.seconds,phase:'queued',owner:r.client};
     }
-    if(delayAck)await new Promise(r=>setTimeout(r,3000));
+    if(delayAck)await new Promise(r=>setTimeout(r,11000));
     res.setHeader('Content-Type','application/json');res.end('{"accepted":true}');return;
   }
   res.statusCode=404;res.end();
@@ -48,6 +50,7 @@ async function main(){
   const address='http://127.0.0.1:'+server.address().port;
   const browser=await chromium.launch({headless:true,channel:process.env.WEB_TEST_BROWSER||'msedge'});
   const context=await browser.newContext({viewport:{width:1360,height:1080}});
+  await context.routeWebSocket('**/api/v2/live?**',ws=>ws.onMessage(()=>{}));
   const page=await context.newPage();const errors=[];page.on('pageerror',e=>errors.push(e.message));
   let assertions=0;const check=async(label,fn)=>{await fn();assertions++;console.log('PASS: '+label);};
   try{
@@ -195,9 +198,9 @@ async function main(){
       assert.equal(await page.locator('#stop').isDisabled(),true);assert.equal(posts.length,1);assert.match(await page.locator('#errors').innerText(),/连接中断/);
       unavailable=false;await page.waitForFunction(()=>!document.getElementById('stop').disabled);assert.equal(posts.length,1);
     });
-    await check('stop is a separate empty request',async()=>{
-      await page.locator('#stop').click();await page.waitForFunction(()=>document.getElementById('message').textContent.includes('请求已接收'));
-      assert.equal(posts.length,2);assert.equal(posts[1].url,'/api/stop');assert.equal(posts[1].body,'');
+    await check('stop is a separate session-bound request',async()=>{
+      await page.locator('#stop').click();await page.waitForFunction(()=>document.getElementById('message').textContent.includes('已请求安全停止'));
+      assert.equal(posts.length,2);assert.equal(posts[1].url,'/api/v2/session/stop');assert.match(JSON.parse(posts[1].body).client,/^[0-9a-f]{32}$/);
     });
     await check('closing and verify are not presented as passed',async()=>{
       s.phase='verifying';await page.waitForFunction(()=>document.getElementById('phase').textContent==='完整回读校验');
@@ -214,7 +217,7 @@ async function main(){
     });
     await check('lost POST acknowledgement never auto-retries',async()=>{
       delayAck=true;await page.locator('#start').click();
-      await page.waitForFunction(()=>document.getElementById('message').textContent.includes('结果未确认'));
+      await page.waitForFunction(()=>document.getElementById('message').textContent.includes('不会自动重发'));
       assert.equal(posts.length,3);await new Promise(r=>setTimeout(r,500));assert.equal(posts.length,3);delayAck=false;
     });
     await check('failure locks new recording',async()=>{

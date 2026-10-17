@@ -22,6 +22,12 @@ EXPECTED_SDKCONFIG_DIFF = {name: {'before': name+'=y', 'after': None} for name i
     'CONFIG_ESP32_PHY_CALIBRATION_AND_DATA_STORAGE',
     'CONFIG_ESP_WIFI_STA_DISCONNECTED_PM_ENABLE')}
 EXPECTED_SDKCONFIG_DIFF.update({
+    'CONFIG_ESP_CONSOLE_SECONDARY_NONE': {'before':None,'after':'CONFIG_ESP_CONSOLE_SECONDARY_NONE=y'},
+    'CONFIG_ESP_CONSOLE_SECONDARY_USB_SERIAL_JTAG': {'before':'CONFIG_ESP_CONSOLE_SECONDARY_USB_SERIAL_JTAG=y','after':None},
+    'CONFIG_ESP_CONSOLE_USB_SERIAL_JTAG_ENABLED': {'before':'CONFIG_ESP_CONSOLE_USB_SERIAL_JTAG_ENABLED=y','after':None},
+    'CONFIG_HTTPD_MAX_URI_LEN': {'before':'CONFIG_HTTPD_MAX_URI_LEN=512','after':'CONFIG_HTTPD_MAX_URI_LEN=1024'},
+    'CONFIG_HTTPD_WS_SUPPORT': {'before':None,'after':'CONFIG_HTTPD_WS_SUPPORT=y'},
+    'CONFIG_LWIP_MAX_SOCKETS': {'before':'CONFIG_LWIP_MAX_SOCKETS=10','after':'CONFIG_LWIP_MAX_SOCKETS=12'},
     'CONFIG_ESP_SYSTEM_PANIC_PRINT_REBOOT': {'before':'CONFIG_ESP_SYSTEM_PANIC_PRINT_REBOOT=y','after':None},
     'CONFIG_ESP_SYSTEM_PANIC_GDBSTUB': {'before':None,'after':'CONFIG_ESP_SYSTEM_PANIC_GDBSTUB=y'},
     'CONFIG_ESP_SYSTEM_PANIC_REBOOT_DELAY_SECONDS': {'before':'CONFIG_ESP_SYSTEM_PANIC_REBOOT_DELAY_SECONDS=0','after':None},
@@ -89,6 +95,7 @@ def main():
     if sha(stage/'src/wifi_credentials.h') != input_record['PRIVATE_GENERATED/wifi_credentials.h']:
         raise SystemExit('Generated credentials bytes differ from the bound input hash')
     page = (SOURCE/'src/index.html').read_text(encoding='utf-8')
+    page = page.replace('/*CONTROLLER_V2*/', '\n'.join((SOURCE/'src'/name).read_text(encoding='utf-8') for name in ('sha256.js', 'controller_v2.js')) + '\nv2Bootstrap();')
     if ')I3PAGE"' in page or page.count('{{KEY}}') != 1:
         raise SystemExit('Invalid page delimiter/session placeholder')
     (stage/'src/web_asset.h').write_text('#pragma once\nstatic constexpr char webPage[] = R"I3PAGE(' + page + ')I3PAGE";\n', encoding='utf-8', newline='\n')
@@ -106,7 +113,8 @@ def main():
     stamp = datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=8))).strftime('%Y%m%d_%H%M%S_%f')
     output = ROOT/'local-data/build/sensor-web'/input_hash[:16]/stamp
     output.mkdir(parents=True, exist_ok=False)
-    command = [sys.executable, '-m', 'platformio', 'run', '--project-dir', str(stage), '--environment', ENVIRONMENT]
+    # Bound host compiler concurrency; this does not change target flags or firmware configuration.
+    command = [sys.executable, '-m', 'platformio', 'run', '--jobs', '2', '--project-dir', str(stage), '--environment', ENVIRONMENT]
     with (output/'build.log').open('x', encoding='utf-8') as log:
         process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
                                    text=True, encoding='utf-8', errors='replace')
