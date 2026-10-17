@@ -6,11 +6,11 @@ from operation_gate import require_approval
 import tf_write_batch as tf
 import sensor_recorder_batch as recorder
 from ui_live_trial import TrialSession
-SOURCE='e470e40057b3c2d4488b61275926bad88d2b8170'
-CANDIDATE='d91e26a2157e6ab9fe46f34bef3e81e01e3cbe655046579f737b142303752033'
+SOURCE='65bb1f80722193e92464ff3363de337784b24c13'
+CANDIDATE='71d54a1f1702ef75e7597db6da6d5c9661a53234bd24f52dd0b7584b2ff3faaf'
 OLD_SOURCE='eb4aba6340ba26093cd8f1849714b8f335bf4792'
 OLD_SHA='400192859ee7e4ac3723120397af1e804bec8c0baea5545bac07b46f8c65dc16'
-MANIFEST=ROOT/'local-data/build/sensor-web/7b8e69162f22b766/20261017_214409_349597/build_manifest.json'
+MANIFEST=ROOT/'local-data/build/sensor-web/0dd68d1806c0b923/20261017_215904_173955/build_manifest.json'
 BASE_SNAPSHOT=ROOT/'local-data/hardware/controller-v2/20261017_213827/controller_prefix.bin'
 BASE_SNAPSHOT_SHA='48e0da0f4a735707b6fe12daf46a0859fa9796d9f40a19c68bd9aafcbe6fa4b1'
 OLD=ROOT/'local-data/controller-v2/recovery-eb4aba6/firmware.bin'
