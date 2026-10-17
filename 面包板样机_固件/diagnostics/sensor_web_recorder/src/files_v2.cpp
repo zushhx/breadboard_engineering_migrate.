@@ -1,4 +1,5 @@
 #include "device_v2.h"
+#include "mutex_lock.h"
 #include "file_policy.h"
 #include "session_model.h"
 #include "recorder.h"
@@ -18,7 +19,7 @@ bool mountStorage();
 void writeGate(bool enabled);
 void updateSpace();
 static SemaphoreHandle_t mutex;
-struct Lock { Lock(){xSemaphoreTake(mutex,portMAX_DELAY);} ~Lock(){xSemaphoreGive(mutex);} };
+
 static bool queued=false,running=false;
 static std::string command,action,result="{\"idle\":true}";
 static int resultCode=200;
@@ -67,7 +68,7 @@ static bool copyFile(const std::string& from,const std::string& to) {
     if(cancel.load()||f_read(&work->file,work->block,sizeof(work->block),&count)!=FR_OK) {ok=false;break;}
     if(count) {
       if(f_write(&work->other,work->block,count,&written)!=FR_OK||written!=count) {ok=false;break;}
-      mbedtls_sha256_update(&hash,work->block,count); {Lock lock; progressBytes+=count;} vTaskDelay(1);
+      mbedtls_sha256_update(&hash,work->block,count); {MutexLock lock(mutex); progressBytes+=count;} vTaskDelay(1);
     }
   } while(count);
   if(f_sync(&work->other)!=FR_OK) ok=false;
@@ -134,13 +135,13 @@ static Reply execute(const char* drive,const std::string& op,cJSON* a) {
       const char* data=text(a,"data"); size_t n=0;
       if(strlen(data)>2800||mbedtls_base64_decode(work->block,sizeof(work->block),&n,(const uint8_t*)data,strlen(data))!=0||!n||transferOffset+n>transferSize) return error(400,"分块数据无效");
       UINT done=0; if(f_write(&work->file,work->block,n,&done)!=FR_OK||done!=n) return finishTransfer(false,"");
-      mbedtls_sha256_update(&transferHash,work->block,n); transferOffset+=n; {Lock lock; progressBytes=transferOffset;}
+      mbedtls_sha256_update(&transferHash,work->block,n); transferOffset+=n; {MutexLock lock(mutex); progressBytes=transferOffset;}
       Reply reply; reply.body="{\"offset\":"+std::to_string(transferOffset)+"}"; return reply;
     }
     if(writing) return error(409,"当前传输不是下载");
     UINT n=0; if(f_read(&work->file,work->block,sizeof(work->block),&n)!=FR_OK) return finishTransfer(false,"");
     if(n) mbedtls_sha256_update(&transferHash,work->block,n);
-    transferOffset+=n; {Lock lock; progressBytes=transferOffset;}
+    transferOffset+=n; {MutexLock lock(mutex); progressBytes=transferOffset;}
     char encoded[2800]={}; size_t length=0; mbedtls_base64_encode((uint8_t*)encoded,sizeof(encoded),&length,work->block,n);
     auto out=cJSON_CreateObject(); cJSON_AddStringToObject(out,"data",encoded); cJSON_AddBoolToObject(out,"done",n==0);
     cJSON_AddNumberToObject(out,"offset",transferOffset);
@@ -222,17 +223,17 @@ static Reply execute(const char* drive,const std::string& op,cJSON* a) {
 Reply filesRequest(const char* method,const char* op,cJSON* a) {
   if(!mutex) return error(503,"文件服务未初始化");
   if(!strcmp(op,"state")&&!strcmp(method,"GET")) {
-    Lock lock; auto out=cJSON_CreateObject(); cJSON_AddStringToObject(out,"job",job); cJSON_AddBoolToObject(out,"running",running||queued);
+    MutexLock lock(mutex); auto out=cJSON_CreateObject(); cJSON_AddStringToObject(out,"job",job); cJSON_AddBoolToObject(out,"running",running||queued);
     cJSON_AddNumberToObject(out,"bytes",progressBytes); cJSON_AddNumberToObject(out,"code",resultCode);
     cJSON_AddItemToObject(out,"result",cJSON_Parse(result.c_str())); Reply r; r.body=json(out); return r;
   }
   if(strcmp(method,"POST")) return error(405,"文件操作需POST");
   if(!strcmp(op,"cancel")) {
     cancel.store(true);
-    Lock lock;
+    MutexLock lock(mutex);
     if(running||queued) {Reply r; r.code=202; r.body="{\"accepted\":true}"; return r;}
   }
-  Lock lock;
+  MutexLock lock(mutex);
   if(running||queued) return error(409,"有文件任务正在执行");
   const char* id=text(a,"job");
   if(!control::Sessions::valid(id)) return error(400,"文件任务编号无效");
@@ -248,7 +249,7 @@ void initFiles() { static StaticSemaphore_t storage; mutex=xSemaphoreCreateMutex
 void pollStorage(const char* drive) {
   if(!mutex) return;
   std::string body,op;
-  {Lock lock;
+  {MutexLock lock(mutex);
     if(transferOpen&&!running&&!queued&&esp_timer_get_time()-transferSeen>60000000) {body="{}";op="cancel";running=true;}
     else if(queued) {body=command;op=action;queued=false;running=true;}
     else return;
@@ -261,6 +262,6 @@ void pollStorage(const char* drive) {
     auto args=cJSON_Parse(body.c_str()); reply=execute(drive,op,args); cJSON_Delete(args);
   }
   if(!transferOpen) {writeGate(false); updateSpace(); control::releaseFiles();}
-  {Lock lock; result=reply.body; resultCode=reply.code; running=false;}
+  {MutexLock lock(mutex); result=reply.body; resultCode=reply.code; running=false;}
 }
 }

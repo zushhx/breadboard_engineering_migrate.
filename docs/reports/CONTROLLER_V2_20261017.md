@@ -1,5 +1,9 @@
 # 主控控制台 v2 软件交付与实机门槛
 
+首轮实机补充：授权记录绑定f3fb1e0及703086a候选。20261017_213827两次读取0..0x121000均为SHA-256 48e0da0f4a735707b6fe12daf46a0859fa9796d9f40a19c68bd9aafcbe6fa4b1，NVS为4611905a70ef9f75c94876814c6bba172eaf54d74dc5f012a6d9079eded9622c。仅app0写入摘要成功，703086a启动身份和HTTP服务启动出现，但之后UART help未响应，门槛失败。未开始采集或TF文件操作，按授权恢复eb4aba6；身份/卡/参考文件摘要复查通过，NVS前后匹配，未重写NVS。旧版恢复不等于v2验收通过。
+
+最小定位：files_v2.cpp与network_v2.cpp在同一devicev2命名空间各自定义不同的Lock，违反C++单一定义规则。失败ELF只保留一份Lock析构，0x420094d4明确读取网络gate(0x3fcac8c0)；文件服务取得mutex(0x3fcac9fc)后也调用该析构，导致文件mutex未释放。保存反汇编于local-data/controller-v2/failed-candidate-disassembly.txt。修正版使用共享MutexLock显式保存实际句柄，并新增双锁嵌套回归；模型、双锁和23项实际文件服务宿主检查通过。修复尚未实机复测前不扩大结论。用户同时要求简短抽查，后续五分钟/完整断电验收缩减为未测试。
+
 2026-10-17。用户明确授权实施 USB 直连、主控 Wi-Fi/AP 配置、网址显示、关闭所属控制端停采、多页接管和网页 TF 文件管理，并明确桌面不增加 TF 页面。源码提交 703086ad916cef463196cb274388e7248fe57cb0，任务分支 codex/controller-usb-wifi-tf；独立托管工作树不修改原目录正在进行的多页 FIFO 修复。
 
 ## 改动与实际边界

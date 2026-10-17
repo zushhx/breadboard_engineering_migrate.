@@ -12,7 +12,7 @@ HEADERS={
 'esp_timer.h':'#include <cstdint>\nextern int64_t hostTime; inline int64_t esp_timer_get_time(){return hostTime;}\n',
 'esp_random.h':'#include <cstdint>\ninline uint32_t esp_random(){static uint32_t n=1;return n++;}\n',
 'freertos/FreeRTOS.h':'#pragma once\n#include <mutex>\n#include <cstdint>\nusing StaticSemaphore_t=std::mutex;using SemaphoreHandle_t=std::mutex*;\n#define portMAX_DELAY 0\ninline void vTaskDelay(int){}\n',
-'freertos/semphr.h':'#include "FreeRTOS.h"\ninline auto xSemaphoreCreateMutexStatic(StaticSemaphore_t* s){return s;}\ninline void xSemaphoreTake(SemaphoreHandle_t s,int){s->lock();}\ninline void xSemaphoreGive(SemaphoreHandle_t s){s->unlock();}\n',
+'freertos/semphr.h':'#pragma once\n#include "FreeRTOS.h"\ninline auto xSemaphoreCreateMutexStatic(StaticSemaphore_t* s){return s;}\ninline void xSemaphoreTake(SemaphoreHandle_t s,int){s->lock();}\ninline void xSemaphoreGive(SemaphoreHandle_t s){s->unlock();}\n',
 'mbedtls/sha256.h':"""#pragma once
 #include <openssl/sha.h>
 using mbedtls_sha256_context=SHA256_CTX;
@@ -48,6 +48,8 @@ def run():
         common=['g++','-std=c++17','-Wall','-Wextra','-Werror','-Wno-deprecated-declarations','-I'+str(SRC),'-I'+str(include)]
         subprocess.run(common+[str(ROOT/'tests/controller_v2_test.cpp'),'-o',str(out/'model')],check=True)
         subprocess.run([str(out/'model')],check=True)
+        subprocess.run(common+[str(ROOT/'tests/controller_mutex_test.cpp'),'-o',str(out/'mutex')],check=True)
+        subprocess.run([str(out/'mutex')],check=True)
         subprocess.run(common+[str(ROOT/'tests/controller_files_host.cpp'),str(SRC/'files_v2.cpp'),str(SRC/'device_v2.cpp'),'-lcrypto','-lcjson','-o',str(out/'files')],check=True)
         card=out/'temporary-card';card.mkdir()
         subprocess.run([str(out/'files'),str(card)],check=True)

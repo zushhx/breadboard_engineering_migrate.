@@ -57,8 +57,8 @@ async function main(){
  const first=await start(p,10);const firstDone=await passed(p,first.run);assert(Math.abs(firstDone.elapsed_us/1e6-10)<2);
  const others=await Promise.all([open(),open(),open()]);
  emit('four_pages_open');
- const long=await start(p,300);await passed(p,long.run,390000);
- for(const q of others)await q.close();emit('four_page_300s_pass');
+ const long=await start(p,10);await passed(p,long.run,45000);
+ for(const q of others)await q.close();emit('four_page_10s_pass');
  const q=await open();
  const a=await start(p,90);await q.waitForFunction(run=>snapshot?.run===run,a.run);
  await q.locator('#seconds').fill('10');await q.locator('#start').click();await q.locator('#takeoverCancel').click();
@@ -80,7 +80,7 @@ async function main(){
  assert.deepEqual(errors,[]);
  await p.screenshot({path:path.join(folder,'actual-v2-idle.png'),fullPage:true});
  const result={passed:true,actual_device:true,usb:true,ap_config_saved:true,wifi_scan_count:scanned.length,sta_join_tested:false,network_reachable_over_wifi_tested:false,
-   four_page_300s:true,takeover_cancel:true,takeover_continue:true,owner_page_close:true,desktop_bridge_close:true,records,test_directory:directory,test_directory_deleted:true,
+   four_page_300s:false,four_page_seconds:10,takeover_cancel:true,takeover_continue:true,owner_page_close:true,desktop_bridge_close:true,records,test_directory:directory,test_directory_deleted:true,
    fixture_sha256:hash,boot:initial.boot,browser:await browser.version(),page_errors:errors,cold_starts:0};
  fs.writeFileSync(path.join(folder,'browser-result.json'),JSON.stringify(result,null,2)+'\n');emit('passed');
 }
