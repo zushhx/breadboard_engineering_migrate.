@@ -1,4 +1,5 @@
 #include "device_v2.h"
+#include "mutex_lock.h"
 #include "wifi_credentials.h"
 #include "esp_wifi.h"
 #include "esp_event.h"
@@ -20,25 +21,25 @@ static int64_t applyAt=0,startAt=0;
 static char staIp[16]={},apIp[16]="192.168.4.1";
 static esp_netif_t* staNet;
 static esp_netif_t* apNet;
-struct Lock { Lock(){xSemaphoreTake(gate,portMAX_DELAY);} ~Lock(){xSemaphoreGive(gate);} };
+
 static void events(void*,esp_event_base_t base,int32_t id,void* data) {
   bool reconnect=false;
   if(base==WIFI_EVENT&&(id==WIFI_EVENT_STA_START||id==WIFI_EVENT_STA_DISCONNECTED)) {
-    {Lock lock; linked=false; staIp[0]=0; reconnect=config.sta&&config.ssid[0];}
+    {MutexLock lock(gate); linked=false; staIp[0]=0; reconnect=config.sta&&config.ssid[0];}
     control::networkAddress(false,"");
     if(reconnect) esp_wifi_connect();
   } else if(base==IP_EVENT&&id==IP_EVENT_STA_GOT_IP) {
     auto e=static_cast<ip_event_got_ip_t*>(data); char ip[16]; esp_ip4addr_ntoa(&e->ip_info.ip,ip,sizeof(ip));
-    {Lock lock; linked=true; subnetPending=true; snprintf(staIp,sizeof(staIp),"%s",ip);}
+    {MutexLock lock(gate); linked=true; subnetPending=true; snprintf(staIp,sizeof(staIp),"%s",ip);}
     control::networkAddress(true,ip);
   }
 }
 static bool apply() {
-  NetworkConfig copy; {Lock lock; copy=config; linked=false; staIp[0]=0;}
+  NetworkConfig copy; {MutexLock lock(gate); copy=config; linked=false; staIp[0]=0;}
   if(started) esp_wifi_stop();
   control::networkAddress(false,"");
   bool ap=copy.ap||recovery;
-  if(!copy.sta&&!ap) {Lock lock;started=false;applyOk=true; control::networkAddress(false,""); return true;}
+  if(!copy.sta&&!ap) {MutexLock lock(gate);started=false;applyOk=true; control::networkAddress(false,""); return true;}
   wifi_mode_t mode=ap?(copy.sta&&copy.ssid[0]?WIFI_MODE_APSTA:WIFI_MODE_AP):WIFI_MODE_STA;
   esp_err_t result=esp_wifi_set_mode(mode);
   if(result==ESP_OK&&copy.sta&&copy.ssid[0]) {
@@ -51,8 +52,8 @@ static bool apply() {
     result=esp_wifi_set_config(WIFI_IF_AP,&c);
   }
   if(result==ESP_OK) result=esp_wifi_start();
-  {Lock lock; started=result==ESP_OK; startAt=esp_timer_get_time();}
-  {Lock lock; applyOk=result==ESP_OK;}
+  {MutexLock lock(gate); started=result==ESP_OK; startAt=esp_timer_get_time();}
+  {MutexLock lock(gate); applyOk=result==ESP_OK;}
   return result==ESP_OK;
 }
 void startWifi() {
@@ -82,12 +83,12 @@ void startWifi() {
 }
 void pollWifi() {
   if(!gate||!initialized) return;
-  bool readdress=false;{Lock lock;readdress=subnetPending;subnetPending=false;}
+  bool readdress=false;{MutexLock lock(gate);readdress=subnetPending;subnetPending=false;}
   if(readdress) {
     esp_netif_ip_info_t station={},access={};
     if(esp_netif_get_ip_info(staNet,&station)==ESP_OK&&esp_netif_get_ip_info(apNet,&access)==ESP_OK&&
        (station.ip.addr&station.netmask.addr)==(access.ip.addr&station.netmask.addr)) {
-      if(!control::reserveFiles()) {Lock lock;subnetPending=true;}
+      if(!control::reserveFiles()) {MutexLock lock(gate);subnetPending=true;}
       else {
         // Select a private AP /24 outside the station's current network.
         const char* options[]={"192.168.4.1","192.168.50.1","172.31.240.1","10.77.0.1"};
@@ -96,7 +97,7 @@ void pollWifi() {
           if((station.ip.addr&station.netmask.addr)!=(access.ip.addr&station.netmask.addr)) {
             access.gw=access.ip;esp_netif_str_to_ip4("255.255.255.0",&access.netmask);
             esp_netif_dhcps_stop(apNet);
-            if(esp_netif_set_ip_info(apNet,&access)==ESP_OK) {Lock lock;snprintf(apIp,sizeof(apIp),"%s",candidate);}
+            if(esp_netif_set_ip_info(apNet,&access)==ESP_OK) {MutexLock lock(gate);snprintf(apIp,sizeof(apIp),"%s",candidate);}
             esp_netif_dhcps_start(apNet);break;
           }
         }
@@ -105,7 +106,7 @@ void pollWifi() {
     }
   }
   bool doApply=false;
-  {Lock lock;
+  {MutexLock lock(gate);
     if(change&&esp_timer_get_time()>=applyAt) {change=false; recovery=false; doApply=true;}
     else if(started&&config.sta&&config.ssid[0]&&!linked&&!config.ap&&!recovery&&esp_timer_get_time()-startAt>30000000&&!control::busyNow()) {
       if(control::reserveFiles()) {recovery=true; doApply=true;}
@@ -116,7 +117,7 @@ void pollWifi() {
 Reply wifiRequest(const char* method,const char* action,cJSON* a) {
   if(!gate||!initialized) return error(503,"网络管理未初始化，USB仍可使用");
   if(!strcmp(action,"state")&&!strcmp(method,"GET")) {
-    Lock lock; auto j=cJSON_CreateObject(); cJSON_AddBoolToObject(j,"connected",linked);
+    MutexLock lock(gate); auto j=cJSON_CreateObject(); cJSON_AddBoolToObject(j,"connected",linked);
     cJSON_AddBoolToObject(j,"sta_enabled",config.sta); cJSON_AddBoolToObject(j,"ap_enabled",config.ap||recovery);
     cJSON_AddBoolToObject(j,"running",started); cJSON_AddBoolToObject(j,"apply_ok",applyOk); cJSON_AddBoolToObject(j,"persistent_available",nvsOk); cJSON_AddBoolToObject(j,"applying",change);
     cJSON_AddStringToObject(j,"ssid",config.ssid); cJSON_AddStringToObject(j,"ap_ssid",config.apSsid);
@@ -142,7 +143,7 @@ Reply wifiRequest(const char* method,const char* action,cJSON* a) {
   }
   if(strcmp(action,"save")) return error(404,"网络操作不存在");
   if(!nvsOk) return error(503,"NVS不可用；未自动擦除，请保留现场");
-  NetworkConfig next; {Lock lock; if(change) return error(409,"网络配置正在应用"); next=config;}
+  NetworkConfig next; {MutexLock lock(gate); if(change) return error(409,"网络配置正在应用"); next=config;}
   const char* ssid=text(a,"ssid"),*password=text(a,"password"),*apSsid=text(a,"ap_ssid"),*apPass=text(a,"ap_password");
   auto sta=cJSON_GetObjectItem(a,"sta_enabled"),ap=cJSON_GetObjectItem(a,"ap_enabled");
   if(!cJSON_IsBool(sta)||!cJSON_IsBool(ap)||strlen(ssid)>32||strlen(password)>63||!strlen(apSsid)||strlen(apSsid)>32||strlen(apPass)<8||strlen(apPass)>63)
@@ -155,7 +156,7 @@ Reply wifiRequest(const char* method,const char* action,cJSON* a) {
   nvs_handle_t handle; esp_err_t saved=nvs_open("controller_v2",NVS_READWRITE,&handle);
   if(saved==ESP_OK) {saved=nvs_set_blob(handle,"network",&next,sizeof(next)); if(saved==ESP_OK) saved=nvs_commit(handle); nvs_close(handle);}
   if(saved!=ESP_OK) {control::releaseFiles(); return error(500,"配置保存失败，未切换网络");}
-  {Lock lock; config=next; change=true; applyAt=esp_timer_get_time()+500000;}
+  {MutexLock lock(gate); config=next; change=true; applyAt=esp_timer_get_time()+500000;}
   Reply r; r.code=202; r.body="{\"accepted\":true}"; return r;
 }
 }

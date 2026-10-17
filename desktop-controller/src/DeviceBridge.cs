@@ -74,17 +74,67 @@ namespace BreadboardController
             return length<=4096&&frame.Length==16+length&&Get32(frame,12)==~Crc(frame,16,length,Crc(frame,4,8,0xffffffff));
         }
     }
+    // Native CDC transport: preserve the driver's DTR/RTS state. SerialPort.Open
+    // reconfigures these lines and was measured to cause USB_UART_CHIP_RESET.
+    public sealed class UsbWire : IDisposable
+    {
+        [System.Runtime.InteropServices.StructLayout(System.Runtime.InteropServices.LayoutKind.Sequential)]
+        private struct Timeouts { public uint Interval,Multiplier,Constant,WriteMultiplier,WriteConstant; }
+        [System.Runtime.InteropServices.DllImport("kernel32.dll",CharSet=System.Runtime.InteropServices.CharSet.Unicode,SetLastError=true)]
+        private static extern Microsoft.Win32.SafeHandles.SafeFileHandle CreateFile(string name,uint access,uint share,IntPtr security,uint creation,uint flags,IntPtr template);
+        [System.Runtime.InteropServices.DllImport("kernel32.dll",SetLastError=true)]
+        private static extern bool SetCommTimeouts(Microsoft.Win32.SafeHandles.SafeFileHandle handle,ref Timeouts timeouts);
+        [System.Runtime.InteropServices.DllImport("kernel32.dll",SetLastError=true)]
+        private static extern bool ReadFile(Microsoft.Win32.SafeHandles.SafeFileHandle handle,byte[] buffer,int count,out int read,IntPtr overlapped);
+        [System.Runtime.InteropServices.DllImport("kernel32.dll",SetLastError=true)]
+        private static extern bool WriteFile(Microsoft.Win32.SafeHandles.SafeFileHandle handle,byte[] buffer,int count,out int written,IntPtr overlapped);
+        private readonly Microsoft.Win32.SafeHandles.SafeFileHandle handle;
+        public readonly string PortName;
+        private int readTimeout;
+        public int ReadTimeout {
+            get { return readTimeout; }
+            set {
+                var timeout=new Timeouts {Interval=UInt32.MaxValue,Constant=(uint)value,WriteConstant=2500};
+                if(!SetCommTimeouts(handle,ref timeout))throw new System.ComponentModel.Win32Exception(System.Runtime.InteropServices.Marshal.GetLastWin32Error());
+                readTimeout=value;
+            }
+        }
+        public UsbWire(string name)
+        {
+            PortName=name;
+            handle=CreateFile(new string((char)92,2)+"."+(char)92+name,0xc0000000,0,IntPtr.Zero,3,0,IntPtr.Zero);
+            if(handle.IsInvalid)throw new System.ComponentModel.Win32Exception(System.Runtime.InteropServices.Marshal.GetLastWin32Error());
+            try {ReadTimeout=2500;}catch {handle.Dispose();throw;}
+        }
+        public int Read(byte[] data,int offset,int length)
+        {
+            byte[] buffer=new byte[length];int count;
+            if(!ReadFile(handle,buffer,length,out count,IntPtr.Zero))throw new System.ComponentModel.Win32Exception(System.Runtime.InteropServices.Marshal.GetLastWin32Error());
+            if(count==0)throw new TimeoutException("USB响应超时");
+            Buffer.BlockCopy(buffer,0,data,offset,count);return count;
+        }
+        public int ReadByte(){byte[] one=new byte[1];Read(one,0,1);return one[0];}
+        public void Write(byte[] data,int offset,int length)
+        {
+            while(length>0) {
+                byte[] buffer=new byte[length];Buffer.BlockCopy(data,offset,buffer,0,length);int count;
+                if(!WriteFile(handle,buffer,length,out count,IntPtr.Zero))throw new System.ComponentModel.Win32Exception(System.Runtime.InteropServices.Marshal.GetLastWin32Error());
+                if(count==0)throw new TimeoutException("USB写入超时");
+                offset+=count;length-=count;
+            }
+        }
+        public void Dispose(){handle.Dispose();}
+    }
     public sealed class UsbBackend : IDeviceBackend
     {
-        private readonly SerialPort port;
+        private readonly UsbWire port;
         private readonly object wire=new object();
         private uint sequence;
         public string Description {get{return "USB "+port.PortName;}}
         public UsbBackend(string name)
         {
             if(!System.Text.RegularExpressions.Regex.IsMatch(name,@"\ACOM[1-9][0-9]*\z"))throw new ArgumentException("请选择原生USB串口");
-            port=new SerialPort(name,115200,Parity.None,8,StopBits.One) {DtrEnable=false,RtsEnable=false,Handshake=Handshake.None,ReadTimeout=2500,WriteTimeout=2500};
-            port.Open(); // No reset, DTR/RTS toggle, bootloader command, or flashing.
+            port=new UsbWire(name); // No SetCommState or DTR/RTS IOCTLs.
         }
         public static string[] Ports()
         {
@@ -110,7 +160,7 @@ namespace BreadboardController
             byte[] header=new byte[16];int used=0;var deadline=Stopwatch.StartNew();
             for(;;)
             {
-                if(deadline.ElapsedMilliseconds>5000)throw new TimeoutException("USB帧未能同步，请重新连接USB");
+                if(deadline.ElapsedMilliseconds>Math.Max(5000,port.ReadTimeout))throw new TimeoutException("USB帧未能同步，请重新连接USB");
                 int n=port.ReadByte();if(n<0)throw new EndOfStreamException();
                 header[used++]=(byte)n;
                 if(used<4)continue;
@@ -129,6 +179,7 @@ namespace BreadboardController
             lock(wire)
             {
                 var data=new Dictionary<string,object>{{"method",method},{"path",path},{"body",body??""},{"key",key??""}};
+                port.ReadTimeout=path=="/api/v2/network/scan"?12000:2500;
                 byte[] outgoing=UsbFrames.Encode(1,++sequence,Encoding.UTF8.GetBytes(new JavaScriptSerializer().Serialize(data)));
                 port.Write(outgoing,0,outgoing.Length);
                 BridgeResponse response=null;long expected=-1;

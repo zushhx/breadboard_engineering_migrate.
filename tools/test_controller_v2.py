@@ -12,7 +12,7 @@ HEADERS={
 'esp_timer.h':'#include <cstdint>\nextern int64_t hostTime; inline int64_t esp_timer_get_time(){return hostTime;}\n',
 'esp_random.h':'#include <cstdint>\ninline uint32_t esp_random(){static uint32_t n=1;return n++;}\n',
 'freertos/FreeRTOS.h':'#pragma once\n#include <mutex>\n#include <cstdint>\nusing StaticSemaphore_t=std::mutex;using SemaphoreHandle_t=std::mutex*;\n#define portMAX_DELAY 0\ninline void vTaskDelay(int){}\n',
-'freertos/semphr.h':'#include "FreeRTOS.h"\ninline auto xSemaphoreCreateMutexStatic(StaticSemaphore_t* s){return s;}\ninline void xSemaphoreTake(SemaphoreHandle_t s,int){s->lock();}\ninline void xSemaphoreGive(SemaphoreHandle_t s){s->unlock();}\n',
+'freertos/semphr.h':'#pragma once\n#include "FreeRTOS.h"\ninline auto xSemaphoreCreateMutexStatic(StaticSemaphore_t* s){return s;}\ninline void xSemaphoreTake(SemaphoreHandle_t s,int){s->lock();}\ninline void xSemaphoreGive(SemaphoreHandle_t s){s->unlock();}\n',
 'mbedtls/sha256.h':"""#pragma once
 #include <openssl/sha.h>
 using mbedtls_sha256_context=SHA256_CTX;
@@ -40,6 +40,9 @@ int f_stat(const char*,FILINFO*);int f_opendir(FF_DIR*,const char*);int f_readdi
 int f_mkdir(const char*);int f_unlink(const char*);int f_rename(const char*,const char*);uint64_t f_size(FIL*);int f_getfree(const char*,DWORD*,FATFS**);
 """
 }
+HEADERS['freertos/task.h']='#pragma once\n#include "FreeRTOS.h"\n#define pdMS_TO_TICKS(x) (x)\n#define pdPASS 1\ninline int xTaskCreatePinnedToCore(void (*)(void*),const char*,int,void*,int,void*,int){return 1;}\n'
+HEADERS['driver/usb_serial_jtag.h']='#pragma once\n#include <cstddef>\n#define ESP_OK 0\nstruct usb_serial_jtag_driver_config_t{size_t rx_buffer_size,tx_buffer_size;};\nint usb_serial_jtag_write_bytes(const void*,size_t,int);int usb_serial_jtag_read_bytes(void*,size_t,int);int usb_serial_jtag_driver_install(const usb_serial_jtag_driver_config_t*);int usb_serial_jtag_driver_uninstall();\n'
+HEADERS['web_asset.h']='#pragma once\nstatic constexpr char webPage[]="'+('a'*3000)+'{{KEY}}'+('b'*2500)+'";\n'
 def run():
     with tempfile.TemporaryDirectory(prefix='controller-v2-host-') as folder:
         out=Path(folder);include=out/'include'
@@ -48,7 +51,11 @@ def run():
         common=['g++','-std=c++17','-Wall','-Wextra','-Werror','-Wno-deprecated-declarations','-I'+str(SRC),'-I'+str(include)]
         subprocess.run(common+[str(ROOT/'tests/controller_v2_test.cpp'),'-o',str(out/'model')],check=True)
         subprocess.run([str(out/'model')],check=True)
+        subprocess.run(common+[str(ROOT/'tests/controller_mutex_test.cpp'),'-o',str(out/'mutex')],check=True)
+        subprocess.run([str(out/'mutex')],check=True)
         subprocess.run(common+[str(ROOT/'tests/controller_files_host.cpp'),str(SRC/'files_v2.cpp'),str(SRC/'device_v2.cpp'),'-lcrypto','-lcjson','-o',str(out/'files')],check=True)
+        subprocess.run(common+[str(ROOT/'tests/controller_usb_host.cpp'),str(SRC/'device_v2.cpp'),'-lcjson','-o',str(out/'usb')],check=True)
+        subprocess.run([str(out/'usb')],check=True)
         card=out/'temporary-card';card.mkdir()
         subprocess.run([str(out/'files'),str(card)],check=True)
 if __name__=='__main__':run()
