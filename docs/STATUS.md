@@ -14,6 +14,8 @@ TF测试仅新建/V2_TEST_AF8CC1BF及本轮采集目录：5001字节中文文件
 
 按用户缩减要求，五分钟、Wi-Fi多页负载、纯失联10秒实机注入及完整断电验收未做；10秒失联状态机仅模型验证。共享转接关闭实测复用桌面相同Dispose路径，未增加一轮完整WPF采集/退出GUI联测。不能把USB四页短测扩为历史Wi-Fi并发FIFO问题已经解决。main/正式发布仍未授权。
 
+修复[PR #19](https://github.com/zushhx/breadboard_engineering_migrate./pull/19)已按故障快捷流程合回当前任务分支，合并fb8b8f2a28a2ca7e0b9ab5aa112f7844c046afb7；当时GitHub files-and-guards通过，其他自动固件构建仍运行，本地相关构建和短测通过。已退出故障快捷流程。[主任务PR #18](https://github.com/zushhx/breadboard_engineering_migrate./pull/18)保留草稿，未合旧桌面任务分支或main。
+
 ## 上一版 Windows 桌面主控控制台已交付
 
 2026-10-17，按用户确认及后续“直接打开之前检测页面”的调整，已在桌面建立“主控控制台”快捷方式及便携程序。源码 2672ebd371c3e803a8da13963138d694a019188b，独立任务分支 codex/desktop-controller；直接打开原检测页，另有地址保存、按需只读检查、受限局域网查找、Windows Wi-Fi/移动热点设置入口及连接日志。采集控制/曲线/INA/TF/故障全部复用原网页，不增加后台轮询。
