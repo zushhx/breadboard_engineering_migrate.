@@ -14,7 +14,7 @@ MANIFEST=ROOT/'local-data/build/sensor-web/7b8e69162f22b766/20261017_214409_3495
 BASE_SNAPSHOT=ROOT/'local-data/hardware/controller-v2/20261017_213827/controller_prefix.bin'
 BASE_SNAPSHOT_SHA='48e0da0f4a735707b6fe12daf46a0859fa9796d9f40a19c68bd9aafcbe6fa4b1'
 OLD=ROOT/'local-data/controller-v2/recovery-eb4aba6/firmware.bin'
-HOST=ROOT/'local-data/controller-v2/DeviceHost.exe'
+HOST=ROOT/'local-data/controller-v2/native-wire-fixed/DeviceHost.exe'
 NODE=Path.home()/'.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node.exe'
 MODULES=NODE.parent.parent/'node_modules'
 SCOPE=dict(app0_only=True,backup_nvs=True,backup_end=0x121000,preserve_old_files=True,new_test_directory_only=True,
@@ -49,6 +49,27 @@ def close_host(host):
         host.stdin.write('exit\n');host.stdin.flush()
         try:host.wait(timeout=10)
         except subprocess.TimeoutExpired:host.terminate();host.wait(timeout=5)
+def probe_usb(path):
+    validate(path)
+    from serial.tools import list_ports
+    ports=[p.device for p in list_ports.comports() if p.vid==0x303a and p.pid==0x1001]
+    if len(ports)!=1:raise RuntimeError('Expected unique native USB')
+    folder=ROOT/'local-data/hardware/controller-v2'/('usb-open-'+datetime.datetime.now().strftime('%Y%m%d_%H%M%S'))
+    session=TrialSession(folder)
+    try:
+        with session.serial() as port:
+            session.collect(port,1);before=session.query(port,'help',1)
+            if OLD_SOURCE not in before:raise RuntimeError('Probe requires restored old controller')
+            process=subprocess.run([str(HOST),'--approved-usb-open',ports[0]],capture_output=True,text=True,env=dict(os.environ,BREADBOARD_V2_APPROVAL=str(path.resolve())),timeout=10)
+            session.emit(process.stdout);session.emit(process.stderr)
+            if process.returncode:raise RuntimeError('Native open probe failed')
+            output=session.collect(port,3)
+            if 'rst:' in output or 'ESP-ROM:' in output:raise RuntimeError('USB open/close still resets controller')
+            after=session.query(port,'help',1)
+            if OLD_SOURCE not in after:raise RuntimeError('Controller not responsive after USB open')
+        (folder/'result.json').write_text(json.dumps(dict(passed=True,open_close_without_reset=True,source=OLD_SOURCE)),encoding='utf-8')
+        session.emit('USB_OPEN_CLOSE_NO_RESET_PASS')
+    finally:session.log.close()
 def run(path):
     candidate,approval=validate(path)
     stamp=datetime.datetime.now().strftime('%Y%m%d_%H%M%S')
@@ -127,10 +148,11 @@ def run(path):
         session.emit('RESULT='+str(session.folder/'result.json'));session.log.close()
 def main():
     sys.stdout.reconfigure(encoding='utf-8',errors='replace');sys.stderr.reconfigure(encoding='utf-8',errors='replace')
-    parser=argparse.ArgumentParser(description=__doc__);parser.add_argument('--prepare-only',action='store_true');parser.add_argument('--approval-record',type=Path);args=parser.parse_args()
+    parser=argparse.ArgumentParser(description=__doc__);parser.add_argument('--prepare-only',action='store_true');parser.add_argument('--probe-usb-only',action='store_true');parser.add_argument('--approval-record',type=Path);args=parser.parse_args()
     if args.prepare_only:
         candidate,files=inputs();print(json.dumps(dict(hardware_accessed=False,scope=SCOPE,files={p.relative_to(ROOT).as_posix() if p.is_relative_to(ROOT) else p.as_posix():sha(p) for p in files}),indent=2))
     else:
         if args.approval_record is None:raise RuntimeError('Explicit approval required before device discovery')
-        run(args.approval_record)
+        if args.probe_usb_only:probe_usb(args.approval_record)
+        else:run(args.approval_record)
 if __name__=='__main__':main()

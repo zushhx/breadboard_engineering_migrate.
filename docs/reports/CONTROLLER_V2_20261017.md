@@ -1,5 +1,7 @@
 # 主控控制台 v2 软件交付与实机门槛
 
+第二轮短测20261017_214856：e470e40/d91e26a2157e6ab9fe46f34bef3e81e01e3cbe655046579f737b142303752033锁修复后UART身份/卡/目录响应恢复。打开.NET SerialPort原生USB端口时出现明确rst:0x15 (USB_UART_CHIP_RESET)，测试立即中止，未采集/TF写入，已恢复eb4aba6并核验旧文件。电脑端改为Win32 CreateFile/ReadFile/WriteFile，仅设通信超时，保持驱动DTR/RTS状态，不调用SetCommState或控制线IOCTL；实际无复位效果需探针验证。参考[Windows串口配置](https://learn.microsoft.com/en-us/windows/win32/devio/modification-of-communications-resource-settings)与[ESP32-S3 USB控制器](https://docs.espressif.com/projects/esp-idf/en/v5.4.2/esp32s3/api-guides/usb-serial-jtag-console.html)。USB扫描请求单独允许更长读取超时，不自动重试命令。
+
 首轮实机补充：授权记录绑定f3fb1e0及703086a候选。20261017_213827两次读取0..0x121000均为SHA-256 48e0da0f4a735707b6fe12daf46a0859fa9796d9f40a19c68bd9aafcbe6fa4b1，NVS为4611905a70ef9f75c94876814c6bba172eaf54d74dc5f012a6d9079eded9622c。仅app0写入摘要成功，703086a启动身份和HTTP服务启动出现，但之后UART help未响应，门槛失败。未开始采集或TF文件操作，按授权恢复eb4aba6；身份/卡/参考文件摘要复查通过，NVS前后匹配，未重写NVS。旧版恢复不等于v2验收通过。
 
 最小定位：files_v2.cpp与network_v2.cpp在同一devicev2命名空间各自定义不同的Lock，违反C++单一定义规则。失败ELF只保留一份Lock析构，0x420094d4明确读取网络gate(0x3fcac8c0)；文件服务取得mutex(0x3fcac9fc)后也调用该析构，导致文件mutex未释放。保存反汇编于local-data/controller-v2/failed-candidate-disassembly.txt。修正版使用共享MutexLock显式保存实际句柄，并新增双锁嵌套回归；模型、双锁和23项实际文件服务宿主检查通过。修复尚未实机复测前不扩大结论。用户同时要求简短抽查，后续五分钟/完整断电验收缩减为未测试。
