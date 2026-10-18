@@ -148,10 +148,13 @@ Reply wifiRequest(const char* method,const char* action,cJSON* a) {
   auto sta=cJSON_GetObjectItem(a,"sta_enabled"),ap=cJSON_GetObjectItem(a,"ap_enabled");
   if(!cJSON_IsBool(sta)||!cJSON_IsBool(ap)||strlen(ssid)>32||strlen(password)>63||!strlen(apSsid)||strlen(apSsid)>32||strlen(apPass)<8||strlen(apPass)>63)
     return error(400,"检查网络名称、密码长度和开关");
-  if(password[0]==0&&!strcmp(ssid,next.ssid)) password=next.password;
-  if(cJSON_IsTrue(sta)&&(!ssid[0]||strlen(password)<8)) return error(400,"Wi-Fi名称不能为空，密码需8至63字节");
+  const bool keepPassword=password[0]==0&&!strcmp(ssid,next.ssid);
+  const char* effectivePassword=keepPassword?next.password:password;
+  if(cJSON_IsTrue(sta)&&(!ssid[0]||strlen(effectivePassword)<8)) return error(400,"Wi-Fi名称不能为空，密码需8至63字节");
   if(!control::reserveFiles()) return error(409,"采集或文件任务中不能修改网络");
-  next.sta=cJSON_IsTrue(sta); next.ap=cJSON_IsTrue(ap); snprintf(next.ssid,sizeof(next.ssid),"%s",ssid); snprintf(next.password,sizeof(next.password),"%s",password);
+  next.sta=cJSON_IsTrue(sta); next.ap=cJSON_IsTrue(ap); snprintf(next.ssid,sizeof(next.ssid),"%s",ssid);
+  // next already owns the previous password; copying it onto itself is undefined.
+  if(!keepPassword) snprintf(next.password,sizeof(next.password),"%s",password);
   snprintf(next.apSsid,sizeof(next.apSsid),"%s",apSsid); snprintf(next.apPassword,sizeof(next.apPassword),"%s",apPass);
   nvs_handle_t handle; esp_err_t saved=nvs_open("controller_v2",NVS_READWRITE,&handle);
   if(saved==ESP_OK) {saved=nvs_set_blob(handle,"network",&next,sizeof(next)); if(saved==ESP_OK) saved=nvs_commit(handle); nvs_close(handle);}
