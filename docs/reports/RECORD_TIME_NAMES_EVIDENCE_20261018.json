@@ -7,7 +7,8 @@
     "bytes": 1121952,
     "sha256": "86a1c917f1267005d4de103fffdfb0162ad93691f7f37d4cb9be286a66407789",
     "build_passed": true,
-    "hardware_tested": false
+    "hardware_tested": true,
+    "hardware_scope": "two 3-second recordings; naming, same-minute suffix, complete device/PC readback and structural integrity"
   },
   "compared_with_previous_65bb1f8": {
     "sdkconfig_generated_sha256_equal": true,
@@ -26,10 +27,46 @@
     "final_diff_review": "self review",
     "independent_source_review": "not obtained; Code Review could not connect to GitHub"
   },
-  "device_connected": false,
-  "device_reset": false,
-  "flashed": false,
-  "tf_written": false,
-  "hardware_and_power_cycle_acceptance": "not tested; candidate-specific flash authorization required",
+  "device_connected": true,
+  "device_reset": true,
+  "flashed": true,
+  "flash_scope": "app0 at 0x10000 only",
+  "tf_written": true,
+  "network_changed": false,
+  "tf_deleted_or_old_files_renamed": false,
+  "operation_commit": "6be7acd07ce91568f5136c7a550088675ae3d4e6",
+  "hardware_evidence_local": "local-data/hardware/record-time-names/20261018_161419/result.json",
+  "backup": {
+    "bytes": 1187840,
+    "sha256": "b87e56da6281e2fddc8bb30375a80b7adc5d9a29226d9f4e8863740374dabfee",
+    "nvs_sha256": "e9ff413f7e443f44c899bb3ff55aa0ab3541ef03bde179319e83d39bbfcc312d",
+    "verified_against_current_chip_before_write": true,
+    "this_snapshot_restore_exercised": false
+  },
+  "records": [
+    {
+      "run": "B79E462C",
+      "name": "26-10-18-16.15.BIN",
+      "samples": 79997,
+      "elapsed_us": 3004806,
+      "bytes": 571143,
+      "sha256": "4083359f8775033d2fcdf3c9a658495e0686eb291c5f86cc04b1a07020a63808",
+      "errors": 0
+    },
+    {
+      "run": "9C982A5F",
+      "name": "26-10-18-16.15-02.BIN",
+      "samples": 80002,
+      "elapsed_us": 3004782,
+      "bytes": 571178,
+      "sha256": "a72a3f41c9af80d04214014a37da52e98e080504e94f192967d3b23cf347399a",
+      "errors": 0
+    }
+  ],
+  "device_and_pc_hashes_match": true,
+  "pc_record_structure_crc_footer_passed": true,
+  "old_reference_hashes_unchanged": true,
+  "cold_starts": 0,
+  "hardware_and_power_cycle_acceptance": "authorized short trial passed; true cold power cycles, long duration and accuracy not tested",
   "pull_request": "https://github.com/zushhx/breadboard_engineering_migrate./pull/21"
 }

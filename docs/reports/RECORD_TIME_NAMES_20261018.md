@@ -1,6 +1,6 @@
-# 振动记录时间命名候选
+# 振动记录时间命名交付与实机短测
 
-2026-10-18，用户确认[具体方案](../plans/RECORD_TIME_NAMES_20261018.md)。当前部署状态只在[STATUS](../STATUS.md)维护。本轮仅准备候选，未连接设备、复位、烧录或写卡。
+2026-10-18，用户确认[具体方案](../plans/RECORD_TIME_NAMES_20261018.md)，候选准备后又对绑定版本及两次3秒短测明确回复“授权”。当前部署状态只在[STATUS](../STATUS.md)维护。下文软件检查为刷前记录，后续实机结果单列。
 
 ## 行为与影响
 
@@ -26,10 +26,25 @@ run编号仍用于会话、接管及趋势身份；I3REC001布局、Header/Foote
 
 project_check checkout模式和提交hook通过，原始冻结输入、默认上传guard未改。最终diff自行审查了路径分配/无覆盖、短临界区、时间传播、状态JSON边界、共享采样和下载调用。Code Review诊断工具对本PR返回“Can't connect to GitHub. Try again.”，无独立源码审查通过结论。[PR #21](https://github.com/zushhx/breadboard_engineering_migrate./pull/21)保留草稿，未合main或其他稳定分支。
 
-实机时间命名、同分钟两份、主控真实回读、复位及两次真断电均未测；不能以软件检查或构建代替验收。后续具体试烧需绑定上述候选与确认范围。
+上述软件检查当时未覆盖实机；后续按具体授权执行下列短测。两次真断电、长时和精度仍未测。
+
+## 授权试烧与实机结果
+
+操作提交6be7acd07ce91568f5136c7a550088675ae3d4e6，入口record_time_names_trial.py及record_time_names_live.cjs，语法/prepare-only检查和最终diff自行复核后执行。忽略目录中的操作记录绑定用户本轮“授权”、候选/恢复固件、工具与宿主哈希、主控MAC及两次3秒范围；先确认空闲、ready、errors0、卡身份及旧源码65bb1f8，未打断用户采集。
+
+备份读取当前0..0x122000共1187840字节，检查旧应用、启动与分区匹配后再对芯片verify_flash通过。仅向0x10000 app0写入候选，esptool Hash of data verified，启动source/input/MAC和旧参考文件通过。SDK参数不变；没有执行网络变更、格式化、修复、删除或旧文件改名。以下文件保留在TF及本地证据中：
+
+| 实际文件 | run | 样本 / 时长 | 完整下载字节 | SHA-256 |
+|---|---|---|---|---|
+| `/26-10-18-16.15/26-10-18-16.15.BIN` | B79E462C | 79997 / 3.004806秒 | 571143 | 4083359f8775033d2fcdf3c9a658495e0686eb291c5f86cc04b1a07020a63808 |
+| `/26-10-18-16.15-02/26-10-18-16.15-02.BIN` | 9C982A5F | 80002 / 3.004782秒 | 571178 | a72a3f41c9af80d04214014a37da52e98e080504e94f192967d3b23cf347399a |
+
+两份errors0、FIFO高水位136/134、队列3/40；设备同步/关闭/完整回读SHA、电脑完整下载SHA及parse_sensor_record结构/逐块CRC/尾部总数/功能采样率校验通过，精度未验收。文件名均来自真实本地分钟，第二份-02，下载Content-Disposition保留名称，采集中未发生boot变化。原TF参考文件前后两次摘要一致，未因试验删除新记录。测试已经结束，不自动开始下一轮。
+
+原始证据`local-data/hardware/record-time-names/20261018_161419/`包含result.json、browser-result.json、browser-events.json、hardware.log、browser-console.log、两个完整BIN及结构摘要、backup.json和本轮NVS备份。原始flash/NVS和振动数据不提交普通代码仓库。没有真断电或长时测试；短测通过不代替这些验收。
 
 ## 恢复位置
 
 当前可用65bb1f80722193e92464ff3363de337784b24c13固件SHA-256 `71d54a1f1702ef75e7597db6da6d5c9661a53234bd24f52dd0b7584b2ff3faaf`已重新核对宿主产物，未覆盖。产物清单在`local-data/build/sensor-web/0dd68d1806c0b923/20261017_215904_173955/build_manifest.json`。原app/NVS前缀备份在`local-data/hardware/controller-v2/20261017_213827/controller_prefix.bin`，SHA-256 `48e0da0f4a735707b6fe12daf46a0859fa9796d9f40a19c68bd9aafcbe6fa4b1`；后续刷入前需保存当时最新app和NVS，不能用旧NVS覆盖用户此后改过的配网。
 
-若后续授权试烧，拟仅写app0、做两份3秒新记录并完整回读，保留旧TF文件和新证据目录，异常恢复65bb1f8及该轮适用备份。未取得该候选试烧授权前不执行这些步骤。桌面0.3.0无需替换，源码可按提交回退，时间名数据不依赖候选固件才能由TF文件管理读出。
+本轮最新前缀备份在`local-data/hardware/record-time-names/20261018_161419/controller_prefix.bin`，SHA-256 `b87e56da6281e2fddc8bb30375a80b7adc5d9a29226d9f4e8863740374dabfee`；NVS在同目录nvs-before.bin，SHA-256 `e9ff413f7e443f44c899bb3ff55aa0ab3541ef03bde179319e83d39bbfcc312d`。试验成功未执行恢复；该具体前缀回写恢复未实测，不能称已验证恢复完成。异常策略为恢复65bb1f8应用区，NVS不符时才恢复本轮NVS，保留所有TF记录。桌面0.3.0无需替换，源码可按提交回退，时间名数据可由原TF文件管理读出。
