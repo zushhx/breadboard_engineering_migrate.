@@ -1,0 +1,152 @@
+{
+  "date": "2026-10-18",
+  "phase": "candidate_preparation_not_release_acceptance",
+  "base_commit": "8f4c48dd30c78f90b22c97a5102a9888f9d973f5",
+  "network_fix_commit": "3a365412d55320f1508b3e24e8d19c8d3582bdeb",
+  "candidate": {
+    "source_commit": "4e6d5333c57942a88138d99582521159f3dbd6b3",
+    "bytes": 1122032,
+    "sha256": "38ef1b535084a7a290d8ea5bf40ae4aeb501ce07905e38db502fc7fce61c18f7",
+    "input_sha256": "ad674614d532d30c9aedcb9e31a48bca333d42c4979122db95f04f2ed170b392",
+    "build_manifest_local": "local-data/build/sensor-web/ad674614d532d30c/20261018_170441_450132/build_manifest.json",
+    "build_passed": true,
+    "hardware_tested": false,
+    "credentials_present": false,
+    "sdk_config_equal_to_6ec57c3": true,
+    "partition_equal": true,
+    "generated_credentials_header_equal": true,
+    "fifo_priority": 8
+  },
+  "desktop_candidate": {
+    "source_commit": "3a365412d55320f1508b3e24e8d19c8d3582bdeb",
+    "version": "0.3.0",
+    "bytes": 147968,
+    "sha256": "76dd364fe9ed3d5557c81637eae469b3dfd6b1d46daee5bbf081a5c1e3699db6",
+    "installed": false,
+    "hardware_tested": false
+  },
+  "software": {
+    "python_cases": 54,
+    "production_network_assertions": 28,
+    "file_router_assertions": 23,
+    "desktop_core_checks": 79,
+    "wpf_smoke_checks": 19,
+    "wpf_screenshots": 9,
+    "v2_browser_checks": 28,
+    "original_browser_checks": 25,
+    "additional_trial_guard_cases": 2,
+    "old_network_password_case": "failed as expected",
+    "fixed_network_password_case": "passed"
+  },
+  "hardware_preflight": {
+    "source": "6ec57c38b1c73159ac987a34541ae0e5da681eab",
+    "result_local": "local-data/hardware/release-v010/preflight-20261018_165955/result.json",
+    "result_sha256": "fd2547473b22f992c5f8e3a7a5859d204167a5e482bb206d70aaf9f4f72614b0",
+    "passed": true,
+    "boot_unchanged": true,
+    "reset_requested": false,
+    "firmware_written": false,
+    "network_changed": false,
+    "target": "existing installed firmware only"
+  },
+  "acceptance": {
+    "candidate_smoke": "awaiting explicit candidate approval",
+    "usb_300s": "not tested",
+    "sta_four_pages_300s": "not tested",
+    "ap_four_pages_300s": "not tested",
+    "ten_30s_runs": "not tested",
+    "native_gui_file_mutations": "not tested",
+    "actual_network_switching": "not tested",
+    "actual_wpf_exit": "not tested",
+    "mcu_reset": "not tested",
+    "two_true_cold_starts": "not tested",
+    "write_power_loss": "excluded by user",
+    "metrology_and_machining": "excluded by user",
+    "full_release_passed": false
+  },
+  "review": {
+    "network_fix": "self reviewed",
+    "trial_packet": "self reviewed and guards checked",
+    "main_integration": "not complete",
+    "independent_source_review_obtained": false
+  },
+  "evidence_local": [
+    {
+      "path": "local-data/validation/release-v010/network-before-fix.txt",
+      "sha256": "c585901861f4d079b6a80a91497a85239981bcea66c1cebe2950ef8772a95b97"
+    },
+    {
+      "path": "local-data/validation/release-v010/network-after-fix.txt",
+      "sha256": "fca0eb4912999fd773dd17f5770f55b35054b2e99f95b68283292ddd9535df94"
+    },
+    {
+      "path": "local-data/validation/release-v010/python-tests.txt",
+      "sha256": "482beed675b8ce6ead22a9107cb8656680b9441716d05d3cf392b0d25710ecf5"
+    },
+    {
+      "path": "local-data/validation/release-v010/controller-host.txt",
+      "sha256": "50a3a1a2beb37b9949850ec9b122fde1a1072c070cdb32ee7ad7a4c9b76bc13e"
+    },
+    {
+      "path": "local-data/validation/release-v010/desktop-core.txt",
+      "sha256": "7c85110a68186090b49e137f32ed5f23d7d8cae8e8b3722a57629d95b479c284"
+    },
+    {
+      "path": "local-data/validation/release-v010/controller-browser.txt",
+      "sha256": "a32b0fce872bf9bd56f8d2469d00779d7a8950f447d2c3d8ab5722791af91366"
+    },
+    {
+      "path": "local-data/validation/release-v010/sensor-browser.txt",
+      "sha256": "ba3e26b783d6725f3fcc3310f216cbe2fec552ceb9f57ae9aad8e735b9df24ee"
+    },
+    {
+      "path": "local-data/validation/release-v010/trial-guards.txt",
+      "sha256": "54843f666b844033f6dd88cee8b6d6704c6fcdaf7f57caa912055268880f2506"
+    },
+    {
+      "path": "local-data/validation/release-v010/firmware-final-build.txt",
+      "sha256": "a998f98b7c0865d2e6c258c5834a75a579078649707922620777e2989dda78f9"
+    },
+    {
+      "path": "local-data/validation/release-v010/smoke-preparation.json",
+      "sha256": "ba7a6bd22e63110ed94f4e492e91b9832a9ac170b5ef2971e9fc8f02ddd52e1e"
+    }
+  ],
+  "tool_hashes": [
+    {
+      "path": "tools/release_v010_trial.py",
+      "sha256": "9b129ae5b81f5d844d503fd56fd1460b2065029992db96e2a88db13bdb99562a"
+    },
+    {
+      "path": "tools/release_v010_live.cjs",
+      "sha256": "5782302df891d1232f2c7f8e1c73037d8a1f9f9b72d1de171f6ad8624184a9f9"
+    },
+    {
+      "path": "tools/release_v010_preflight.py",
+      "sha256": "d25371e1fff421f01cac8836913b4d6d5486abd300b78ea2de5dbb0c2cb57aa0"
+    },
+    {
+      "path": "tools/test_controller_network.py",
+      "sha256": "683569316befec288744557ac81f125bee044d91d427f97104dec8378edef00c"
+    },
+    {
+      "path": "tests/controller_network_host.cpp",
+      "sha256": "5118fc88acd6f37f7237b79e4852f2c6ca811516583409f8db8e928a750d311e"
+    },
+    {
+      "path": "tests/network_sdk_stubs.h",
+      "sha256": "195c7c8e03d38166883832b9ec2f1ca3cc1d78c27763b4c72888b9eb689354f0"
+    }
+  ],
+  "main_merged": false,
+  "release_published": false,
+  "host_json_fixture": {
+    "origin": "ESP-IDF 5.4.2 / cJSON 1.7.18",
+    "firmware_dependency_changed": false,
+    "manifest": "tests/vendor/cjson/manifest.json",
+    "header_change": "one comment trailing space only",
+    "checks": 28,
+    "log": "local-data/validation/release-v010/network-pinned-sdk-json-final.txt",
+    "log_sha256": "fca0eb4912999fd773dd17f5770f55b35054b2e99f95b68283292ddd9535df94"
+  }
+}

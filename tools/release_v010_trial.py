@@ -19,11 +19,11 @@ import tf_write_batch as tf
 import sensor_recorder_batch as recorder
 import parse_sensor_record
 
-SOURCE = '3a365412d55320f1508b3e24e8d19c8d3582bdeb'
-CANDIDATE = '91c2c9d153dd35d05b9dc5856f68080fbdb300f1d43b8a3df6252e3e87df029c'
+SOURCE = '4e6d5333c57942a88138d99582521159f3dbd6b3'
+CANDIDATE = '38ef1b535084a7a290d8ea5bf40ae4aeb501ce07905e38db502fc7fce61c18f7'
 OLD_SOURCE = '6ec57c38b1c73159ac987a34541ae0e5da681eab'
 OLD_SHA = '86a1c917f1267005d4de103fffdfb0162ad93691f7f37d4cb9be286a66407789'
-MANIFEST = ROOT/'local-data/build/sensor-web/f1409ecdf87fc74d/20261018_164522_110269/build_manifest.json'
+MANIFEST = ROOT/'local-data/build/sensor-web/ad674614d532d30c/20261018_170441_450132/build_manifest.json'
 BASELINE = ROOT/'local-data/baselines/release-v010/manifest.json'
 HOST = ROOT/'local-data/release-v010/device-host/DeviceHost.exe'
 BROWSER = ROOT/'tools/release_v010_live.cjs'
