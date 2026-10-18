@@ -85,7 +85,7 @@ int main(){try{
   check(save("TestNet","replacement-password").code==202,"USB request can recover failed network configuration");apply();
   check(stateFlag("apply_ok"),"recovered driver start reported successful");
   auto state=devicev2::wifiRequest("GET","state",nullptr);check(state.body.find("replacement-password")==std::string::npos,"STA secret not exposed in network state");
-  auto beforeApplies=applies;devicev2::startWifi();check(applies==beforeApplies+1&&!strcmp((char*)station.sta.password,"replacement-password"),"restart reloads persisted password");
+  auto beforeApplies=applies;devicev2::startWifi();check(applies==beforeApplies+1&&mode==WIFI_MODE_APSTA&&!strcmp((char*)station.sta.ssid,"TestNet")&&!strcmp((char*)station.sta.password,"replacement-password"),"restart reloads persisted SSID, password and APSTA mode");
   devicev2::nvsOk=false;oldWrites=writes;check(save("TestNet","").code==503&&writes==oldWrites,"unavailable NVS rejects save without erase");
   std::cout<<"RESULT "<<checks<<" production network checks; host SDK/NVS adapters, not radio or real NVS\n";return 0;
 }catch(const std::exception& e){std::cerr<<"FAIL "<<e.what()<<"\n";return 1;}}

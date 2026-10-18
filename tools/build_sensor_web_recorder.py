@@ -1,7 +1,8 @@
 """Build the independent WiFi recorder; never open a serial port or write devices.
 
 Credentials only enter an ignored local config and private staging/artifacts. Default
-CI builds have WiFi disabled. Firmware files contain credentials; do not publish them.
+CI builds embed no STA credentials; v2 can load app NVS or start its recovery AP.
+Firmware built with local credentials must not be published.
 """
 from pathlib import Path
 import argparse
