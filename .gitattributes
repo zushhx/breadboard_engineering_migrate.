@@ -14,3 +14,4 @@ docs/reports/** -text
 docs/hardware/** -text
 .shell-tools/** -text
 面包板样机_固件/** -text
+tests/vendor/cjson/cJSON.[ch] -text

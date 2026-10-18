@@ -1,0 +1,12 @@
+{
+  "origin": "PlatformIO framework-espidf 3.50402.0 / ESP-IDF 5.4.2 / components/json/cJSON",
+  "version": "1.7.18",
+  "purpose": "host tests only; firmware SDK and dependency versions unchanged",
+  "license": "MIT; full copyright and license retained in both original files",
+  "original_header_sha256": "fda63720ffad1d007802f62204831018d167084c26e2ce08ad36f11529a90682",
+  "header_normalization": "Remove one trailing space in a comment at original cJSON.h:264; no API or code change",
+  "sha256": {
+    "cJSON.c": "f892717f26cf3d21b7108de50cea95b6e48092950427615fe1d8d9c46ea09cca",
+    "cJSON.h": "c1ba70316fe1218c68c397783d1ffce7398db619bace5176019d85454644a9fa"
+  }
+}
