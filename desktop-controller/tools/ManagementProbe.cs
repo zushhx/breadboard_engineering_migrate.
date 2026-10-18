@@ -13,7 +13,9 @@ public static class ManagementProbe
         if (args.Length != 1) return 2;
         try
         {
-            using (var backend = new UsbBackend(args[0]))
+            Uri local;
+            bool loopback = Uri.TryCreate(args[0], UriKind.Absolute, out local) && local.Scheme == "http" && local.Host == "127.0.0.1";
+            using (IDeviceBackend backend = loopback ? (IDeviceBackend)new NetworkBackend(local) : new UsbBackend(args[0]))
             {
                 var client = new ManagementClient(backend, CancellationToken.None, null); client.Begin();
                 string before = client.Boot;
