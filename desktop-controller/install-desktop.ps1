@@ -1,7 +1,8 @@
 param(
     [Parameter(Mandatory)][string]$BuildDirectory,
     [Parameter(Mandatory)][string]$ExpectedExecutableSha256,
-    [switch]$Candidate
+    [switch]$Candidate,
+    [string]$ApplicationName
 )
 $ErrorActionPreference = 'Stop'
 Set-StrictMode -Version Latest
@@ -16,7 +17,8 @@ $manifestConfig = @($manifest.artifacts | Where-Object { $_.name -eq '主控控�
 if ($manifest.source_worktree_dirty -or $manifestExe.Count -ne 1 -or $manifestExe[0].sha256 -ne $ExpectedExecutableSha256 -or $manifestConfig.Count -ne 1 -or
     (Get-FileHash -LiteralPath $sourceConfig -Algorithm SHA256).Hash -ne $manifestConfig[0].sha256) { throw 'Build manifest verification failed.' }
 $desktopPath = [Environment]::GetFolderPath('Desktop')
-$applicationName = if ($Candidate) { '主控控制台 v2（待实机验收）' } else { '主控控制台' }
+if (-not $ApplicationName) { $ApplicationName = if ($Candidate) { '主控控制台 v2（待实机验收）' } else { '主控控制台' } }
+if ($ApplicationName -notmatch '^主控控制台(?: v[0-9]+(?:（待实机验收）)?)?$') { throw 'Application name must be a controller desktop folder name, not a path.' }
 $destination = Join-Path $desktopPath $applicationName
 $shortcutPath = Join-Path $desktopPath ($applicationName + '.lnk')
 if ((Test-Path -LiteralPath $destination) -or (Test-Path -LiteralPath $shortcutPath)) {

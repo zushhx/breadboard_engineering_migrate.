@@ -52,16 +52,16 @@ $common += @($referencePaths | ForEach-Object { '/reference:' + $_ })
 $exe = Join-Path $output '主控控制台.exe'
 $compile = $common + @('/target:winexe', ('/out:' + $exe), ('/win32manifest:' + (Join-Path $sourceDirectory 'app.manifest')),
     ('/win32icon:' + $iconPath), ('/resource:' + (Join-Path $sourceDirectory 'MainWindow.xaml') + ',MainWindow.xaml'),
-    ('/resource:' + $iconPath + ',AppIcon.ico'), (Join-Path $sourceDirectory 'Core.cs'), (Join-Path $sourceDirectory 'DeviceBridge.cs'), (Join-Path $sourceDirectory 'Program.cs'))
+    ('/resource:' + $iconPath + ',AppIcon.ico'), (Join-Path $sourceDirectory 'Core.cs'), (Join-Path $sourceDirectory 'DeviceBridge.cs'), (Join-Path $sourceDirectory 'ManagementClient.cs'), (Join-Path $sourceDirectory 'ManagementUi.cs'), (Join-Path $sourceDirectory 'Program.cs'))
 & $compiler @compile 2>&1 | Tee-Object -FilePath (Join-Path $output 'compile.log')
 if ($LASTEXITCODE -ne 0) { throw 'Desktop application compilation failed.' }
 Copy-Item -LiteralPath (Join-Path $sourceDirectory 'app.config') -Destination ($exe + '.config')
 $testExe = Join-Path $output 'CoreTests.exe'
-$testCompile = $common + @('/target:exe', ('/out:' + $testExe), (Join-Path $sourceDirectory 'Core.cs'), (Join-Path $sourceDirectory 'DeviceBridge.cs'), (Join-Path $PSScriptRoot 'tests/CoreTests.cs'), (Join-Path $PSScriptRoot 'tests/BridgeTests.cs'))
+$testCompile = $common + @('/target:exe', ('/out:' + $testExe), (Join-Path $sourceDirectory 'Core.cs'), (Join-Path $sourceDirectory 'DeviceBridge.cs'), (Join-Path $sourceDirectory 'ManagementClient.cs'), (Join-Path $PSScriptRoot 'tests/CoreTests.cs'), (Join-Path $PSScriptRoot 'tests/BridgeTests.cs'), (Join-Path $PSScriptRoot 'tests/ManagementTests.cs'))
 & $compiler @testCompile 2>&1 | Tee-Object -FilePath (Join-Path $output 'test-compile.log')
 if ($LASTEXITCODE -ne 0) { throw 'Desktop test compilation failed.' }
 Copy-Item -LiteralPath (Join-Path $sourceDirectory 'app.config') -Destination ($testExe + '.config')
-$sourceFiles = @((Get-ChildItem -LiteralPath $sourceDirectory -File), (Get-Item -LiteralPath $PSCommandPath), (Get-Item -LiteralPath (Join-Path $PSScriptRoot 'toolchain.json')), (Get-Item -LiteralPath (Join-Path $PSScriptRoot 'tests/CoreTests.cs')), (Get-Item -LiteralPath (Join-Path $PSScriptRoot 'tests/BridgeTests.cs'))) | ForEach-Object { $_ }
+$sourceFiles = @((Get-ChildItem -LiteralPath $sourceDirectory -File), (Get-Item -LiteralPath $PSCommandPath), (Get-Item -LiteralPath (Join-Path $PSScriptRoot 'toolchain.json')), (Get-ChildItem -LiteralPath (Join-Path $PSScriptRoot 'tests') -Filter '*.cs')) | ForEach-Object { $_ }
 $sourceHashes = @($sourceFiles | ForEach-Object { [ordered]@{path = [IO.Path]::GetRelativePath($projectRoot, $_.FullName); sha256 = (Get-FileHash -LiteralPath $_.FullName -Algorithm SHA256).Hash.ToLowerInvariant()} })
 $manifest = [ordered]@{
     built_at = [DateTimeOffset]::Now.ToString('o')

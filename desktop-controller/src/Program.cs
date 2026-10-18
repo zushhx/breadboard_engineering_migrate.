@@ -20,8 +20,8 @@ using Microsoft.Win32;
 [assembly: AssemblyTitle("主控控制台")]
 [assembly: AssemblyDescription("直插式面包板样机桌面连接助手")]
 [assembly: AssemblyProduct("主控控制台")]
-[assembly: AssemblyVersion("0.2.0.0")]
-[assembly: AssemblyFileVersion("0.2.0.0")]
+[assembly: AssemblyVersion("0.3.0.0")]
+[assembly: AssemblyFileVersion("0.3.0.0")]
 
 namespace BreadboardController
 {
@@ -44,7 +44,7 @@ namespace BreadboardController
         }
     }
 
-    public sealed class ControllerWindow
+    public sealed partial class ControllerWindow
     {
         private readonly bool preview;
         private readonly string storage;
@@ -75,6 +75,7 @@ namespace BreadboardController
             Address.Text = settings.Address ?? "http://172.28.247.119";
             Address.TextChanged += delegate
             {
+                ResetManagement();
                 lastDevice = null;
                 if (backend is UsbBackend) { if (bridge != null) bridge.Dispose(); bridge = null; backend = null; }
                 Badge("尚未检测", "#E9EDF4", "#526179");
@@ -107,7 +108,8 @@ namespace BreadboardController
                 if (!preview) { Directory.CreateDirectory(storage); Shell(storage); }
                 return Task.FromResult(0);
             }, null);
-            foreach (string page in new[] { "Device", "Network", "Logs", "Help" })
+            BindManagement();
+            foreach (string page in new[] { "Device", "Network", "Files", "Logs", "Help" })
             {
                 string name = page;
                 Find<RadioButton>("Nav" + name).Checked += delegate { ShowPage(name); };
@@ -135,8 +137,8 @@ namespace BreadboardController
             };
             RefreshNetworks();
             RefreshUsb();
-            Text("AboutText", "版本：0.2.0 · Windows 本机便携版\n快捷键：Ctrl + O 打开检测页面；F5 检测连接。\n设置与连接日志：" +
-                storage + "\n主控 Wi-Fi 和热点在统一网页设置。本软件不保存 Wi-Fi 密码。关闭本程序会断开本程序打开页面的控制会话。");
+            Text("AboutText", "版本：0.3.0 · Windows 本机便携版\n快捷键：Ctrl + O 打开检测页面；F5 检测连接。\n设置与连接日志：" +
+                storage + "\n主控 Wi-Fi、热点和 TF 文件可以在本控制台直接管理。密码不写入设置或日志。关闭本程序会断开本程序打开页面的控制会话。");
             AddLog(preview ? "界面预览：离线模拟，不访问实机、不打开外部程序。" : "程序启动。等待用户操作，未查询设备。");
             if (preview) { Window.Title += " · 离线界面预览"; Text("FooterText", "离线界面预览 · 没有实机数据"); }
         }
@@ -164,6 +166,8 @@ namespace BreadboardController
                 error is IOException || error is UnauthorizedAccessException ? "本机文件操作失败。请检查文件是否被占用，以及目标文件夹的访问权限。" :
                 "操作未完成。请重新尝试，必要时导出连接记录。";
             Notify(message, true);
+            if (Find<FrameworkElement>("FilesPage").IsVisible) Text("TfMessage", message);
+            if (Find<FrameworkElement>("NetworkPage").IsVisible) Text("DeviceNetworkMessage", message);
             AddLog(message + " [" + error.GetType().Name + "]");
         }
         private void Badge(string title, string background, string foreground)
@@ -217,6 +221,7 @@ namespace BreadboardController
             operation = new CancellationTokenSource();
             Address.IsEnabled = false;
             Find<ComboBox>("Networks").IsEnabled = false;
+            ManagementEnabled(false);
             Text("FooterText", message);
             CommandManager.InvalidateRequerySuggested();
         }
@@ -226,6 +231,7 @@ namespace BreadboardController
             if (operation != null) { operation.Dispose(); operation = null; }
             Address.IsEnabled = true;
             Find<ComboBox>("Networks").IsEnabled = true;
+            ManagementEnabled(true);
             Find<Button>("CancelSearch").Visibility = Visibility.Collapsed;
             CommandManager.InvalidateRequerySuggested();
         }
@@ -303,6 +309,7 @@ namespace BreadboardController
                 await Task.Run(() => ValidateV2(candidate));
                 if (closed) return;
                 if (bridge != null) bridge.Dispose();
+                ResetManagement();
                 backend = candidate; candidate = null;
                 bridge = new DeviceBridge(backend); backendTarget = name;
                 Text("UsbHint", "已连接 " + name + "；不需要电脑连接 Wi-Fi。");
@@ -320,27 +327,29 @@ namespace BreadboardController
                 throw new IOException("主控未提供 v2 控制接口");
         }
         private Task OpenDetectionAsync() { return OpenPageAsync(""); }
+        private async Task EnsureBackendAsync()
+        {
+            if (backend is UsbBackend) return;
+            Uri uri = AddressPolicy.Normalize(Address.Text, false);
+            if (bridge == null || backendTarget != uri.AbsoluteUri)
+            {
+                var candidate = new NetworkBackend(uri);
+                try { await Task.Run(() => ValidateV2(candidate)); }
+                catch { candidate.Dispose(); throw; }
+                if (closed) { candidate.Dispose(); return; }
+                if (bridge != null) bridge.Dispose();
+                ResetManagement();
+                backend = candidate; bridge = new DeviceBridge(backend); backendTarget = uri.AbsoluteUri;
+            }
+            Save(uri, false);
+        }
         private async Task OpenPageAsync(string panel)
         {
             if (preview) { Notify("离线预览：这里会打开统一网页；未访问主控。", false); return; }
             BeginWork("正在准备主控网页……");
             try
             {
-                if (backend == null || !(backend is UsbBackend))
-                {
-                    Uri uri;
-                    if (!TryAddress(out uri)) return;
-                    if (bridge == null || backendTarget != uri.AbsoluteUri)
-                    {
-                        var candidate = new NetworkBackend(uri);
-                        try { await Task.Run(() => ValidateV2(candidate)); }
-                        catch { candidate.Dispose(); throw; }
-                        if (closed) { candidate.Dispose(); return; }
-                        if (bridge != null) bridge.Dispose();
-                        backend = candidate; bridge = new DeviceBridge(backend); backendTarget = uri.AbsoluteUri;
-                    }
-                    Save(uri, false);
-                }
+                await EnsureBackendAsync();
                 if (closed) return;
                 string url = bridge.Address.AbsoluteUri + (panel.Length == 0 ? "" : "?panel=" + panel);
                 Shell(url);
@@ -435,7 +444,7 @@ namespace BreadboardController
         {
             Uri uri;
             string target = TryAddress(out uri) ? AddressPolicy.Display(uri) : "无效地址";
-            return "主控控制台 0.2.0\n生成时间：" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss zzz") + "\n主控地址：" + target +
+            return "主控控制台 0.3.0\n生成时间：" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss zzz") + "\n主控地址：" + target +
                 "\n最近检查：" + Find<TextBlock>("DeviceSummary").Text + "\n电脑网络：" + Find<TextBlock>("NetworkInfo").Text +
                 "\n说明：程序只做按需连接检查，采集与图表在原检测页面。\n\n本次记录：\n" + String.Join("\n", log);
         }
@@ -476,11 +485,11 @@ namespace BreadboardController
         }
         public void ShowPage(string page)
         {
-            foreach (string name in new[] { "Device", "Network", "Logs", "Help" })
+            foreach (string name in new[] { "Device", "Network", "Files", "Logs", "Help" })
                 Find<FrameworkElement>(name + "Page").Visibility = name == page ? Visibility.Visible : Visibility.Collapsed;
-            string title = page == "Device" ? "设备连接" : page == "Network" ? "Wi-Fi 与热点" : page == "Logs" ? "连接记录" : "使用说明";
+            string title = page == "Device" ? "设备连接" : page == "Network" ? "主控 Wi-Fi 与热点" : page == "Files" ? "TF 文件" : page == "Logs" ? "连接记录" : "使用说明";
             Text("PageTitle", title);
-            Text("PageSubtitle", page == "Device" ? "连接主控，打开熟悉的检测页面。" : page == "Network" ? "选择一种连接方式，让电脑与主控互相访问。" :
+            Text("PageSubtitle", page == "Device" ? "连接主控，打开熟悉的检测页面。" : page == "Network" ? "直接设置主控接入的 Wi-Fi 和主控自身热点。" : page == "Files" ? "在控制台管理主控 TF 卡里的文件。" :
                 page == "Logs" ? "查看和导出本次连接过程，方便自己排查。" : "以后直接从桌面操作，无需通过 Codex。");
             Find<RadioButton>("Nav" + page).IsChecked = true;
         }
@@ -532,6 +541,22 @@ namespace BreadboardController
             ShowPage("Network"); await Task.Delay(50);
             verify(Find<FrameworkElement>("NetworkPage").IsVisible && !Find<FrameworkElement>("DevicePage").IsVisible, "network navigation");
             Capture(Path.Combine(folder, "03-network-simulated.png"));
+            verify(Find<Button>("SaveDeviceNetwork").Command != null && Find<PasswordBox>("DeviceApPassword") != null, "native network form and save are wired");
+            await ReadNetworkAsync();
+            verify(Find<TextBlock>("DeviceNetworkMessage").Text.Contains("未向主控"), "native management preview sends no requests");
+            ShowPage("Files"); await Task.Delay(50);
+            verify(Find<FrameworkElement>("FilesPage").IsVisible && !Find<FrameworkElement>("NetworkPage").IsVisible, "native TF navigation");
+            Find<DataGrid>("TfGrid").ItemsSource = new[] { new TfEntry { Name = "中文记录.bin（模拟）", Bytes = 5001, Path = "/中文记录.bin" }, new TfEntry { Name = "REC_示例（模拟）", Directory = true, Path = "/REC_示例" } };
+            Find<DataGrid>("TfGrid").SelectedIndex = 0;
+            verify(Find<Button>("DownloadTf").Command.CanExecute(null) && Find<Button>("DeleteTf").Command.CanExecute(null), "file selection enables download and guarded delete");
+            BeginWork("模拟文件任务");
+            verify(!Find<Button>("ConnectUsb").Command.CanExecute(null) && !Find<Button>("SaveDeviceNetwork").Command.CanExecute(null) && !Find<DataGrid>("TfGrid").IsEnabled, "management task prevents backend switching and overlapping changes");
+            EndWork();
+            Capture(Path.Combine(folder, "08-files-simulated.png"));
+            Window.Width = 1000; Window.Height = 700; await Task.Delay(50);
+            verify(Find<DataGrid>("TfGrid").ActualHeight > 70 && Find<Button>("CancelTf").IsVisible, "TF list and cancel remain available at minimum size");
+            Capture(Path.Combine(folder, "09-files-minimum-simulated.png"));
+            Window.Width = 1160; Window.Height = 820;
             ShowPage("Logs"); await Task.Delay(50);
             verify(Find<TextBox>("LogText").Text.Contains("离线模拟"), "logs identify simulated source");
             Capture(Path.Combine(folder, "04-logs-simulated.png"));
@@ -551,7 +576,7 @@ namespace BreadboardController
             await Task.Delay(100); Capture(Path.Combine(folder, "07-minimum-simulated.png"));
             verify(Find<Button>("OpenDetection").ActualWidth >= 202 && Address.ActualWidth > 300, "primary controls fit minimum desktop size");
             File.WriteAllText(Path.Combine(folder, "preview-result.txt"), String.Join("\n", checks) +
-                "\nRESULT: " + checks.Count + " UI smoke checks, seven screenshots. No HTTP requests, shell launches, settings writes or real device data.\n", new UTF8Encoding(false));
+                "\nRESULT: " + checks.Count + " UI smoke checks, nine screenshots. No HTTP requests, shell launches, settings writes or real device data.\n", new UTF8Encoding(false));
             Window.Close();
         }
     }
