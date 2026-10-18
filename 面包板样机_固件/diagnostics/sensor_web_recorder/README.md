@@ -2,6 +2,12 @@
 
 从记录器独立复制；初版范围见[网页方案](../../../docs/plans/SENSOR_WEB_CONTROL_20261016.md)，新版界面和连续统计见[UI改版方案](../../../docs/plans/REALTIME_UI_REDESIGN_20261016.md)。当前软件、实机版本及验收边界只在[STATUS](../../../docs/STATUS.md)维护。
 
+## 时间命名候选
+
+2026-10-18按[已确认方案](../../../docs/plans/RECORD_TIME_NAMES_20261018.md)准备新候选：网页提交控制端本地时间`YY-MM-DD-HH.mm.ss`，主控用单调计时补偿准备/接管等待，记录保存为`/26-10-18-15.46/26-10-18-15.46.BIN`，同一分钟从`-02`顺序选空目录，不覆盖历史项目。两位年限定2000–2099，闰日等日期校验；不依赖NTP或设备RTC。状态`record_name/record_path`提供实际名称，网页和桌面下载沿用实际文件名。旧客户端缺少local_time仍使用旧REC_/DATA.BIN，不猜测年月日；升级后应刷新检测页。
+
+文件格式、采样配置、run会话身份、模块启动顺序不变。新目录查询仍在准备阶段，若模块准备跨分钟，在首次写卡前重新选择该分钟的空目录；查询失败不继续写入。历史`REC_VERIFY <run>`保持；新时间名可用只读`REC_VERIFY_NAME 26-10-18-15.46[-02]`验证（括号只表示可选序号，实际命令不含括号）。候选构建不代表已经刷入或通过实机验收。
+
 ## 构建
 
 使用项目PowerShell7.6.6执行`.shell-tools/build_sensor_web_recorder_pwsh7.ps1`。默认空凭据，网络禁用，供CI构建；加入`-WifiConfig local-data/config/sensor-web-wifi.json`才注入本地凭据。JSON具有ssid/password两个字符串，须放忽略的local-data；不将实际值写入源码、报告或CI。`-PrepareOnly`仅生成独立暂存输入。凭据头只在私人ASCII构建目录，含凭据产物/完整清单保留local-data，不能公开发布。构建入口不访问串口、不复位、不烧录或读写卡。

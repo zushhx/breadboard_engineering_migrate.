@@ -7,6 +7,8 @@ void startNetwork();
 void pollNetworkLog();
 bool take(char* run, unsigned& seconds);
 bool begin(const char* run, unsigned seconds);
+bool recordNaming(const char* run, char* local, uint64_t& elapsedUs);
+void recordLocation(const char* run, const char* name, const char* path);
 void phase(Phase value, const char* detail);
 bool stopping();
 void result(bool passed, bool locked, const char* detail, const char* sha = "");

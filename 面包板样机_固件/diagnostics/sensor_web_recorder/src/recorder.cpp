@@ -1,6 +1,7 @@
 #include "recorder.h"
 #include "record_format.h"
 #include "record_request.h"
+#include "record_name.h"
 #include "modules.h"
 #include "serial_compat.h"
 #include "build_identity.h"
@@ -209,12 +210,25 @@ static void record(const Store& store, const char* run, unsigned seconds) {
   if (locked) { Serial.println("[rec] rejected: previous failure; preserve evidence, reboot required"); return; }
   if (!control::begin(run, seconds)) { Serial.println("[rec] rejected busy/unavailable control state"); return; }
   control::phase(control::Phase::Preparing, "检查卡、内存与模块；准备本轮录制");
-  char directory[40], path[56];
-  snprintf(directory, sizeof(directory), "%s/REC_%s", store.drive, run);
-  snprintf(path, sizeof(path), "%s/DATA.BIN", directory);
-  FILINFO info; FRESULT exists = f_stat(directory, &info);
-  if (exists != FR_NO_FILE) { Serial.printf("[rec] rejected existing/unknown directory fatfs=%u\n", exists);
-    control::result(false, false, "目录已存在或查询失败，未开始录制"); return; }
+  char directory[64], path[96], name[kRecordNameSize], stamp[18]; uint64_t namingElapsed=0;
+  const bool named=control::recordNaming(run,stamp,namingElapsed);
+  auto locate=[&]() {
+    if(named) {
+      auto inspect=[&](const char* candidate) {
+        snprintf(directory,sizeof(directory),"%s/%s",store.drive,candidate);
+        FILINFO info;FRESULT exists=f_stat(directory,&info);
+        return exists==FR_NO_FILE?NameSlot::Free:exists==FR_OK?NameSlot::Occupied:NameSlot::Error;
+      };
+      if(!chooseRecordingName(stamp,namingElapsed,inspect,name))return false;
+      if(!recordingPaths(store.drive,name,true,directory,path))return false;
+    } else {
+      snprintf(name,sizeof(name),"REC_%s",run);
+      if(!recordingPaths(store.drive,name,false,directory,path))return false;
+      FILINFO info;if(f_stat(directory,&info)!=FR_NO_FILE)return false;
+    }
+    return true;
+  };
+  if(!locate()) {control::result(false,false,"命名冲突、时间无效或目录查询失败，未开始录制");return;}
   DWORD clusters = 0; FATFS* fs = nullptr;
   uint64_t freeBytes = 0;
   const bool spaceValid = f_getfree(store.drive, &clusters, &fs) == FR_OK && fs &&
@@ -245,9 +259,18 @@ static void record(const Store& store, const char* run, unsigned seconds) {
     control::result(false, true, "MAC读取失败，未写卡"); return; }
   snprintf(h.mac, sizeof(h.mac), "%02x:%02x:%02x:%02x:%02x:%02x", mac[0], mac[1], mac[2], mac[3], mac[4], mac[5]);
   snprintf(h.wiring, sizeof(h.wiring), "20261015-IO13-TFdirect"); h.crc = crc32(&h, offsetof(Header, crc));
+  // Re-evaluate only if module preparation crossed a minute boundary. No system-clock changes.
+  if(named) {
+    char fresh[kRecordNameSize];
+    if(!control::recordNaming(run,stamp,namingElapsed)||!minuteLabel(stamp,namingElapsed,fresh)||
+       (strncmp(fresh,name,14)&&!locate())) {
+      cleanup();control::result(false,false,"准备期间时间或目录查询失败，未写卡");return;
+    }
+  }
   store.gate(true); bool opened = false;
   bool ok = f_mkdir(directory) == FR_OK;
   if (ok) { opened = f_open(&file, path, FA_WRITE | FA_CREATE_NEW) == FR_OK; ok = opened; }
+  if (opened) control::recordLocation(run,name,path+strlen(store.drive));
   mbedtls_sha256_context hash; mbedtls_sha256_init(&hash); mbedtls_sha256_starts_ret(&hash, 0);
   if (ok) ok = emit(&h, sizeof(h), hash) && sync();
   if (ok) ok = modules::startFifo();
@@ -331,6 +354,16 @@ static void record(const Store& store, const char* run, unsigned seconds) {
       (unsigned long)totals.maxWriteUs, (unsigned long)totals.maxSyncUs, actual);
 }
 void command(const char* line, const Store& store) {
+  if(!strncmp(line,"REC_VERIFY_NAME ",16)) {
+    char name[kRecordNameSize]={};int end=0;
+    if(sscanf(line,"REC_VERIFY_NAME %23s%n",name,&end)!=1||line[end]||!recordingName(name)) {
+      Serial.println("[rec] rejected timestamp recording name; no writes");return;
+    }
+    char directory[64],path[96],digest[65]={};
+    if(!recordingPaths(store.drive,name,true,directory,path)){Serial.println("[rec] rejected name path length");return;}
+    bool ok=verify(path,digest);
+    Serial.printf("[rec] VERIFY_%s name=%s write_gate=0\n",ok?"PASS":"FAIL",name);return;
+  }
   Request request = {};
   if (parseRequest(line, request) && request.write && request.serial == store.serial && request.capacity == store.capacity) {
     record(store, request.run, request.seconds); return;

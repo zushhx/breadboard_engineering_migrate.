@@ -21,7 +21,7 @@ Reply dispatch(const char* method,const char* path,const char* body,const char* 
   bool get=!strcmp(method,"GET"); if(!get&&strcmp(method,"POST")) return error(405,"方法不支持");
   if(get&&!strcmp(path,"/api/status")) { Reply r; r.body=control::statusJson(); return r; }
   if(get&&!strcmp(path,"/api/trend")) { Reply r; r.body=control::trendJson(); return r; }
-  if(get&&!strcmp(path,"/api/v2/capabilities")) { Reply r; r.body="{\"version\":2,\"usb\":true,\"wifi_config\":true,\"files\":true,\"owner_timeout_ms\":10000,\"max_clients\":4}"; return r; }
+  if(get&&!strcmp(path,"/api/v2/capabilities")) { Reply r; r.body="{\"version\":2,\"usb\":true,\"wifi_config\":true,\"files\":true,\"record_time_names\":true,\"owner_timeout_ms\":10000,\"max_clients\":4}"; return r; }
   if(strlen(body)>4096) return error(413,"请求过长");
   cJSON* args=body[0]?cJSON_Parse(body):cJSON_CreateObject();
   if(!cJSON_IsObject(args)) { cJSON_Delete(args); return error(400,"JSON对象无效"); }
