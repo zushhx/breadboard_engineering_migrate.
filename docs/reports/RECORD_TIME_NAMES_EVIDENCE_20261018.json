@@ -1,0 +1,35 @@
+{
+  "date": "2026-10-18",
+  "source_commit": "6ec57c38b1c73159ac987a34541ae0e5da681eab",
+  "working_tree_dirty_at_build_start": false,
+  "input_sha256": "653e7a0aaa30e68b65d66ae7a319c9400f601a1b95867896bfdc9b4381d80821",
+  "firmware": {
+    "bytes": 1121952,
+    "sha256": "86a1c917f1267005d4de103fffdfb0162ad93691f7f37d4cb9be286a66407789",
+    "build_passed": true,
+    "hardware_tested": false
+  },
+  "compared_with_previous_65bb1f8": {
+    "sdkconfig_generated_sha256_equal": true,
+    "partition_binary_sha256_equal": true,
+    "generated_credentials_sha256_equal": true,
+    "previous_firmware_hash_verified": true
+  },
+  "checks": {
+    "actual_naming_and_path_helpers": "passed; host temporary filesystem",
+    "web_control_unit_checks": 6,
+    "controller_ownership_mutex_usb_driver_models": "passed",
+    "actual_files_router_host_checks": 23,
+    "v2_browser_checks": 28,
+    "original_monitor_browser_checks": 25,
+    "project_check_and_commit_hook": "passed",
+    "final_diff_review": "self review",
+    "independent_source_review": "not obtained; Code Review could not connect to GitHub"
+  },
+  "device_connected": false,
+  "device_reset": false,
+  "flashed": false,
+  "tf_written": false,
+  "hardware_and_power_cycle_acceptance": "not tested; candidate-specific flash authorization required",
+  "pull_request": "https://github.com/zushhx/breadboard_engineering_migrate./pull/21"
+}
