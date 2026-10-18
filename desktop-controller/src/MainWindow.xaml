@@ -124,12 +124,13 @@
         <StackPanel Grid.Row="1">
           <RadioButton x:Name="NavDevice" Content="设备连接" GroupName="Navigation" Style="{StaticResource NavButton}" IsChecked="True"/>
           <RadioButton x:Name="NavNetwork" Content="Wi-Fi 与热点" GroupName="Navigation" Style="{StaticResource NavButton}"/>
+          <RadioButton x:Name="NavFiles" Content="TF 文件" GroupName="Navigation" Style="{StaticResource NavButton}"/>
           <RadioButton x:Name="NavLogs" Content="连接记录" GroupName="Navigation" Style="{StaticResource NavButton}"/>
           <RadioButton x:Name="NavHelp" Content="使用说明" GroupName="Navigation" Style="{StaticResource NavButton}"/>
         </StackPanel>
         <StackPanel Grid.Row="3" Margin="12,0,8,0">
           <TextBlock Text="直接连接你的主控" FontSize="13" Foreground="#526179"/>
-          <TextBlock Text="本机便携版  0.2.0" FontSize="12" Foreground="#64748B" Margin="0,6,0,0"/>
+          <TextBlock Text="本机便携版  0.3.0" FontSize="12" Foreground="#64748B" Margin="0,6,0,0"/>
         </StackPanel>
       </Grid>
     </Border>
@@ -214,16 +215,63 @@
                 </StackPanel>
               </StackPanel>
             </Border>
-            <TextBlock Text="使用一个检测页面即可。连接记录只表示检查当时的状态；关闭本程序不会停止主控的采集。" FontSize="12" Foreground="#526179" LineHeight="22" Margin="2,16,2,8"/>
+            <TextBlock Text="连接记录表示检查时的状态。关闭所属检测页或本程序会请求安全停止相关采集，请等待保存完成。" FontSize="12" Foreground="#526179" LineHeight="22" Margin="2,16,2,8"/>
           </StackPanel>
         </ScrollViewer>
         <ScrollViewer x:Name="NetworkPage" Visibility="Collapsed" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Padding="0,0,5,0">
           <StackPanel>
             <Border Style="{StaticResource Card}" Margin="0,0,0,18">
               <StackPanel>
-                <TextBlock Text="设置主控 Wi-Fi 与热点" Style="{StaticResource SectionTitle}"/>
-                <TextBlock Text="通过 USB 或当前 Wi-Fi 连接打开主控设置：扫描网络、配置接入 Wi-Fi、开启主控热点，并查看可分享的实际网址。" Style="{StaticResource MutedText}" Margin="0,0,0,16"/>
-                <Button x:Name="OpenDeviceNetwork" Content="打开主控网络设置" Style="{StaticResource PrimaryButton}" HorizontalAlignment="Left"/>
+                <TextBlock Text="主控网络设置" Style="{StaticResource SectionTitle}"/>
+                <TextBlock Text="先连接 USB 或填写主控 IP，再读取设置。这里直接控制主控的 Wi-Fi 与热点。" Style="{StaticResource MutedText}"/>
+                <WrapPanel Margin="0,12,0,8">
+                  <Button x:Name="ReadDeviceNetwork" Content="读取主控设置" Margin="0,0,10,8"/>
+                  <Button x:Name="ScanDeviceWifi" Content="扫描附近 Wi-Fi" Margin="0,0,0,8"/>
+                </WrapPanel>
+                <Border Background="#EFF5FF" Padding="12" CornerRadius="6" Margin="0,0,0,16">
+                  <TextBlock x:Name="DeviceNetworkMessage" Text="点击「读取主控设置」加载当前配置。采集和文件任务期间不能修改网络。" Style="{StaticResource MutedText}"/>
+                </Border>
+                <Grid x:Name="DeviceNetworkForm">
+                  <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="24"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
+                  <StackPanel>
+                    <TextBlock Text="主控连接 Wi-Fi" FontWeight="SemiBold" FontSize="17" Margin="0,0,0,12"/>
+                    <CheckBox x:Name="DeviceStaEnabled" Content="启用 Wi-Fi 连接" MinHeight="32"/>
+                    <Label Content="附近网络（2.4 GHz）" Target="{Binding ElementName=DeviceWifiChoices}" Padding="0,8,0,6"/>
+                    <ComboBox x:Name="DeviceWifiChoices" MinHeight="38" AutomationProperties.Name="附近 Wi-Fi 网络"/>
+                    <Label Content="Wi-Fi 名称" Target="{Binding ElementName=DeviceSsid}" Padding="0,10,0,6"/>
+                    <TextBox x:Name="DeviceSsid" MaxLength="32" AutomationProperties.Name="主控接入的 Wi-Fi 名称"/>
+                    <Label Content="Wi-Fi 密码" Target="{Binding ElementName=DeviceWifiPassword}" Padding="0,10,0,6"/>
+                    <PasswordBox x:Name="DeviceWifiPassword" MaxLength="63" Padding="12,10" MinHeight="44" AutomationProperties.Name="Wi-Fi 密码"/>
+                    <TextBlock Text="名称不变时密码留空可保留。取消勾选后保存即可断开。密码不会保存到电脑。" Style="{StaticResource MutedText}" FontSize="12" Margin="0,8,0,0"/>
+                  </StackPanel>
+                  <StackPanel Grid.Column="2">
+                    <TextBlock Text="主控自身热点" FontWeight="SemiBold" FontSize="17" Margin="0,0,0,12"/>
+                    <CheckBox x:Name="DeviceApEnabled" Content="开启主控热点" MinHeight="32"/>
+                    <TextBlock Text="让电脑或手机连接此热点后访问主控；此热点不提供互联网。" Style="{StaticResource MutedText}" FontSize="12" Margin="0,8,0,0"/>
+                    <Label Content="热点名称" Target="{Binding ElementName=DeviceApSsid}" Padding="0,10,0,6"/>
+                    <TextBox x:Name="DeviceApSsid" MaxLength="32" AutomationProperties.Name="主控热点名称"/>
+                    <Label Content="热点密码（8–63字节）" Target="{Binding ElementName=DeviceApPassword}" Padding="0,10,0,6"/>
+                    <PasswordBox x:Name="DeviceApPassword" MaxLength="63" Padding="12,10" MinHeight="44" AutomationProperties.Name="主控热点密码"/>
+                    <Button x:Name="ViewApPassword" Content="查看热点密码" HorizontalAlignment="Left" Margin="0,8,0,0"/>
+                    <TextBlock Text="取消勾选后保存即可关闭热点。更改网络可能导致当前 Wi-Fi 连接断开，建议通过 USB 设置。" Style="{StaticResource MutedText}" FontSize="12" Margin="0,8,0,0"/>
+                  </StackPanel>
+                </Grid>
+                <Button x:Name="SaveDeviceNetwork" Content="保存并应用到主控" Style="{StaticResource PrimaryButton}" HorizontalAlignment="Left" Margin="0,18,0,0"/>
+              </StackPanel>
+            </Border>
+            <Border Style="{StaticResource Card}" Margin="0,0,0,18">
+              <StackPanel>
+                <TextBlock Text="检测页面网址" Style="{StaticResource SectionTitle}"/>
+                <TextBox x:Name="DeviceUrls" IsReadOnly="True" Text="读取主控设置后显示实际网址。" TextWrapping="Wrap" MinHeight="85" AutomationProperties.Name="主控检测页面网址"/>
+                <TextBlock Text="其他设备请使用 Wi-Fi 或主控热点网址；127.0.0.1 本机入口只在这台电脑上有效。" Style="{StaticResource MutedText}" FontSize="12" Margin="0,8,0,10"/>
+                <Button x:Name="CopyDeviceUrls" Content="复制网址" HorizontalAlignment="Left"/>
+              </StackPanel>
+            </Border>
+            <Border Style="{StaticResource Card}" Margin="0,0,0,18">
+              <StackPanel>
+                <TextBlock Text="其他连接入口" Style="{StaticResource SectionTitle}"/>
+                <TextBlock Text="也可以通过统一网页设置主控网络；下方 Windows 设置仅用于电脑自身。" Style="{StaticResource MutedText}" Margin="0,0,0,16"/>
+                <Button x:Name="OpenDeviceNetwork" Content="在浏览器中打开网络设置" HorizontalAlignment="Left"/>
               </StackPanel>
             </Border>
             <Border Style="{StaticResource Card}">
@@ -255,6 +303,45 @@
             </Border>
           </StackPanel>
         </ScrollViewer>
+        <Grid x:Name="FilesPage" Visibility="Collapsed">
+          <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/><RowDefinition Height="*"/><RowDefinition Height="Auto"/></Grid.RowDefinitions>
+          <Border Style="{StaticResource Card}" Padding="18" Margin="0,0,0,12">
+            <StackPanel>
+              <Label Content="TF 当前目录" Target="{Binding ElementName=TfPath}" Padding="0,0,0,6"/>
+              <TextBox x:Name="TfPath" Text="/" MaxLength="240" AutomationProperties.Name="TF 当前目录"/>
+              <WrapPanel Margin="0,12,0,0">
+                <Button x:Name="RefreshTf" Content="读取 / 刷新" Margin="0,0,8,8"/>
+                <Button x:Name="ParentTf" Content="上一级" Margin="0,0,8,8"/>
+                <Button x:Name="NewTfFolder" Content="新建文件夹" Margin="0,0,8,8"/>
+                <Button x:Name="UploadTf" Content="从电脑上传" Margin="0,0,8,8"/>
+              </WrapPanel>
+              <WrapPanel>
+                <Button x:Name="RenameTf" Content="重命名" Margin="0,0,8,8"/>
+                <Button x:Name="CopyTf" Content="复制" Margin="0,0,8,8"/>
+                <Button x:Name="PasteTf" Content="粘贴" Margin="0,0,8,8"/>
+                <Button x:Name="DownloadTf" Content="下载到电脑" Margin="0,0,8,8"/>
+                <Button x:Name="DeleteTf" Content="永久删除" Foreground="#B42318" Margin="0,0,8,8"/>
+              </WrapPanel>
+            </StackPanel>
+          </Border>
+          <Border Grid.Row="1" Background="#EFF5FF" Padding="12" CornerRadius="6" Margin="0,0,0,12">
+            <TextBlock x:Name="TfMessage" Text="先连接主控，再读取目录。文件操作只在采集、保存和交接结束后执行。" Style="{StaticResource MutedText}"/>
+          </Border>
+          <DataGrid x:Name="TfGrid" Grid.Row="2" AutoGenerateColumns="False" IsReadOnly="True" CanUserAddRows="False" CanUserDeleteRows="False" SelectionMode="Single" SelectionUnit="FullRow" RowHeight="38" HeadersVisibility="Column" GridLinesVisibility="Horizontal" BorderBrush="#DFE5EF" Background="White" AutomationProperties.Name="TF 文件列表">
+            <DataGrid.Columns>
+              <DataGridTextColumn Header="名称（双击文件夹进入）" Binding="{Binding Name}" Width="*"/>
+              <DataGridTextColumn Header="类型" Binding="{Binding Kind}" Width="85"/>
+              <DataGridTextColumn Header="大小" Binding="{Binding Size}" Width="150"/>
+            </DataGrid.Columns>
+          </DataGrid>
+          <StackPanel Grid.Row="3" Margin="0,12,0,0">
+            <WrapPanel>
+              <Button x:Name="NextTf" Content="下一页" Margin="0,0,10,8"/>
+              <Button x:Name="CancelTf" Content="取消当前文件任务" Margin="0,0,0,8"/>
+            </WrapPanel>
+            <TextBlock Text="复制支持 TF 卡内文件和文件夹；粘贴也可上传电脑剪贴板中的文件。不会覆盖同名 TF 项目；删除前会确认路径、数量和大小。" Style="{StaticResource MutedText}" FontSize="12"/>
+          </StackPanel>
+        </Grid>
         <Grid x:Name="LogsPage" Visibility="Collapsed">
           <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="*"/><RowDefinition Height="Auto"/></Grid.RowDefinitions>
           <WrapPanel Margin="0,0,0,16">

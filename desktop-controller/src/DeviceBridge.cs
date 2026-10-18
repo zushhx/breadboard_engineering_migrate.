@@ -36,7 +36,7 @@ namespace BreadboardController
         {
             this.address=address;
             client=new HttpClient(new HttpClientHandler {UseProxy=false,AllowAutoRedirect=false,UseCookies=false,UseDefaultCredentials=false});
-            client.Timeout=TimeSpan.FromSeconds(5);client.MaxResponseContentBufferSize=524288;
+            client.Timeout=TimeSpan.FromSeconds(15);client.MaxResponseContentBufferSize=524288;
             client.DefaultRequestHeaders.ConnectionClose=true;
         }
         public string Description {get{return AddressPolicy.Display(address);}}
@@ -46,7 +46,8 @@ namespace BreadboardController
             {
                 if(method=="POST")request.Content=new StringContent(body,Encoding.UTF8,"application/json");
                 if(!String.IsNullOrEmpty(key))request.Headers.TryAddWithoutValidation("X-Record-Key",key);
-                using(var response=client.SendAsync(request).GetAwaiter().GetResult())
+                using(var timeout=new CancellationTokenSource(path=="/api/v2/network/scan"?12000:5000))
+                using(var response=client.SendAsync(request,timeout.Token).GetAwaiter().GetResult())
                     return new BridgeResponse {Code=(int)response.StatusCode,Type=response.Content.Headers.ContentType==null?"application/json":response.Content.Headers.ContentType.ToString(),Body=response.Content.ReadAsByteArrayAsync().GetAwaiter().GetResult()};
             }
         }
