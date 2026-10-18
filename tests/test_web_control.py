@@ -13,6 +13,22 @@ from build_sensor_web_recorder import credentials, credential_header
 
 
 class WebControl(unittest.TestCase):
+    def test_record_local_time_names(self):
+        compiler = shutil.which('g++') or shutil.which('clang++')
+        zig = ROOT/'local-data/tooling/ziglang-0.13.0/ziglang/zig.exe'
+        command = [compiler] if compiler else [str(zig), 'c++']
+        if not compiler and not zig.is_file():
+            self.fail('Native compiler or pinned Zig required')
+        with tempfile.TemporaryDirectory() as directory:
+            binary = Path(directory)/('record_names.exe' if os.name == 'nt' else 'record_names')
+            result = subprocess.run(command + ['-std=c++17', '-Wall', '-Wextra', '-Werror',
+                '-I', str(ROOT/'面包板样机_固件/diagnostics/sensor_web_recorder/src'),
+                str(ROOT/'tests/record_time_names_test.cpp'), '-o', str(binary)], capture_output=True, text=True, timeout=180)
+            self.assertEqual(result.returncode, 0, result.stdout+result.stderr)
+            result = subprocess.run([str(binary), str(Path(directory)/'card')], capture_output=True, text=True, timeout=30)
+            self.assertEqual(result.returncode, 0, result.stdout+result.stderr)
+            self.assertIn('PASS:', result.stdout)
+
     def test_continuous_vibration_statistics(self):
         compiler = shutil.which('g++') or shutil.which('clang++')
         zig = ROOT/'local-data/tooling/ziglang-0.13.0/ziglang/zig.exe'

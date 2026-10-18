@@ -21,11 +21,12 @@ const server=http.createServer(async(req,res)=>{
  if(url.pathname==='/api/v2/capabilities'){res.end('{"version":2}');return;}
  if(url.pathname==='/api/v2/network/state'){res.end(JSON.stringify({sta_enabled:true,ap_enabled:true,connected:true,ssid:'测试网络',ap_ssid:'Breadboard-Test',ap_password:'password1234',sta_ip:'192.168.1.23',ap_ip:'192.168.4.1'}));return;}
  if(url.pathname==='/api/v2/files/state'){res.end(JSON.stringify(fileState));return;}
+ if(url.pathname==='/api/v2/download'){res.setHeader('Content-Type','application/octet-stream');res.end('mock waveform');return;}
  if(req.method==='POST'){
   let raw='';for await(const bytes of req)raw+=bytes;const a=JSON.parse(raw);posts.push({path:url.pathname,a});
   assert.equal(a.boot,boot);
   const action=url.pathname.split('/').pop();
-  if(action==='start'){s={...s,owner:a.client,run:a.run,seconds:a.seconds,phase:'recording'};}
+  if(action==='start'){const name=a.local_time.slice(0,14);s={...s,owner:a.client,run:a.run,seconds:a.seconds,phase:'recording',record_name:name,record_path:'/'+name+'/'+name+'.BIN'};}
   if(action==='takeover'){assert.equal(a.expected_run,s.run);s={...s,pending_owner:a.client,phase:'draining'};}
   if(action==='stop')s.phase='passed';
   if(url.pathname.includes('/files/')){
@@ -52,9 +53,16 @@ async function main(){
   await p.goto(base);await p.waitForFunction(()=>!document.getElementById('start').disabled);
   await check('no automatic acquisition',async()=>assert.equal(posts.filter(x=>x.path.endsWith('/start')).length,0));
   await check('start binds independent session and duration',async()=>{await p.locator('#seconds').fill('60');await p.locator('#start').click();await p.waitForFunction(()=>snapshot?.phase==='recording');assert.equal(s.seconds,60);assert.match(s.owner,/^[0-9a-f]{32}$/);});
+  await check('start sends local calendar time and shows actual TF path',async()=>{const a=posts.findLast(x=>x.path.endsWith('/start')).a;assert.match(a.local_time,/^\d{2}-\d{2}-\d{2}-\d{2}\.\d{2}\.\d{2}$/);assert.match(await p.locator('#recordFile').innerText(),new RegExp(s.record_name.replaceAll('.','\\.')));});
+  await check('naming uses local date components and rejects out-of-range years',async()=>{
+    assert.equal(await p.evaluate(()=>v2LocalTime(new Date(2026,9,18,15,46,32))),'26-10-18-15.46.32');
+    assert.equal(await p.evaluate(()=>v2LocalTime(new Date(2024,1,29,0,0,0))),'24-02-29-00.00.00');
+    assert(await p.evaluate(()=>{try{v2LocalTime(new Date(2100,0,1));return false;}catch{return true;}}));
+  });
   const oldOwner=s.owner,oldRun=s.run;const q=await context.newPage();q.on('pageerror',e=>errors.push(e.message));await q.goto(base);await q.waitForFunction(()=>!document.getElementById('start').disabled);
   await check('other page cancel preserves first recording',async()=>{await q.locator('#start').click();await q.locator('#takeoverCancel').click();assert.equal(s.owner,oldOwner);assert.equal(s.phase,'recording');assert.equal(posts.filter(x=>x.path.endsWith('/takeover')).length,0);});
   await check('continue explicitly targets observed run and new run',async()=>{await q.locator('#seconds').fill('90');await q.locator('#start').click();await q.locator('#takeoverContinue').click();await q.waitForFunction(()=>snapshot?.phase==='draining');const a=posts.findLast(x=>x.path.endsWith('/takeover')).a;assert.equal(a.expected_run,oldRun);assert.notEqual(a.run,oldRun);assert.equal(a.seconds,90);assert.notEqual(a.client,oldOwner);});
+  await check('takeover submits its own local timestamp',async()=>assert.match(posts.findLast(x=>x.path.endsWith('/takeover')).a.local_time,/^\d{2}-\d{2}-\d{2}-\d{2}\.\d{2}\.\d{2}$/));
   await check('closing observer releases only its own session',async()=>{const id=await q.evaluate(()=>v2Client);await q.close();await new Promise(r=>setTimeout(r,150));assert(posts.some(x=>x.path.endsWith('/release')&&x.a.client===id));});
   s={...s,phase:'passed',pending_owner:'',owner:''};
   await p.locator('[data-panel=network]').click();await p.waitForFunction(()=>document.getElementById('wifiSsid').value==='测试网络');
@@ -66,6 +74,7 @@ async function main(){
   await check('delete cancellation never dispatches delete',async()=>{p.once('dialog',d=>d.dismiss());await p.locator('#deleteFile').click();await p.waitForFunction(()=>document.getElementById('fileMessage').textContent.includes('已取消删除'));assert.equal(posts.filter(x=>x.path.endsWith('/delete')).length,0);});
   await check('confirmed deletion carries measured revision',async()=>{p.once('dialog',d=>d.accept());await p.locator('#deleteFile').click();await p.waitForFunction(()=>document.getElementById('fileMessage').textContent.includes('删除已完成'));assert.equal(posts.findLast(x=>x.path.endsWith('/delete')).a.revision,5);});
   await check('upload chunks and SHA match standard implementation',async()=>{const bytes=crypto.randomBytes(5001);await p.locator('#uploadPicker').setInputFiles({name:'测试上传.bin',mimeType:'application/octet-stream',buffer:bytes});await p.waitForFunction(()=>document.getElementById('fileMessage').textContent.includes('上传已逐文件'));assert.deepEqual(Buffer.concat(upload),bytes);assert.equal(confirmedDigest,crypto.createHash('sha256').update(bytes).digest('hex'));});
+  await check('download default retains timestamp and collision suffix',async()=>{await p.evaluate(()=>v2Selected={name:'26-10-18-15.46-02.BIN',path:'/26-10-18-15.46-02/26-10-18-15.46-02.BIN',directory:false});const event=p.waitForEvent('download');await p.locator('#downloadFile').click();const download=await event;assert.equal(download.suggestedFilename(),'26-10-18-15.46-02.BIN');await download.cancel();});
   await check('TF and acquisition controls exclude busy recording',async()=>{s.phase='recording';await p.waitForFunction(()=>document.getElementById('deleteFile').disabled);assert(await p.locator('#uploadFiles').isDisabled());});
   s.phase='passed';await p.waitForFunction(()=>!document.getElementById('uploadFiles').disabled);
   await p.screenshot({path:path.join(out,'web-tf-simulated.png'),fullPage:true});

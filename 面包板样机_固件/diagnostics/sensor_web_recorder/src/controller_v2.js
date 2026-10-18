@@ -4,6 +4,7 @@ const v2Client=Array.from(crypto.getRandomValues(new Uint8Array(16)),n=>n.toStri
 const v2Style=document.createElement('style');v2Style.textContent='[hidden]{display:none!important}.v2nav{max-width:1400px;margin:16px auto 0;display:flex;gap:10px;padding:0 32px;flex-wrap:wrap}.v2nav button[aria-pressed=true]{background:#245dd6;color:white}.v2panel{max-width:1050px;margin:auto}.v2grid{display:grid;grid-template-columns:1fr 1fr;gap:20px}.v2panel label{display:block;margin:14px 0 7px}.v2panel input:not([type=checkbox]){box-sizing:border-box;width:100%;padding:11px;border:1px solid #95a4b5;border-radius:5px;font:inherit}.v2toolbar{display:flex;gap:9px;flex-wrap:wrap;margin:16px 0}.v2panel table{width:100%;border-collapse:collapse}.v2panel td,.v2panel th{padding:12px 8px;text-align:left;border-bottom:1px solid #e1e7ed;overflow-wrap:anywhere}.v2panel tr.selected{background:#eaf2ff}.v2panel tr{cursor:pointer}.v2notice{padding:12px;background:#eff5ff;color:#264873;border-radius:6px;margin:12px 0;white-space:pre-wrap}.v2panel dialog,dialog.v2dialog{border:1px solid #cbd5e1;border-radius:12px;padding:26px;max-width:440px;color:#17243b}dialog::backdrop{background:#17243b66}.v2panel .v2result{white-space:pre-wrap;font-size:13px;line-height:1.7}.v2panel a{color:#194fb9}@media(max-width:760px){.v2grid{grid-template-columns:1fr}.v2nav{padding:0 16px}}';
 document.head.append(v2Style);
 const v2Main=document.querySelector('main'),v2Monitor=document.createElement('div');v2Monitor.id='monitorPanel';v2Monitor.append(...v2Main.childNodes);v2Main.append(v2Monitor);
+const v2RecordFile=document.createElement('p');v2RecordFile.id='recordFile';v2RecordFile.style.overflowWrap='anywhere';v2Monitor.querySelector('.aside-note').append(v2RecordFile);
 const v2Nav=document.createElement('nav');v2Nav.className='v2nav';v2Nav.setAttribute('aria-label','主控功能');
 v2Nav.innerHTML='<button data-panel="monitor" aria-pressed="true">检测页面</button><button data-panel="network" aria-pressed="false">主控网络设置</button><button data-panel="files" aria-pressed="false">TF 文件</button>';
 v2Main.before(v2Nav);
@@ -32,6 +33,7 @@ async function v2Bootstrap(){
   const panel=new URLSearchParams(location.search).get('panel');if(['network','files'].includes(panel))v2ChoosePanel(panel);poll();
 }
 function v2Render(s){
+  v2RecordFile.textContent=s.record_path?'信号文件：'+s.record_path:'新记录按开始时电脑或手机的本地时间命名；请先确认控制端时间正确。';
   if(v2OwnedRun&&s.owner&&s.owner!==v2Client&&s.run!==v2OwnedRun){text('message','本页采集已被其他页面接管，当前仅查看新的采集。');v2OwnedRun='';}
   if(s.pending_owner&&s.owner===v2Client)text('message','其他页面请求接管，正在停止、保存和校验本页记录。');
   v2Files.querySelectorAll('button').forEach(b=>{if(b.id!=='cancelFile')b.disabled=!v2Ready||active.has(s.phase)||v2FileBusy;});
@@ -51,9 +53,14 @@ async function v2Start(){
   try{
     if(busy&&!await v2ConfirmTakeover(observed,seconds)){text('message','已取消；原页面继续采集。');return;}
     const run=crypto.getRandomValues(new Uint32Array(1))[0].toString(16).toUpperCase().padStart(8,'0');
-    await v2Api('session/'+(busy?'takeover':'start'),{client:v2Client,run,seconds,card_serial:observed.card_serial,card_bytes:observed.card_bytes,...(busy?{expected_run:observed.run}:{})});
+    await v2Api('session/'+(busy?'takeover':'start'),{client:v2Client,run,seconds,local_time:v2LocalTime(new Date()),card_serial:observed.card_serial,card_bytes:observed.card_bytes,...(busy?{expected_run:observed.run}:{})});
     v2OwnedRun=run;text('message',busy?'已预约接管：先保存并校验原记录，再开始本页采集。':'开始请求已接收，以设备状态为准。');
   }catch(e){text('message',e.message+'；不会自动重发，请查看当前状态。');}finally{pending=false;buttons();}
+}
+function v2LocalTime(date){
+  const year=date.getFullYear();if(!Number.isFinite(date.getTime())||year<2000||year>2099)throw Error('电脑或手机日期需在2000–2099年之间，请校准后再开始');
+  const two=n=>String(n).padStart(2,'0');
+  return two(year%100)+'-'+two(date.getMonth()+1)+'-'+two(date.getDate())+'-'+two(date.getHours())+'.'+two(date.getMinutes())+'.'+two(date.getSeconds());
 }
 async function v2Stop(){try{await v2Api('session/stop',{client:v2Client});text('message','已请求安全停止，请等待文件保存和校验完成。');}catch(e){text('message',e.message);}}
 window.addEventListener('pagehide',()=>{v2Leaving=true;v2Ready=false;navigator.sendBeacon('/api/v2/session/release',JSON.stringify({boot:sessionKey,client:v2Client}));if(v2Socket)v2Socket.close();if(v2Transfer)navigator.sendBeacon('/api/v2/files/cancel',JSON.stringify({boot:sessionKey,job:v2Uuid(),transfer:v2Transfer}));});

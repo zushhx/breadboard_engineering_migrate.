@@ -59,6 +59,17 @@ bool begin(const char* run, unsigned seconds) {
   snprintf(trendRun, sizeof(trendRun), "%s", run);
   return true;
 }
+bool recordNaming(const char* run,char* local,uint64_t& elapsedUs) {
+  Guard g;
+  if(strcmp(model.s.run,run)||!model.s.startLocal[0]) {local[0]=0;elapsedUs=0;return false;}
+  memcpy(local,model.s.startLocal,18);uint64_t current=esp_timer_get_time();
+  elapsedUs=current>=model.s.namedAtUs?current-model.s.namedAtUs:0;return true;
+}
+void recordLocation(const char* run,const char* name,const char* path) {
+  Guard g;if(strcmp(model.s.run,run))return;
+  snprintf(model.s.recordName,sizeof(model.s.recordName),"%s",name);
+  snprintf(model.s.recordPath,sizeof(model.s.recordPath),"%s",path);
+}
 void phase(Phase value, const char* detail) { Guard g; model.s.phase = value; snprintf(model.s.detail, sizeof(model.s.detail), "%s", detail); }
 bool stopping() { Guard g; sessions.tick(model,esp_timer_get_time()); return model.s.stop; }
 void result(bool passed, bool locked, const char* detail, const char* sha) {
@@ -117,18 +128,18 @@ std::string statusJson() {
   { Guard g; sessions.tick(model,esp_timer_get_time()); s = model.s; snprintf(owner,sizeof(owner),"%s",sessions.owner); snprintf(waiting,sizeof(waiting),"%s",sessions.pendingOwner); files=sessions.files; }
   // 272 signed XYZ rows need < 6KiB; reserve metadata space without growing the task stack.
   static char out[8192]; // HTTP handlers run on one server task, never on acquisition tasks.
-  static_assert(kPreview * 24 + 1200 < sizeof(out), "Status JSON worst-case bound");
+  static_assert(kPreview * 24 + 1500 < sizeof(out), "Status JSON worst-case bound");
   int n = snprintf(out, sizeof(out),
       "{\"boot\":\"%s\",\"phase\":\"%s\",\"ready\":%s,\"connected\":%s,\"ip\":\"%s\","
       "\"card_serial\":\"%08" PRIX32 "\",\"card_bytes\":\"%" PRIu64 "\",\"space_valid\":%s,\"free_bytes\":\"%" PRIu64 "\",\"run\":\"%s\",\"seconds\":%u,"
       "\"written\":%" PRIu64 ",\"elapsed_us\":%" PRIu64 ",\"errors\":%u,\"queue\":%u,"
       "\"fifo_high\":%u,\"queue_high\":%u,\"write_us\":%u,\"sync_us\":%u,\"free_heap\":%u,"
       "\"ina_valid\":%s,\"ina_us\":%" PRIu64 ",\"bus_mv\":%" PRId32 ",\"current_ua\":%" PRId32 ",\"power_uw\":%" PRId32 ","
-      "\"detail\":\"%s\",\"sha256\":\"%s\",\"preview_seq\":%u,\"preview_us\":%" PRIu64 ",\"preview\":[",
+      "\"detail\":\"%s\",\"sha256\":\"%s\",\"record_name\":\"%s\",\"record_path\":\"%s\",\"preview_seq\":%u,\"preview_us\":%" PRIu64 ",\"preview\":[",
       key, phaseName(s.phase), s.ready ? "true" : "false", s.connected ? "true" : "false", s.ip,
       s.serial, s.capacity, s.spaceValid ? "true" : "false", s.freeBytes, s.run, (unsigned)s.seconds, s.written, s.elapsedUs, (unsigned)s.errors, (unsigned)s.queue,
       (unsigned)s.fifoHigh, (unsigned)s.queueHigh, (unsigned)s.maxWriteUs, (unsigned)s.maxSyncUs, (unsigned)s.freeHeap,
-      s.inaValid ? "true" : "false", s.inaUs, s.busMv, s.currentUa, s.powerUw, s.detail, s.sha, (unsigned)s.previewSeq, s.previewUs);
+      s.inaValid ? "true" : "false", s.inaUs, s.busMv, s.currentUa, s.powerUw, s.detail, s.sha, s.recordName, s.recordPath, (unsigned)s.previewSeq, s.previewUs);
   for (unsigned i = 0; i < s.previewCount && n > 0 && n < static_cast<int>(sizeof(out)); ++i)
     n += snprintf(out + n, sizeof(out) - n, "%s[%d,%d,%d]", i ? "," : "", s.xyz[i][0], s.xyz[i][1], s.xyz[i][2]);
   if (n <= 0 || n + 3 >= static_cast<int>(sizeof(out))) { xSemaphoreGive(serialization); return "{}"; }
@@ -199,12 +210,15 @@ devicev2::Reply sessionRequest(const char* action,cJSON* a) {
   else if(!strcmp(action,"stop")) {Guard guard;model.requestStop();}
   else {
     int seconds=0;const char* run=devicev2::text(a,"run");const char* serial=devicev2::text(a,"card_serial");const char* capacity=devicev2::text(a,"card_bytes");
+    auto stampValue=cJSON_GetObjectItem(a,"local_time");
+    if(stampValue&&(!cJSON_IsString(stampValue)||!recorder::localStamp(stampValue->valuestring)))return devicev2::error(400,"采集本地时间无效，请校准电脑或手机时间并刷新页面");
+    const char* local=stampValue?stampValue->valuestring:"";
     if(!devicev2::integer(a,"seconds",1,300,seconds)||!recorder::runId(serial)||!recorder::runId(run)||!capacity[0]) return devicev2::error(400,"采集参数无效");
     for(const char* digit=capacity;*digit;digit++) if(*digit<'0'||*digit>'9') return devicev2::error(400,"卡容量无效");
     char* end=nullptr;uint64_t bytes=strtoull(capacity,&end,10);if(!end||*end) return devicev2::error(400,"卡容量无效");
     {Guard guard;
-      if(!strcmp(action,"start")) ok=sessions.start(model,id,now,strtoul(serial,nullptr,16),bytes,run,seconds);
-      else if(!strcmp(action,"takeover")) ok=sessions.takeover(model,id,now,devicev2::text(a,"expected_run"),strtoul(serial,nullptr,16),bytes,run,seconds);
+      if(!strcmp(action,"start")) ok=sessions.start(model,id,now,strtoul(serial,nullptr,16),bytes,run,seconds,local);
+      else if(!strcmp(action,"takeover")) ok=sessions.takeover(model,id,now,devicev2::text(a,"expected_run"),strtoul(serial,nullptr,16),bytes,run,seconds,local);
     }
     if(!ok) return devicev2::error(409,"状态已变化、其他页面正在采集或文件任务未完成；请刷新状态");
   }
