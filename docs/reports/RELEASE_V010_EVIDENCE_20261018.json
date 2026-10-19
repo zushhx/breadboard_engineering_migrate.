@@ -1,6 +1,6 @@
 {
-  "date": "2026-10-18",
-  "phase": "candidate_preparation_not_release_acceptance",
+  "date": "2026-10-19",
+  "phase": "candidate_flashed_usb_captured_pc_exports_pending",
   "base_commit": "8f4c48dd30c78f90b22c97a5102a9888f9d973f5",
   "network_fix_commit": "3a365412d55320f1508b3e24e8d19c8d3582bdeb",
   "candidate": {
@@ -10,7 +10,7 @@
     "input_sha256": "ad674614d532d30c9aedcb9e31a48bca333d42c4979122db95f04f2ed170b392",
     "build_manifest_local": "local-data/build/sensor-web/ad674614d532d30c/20261018_170441_450132/build_manifest.json",
     "build_passed": true,
-    "hardware_tested": false,
+    "hardware_tested": true,
     "credentials_present": false,
     "sdk_config_equal_to_6ec57c3": true,
     "partition_equal": true,
@@ -50,11 +50,11 @@
     "target": "existing installed firmware only"
   },
   "acceptance": {
-    "candidate_smoke": "awaiting explicit candidate approval",
-    "usb_300s": "not tested",
+    "candidate_smoke": "passed two complete 3-second PC verified records",
+    "usb_300s": "device passed; complete PC export pending",
     "sta_four_pages_300s": "not tested",
     "ap_four_pages_300s": "not tested",
-    "ten_30s_runs": "not tested",
+    "ten_30s_runs": "10 device passes; complete PC exports pending",
     "native_gui_file_mutations": "not tested",
     "actual_network_switching": "not tested",
     "actual_wpf_exit": "not tested",
@@ -148,5 +148,191 @@
     "checks": 28,
     "log": "local-data/validation/release-v010/network-pinned-sdk-json-final.txt",
     "log_sha256": "fca0eb4912999fd773dd17f5770f55b35054b2e99f95b68283292ddd9535df94"
+  },
+  "candidate_trial": {
+    "approved": true,
+    "operation_commit": "ba10dc54ee2af3c1c51d8195cbfba5ebe83b0bf0",
+    "app0_only": true,
+    "passed": true,
+    "result_local": "local-data/hardware/release-v010/candidate-smoke/20261019_100008/result.json",
+    "result_sha256": "ab8e6bc497460da1545e1c80d4d2f5112ef7a1a021657b707c989d184bae16ce",
+    "backup": {
+      "path": "local-data/hardware/release-v010/candidate-smoke/20261019_100008/controller_prefix.bin",
+      "bytes": 1187840,
+      "sha256": "fa055c352c0cd7379887f4c66feb24eec64b67178c1477a8ada06549741a21fe",
+      "nvs_sha256": "e9ff413f7e443f44c899bb3ff55aa0ab3541ef03bde179319e83d39bbfcc312d",
+      "verified_against_chip": true
+    },
+    "restoration_exercised": false
+  },
+  "usb_capture": {
+    "source": "4e6d5333c57942a88138d99582521159f3dbd6b3",
+    "folder_local": "local-data/hardware/release-v010/usb-acceptance-20261019_100401",
+    "radio_sta_enabled": false,
+    "radio_ap_enabled": false,
+    "desktop_used_sha256": "a05dd3783e2b4dc9a2442f997577ba47d7a61fe67db9b545553859fc0e567936",
+    "idle_internal_free_bytes": 45024,
+    "browser_harness_stopped_after_capture": true,
+    "reason": "replace insufficient total HTTP export deadline with separately recorded streaming export; original non-passing result preserved",
+    "records": [
+      {
+        "run": "9C91F86F",
+        "record_name": "26-10-19-10.04",
+        "record_path": "/26-10-19-10.04/26-10-19-10.04.BIN",
+        "seconds": 300,
+        "elapsed_us": 300004782,
+        "written": 7988759,
+        "errors": 0,
+        "fifo_high": 136,
+        "queue_high": 19,
+        "free_heap": 45024,
+        "sha256": "2d454300701216f78b9303147be43c209fd00c19155fd0c051f45acb97e01659"
+      },
+      {
+        "run": "E454FC20",
+        "record_name": "26-10-19-10.10",
+        "record_path": "/26-10-19-10.10/26-10-19-10.10.BIN",
+        "seconds": 30,
+        "elapsed_us": 30002790,
+        "written": 799074,
+        "errors": 0,
+        "fifo_high": 135,
+        "queue_high": 12,
+        "free_heap": 45024,
+        "sha256": "715fa9f13d84a6e397487dfd214ef0da19dca27b26c2beb18acb5dc64dfd0522"
+      },
+      {
+        "run": "7D418179",
+        "record_name": "26-10-19-10.10-02",
+        "record_path": "/26-10-19-10.10-02/26-10-19-10.10-02.BIN",
+        "seconds": 30,
+        "elapsed_us": 30002799,
+        "written": 799074,
+        "errors": 0,
+        "fifo_high": 136,
+        "queue_high": 14,
+        "free_heap": 45024,
+        "sha256": "56b344bb232bea8cd9495565a5dc7375668f7a384cf0d680cf9fe0b942e4cd21"
+      },
+      {
+        "run": "1E26E741",
+        "record_name": "26-10-19-10.11",
+        "record_path": "/26-10-19-10.11/26-10-19-10.11.BIN",
+        "seconds": 30,
+        "elapsed_us": 30004810,
+        "written": 799122,
+        "errors": 0,
+        "fifo_high": 136,
+        "queue_high": 4,
+        "free_heap": 45024,
+        "sha256": "96c14a880ddf1af002273a46f7689c42a054e3e45376b730fc93878b533d8bf3"
+      },
+      {
+        "run": "F4267EDC",
+        "record_name": "26-10-19-10.12",
+        "record_path": "/26-10-19-10.12/26-10-19-10.12.BIN",
+        "seconds": 30,
+        "elapsed_us": 30004799,
+        "written": 799128,
+        "errors": 0,
+        "fifo_high": 136,
+        "queue_high": 13,
+        "free_heap": 45024,
+        "sha256": "e952f1c4e28932b3c443075a1669012534a2e20d782796c865a57aff02507963"
+      },
+      {
+        "run": "1D689081",
+        "record_name": "26-10-19-10.12-02",
+        "record_path": "/26-10-19-10.12-02/26-10-19-10.12-02.BIN",
+        "seconds": 30,
+        "elapsed_us": 30002792,
+        "written": 799058,
+        "errors": 0,
+        "fifo_high": 134,
+        "queue_high": 10,
+        "free_heap": 45024,
+        "sha256": "cda8f747745887ed4108c71a08b9f950d94bac53848c26bb12e4a3f953447e88"
+      },
+      {
+        "run": "A7FD0EF2",
+        "record_name": "26-10-19-10.13",
+        "record_path": "/26-10-19-10.13/26-10-19-10.13.BIN",
+        "seconds": 30,
+        "elapsed_us": 30004813,
+        "written": 799112,
+        "errors": 0,
+        "fifo_high": 134,
+        "queue_high": 4,
+        "free_heap": 45024,
+        "sha256": "16ccdccd423c8b46fbee120ce07010df49f3d90f67c9c61b7b9526e5b7a7109e"
+      },
+      {
+        "run": "D6786191",
+        "record_name": "26-10-19-10.14",
+        "record_path": "/26-10-19-10.14/26-10-19-10.14.BIN",
+        "seconds": 30,
+        "elapsed_us": 30002796,
+        "written": 799006,
+        "errors": 0,
+        "fifo_high": 135,
+        "queue_high": 17,
+        "free_heap": 45024,
+        "sha256": "4c842a7e67449948defa62b412cdb049af811a6e6b7e84b360a09422f0063fb4"
+      },
+      {
+        "run": "D2689553",
+        "record_name": "26-10-19-10.14-02",
+        "record_path": "/26-10-19-10.14-02/26-10-19-10.14-02.BIN",
+        "seconds": 30,
+        "elapsed_us": 30002801,
+        "written": 799038,
+        "errors": 0,
+        "fifo_high": 134,
+        "queue_high": 11,
+        "free_heap": 45024,
+        "sha256": "225f349b044f38becb049d887b6e378be32d5a697143813740a6bd99d0d1c4ac"
+      },
+      {
+        "run": "E6CCD583",
+        "record_name": "26-10-19-10.15",
+        "record_path": "/26-10-19-10.15/26-10-19-10.15.BIN",
+        "seconds": 30,
+        "elapsed_us": 30002803,
+        "written": 799038,
+        "errors": 0,
+        "fifo_high": 134,
+        "queue_high": 4,
+        "free_heap": 45024,
+        "sha256": "a2526d635280df890aa4832e24d9b60782b68305edeacd935a23798dd74ce605"
+      },
+      {
+        "run": "2881608E",
+        "record_name": "26-10-19-10.16",
+        "record_path": "/26-10-19-10.16/26-10-19-10.16.BIN",
+        "seconds": 30,
+        "elapsed_us": 30004799,
+        "written": 799091,
+        "errors": 0,
+        "fifo_high": 134,
+        "queue_high": 12,
+        "free_heap": 45024,
+        "sha256": "6e0e4028714fbd56f44702dbcdaf149f5af5f08a7fa31a059aaa2484248bf10c"
+      }
+    ]
+  },
+  "ci": {
+    "head": "ba10dc54ee2af3c1c51d8195cbfba5ebe83b0bf0",
+    "run_id": 39115296002,
+    "url": "https://github.com/zushhx/breadboard_engineering_migrate./actions/runs/39115296002",
+    "all_six_success": true,
+    "python_cases": 56,
+    "jobs": [
+      "files-and-guards",
+      "frozen-firmware-build",
+      "sensor-recorder-build",
+      "sensor-web-recorder-build",
+      "tf-write-diagnostic-build",
+      "sensor-monitor-diagnostic-build"
+    ]
   }
 }
