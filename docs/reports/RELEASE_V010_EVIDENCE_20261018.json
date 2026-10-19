@@ -1,22 +1,18 @@
 {
   "date": "2026-10-19",
-  "phase": "sta_abort_halted_repair_in_progress",
+  "phase": "sta_queue_failure_writer_repair_in_progress",
   "base_commit": "8f4c48dd30c78f90b22c97a5102a9888f9d973f5",
   "network_fix_commit": "3a365412d55320f1508b3e24e8d19c8d3582bdeb",
   "candidate": {
-    "source_commit": "4e6d5333c57942a88138d99582521159f3dbd6b3",
-    "bytes": 1122032,
-    "sha256": "38ef1b535084a7a290d8ea5bf40ae4aeb501ce07905e38db502fc7fce61c18f7",
-    "input_sha256": "ad674614d532d30c9aedcb9e31a48bca333d42c4979122db95f04f2ed170b392",
-    "build_manifest_local": "local-data/build/sensor-web/ad674614d532d30c/20261018_170441_450132/build_manifest.json",
+    "source_commit": "fb2461cbe301a88b19d5d3022fb2733f8821f566",
+    "bytes": 1122608,
+    "sha256": "8104ab5358d2112ad0268214efa5fb446b21c3c8309a82e489f2456bb76841c6",
+    "input_sha256": "01b753c715476e31043305d6ad2f4442072319c73d15ba6e5ef82720ef19e397",
+    "build_manifest_local": "local-data/build/sensor-web/01b753c715476e31/20261019_111351_451894/build_manifest.json",
     "build_passed": true,
     "hardware_tested": true,
     "credentials_present": false,
-    "sdk_config_equal_to_6ec57c3": true,
-    "partition_equal": true,
-    "generated_credentials_header_equal": true,
-    "fifo_priority": 8,
-    "runtime_state": "halted in GDB stub after HTTP status allocation abort; not reset"
+    "runtime_state": "failed/locked after STA four-page Queue(8), capture closed; no reset after this failure"
   },
   "desktop_candidate": {
     "source_commit": "3a365412d55320f1508b3e24e8d19c8d3582bdeb",
@@ -763,7 +759,8 @@
         },
         "integrity_passed": true
       }
-    ]
+    ],
+    "source_commit": "4e6d5333c57942a88138d99582521159f3dbd6b3"
   },
   "ci": {
     "head": "ba10dc54ee2af3c1c51d8195cbfba5ebe83b0bf0",
@@ -794,6 +791,52 @@
       "?",
       "g"
     ],
-    "recovery_executed": false
+    "recovery_executed": true,
+    "recovery_note": "User approved exact fb2461c app0 trial; saved panic recovered by MCU reset before fresh snapshot and verified app write."
+  },
+  "previous_candidate_4e6d5333": {
+    "source_commit": "4e6d5333c57942a88138d99582521159f3dbd6b3",
+    "bytes": 1122032,
+    "sha256": "38ef1b535084a7a290d8ea5bf40ae4aeb501ce07905e38db502fc7fce61c18f7",
+    "input_sha256": "ad674614d532d30c9aedcb9e31a48bca333d42c4979122db95f04f2ed170b392",
+    "build_manifest_local": "local-data/build/sensor-web/ad674614d532d30c/20261018_170441_450132/build_manifest.json",
+    "build_passed": true,
+    "hardware_tested": true,
+    "credentials_present": false,
+    "sdk_config_equal_to_6ec57c3": true,
+    "partition_equal": true,
+    "generated_credentials_header_equal": true,
+    "fifo_priority": 8,
+    "runtime_state": "halted in GDB stub after HTTP status allocation abort; not reset"
+  },
+  "telemetry_trial": {
+    "source": "fb2461cbe301a88b19d5d3022fb2733f8821f566",
+    "result_local": "local-data/hardware/release-v010/telemetry-candidate-smoke/20261019_112542/result.json",
+    "result_sha256": "3cbca440338325f0fee3d9fd2f7922b9828148a2c656ee7185055729456381e0",
+    "passed": true,
+    "records": 2,
+    "seconds_each": 3,
+    "complete_pc_readback": true,
+    "full_acceptance": false,
+    "backup": {
+      "path": "local-data/hardware/release-v010/telemetry-candidate-smoke/20261019_112542/controller_prefix.bin",
+      "bytes": 1191936,
+      "sha256": "03b872ea9d2c7138d9dc181d21ead2f16e60f1048dfae470f0fcf111e5e0647f",
+      "nvs_sha256": "d677749092ca15a26c5b968988f87e83cfb885082daa8949024681e8bab491ca",
+      "verified_against_chip": true
+    }
+  },
+  "sta_queue_failure": {
+    "source": "fb2461cbe301a88b19d5d3022fb2733f8821f566",
+    "run": "AC41A7E6",
+    "errors": 8,
+    "elapsed_us": 4654508,
+    "samples": 124096,
+    "fifo_high": 373,
+    "queue_high": 40,
+    "result_local": "local-data/hardware/release-v010/sta-four-pages-20261019_112747/result.json",
+    "result_sha256": "7218c236b8b2637752d8009422684c9a0bdcda6970a988b04ee91929c0e46570",
+    "passed": false,
+    "reset_requested": false
   }
 }
