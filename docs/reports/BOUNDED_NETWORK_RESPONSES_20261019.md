@@ -24,3 +24,11 @@ B匹配ELF的只读GDB回溯已证实USB statusJson构造大std::string副本时
 - 实际HTTP策略头宿主检查通过：完整发送后关闭、发送/关闭失败、chunk末块、generation/过期/旧callback/运行中/排队失败/并发callback及32位时间回绕。WS检查是源码结构guard，未执行真实SDK连接负载。
 
 本报告不记新候选实机通过。最终源码、镜像摘要、恢复条件及试烧入口准备后，仍须取得该具体候选试烧确认。main和Release门槛保留。
+
+## C冻结构建
+
+源码9ce3f4e1d317bb23c5dcd55fa78cb1687b969b9b，输入c838aec0f4fe14028a603665803aeb86ccfb5bcf1045d7919c3ea7e5b7b320b2；local-data/build/sensor-web/c838aec0f4fe1402/20261019_172016_557726/build_manifest.json记录干净输入构建成功、无嵌入凭据、hardware_tested=false。应用1123856字节，SHA-256 4e064e96ca3c1d18dec283dcaa9de22e9c2938137487ce64bda31dffb3ac1656；SDK配置c8b9163660bf87d2f38639536994c92b721a8efaf266a2c2986696ebbf2678d5，分区1d9cca96de0fe07ad7fc0648b9878ddecd9ce565e38b589ad20fea698ed4c80c与B一致。静态RAM87460字节，较B增加8字节；未改采集/写卡任务参数。构建日志local-data/validation/release-v010/bounded-network-build-C.txt。
+
+具体试烧将先保存核验最新1191936字节前缀及NVS，核实B原字节、MAC/boot/分区，再仅写app0；不写本次重建bootloader。回退使用保留B原应用，NVS仅按同轮条件必要时恢复。B已有的缩短采样和USB缺陷不因作为回退镜像而消失；未来C实机通过不追溯覆盖A/B失败。
+
+试烧入口tools/release_v010_bounded_network_trial.py已绑定上述原字节产物；prepare-only核实全部源码输入、SDK/分区/空凭据、B回退镜像及GDB证据，hardware_accessed=false。15项定向门槛回归通过，含缺少批准先拒绝、GDB只读查询、错备份拒绝、同轮NVS恢复条件及清理异常不跳过恢复。另一agent审查发现并修复了browser清理异常可能跳过回退、host启动失败可能遗留USB占用的路径。具体新C确认尚未取得，未执行该入口的硬件路径。
