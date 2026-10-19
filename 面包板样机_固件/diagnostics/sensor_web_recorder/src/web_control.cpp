@@ -1,5 +1,6 @@
 #include "web_control.h"
 #include "session_model.h"
+#include "telemetry_json.h"
 #include "device_v2.h"
 #include <unistd.h>
 #include "freertos/FreeRTOS.h"
@@ -122,49 +123,42 @@ static esp_err_t page(httpd_req_t* r) {
       httpd_resp_send_chunk(r, marker + 7, pageEnd - (marker + 7) - 1) != ESP_OK) return ESP_FAIL;
   return httpd_resp_send_chunk(r, nullptr, 0);
 }
-std::string statusJson() {
-  xSemaphoreTake(serialization,portMAX_DELAY);
+// Only network/USB response tasks take this mutex. Never hold Guard across I/O.
+static char telemetryJson[kTelemetryJsonCapacity];
+struct TelemetryLock {
+  TelemetryLock() {xSemaphoreTake(serialization,portMAX_DELAY);}
+  ~TelemetryLock() {xSemaphoreGive(serialization);}
+};
+static size_t buildStatusJson() {
   Snapshot s; char owner[33],waiting[33]; bool files;
-  { Guard g; sessions.tick(model,esp_timer_get_time()); s = model.s; snprintf(owner,sizeof(owner),"%s",sessions.owner); snprintf(waiting,sizeof(waiting),"%s",sessions.pendingOwner); files=sessions.files; }
-  // 272 signed XYZ rows need < 6KiB; reserve metadata space without growing the task stack.
-  static char out[8192]; // HTTP handlers run on one server task, never on acquisition tasks.
-  static_assert(kPreview * 24 + 1500 < sizeof(out), "Status JSON worst-case bound");
-  int n = snprintf(out, sizeof(out),
-      "{\"boot\":\"%s\",\"phase\":\"%s\",\"ready\":%s,\"connected\":%s,\"ip\":\"%s\","
-      "\"card_serial\":\"%08" PRIX32 "\",\"card_bytes\":\"%" PRIu64 "\",\"space_valid\":%s,\"free_bytes\":\"%" PRIu64 "\",\"run\":\"%s\",\"seconds\":%u,"
-      "\"written\":%" PRIu64 ",\"elapsed_us\":%" PRIu64 ",\"errors\":%u,\"queue\":%u,"
-      "\"fifo_high\":%u,\"queue_high\":%u,\"write_us\":%u,\"sync_us\":%u,\"free_heap\":%u,"
-      "\"ina_valid\":%s,\"ina_us\":%" PRIu64 ",\"bus_mv\":%" PRId32 ",\"current_ua\":%" PRId32 ",\"power_uw\":%" PRId32 ","
-      "\"detail\":\"%s\",\"sha256\":\"%s\",\"record_name\":\"%s\",\"record_path\":\"%s\",\"preview_seq\":%u,\"preview_us\":%" PRIu64 ",\"preview\":[",
-      key, phaseName(s.phase), s.ready ? "true" : "false", s.connected ? "true" : "false", s.ip,
-      s.serial, s.capacity, s.spaceValid ? "true" : "false", s.freeBytes, s.run, (unsigned)s.seconds, s.written, s.elapsedUs, (unsigned)s.errors, (unsigned)s.queue,
-      (unsigned)s.fifoHigh, (unsigned)s.queueHigh, (unsigned)s.maxWriteUs, (unsigned)s.maxSyncUs, (unsigned)s.freeHeap,
-      s.inaValid ? "true" : "false", s.inaUs, s.busMv, s.currentUa, s.powerUw, s.detail, s.sha, s.recordName, s.recordPath, (unsigned)s.previewSeq, s.previewUs);
-  for (unsigned i = 0; i < s.previewCount && n > 0 && n < static_cast<int>(sizeof(out)); ++i)
-    n += snprintf(out + n, sizeof(out) - n, "%s[%d,%d,%d]", i ? "," : "", s.xyz[i][0], s.xyz[i][1], s.xyz[i][2]);
-  if (n <= 0 || n + 3 >= static_cast<int>(sizeof(out))) { xSemaphoreGive(serialization); return "{}"; }
-  memcpy(out + n, "]}", 3);
-  std::string value(out,n+1);
-  value += ",\"owner\":\""; value += owner; value += "\",\"pending_owner\":\""; value+=waiting;
-  value += "\",\"files_busy\":"; value += files?"true}":"false}";
-  xSemaphoreGive(serialization); return value;
+  {Guard g;sessions.tick(model,esp_timer_get_time());s=model.s;
+    snprintf(owner,sizeof(owner),"%s",sessions.owner);snprintf(waiting,sizeof(waiting),"%s",sessions.pendingOwner);files=sessions.files;}
+  return renderStatusJson(telemetryJson,sizeof(telemetryJson),key,s,owner,waiting,files);
 }
-static esp_err_t status(httpd_req_t* r) { headers(r,"application/json"); auto out=statusJson(); return httpd_resp_send(r,out.data(),out.size()); }
-std::string trendJson() {
-  xSemaphoreTake(serialization,portMAX_DELAY);
+static size_t buildTrendJson() {
   static TrendPoint points[kTrendPoints]; char run[9]; unsigned count;
-  { Guard g; count=trendHistory.copy(points); memcpy(run,trendRun,sizeof(run)); }
-  std::string value="{\"boot\":\""; value+=key; value+="\",\"run\":\""; value+=run;
-  value+="\",\"sample_rate\":26667,\"window_samples\":5333,\"points\":[";
-  char item[128];
-  for(unsigned i=0;i<count;i++) { auto& p=points[i];
-    snprintf(item,sizeof(item),"%s[%lu,%lu,%lu,%lu,%lu]",i?",":"",(unsigned long)p.endSample,
-      (unsigned long)p.rmsUg[0],(unsigned long)p.rmsUg[1],(unsigned long)p.rmsUg[2],(unsigned long)p.nearFullScale);
-    value+=item;
-  }
-  value+="]}"; xSemaphoreGive(serialization); return value;
+  {Guard g;count=trendHistory.copy(points);memcpy(run,trendRun,sizeof(run));}
+  return renderTrendJson(telemetryJson,sizeof(telemetryJson),key,run,points,count);
 }
-static esp_err_t trend(httpd_req_t* r) { headers(r,"application/json"); auto out=trendJson(); return httpd_resp_send(r,out.data(),out.size()); }
+std::string statusJson() {
+  TelemetryLock lock;size_t size=buildStatusJson();
+  // USB owns one final bounded copy; append-induced doubling is eliminated.
+  return size?std::string(telemetryJson,size):std::string("{}");
+}
+std::string trendJson() {
+  TelemetryLock lock;size_t size=buildTrendJson();
+  return size?std::string(telemetryJson,size):std::string("{}");
+}
+static esp_err_t telemetry(httpd_req_t* r,bool trend) {
+  headers(r,"application/json");TelemetryLock lock;
+  size_t size=trend?buildTrendJson():buildStatusJson();
+  if(!size) return httpd_resp_send_err(r,HTTPD_500_INTERNAL_SERVER_ERROR,"telemetry bound exceeded");
+  // Keep the response buffer stable until this synchronous send returns. No
+  // std::string allocation on HTTP status/trend, including low-heap operation.
+  return httpd_resp_send(r,telemetryJson,size);
+}
+static esp_err_t status(httpd_req_t* r) {return telemetry(r,false);}
+static esp_err_t trend(httpd_req_t* r) {return telemetry(r,true);}
 static bool authorized(httpd_req_t* r) {
   char received[33] = {};
   return httpd_req_get_hdr_value_len(r, "X-Record-Key") == 32 &&
