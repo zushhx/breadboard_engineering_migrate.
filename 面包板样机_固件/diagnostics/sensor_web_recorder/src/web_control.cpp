@@ -14,6 +14,7 @@
 #include "esp_event.h"
 #include "esp_netif.h"
 #include "esp_http_server.h"
+#include "http_response_policy.h"
 #include "esp_random.h"
 #include "esp_timer.h"
 #include "esp_heap_caps.h"
@@ -108,6 +109,7 @@ void ina(uint64_t timeUs, bool valid, int32_t busMv, int32_t currentUa, int32_t 
 }
 void finalMetrics(uint32_t fifoHigh, uint32_t queueHigh) { Guard g; model.s.fifoHigh = fifoHigh; model.s.queueHigh = queueHigh; }
 static esp_err_t headers(httpd_req_t* r, const char* type) {
+  if(boundedhttp::prepare(r)!=ESP_OK)return ESP_FAIL;
   httpd_resp_set_type(r, type);
   httpd_resp_set_hdr(r, "Cache-Control", "no-store");
   httpd_resp_set_hdr(r, "X-Content-Type-Options", "nosniff");
@@ -115,13 +117,13 @@ static esp_err_t headers(httpd_req_t* r, const char* type) {
   return ESP_OK;
 }
 static esp_err_t page(httpd_req_t* r) {
-  headers(r, "text/html; charset=utf-8");
+  if(headers(r, "text/html; charset=utf-8")!=ESP_OK)return ESP_FAIL;
   const char* marker = strstr(pageStart, "{{KEY}}");
-  if (!marker) return httpd_resp_send_err(r, HTTPD_500_INTERNAL_SERVER_ERROR, "asset invalid");
+  if (!marker) return boundedhttp::error(r, HTTPD_500_INTERNAL_SERVER_ERROR, "asset invalid");
   if (httpd_resp_send_chunk(r, pageStart, marker - pageStart) != ESP_OK ||
       httpd_resp_send_chunk(r, key, strlen(key)) != ESP_OK ||
       httpd_resp_send_chunk(r, marker + 7, pageEnd - (marker + 7) - 1) != ESP_OK) return ESP_FAIL;
-  return httpd_resp_send_chunk(r, nullptr, 0);
+  return boundedhttp::endChunks(r);
 }
 // Only network/USB response tasks take this mutex. Never hold Guard across I/O.
 static char telemetryJson[kTelemetryJsonCapacity];
@@ -140,9 +142,16 @@ static size_t buildTrendJson() {
   {Guard g;count=trendHistory.copy(points);memcpy(run,trendRun,sizeof(run));}
   return renderTrendJson(telemetryJson,sizeof(telemetryJson),key,run,points,count);
 }
+bool streamTelemetry(bool trend,TelemetrySink sink,void* context) {
+  if(!sink) return false;
+  TelemetryLock lock;
+  size_t size=trend?buildTrendJson():buildStatusJson();
+  static constexpr char error[]="{\"error\":\"telemetry bound exceeded\"}";
+  return size?sink(200,telemetryJson,size,context):sink(500,error,sizeof(error)-1,context);
+}
 std::string statusJson() {
   TelemetryLock lock;size_t size=buildStatusJson();
-  // USB owns one final bounded copy; append-induced doubling is eliminated.
+  // Compatibility for generic dispatch callers; the USB transport streams directly.
   return size?std::string(telemetryJson,size):std::string("{}");
 }
 std::string trendJson() {
@@ -152,10 +161,10 @@ std::string trendJson() {
 static esp_err_t telemetry(httpd_req_t* r,bool trend) {
   headers(r,"application/json");TelemetryLock lock;
   size_t size=trend?buildTrendJson():buildStatusJson();
-  if(!size) return httpd_resp_send_err(r,HTTPD_500_INTERNAL_SERVER_ERROR,"telemetry bound exceeded");
+  if(!size) return boundedhttp::error(r,HTTPD_500_INTERNAL_SERVER_ERROR,"telemetry bound exceeded");
   // Keep the response buffer stable until this synchronous send returns. No
   // std::string allocation on HTTP status/trend, including low-heap operation.
-  return httpd_resp_send(r,telemetryJson,size);
+  return boundedhttp::send(r,telemetryJson,size);
 }
 static esp_err_t status(httpd_req_t* r) {return telemetry(r,false);}
 static esp_err_t trend(httpd_req_t* r) {return telemetry(r,true);}
@@ -166,14 +175,14 @@ static bool authorized(httpd_req_t* r) {
 }
 static esp_err_t stop(httpd_req_t* r) {
   headers(r, "application/json");
-  if (!authorized(r)) return httpd_resp_send_err(r, HTTPD_403_FORBIDDEN, "stale session or missing token; reload page");
-  if (r->content_len != 0) return httpd_resp_send_err(r, HTTPD_400_BAD_REQUEST, "empty body required");
+  if (!authorized(r)) return boundedhttp::error(r, HTTPD_403_FORBIDDEN, "stale session or missing token; reload page");
+  if (r->content_len != 0) return boundedhttp::error(r, HTTPD_400_BAD_REQUEST, "empty body required");
   { Guard g; model.requestStop(); }
-  return httpd_resp_sendstr(r, "{\"accepted\":true}");
+  return boundedhttp::send(r, "{\"accepted\":true}",HTTPD_RESP_USE_STRLEN);
 }
 static esp_err_t start(httpd_req_t* r) {
   httpd_resp_set_status(r,"426 Upgrade Required"); headers(r,"application/json");
-  return httpd_resp_sendstr(r,"{\"error\":\"v2 control session required\"}");
+  return boundedhttp::send(r,"{\"error\":\"v2 control session required\"}",HTTPD_RESP_USE_STRLEN);
 }
 void pollNetworkLog() {
   char ip[16] = {}; bool addressPending; esp_err_t error;
@@ -219,13 +228,13 @@ devicev2::Reply sessionRequest(const char* action,cJSON* a) {
   devicev2::Reply r;r.code=202;r.body="{\"accepted\":true}";return r;
 }
 static esp_err_t v2Handler(httpd_req_t* r) {
-  if(r->content_len>4096) return httpd_resp_send_err(r,HTTPD_400_BAD_REQUEST,"request too large");
+  if(r->content_len>4096) return boundedhttp::error(r,HTTPD_400_BAD_REQUEST,"request too large");
   std::string body; body.resize(r->content_len); size_t used=0;
   while(used<body.size()) { int n=httpd_req_recv(r,&body[used],body.size()-used); if(n<=0) return ESP_FAIL; used+=n; }
   char token[33]={}; httpd_req_get_hdr_value_str(r,"X-Record-Key",token,sizeof(token));
   auto reply=devicev2::dispatch(r->method==HTTP_GET?"GET":"POST",r->uri,body.c_str(),token);
   char statusText[40]; snprintf(statusText,sizeof(statusText),"%d %s",reply.code,reply.code<400?"OK":"Request Rejected");
-  httpd_resp_set_status(r,statusText); headers(r,reply.type); return httpd_resp_send(r,reply.body.data(),reply.body.size());
+  httpd_resp_set_status(r,statusText); headers(r,reply.type); return boundedhttp::send(r,reply.body.data(),reply.body.size());
 }
 
 struct LiveClient {int fd=-1;char id[33]={};};
@@ -244,12 +253,12 @@ static esp_err_t liveHandler(httpd_req_t* r) {
     if(httpd_req_get_url_query_str(r,query,sizeof(query))!=ESP_OK||
        httpd_query_key_value(query,"client",id,sizeof(id))!=ESP_OK||
        httpd_query_key_value(query,"boot",boot,sizeof(boot))!=ESP_OK||
-       strcmp(boot,key)||!Sessions::valid(id)) return httpd_resp_send_err(r,HTTPD_403_FORBIDDEN,"invalid session");
+       strcmp(boot,key)||!Sessions::valid(id)) return boundedhttp::error(r,HTTPD_403_FORBIDDEN,"invalid session");
     LiveClient* slot=nullptr;
     for(auto& client:live) if(client.fd==fd||client.fd<0) {slot=&client;break;}
-    if(!slot) {httpd_resp_set_status(r,"429 Too Many Requests");return httpd_resp_sendstr(r,"client limit");}
+    if(!slot) {httpd_resp_set_status(r,"429 Too Many Requests");return boundedhttp::send(r,"client limit",HTTPD_RESP_USE_STRLEN);}
     bool accepted=false;{Guard guard;accepted=sessions.touch(id,esp_timer_get_time());}
-    if(!accepted) {httpd_resp_set_status(r,"429 Too Many Requests");return httpd_resp_sendstr(r,"client limit");}
+    if(!accepted) {httpd_resp_set_status(r,"429 Too Many Requests");return boundedhttp::send(r,"client limit",HTTPD_RESP_USE_STRLEN);}
     slot->fd=fd;snprintf(slot->id,sizeof(slot->id),"%s",id);return ESP_OK;
   }
   httpd_ws_frame_t frame={};uint8_t payload[160];frame.payload=payload;
@@ -262,14 +271,23 @@ static esp_err_t liveHandler(httpd_req_t* r) {
   if(frame.type==HTTPD_WS_TYPE_PING) {frame.type=HTTPD_WS_TYPE_PONG;return httpd_ws_send_frame(r,&frame);}
   return ESP_OK;
 }
-static void pingClients(void*) {
+static boundedhttp::PendingWork heartbeatPending;
+static void pingClients(void* context) {
+  uint32_t token=static_cast<uint32_t>(reinterpret_cast<uintptr_t>(context));
+  if(!heartbeatPending.begin(token))return;
   for(auto& client:live) if(client.fd>=0) {
     httpd_ws_frame_t frame={};frame.type=HTTPD_WS_TYPE_PING;
     if(httpd_ws_send_frame_async(server,client.fd,&frame)!=ESP_OK) httpd_sess_trigger_close(server,client.fd);
   }
+  heartbeatPending.complete(token);
 }
 static void heartbeatTask(void*) {
-  for(;;) {vTaskDelay(pdMS_TO_TICKS(2000));if(server) httpd_queue_work(server,pingClients,nullptr);}
+  for(;;) {
+    vTaskDelay(pdMS_TO_TICKS(2000));
+    if(server) heartbeatPending.schedule(static_cast<uint32_t>(esp_timer_get_time()/1000),[](uint32_t token) {
+      return httpd_queue_work(server,pingClients,reinterpret_cast<void*>(static_cast<uintptr_t>(token)))==ESP_OK;
+    });
+  }
 }
 void startNetwork() {
   for(unsigned i=0;i<4;i++) snprintf(key+i*8,9,"%08" PRIx32,esp_random());

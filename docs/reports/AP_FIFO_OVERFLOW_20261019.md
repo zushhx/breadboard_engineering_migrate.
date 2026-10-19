@@ -14,7 +14,7 @@
 
 ## 单变量对照安排
 
-实际配置中FIFO为优先级8/CPU1；TCP/IP优先级18、可在两核运行；Wi-Fi驱动在CPU0。AP突发请求期间FIFO溢出而写卡队列仅1，优先验证FIFO被高优先级网络处理挤占的假设，不称唯一根因。候选A相对运行fb固件只将FIFO优先级8改19，CPU亲和性、SDK配置、采样、TF、队列和格式保持，写卡所有者仍用原策略。A后视证据再用候选B叠加已准备的写卡有界调度（捕获/排空优先级至少3，每归还块让出1ms，结束恢复），以A/B分离判断FIFO保护与写卡服务作用。两份原字节产物、检查和恢复条件准备完后，再取得具体候选试烧确认；尚未刷入A/B，不把构建当实机通过。
+实际配置中FIFO为优先级8/CPU1；TCP/IP优先级18、可在两核运行；Wi-Fi驱动在CPU0。AP突发请求期间FIFO溢出而写卡队列仅1，优先验证FIFO被高优先级网络处理挤占的假设，不称唯一根因。候选A相对运行fb固件只将FIFO优先级8改19，CPU亲和性、SDK配置、采样、TF、队列和格式保持，写卡所有者仍用原策略。A后视证据再用候选B叠加已准备的写卡有界调度（捕获/排空优先级至少3，每归还块让出1ms，结束恢复），以A/B分离判断FIFO保护与写卡服务作用。此为试烧前对照安排；具体批准与实测证据见下方追加，不把构建当实机通过。
 
 ## 已冻结的具体 A/B 候选
 
@@ -29,6 +29,18 @@
 
 试烧入口tools/release_v010_ap_fifo_trial.py和tools/release_v010_ap_writer_trial.py。各候选按自己的Git提交逐一核对冻结输入，避免把工作树B误作候选A；原字节镜像/SDK/分区/空凭据/备份扇区检查均通过，prepare-only不访问硬件。5项操作门槛回归通过。B在任何硬件访问前，必须取得A实际两份短录通过的本机结果、校验源码和镜像摘要，再将该结果加入批准文件摘要；缺失、失败或不匹配均拒绝。B仅接受A已通过或Queue(8)失败的停采状态，若A仍FIFO溢出则不进入B，先保存现场定位。
 
-每份候选先重新备份并verify_flash核验0..0x123000及当轮最新AP配置NVS，仅写app0，做两份3秒完整导出/结构/CRC/尾部/SHA检查，再按实际结果继续AP四页。初检失败仅恢复该轮原应用，NVS只在必要时按同轮条件恢复。A的恢复镜像是已有短录证据但无线有缺陷的fb；B的恢复镜像A只有实际已取得的验收范围，不称完整稳定。此处不授权发布未实测字节。两候选均尚未获得具体试烧确认，未刷入。
+每份候选先重新备份并verify_flash核验0..0x123000及当轮最新AP配置NVS，仅写app0，做两份3秒完整导出/结构/CRC/尾部/SHA检查，再按实际结果继续AP四页。初检失败仅恢复该轮原应用，NVS只在必要时按同轮条件恢复。A的恢复镜像是已有短录证据但无线有缺陷的fb；B的恢复镜像A只有实际已取得的验收范围，不称完整稳定。此处不授权发布未实测字节。此段描述试烧前门槛；用户后续已具体确认A/B，执行证据如下。
 
 AP失败记录已通过USB完整导出22198字节、电脑摘要与设备ebf9ee96…e335一致；解析明确拒绝错误258，作为失败证据保留，boot不变，不记通过。位置local-data/hardware/release-v010/ap-failed-export-20261019T035952Z。
+
+## A/B实际试烧及四页尝试证据（2026-10-19）
+
+用户原话确认 A/B 按上述顺序试烧。A/B均按顺序仅写app0并校验，未写NVS。A刷前1191936字节备份SHA-256 f0cd7b51bf95988cfc4afcfb877892a88f0aa9c6fb521b90706504044378a61e；B刷前同范围备份a563a6f882555ce4e83c41f35261a577bfd278c3230a6f27426eeaa03ca0a6ef，两轮NVS摘要均为上述0be1ee3e…946f，均与芯片核验。A初检local-data/hardware/release-v010/ap-fifo-smoke/20261019_120729/result.json、B初检ap-writer-smoke/20261019_163828/result.json均passed；各两份3秒记录完整导出和电脑校验通过，cold_starts=0，不扩大为整套验收。
+
+A四页结果local-data/hardware/release-v010/ap-four-pages-A-20261019T083145Z/result.json明确passed=false。069B9A67请求300秒，实际28.981679秒/771186样本，页面失联触发安全停采；errors0、INA无效0、FIFO220、队列9。随后comparison-export-20261019T083514Z/result.json记录完整导出5502178字节，SHA-256 9562b8c5a1ad4cc5aff183c3151b0f8797a3dd07332d606680ea3f95fe061782，结构/2013块CRC/尾部一致，USB导出107.188秒；record_integrity_passed=true且capture_300s_accepted=false。尾部min_heap=764字节，未作同条件长时泄漏结论。PC网络在测试脚本finally恢复；不能把页面断连等同于PC提前切回互联网。
+
+B四页local-data/hardware/release-v010/ap-four-pages-B-20261019T084525Z/result.json明确passed=false；browser.log记录状态超时、WS连接失败和25秒启动观察超时。UART hardware.log记录15B7477A实际启动后约9秒提前停采、242902样本、errors0、INA无效0、FIFO188、队列4，写卡优先级1→3→1；设备回读报告PASS，文件/26-10-19-16.45/26-10-19-16.45.BIN、设备SHA-256 c5084a78d164764ad6505490c35cb6093d49740c9c93ed90006e6bcb0dc43a65。因尚未电脑完整导出，精确尾部时长和电脑CRC/摘要不记通过。HTTP发送错误11及WS发送失败保留在原UART日志。
+
+随后USB状态查询失败，B-gdb-readonly-20261019T085229Z保存只读?、g及有界m读取和解码；匹配B冻结ELF显示panic_abort→operator new→std::string构造→control::statusJson(web_control.cpp:146)→devicev2::dispatch→usb_v2::serve/receiveTask。已证实USB状态JSON大块副本分配失败；初始panic发生在UART监听退出后，不能声称保存了完整panic实时UART。该次取证未复位/继续/写寄存器。comparison-export-20261019T085002Z为未完成导出尝试，不能计B文件电脑校验通过。
+
+观察器出现六个历史HTTP connection ID，加四个WS；这不是六个HTTP同时存活的证明。普通HTTP连接占用及心跳工作积压仍属待验证假设。A/B仅表明缩短区间采样未报FIFO/队列错误，网络/会话长时门槛仍失败；不据此合main或发布。后续C软件修复尚未构建/刷入，具体新产物须重新取得试烧确认。

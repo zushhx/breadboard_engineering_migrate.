@@ -19,6 +19,9 @@ bool integer(cJSON* obj,const char* key,int low,int high,int& value);
 }
 namespace control {
 const char* sessionKey();
+// The sink must consume the bounded buffer synchronously; it cannot retain it.
+using TelemetrySink = bool (*)(int code,const char* data,size_t size,void* context);
+bool streamTelemetry(bool trend,TelemetrySink sink,void* context);
 std::string statusJson();
 std::string trendJson();
 devicev2::Reply sessionRequest(const char* action,cJSON* args);

@@ -1,18 +1,20 @@
 {
   "date": "2026-10-19",
-  "phase": "ap_fifo_failure_scheduling_candidates_prepared_not_flashed",
+  "phase": "ap_A_B_trials_done_300s_failed_B_usb_status_allocation_abort_C_in_progress",
   "base_commit": "8f4c48dd30c78f90b22c97a5102a9888f9d973f5",
   "network_fix_commit": "3a365412d55320f1508b3e24e8d19c8d3582bdeb",
   "candidate": {
-    "source_commit": "fb2461cbe301a88b19d5d3022fb2733f8821f566",
-    "bytes": 1122608,
-    "sha256": "8104ab5358d2112ad0268214efa5fb446b21c3c8309a82e489f2456bb76841c6",
-    "input_sha256": "01b753c715476e31043305d6ad2f4442072319c73d15ba6e5ef82720ef19e397",
-    "build_manifest_local": "local-data/build/sensor-web/01b753c715476e31/20261019_111351_451894/build_manifest.json",
+    "label": "B",
+    "source_commit": "aec26390ec7bc77b22cdeb7fe458210cc877007d",
+    "input_sha256": "0de061b429d10c8ae73e431a76cc1a37570786d49b2caa82c8098a539c6c12f8",
+    "bytes": 1122816,
+    "sha256": "0db02fd86b661fc4c857ab4f026964a23dde11a9e3dbdb9d38c5719cde453db1",
+    "manifest_local": "local-data/build/sensor-web/0de061b429d10c8a/20261019_115831_840955/build_manifest.json",
     "build_passed": true,
     "hardware_tested": true,
+    "specific_flash_approval_received": false,
     "credentials_present": false,
-    "runtime_state": "fb2461c failed/locked after AP four-page Overflow(2)+Rate(256), run74227083. AP enabled, STA disabled; PC restored to Internet."
+    "runtime_state": "B halted in GDB stub after USB status JSON allocation abort; no subsequent reset; AP on STA off; PC restored to Internet"
   },
   "desktop_candidate": {
     "source_commit": "3a365412d55320f1508b3e24e8d19c8d3582bdeb",
@@ -48,10 +50,10 @@
   },
   "acceptance": {
     "candidate_smoke": "passed two complete 3-second PC verified records",
-    "usb_300s": "passed device and full PC integrity",
+    "usb_300s": "passed only historical 4e6d533 candidate, not inherited by A/B/C",
     "sta_four_pages_300s": "failed: abort at about 5.23s; 300s not completed",
-    "ap_four_pages_300s": "not tested",
-    "ten_30s_runs": "10 passed device and full PC integrity",
+    "ap_four_pages_300s": "failed on fb, A and B; A/B shortened records do not satisfy 300 seconds",
+    "ten_30s_runs": "10 passed only historical 4e6d533 candidate, not inherited by A/B/C",
     "native_gui_file_mutations": "not tested",
     "actual_network_switching": "not tested",
     "actual_wpf_exit": "not tested",
@@ -907,8 +909,20 @@
       "sha256": "f621c18723fb2e2647aa785213229f59159f655ccb6f7f16554eae163d611533",
       "manifest_local": "local-data/build/sensor-web/033c60396d7a0b6a/20261019_115745_351401/build_manifest.json",
       "build_passed": true,
-      "hardware_tested": false,
-      "specific_flash_approval_received": false
+      "hardware_tested": true,
+      "specific_flash_approval_received": true,
+      "approval_quote": "确认 A/B 按上述顺序试烧",
+      "smoke_passed": true,
+      "smoke_result_local": "local-data/hardware/release-v010/ap-fifo-smoke/20261019_120729/result.json",
+      "smoke_result_sha256": "d8a04af7e21e985530cab4b02b07c0d1be8c78a44dfa1f59a501585d4bab1b45",
+      "backup": {
+        "path": "local-data/hardware/release-v010/ap-fifo-smoke/20261019_120729/controller_prefix.bin",
+        "bytes": 1191936,
+        "sha256": "f0cd7b51bf95988cfc4afcfb877892a88f0aa9c6fb521b90706504044378a61e",
+        "nvs_sha256": "0be1ee3e301f658c5611dad6c777642e675bc79132a000043dc64afb7248946f",
+        "verified_against_chip": true
+      },
+      "full_acceptance": false
     },
     {
       "label": "B",
@@ -918,8 +932,86 @@
       "sha256": "0db02fd86b661fc4c857ab4f026964a23dde11a9e3dbdb9d38c5719cde453db1",
       "manifest_local": "local-data/build/sensor-web/0de061b429d10c8a/20261019_115831_840955/build_manifest.json",
       "build_passed": true,
-      "hardware_tested": false,
-      "specific_flash_approval_received": false
+      "hardware_tested": true,
+      "specific_flash_approval_received": true,
+      "approval_quote": "确认 A/B 按上述顺序试烧",
+      "smoke_passed": true,
+      "smoke_result_local": "local-data/hardware/release-v010/ap-writer-smoke/20261019_163828/result.json",
+      "smoke_result_sha256": "3645da7ffab32c0a55459f8e4e7239c50bab06016ead3308c7c4a2093639c772",
+      "backup": {
+        "path": "local-data/hardware/release-v010/ap-writer-smoke/20261019_163828/controller_prefix.bin",
+        "bytes": 1191936,
+        "sha256": "a563a6f882555ce4e83c41f35261a577bfd278c3230a6f27426eeaa03ca0a6ef",
+        "nvs_sha256": "0be1ee3e301f658c5611dad6c777642e675bc79132a000043dc64afb7248946f",
+        "verified_against_chip": true
+      },
+      "full_acceptance": false
     }
-  ]
+  ],
+  "previous_candidate_fb2461c": {
+    "source_commit": "fb2461cbe301a88b19d5d3022fb2733f8821f566",
+    "bytes": 1122608,
+    "sha256": "8104ab5358d2112ad0268214efa5fb446b21c3c8309a82e489f2456bb76841c6",
+    "input_sha256": "01b753c715476e31043305d6ad2f4442072319c73d15ba6e5ef82720ef19e397",
+    "build_manifest_local": "local-data/build/sensor-web/01b753c715476e31/20261019_111351_451894/build_manifest.json",
+    "build_passed": true,
+    "hardware_tested": true,
+    "credentials_present": false,
+    "runtime_state": "fb2461c failed/locked after AP four-page Overflow(2)+Rate(256), run74227083. AP enabled, STA disabled; PC restored to Internet."
+  },
+  "ap_A_attempt": {
+    "record_integrity_passed": true,
+    "capture_300s_accepted": false,
+    "run": "069B9A67",
+    "source": "2055dce1e00b782ad7e4100dbecb15418ecb78a3",
+    "bytes": 5502178,
+    "sha256": "9562b8c5a1ad4cc5aff183c3151b0f8797a3dd07332d606680ea3f95fe061782",
+    "export_seconds": 107.18799999999828,
+    "requested_seconds": 300,
+    "actual_elapsed_us": 28981679,
+    "samples": 771186,
+    "errors": 0,
+    "fifo_high": 220,
+    "queue_high": 9,
+    "min_heap": 764,
+    "result_local": "local-data/hardware/release-v010/ap-four-pages-A-20261019T083145Z/result.json",
+    "export_result_local": "local-data/hardware/release-v010/comparison-export-20261019T083514Z/result.json",
+    "export_result_sha256": "92a17ee9356f2b9da42dcb30a591a0c8329c4a38689fe3908522bd7593950131",
+    "passed": false
+  },
+  "ap_B_attempt": {
+    "source": "aec26390ec7bc77b22cdeb7fe458210cc877007d",
+    "run": "15B7477A",
+    "requested_seconds": 300,
+    "actual_seconds_approx": 9,
+    "exact_footer_elapsed_us": null,
+    "samples": 242902,
+    "errors": 0,
+    "ina_invalid": 0,
+    "fifo_high": 188,
+    "queue_high": 4,
+    "passed": false,
+    "complete_pc_export_passed": false,
+    "device_sha256": "c5084a78d164764ad6505490c35cb6093d49740c9c93ed90006e6bcb0dc43a65",
+    "result_local": "local-data/hardware/release-v010/ap-four-pages-B-20261019T084525Z/result.json",
+    "uart_local": "local-data/hardware/release-v010/ap-four-pages-B-20261019T084525Z/uart/hardware.log"
+  },
+  "B_usb_abort": {
+    "trigger": "USB statusJson std::string allocation -> operator new -> abort",
+    "gdb_read_only_packets": [
+      "?",
+      "g",
+      "bounded m"
+    ],
+    "evidence_local": "local-data/hardware/release-v010/B-gdb-readonly-20261019T085229Z",
+    "reset_after_evidence": false,
+    "full_panic_uart_captured": false,
+    "http_connection_budget_root_cause_confirmed": false
+  },
+  "C_followup": {
+    "state": "software implementation in progress",
+    "built": false,
+    "flashed": false,
+    "specific_flash_approval_received": false
+  }
 }
