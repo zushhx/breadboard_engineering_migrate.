@@ -32,3 +32,11 @@ B匹配ELF的只读GDB回溯已证实USB statusJson构造大std::string副本时
 具体试烧将先保存核验最新1191936字节前缀及NVS，核实B原字节、MAC/boot/分区，再仅写app0；不写本次重建bootloader。回退使用保留B原应用，NVS仅按同轮条件必要时恢复。B已有的缩短采样和USB缺陷不因作为回退镜像而消失；未来C实机通过不追溯覆盖A/B失败。
 
 试烧入口tools/release_v010_bounded_network_trial.py已绑定上述原字节产物；prepare-only核实全部源码输入、SDK/分区/空凭据、B回退镜像及GDB证据，hardware_accessed=false。15项定向门槛回归通过，含缺少批准先拒绝、GDB只读查询、错备份拒绝、同轮NVS恢复条件及清理异常不跳过恢复。另一agent审查发现并修复了browser清理异常可能跳过回退、host启动失败可能遗留USB占用的路径。具体新C确认尚未取得，未执行该入口的硬件路径。
+
+## C实际试烧及AP失败证据
+
+用户随后明确选择“确认试烧候选C”。local-data/hardware/release-v010/bounded-network-smoke/20261019_172806/result.json记录passed=true、source9ce3f4e/镜像4e064e96…1656，operation_commit3244d2f，cold_starts=0。当轮1191936字节备份cda8aa6d29985a44ef6196b019722d380f9dbca811b3658c104d2d3ad0c78845、NVS0be1ee3e…946f与芯片verify，应用区写入及芯片校验成功。E7891FF8和806E7CD0各3秒，完整电脑导出571066/571514字节，SHA分别192ffff0aeab444c8fc9b631e314fd25862b32c378cc79467a13c8616f2d6720及8a2b2ede9ed82ce11b76e722fca0d4b3febc776adedb04bdee997c6f7a380503，电脑结构/CRC/尾部及旧参考核验通过。
+
+local-data/hardware/release-v010/ap-four-pages-C-20261019T093107Z/result.json记录passed=false。8ADF1412请求300秒，实际8.797651秒/234426样本后因会话失联提前停止，errors0、INA无效0、FIFO214、queue10；网页在启动后未及时观察recording、status请求超时，后段恢复。设备回读通过但长时不通过；后置USB状态成功、UART未观察panic/reset，电脑原Wi-Fi恢复核实。完整缩短记录在comparison-export-20261019T093341Z，1672810字节/SHA-256 62ba9b8f8a14da5cfe9e1e9babea899163fb5dbadc7c29f6133f5787e50d37fc，电脑结构/CRC/尾部/摘要通过，capture_300s_accepted=false。
+
+录前日志内部free31264/largest14848，随后创建录制任务栈和队列；录制任务清理后HTTP恢复。源码与UART显示HTTP曾尝试发送并报EAGAIN，不能称完全未调度。低内存网络预算是下一单变量假设；没有把连接关闭改动称根因修复。下一分支拟40→32块池，回收25344字节，原始缓冲约672→537.6毫秒，实际TF延迟及网络改善须重新实测。

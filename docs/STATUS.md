@@ -2,6 +2,12 @@
 
 更新日期：2026-10-19。当前事实唯一入口。历史测试结果保留其适用条件，不自动延伸至其他固件或接法。
 
+## 2026-10-19 17:36 C已试烧，短录通过，AP长录仍提前失联
+
+用户明确确认候选C后，仅写9ce3f4e/4e064e96…1656的app0，芯片校验通过；刷前0..0x123000备份SHA-256 cda8aa6d29985a44ef6196b019722d380f9dbca811b3658c104d2d3ad0c78845及最新NVS核验通过。两份3秒完整导出/电脑结构/CRC/尾部/SHA通过，旧参考不变，运行C不再停B的GDB。AP四页300秒尝试8ADF1412实际8.797651秒/234426样本提前失去会话，errors0、FIFO214、queue10，未通过300秒。缩短文件1672810字节完整导出与电脑校验通过，SHA-256 62ba9b8f8a14da5cfe9e1e9babea899163fb5dbadc7c29f6133f5787e50d37fc；后置USB状态成功、UART无panic/reset，PC实际恢复原Wi-Fi。不能将USB修复的这次成功扩大为无线闭环。
+
+网络失联时采样仍进行、录制清理资源后HTTP恢复，内部内存预算是下一受控假设，并非唯一根因结论。新分支codex/fix-release-capture-network-headroom拟保留SDK/优先级/PSRAM，仅将40块池降至32块以回收25344字节并增加低频证据；尚未构建/刷入。集成审查另确认自动文件取消的任务匹配竞争窗口，补丁暂未应用，留待独立修复。main和正式发布仍停止。证据见[本轮修复报告](reports/BOUNDED_NETWORK_RESPONSES_20261019.md)。
+
 ## 2026-10-19 17:24 C软件修复已冻结构建，等待具体试烧确认
 
 从A/B现场证据状态建立修复分支，子agent分别实施USB、HTTP及证据整理，另一agent交叉审查后主agent集成。C源码9ce3f4e1d317bb23c5dcd55fa78cb1687b969b9b，镜像1123856字节，SHA-256 4e064e96ca3c1d18dec283dcaa9de22e9c2938137487ce64bda31dffb3ac1656；干净输入c838aec0…320b2构建成功，SDK配置/分区/空凭据与B一致，仅应用区候选，不发布重建bootloader。USB遥测直接使用有界缓冲并有整份1秒发送期限，普通HTTP响应完成后关闭、心跳队列采用generation和过期恢复；定向宿主及工程检查通过，实际新HTTP/USB并发及网络长时仍未测。见[修复与审查](reports/BOUNDED_NETWORK_RESPONSES_20261019.md)。

@@ -1,6 +1,6 @@
 {
   "date": "2026-10-19",
-  "phase": "C_bounded_network_clean_build_passed_awaiting_specific_trial_approval",
+  "phase": "C_smoke_passed_AP_300s_failed_memory_headroom_followup",
   "base_commit": "8f4c48dd30c78f90b22c97a5102a9888f9d973f5",
   "network_fix_commit": "3a365412d55320f1508b3e24e8d19c8d3582bdeb",
   "candidate": {
@@ -1009,7 +1009,7 @@
     "http_connection_budget_root_cause_confirmed": false
   },
   "C_followup": {
-    "state": "software and cross-agent review complete; clean build passed; hardware untested",
+    "state": "specific trial approved, flashed app0, two-record smoke passed, AP four-page 300s failed early",
     "built": true,
     "source_commit": "9ce3f4e1d317bb23c5dcd55fa78cb1687b969b9b",
     "input_sha256": "c838aec0f4fe14028a603665803aeb86ccfb5bcf1045d7919c3ea7e5b7b320b2",
@@ -1020,7 +1020,20 @@
     "partitions_unchanged_from_B": true,
     "credentials_embedded": false,
     "review": "implementer self-review, cross-agent review, root integration review; not external Code Review service approval",
-    "flashed": false,
-    "specific_flash_approval_received": false
+    "flashed": true,
+    "specific_flash_approval_received": true,
+    "smoke_local": "local-data/hardware/release-v010/bounded-network-smoke/20261019_172806/result.json",
+    "AP_local": "local-data/hardware/release-v010/ap-four-pages-C-20261019T093107Z/result.json",
+    "AP_300s_passed": false,
+    "AP_elapsed_us": 8797651,
+    "AP_run": "8ADF1412",
+    "AP_errors": 0,
+    "AP_fifo_high": 214,
+    "AP_queue_high": 10,
+    "AP_pc_export_local": "local-data/hardware/release-v010/comparison-export-20261019T093341Z/result.json",
+    "AP_shortened_record_integrity_passed": true,
+    "panic_or_reset_observed": false,
+    "post_failure_USB_status_passed": true,
+    "pc_network_restored": true
   }
 }
