@@ -1,6 +1,6 @@
 {
   "date": "2026-10-19",
-  "phase": "sta_queue_failure_writer_repair_in_progress",
+  "phase": "ap_fifo_failure_scheduling_candidates_prepared_not_flashed",
   "base_commit": "8f4c48dd30c78f90b22c97a5102a9888f9d973f5",
   "network_fix_commit": "3a365412d55320f1508b3e24e8d19c8d3582bdeb",
   "candidate": {
@@ -12,7 +12,7 @@
     "build_passed": true,
     "hardware_tested": true,
     "credentials_present": false,
-    "runtime_state": "failed/locked after STA four-page Queue(8), capture closed; no reset after this failure"
+    "runtime_state": "fb2461c failed/locked after AP four-page Overflow(2)+Rate(256), run74227083. AP enabled, STA disabled; PC restored to Internet."
   },
   "desktop_candidate": {
     "source_commit": "3a365412d55320f1508b3e24e8d19c8d3582bdeb",
@@ -838,5 +838,88 @@
     "result_sha256": "7218c236b8b2637752d8009422684c9a0bdcda6970a988b04ee91929c0e46570",
     "passed": false,
     "reset_requested": false
-  }
+  },
+  "ap_failure": {
+    "source": "fb2461cbe301a88b19d5d3022fb2733f8821f566",
+    "run": "74227083",
+    "errors": 258,
+    "elapsed_us": 135714,
+    "samples": 3054,
+    "fifo_high": 512,
+    "queue_high": 1,
+    "result_local": "local-data/hardware/release-v010/ap-four-pages-baseline-20261019T035347Z/result.json",
+    "result_sha256": "5be9dbefb60b9bc9b952c528bad583ba2f07fd314af7c27ad8318f295ce9ee37",
+    "passed": false,
+    "failed_file_export_local": "local-data/hardware/release-v010/ap-failed-export-20261019T035952Z/result.json",
+    "failed_file_export_sha256": "9e441cdfbbf85561d290b74c65fa0e4e3812bc35ae5d17db94825c9b651a4489",
+    "reset_after_failure": false
+  },
+  "ap_transfer_baseline": {
+    "source": "fb2461cbe301a88b19d5d3022fb2733f8821f566",
+    "bytes_each": 262144,
+    "results": [
+      {
+        "operation": "v2-upload",
+        "bytes": 262144,
+        "seconds": 28.54699999999957,
+        "bytes_per_second": 9182.891372123304,
+        "sha256": "2312394bd99545d9de131c24efb781e765ac1aec243f2ed9347597a793a415e9",
+        "poll_delay_ms": 100.0,
+        "label": "wait100ms"
+      },
+      {
+        "operation": "http-stream-download",
+        "bytes": 262144,
+        "seconds": 2.655999999999949,
+        "bytes_per_second": 98698.79518072479,
+        "sha256": "2312394bd99545d9de131c24efb781e765ac1aec243f2ed9347597a793a415e9",
+        "label": "wait100ms"
+      },
+      {
+        "operation": "v2-upload",
+        "bytes": 262144,
+        "seconds": 16.09400000000005,
+        "bytes_per_second": 16288.30620106867,
+        "sha256": "2312394bd99545d9de131c24efb781e765ac1aec243f2ed9347597a793a415e9",
+        "poll_delay_ms": 0,
+        "label": "immediate"
+      },
+      {
+        "operation": "http-stream-download",
+        "bytes": 262144,
+        "seconds": 2.67200000000048,
+        "bytes_per_second": 98107.78443112009,
+        "sha256": "2312394bd99545d9de131c24efb781e765ac1aec243f2ed9347597a793a415e9",
+        "label": "immediate"
+      }
+    ],
+    "result_local": "local-data/hardware/release-v010/ap-speed-small-20261019_114951/result.json",
+    "result_sha256": "9af501a9cecdd98369b5dc60715dfcd1ce85af145ff77af4ddc6bfd5fbb2992f",
+    "real_wpf_tested": false,
+    "maximum_rate_claimed": false
+  },
+  "prepared_ap_candidates": [
+    {
+      "label": "A",
+      "source_commit": "2055dce1e00b782ad7e4100dbecb15418ecb78a3",
+      "input_sha256": "033c60396d7a0b6a5e0eefeca1e781a4298bb61a5c820271e350bb90158724a9",
+      "bytes": 1122608,
+      "sha256": "f621c18723fb2e2647aa785213229f59159f655ccb6f7f16554eae163d611533",
+      "manifest_local": "local-data/build/sensor-web/033c60396d7a0b6a/20261019_115745_351401/build_manifest.json",
+      "build_passed": true,
+      "hardware_tested": false,
+      "specific_flash_approval_received": false
+    },
+    {
+      "label": "B",
+      "source_commit": "aec26390ec7bc77b22cdeb7fe458210cc877007d",
+      "input_sha256": "0de061b429d10c8ae73e431a76cc1a37570786d49b2caa82c8098a539c6c12f8",
+      "bytes": 1122816,
+      "sha256": "0db02fd86b661fc4c857ab4f026964a23dde11a9e3dbdb9d38c5719cde453db1",
+      "manifest_local": "local-data/build/sensor-web/0de061b429d10c8a/20261019_115831_840955/build_manifest.json",
+      "build_passed": true,
+      "hardware_tested": false,
+      "specific_flash_approval_received": false
+    }
+  ]
 }
