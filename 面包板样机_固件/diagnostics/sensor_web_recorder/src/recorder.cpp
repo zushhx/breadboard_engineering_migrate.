@@ -282,6 +282,13 @@ static void record(const Store& store, const char* run, unsigned seconds) {
     Serial.println("[rec] FAIL setup; files retained, no retry");
     control::result(false, true, "启动失败，保留文件；不自动重试"); return;
   }
+  // The owner drains/writes the acquisition queue on CPU0. Give it precedence
+  // over HTTP (priority 2) only during capture/drain, below FIFO and Wi-Fi.
+  // Restore before close/readback so idle/file/network scheduling is unchanged.
+  const UBaseType_t previousPriority = uxTaskPriorityGet(nullptr);
+  if (previousPriority < 3) vTaskPrioritySet(nullptr, 3);
+  Serial.printf("[rec] writer_priority before=%u active=%u core=%u\n",
+      (unsigned)previousPriority, (unsigned)uxTaskPriorityGet(nullptr), (unsigned)xPortGetCoreID());
   totals.startUs = now(); deadline = totals.startUs + static_cast<uint64_t>(seconds) * 1000000;
   control::phase(control::Phase::Recording, "正在写入完整原始数据；页面提供限速短窗口预览");
   xTaskNotifyGive(sensorTask); xTaskNotifyGive(monitorTask);
@@ -305,6 +312,9 @@ static void record(const Store& store, const char* run, unsigned seconds) {
           writtenSamples, chunk->data, chunk->count * 7, hash);
       writtenSamples += chunk->count;
       xQueueSend(freeQ, &chunk, 0);
+      // A nonempty queue must not starve HTTP, lease/INA or idle tasks.
+      // One frozen 1ms tick per 448-frame block bounds the service interval.
+      vTaskDelay(1);
     }
     InaSample item;
     while (xQueueReceive(inaQ, &item, 0) == pdTRUE) {
@@ -328,6 +338,8 @@ static void record(const Store& store, const char* run, unsigned seconds) {
           (unsigned)uxQueueMessagesWaiting(dataQ), (unsigned long)errors.load()); nextReport = now() + 1000000;
     }
   }
+  vTaskPrioritySet(nullptr, previousPriority);
+  Serial.printf("[rec] writer_priority restored=%u\n", (unsigned)uxTaskPriorityGet(nullptr));
   if (writtenSamples != totals.samples || !totals.samples || !totals.inaSamples || totals.stopUs <= totals.startUs) fail(Queue);
   if (totals.inaSamples == totals.inaInvalid) fail(Monitor);
   if (totals.stopUs > totals.startUs) {
