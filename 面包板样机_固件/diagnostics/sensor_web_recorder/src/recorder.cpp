@@ -310,6 +310,9 @@ static void record(const Store& store, const char* run, unsigned seconds) {
           writtenSamples, chunk->data, chunk->count * 7, hash);
       writtenSamples += chunk->count;
       xQueueSend(freeQ, &chunk, 0);
+      // A nonempty queue must not starve HTTP, lease/INA or idle tasks.
+      // One frozen 1ms tick per 448-frame block bounds the service interval.
+      vTaskDelay(1);
     }
     InaSample item;
     while (xQueueReceive(inaQ, &item, 0) == pdTRUE) {
