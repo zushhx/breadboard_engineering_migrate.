@@ -5,6 +5,7 @@
 ## 本次工程整理
 
 - [v0.1.0工程原型验收、候选与发布边界](RELEASE_V010_20261018.md)
+- [STA四页状态序列化内存失败现场与修复](WIFI_TELEMETRY_ABORT_20261019.md)
 - [主控控制台 v2 软件、短测及实机边界](CONTROLLER_V2_20261017.md)
 - [v2产物与短测证据摘要](CONTROLLER_V2_EVIDENCE_20261017.json)
 - [Windows 主控控制台交付、检查与边界](DESKTOP_CONTROLLER_20261017.md)

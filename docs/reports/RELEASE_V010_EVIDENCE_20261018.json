@@ -1,6 +1,6 @@
 {
   "date": "2026-10-19",
-  "phase": "usb_group_passed_remaining_matrix_pending",
+  "phase": "sta_abort_halted_repair_in_progress",
   "base_commit": "8f4c48dd30c78f90b22c97a5102a9888f9d973f5",
   "network_fix_commit": "3a365412d55320f1508b3e24e8d19c8d3582bdeb",
   "candidate": {
@@ -15,7 +15,8 @@
     "sdk_config_equal_to_6ec57c3": true,
     "partition_equal": true,
     "generated_credentials_header_equal": true,
-    "fifo_priority": 8
+    "fifo_priority": 8,
+    "runtime_state": "halted in GDB stub after HTTP status allocation abort; not reset"
   },
   "desktop_candidate": {
     "source_commit": "3a365412d55320f1508b3e24e8d19c8d3582bdeb",
@@ -52,7 +53,7 @@
   "acceptance": {
     "candidate_smoke": "passed two complete 3-second PC verified records",
     "usb_300s": "passed device and full PC integrity",
-    "sta_four_pages_300s": "not tested",
+    "sta_four_pages_300s": "failed: abort at about 5.23s; 300s not completed",
     "ap_four_pages_300s": "not tested",
     "ten_30s_runs": "10 passed device and full PC integrity",
     "native_gui_file_mutations": "not tested",
@@ -778,5 +779,21 @@
       "tf-write-diagnostic-build",
       "sensor-monitor-diagnostic-build"
     ]
+  },
+  "sta_abort": {
+    "source": "4e6d5333c57942a88138d99582521159f3dbd6b3",
+    "run": "8071F57B",
+    "folder_local": "local-data/hardware/release-v010/sta-four-pages-20261019_110332",
+    "result_sha256": "a5c7a3d343c0c102233eb4d38cdf60c24ac6ae632a0a88e9b38e03eb05f480df",
+    "decoded_backtrace_sha256": "503124654577800c0525637c03e950b4d262ada2e316402f2e1ba6c40f848d06",
+    "elf_sha256": "bba64eb6fa3de21460bdef82b9772fd0a4aa3a841c1ec85a99b1e49d11400c80",
+    "trigger": "statusJson std::string constructor allocation failure -> abort",
+    "fifo_overflow_confirmed": false,
+    "reset_requested": false,
+    "gdb_read_only_packets": [
+      "?",
+      "g"
+    ],
+    "recovery_executed": false
   }
 }
