@@ -136,10 +136,15 @@ class FilePathsGuards(unittest.TestCase):
         self.assertEqual(trial.SCOPE['candidate_confirmation_authority'],'user_delegated_lead_for_current_round')
         self.assertFalse(hasattr(trial,'EXPECTED_NVS'))
         config=dict(ap_enabled=True,sta_enabled=False,running=True,apply_ok=True,applying=False,ssid='',ap_ssid='fixture',ap_password='fixture-pass')
-        trial.check_ap_network(config,dict(config))
+        saved={k:v for k,v in config.items() if k!='ap_password'}
+        saved['ap_password_sha256']=trial.hashlib.sha256(config['ap_password'].encode()).hexdigest()
+        expected=dict(source=trial.OLD_SOURCE,mac=trial.tf.MAC,network=saved)
+        trial.check_ap_network(config,expected)
+        for bad in (config,dict(expected,source='wrong'),dict(expected,mac='wrong'),dict(expected,network={})):
+            with self.assertRaisesRegex(RuntimeError,'no reset or write'):trial.check_ap_network(config,bad)
         for key,value in [('ap_password','wrong-password'),('ap_ssid','other'),('applying',True)]:
             bad=dict(config);bad[key]=value
-            with self.assertRaisesRegex(RuntimeError,'no reset or write'):trial.check_ap_network(bad,config)
+            with self.assertRaisesRegex(RuntimeError,'no reset or write'):trial.check_ap_network(bad,expected)
         self.assertEqual(trial.HOST,trial.ROOT/'local-data/release-v010/device-host-E/DeviceHost.exe')
         self.assertEqual(trial.SCOPE['backup_end']%4096,0)
         for key in ('change_network','delete_format_repair','main_merge_release'):self.assertFalse(trial.SCOPE[key])

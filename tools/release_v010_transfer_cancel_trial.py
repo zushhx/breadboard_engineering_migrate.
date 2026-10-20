@@ -1,4 +1,4 @@
-"""Unbound F app0 trial from verified E. User delegated this round candidate confirmation to lead; never claim a new human exact-F confirmation. Same-round NVS only."""
+"""Bound F app0 trial from verified E. User delegated this round candidate confirmation to lead; never claim a new human exact-F confirmation. Same-round NVS only."""
 from pathlib import Path
 import argparse
 import datetime
@@ -16,18 +16,18 @@ import tf_write_batch as tf
 import sensor_recorder_batch as recorder
 import parse_sensor_record
 
-SOURCE = 'UNBOUND_F_SOURCE'
-CANDIDATE = 'UNBOUND_F_SHA256'
+SOURCE = '360522d53544cdafdf5e0a33da9dd1e7d2e7543f'
+CANDIDATE = '7fa116e326f59c194172607ee52305078729bcc9b409d56f6949874e780d25fe'
 OLD_SOURCE = '4aa27b2c90902d03e262c23cad5eb65f812bc524'
 OLD_SHA = '81a84cabc93c30934122c33d5a6ca6945a6da3ff05292b94cef5cb39ebceade7'
-MANIFEST = None
+MANIFEST = ROOT/'local-data/build/sensor-web/f90de84d6ec276bb/20261020_222729_256699/build_manifest.json'
 OLD_MANIFEST = ROOT/'local-data/build/sensor-web/250563438c572116/20261020_162052_054082/build_manifest.json'
 EXPECTED_NETWORK = ROOT/'local-data/hardware/release-v010/E-usb-network-before-private.json'
 HOST = ROOT/'local-data/release-v010/device-host-E/DeviceHost.exe'
 BROWSER = ROOT/'tools/release_v010_live.cjs'
 NODE = Path.home()/'.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node.exe'
 OPERATION = 'release-v010-transfer-cancel-smoke'
-SCOPE = dict(app0_only=True, requires_quiescent_E=True, candidate_confirmation_authority='user_delegated_lead_for_current_round', backup_end=0x124000, reset_from_saved_panic=False, backup_nvs=True,
+SCOPE = dict(app0_only=True, requires_quiescent_E=True, candidate_confirmation_authority='user_delegated_lead_for_current_round', backup_end=0x123000, reset_from_saved_panic=False, backup_nvs=True,
              restore_app0_only=True, restore_nvs_only_if_changed=True, records=2, seconds_each=3,
              preserve_existing_files=True, delete_format_repair=False, change_network=False,
              restore_on_failure=True, cold_starts=0, main_merge_release=False)
@@ -141,12 +141,19 @@ def check_ap_network(network,expected):
     if (network.get('ap_enabled') is not True or network.get('sta_enabled') is not False or
         network.get('running') is not True or network.get('apply_ok') is not True or network.get('applying') is not False):
         raise RuntimeError('Current E is not applied AP-only config; no reset or write')
+    if expected.get('source')!=OLD_SOURCE or expected.get('mac')!=tf.MAC:
+        raise RuntimeError('Network snapshot identity mismatch; no reset or write')
+    saved=expected.get('network',{})
     for key in ('sta_enabled','ap_enabled','ssid','ap_ssid'):
-        if key not in expected or network.get(key)!=expected[key]:
+        if key not in saved or network.get(key)!=saved[key]:
             raise RuntimeError('Current E logical network config differs; no reset or write')
-    passwords=[value.get('ap_password') for value in (network,expected)]
-    if any(not isinstance(value,str) or len(value)<8 for value in passwords) or hashlib.sha256(passwords[0].encode()).digest()!=hashlib.sha256(passwords[1].encode()).digest():
+    password=network.get('ap_password')
+    digest=saved.get('ap_password_sha256')
+    import re
+    if (not isinstance(password,str) or len(password)<8 or not isinstance(digest,str) or
+            not re.fullmatch(r'[0-9a-f]{64}',digest) or hashlib.sha256(password.encode()).hexdigest()!=digest):
         raise RuntimeError('Current E AP password digest differs; no reset or write')
+
 
 
 def check_backup(data,old,nvs_data):
