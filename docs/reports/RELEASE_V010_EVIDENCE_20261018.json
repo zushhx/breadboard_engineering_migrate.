@@ -1,12 +1,13 @@
 {
-  "date": "2026-10-19",
-  "phase": "D_trial_smoke_passed_AP_200s_target_revised_PC_driver_interruption_full_export_pending",
+  "date": "2026-10-20",
+  "phase": "D_complete_export_integrity_passed_INA_invalid_6_quality_failed_AP_not_accepted",
   "AP_duration_adjustment": {
     "date": "2026-10-20",
     "user_statement": "200秒可以了",
     "target_seconds": 200,
     "scope": "AP long recording; other matrix entries unchanged",
-    "preserve_original_request_and_interruption_evidence": true
+    "preserve_original_request_and_interruption_evidence": true,
+    "INA_invalid_zero_requirement_unchanged": true
   },
   "D_network_headroom": {
     "source_commit": "9cc8c174f628ed0654403b248c72389a426f2ef6",
@@ -32,7 +33,26 @@
     "errors": 0,
     "device_sha256": "d624c1c1667e7bf482b367607475267926537c057357f7adc5c52105e7860105",
     "PC_driver_recovery_evidence_local": "local-data/validation/release-v010/D-PC-WLAN-20261020/timeline-and-conclusion.md",
-    "complete_PC_export_passed": false
+    "complete_PC_export_passed": false,
+    "complete_PC_export_bytes": 39581242,
+    "complete_PC_export_sha256_matched": true,
+    "structural_integrity_passed": true,
+    "block_CRC_passed": true,
+    "footer_counts_passed": true,
+    "recording_quality_passed": false,
+    "INA_samples": 2082,
+    "INA_invalid": 6,
+    "saturation": 0,
+    "fifo_high": 224,
+    "queue_high": 14,
+    "max_write_us": 154732,
+    "max_sync_us": 182052,
+    "min_heap_bytes": 7660,
+    "sensor_stack_bytes": 2076,
+    "INA_stack_bytes": 2744,
+    "offline_decode_local": "local-data/hardware/release-v010/D-diagnostic-export-20261020T053048Z/offline-decoded-not-accepted.json",
+    "original_partial_and_failed_result_preserved": true,
+    "failure_reason": "6 invalid INA reference samples violate the zero-invalid acceptance criterion; metrology exclusion does not waive this quality failure"
   },
   "base_commit": "8f4c48dd30c78f90b22c97a5102a9888f9d973f5",
   "network_fix_commit": "3a365412d55320f1508b3e24e8d19c8d3582bdeb",
@@ -85,7 +105,7 @@
     "candidate_smoke": "passed two complete 3-second PC verified records",
     "usb_300s": "passed only historical 4e6d533 candidate, not inherited by A/B/C",
     "sta_four_pages_300s": "failed: abort at about 5.23s; 300s not completed",
-    "ap_four_pages_300s": "failed on fb, A and B; A/B shortened records do not satisfy 300 seconds",
+    "ap_four_pages_300s": "historical request retained; user revised AP target to approximately 200s on 2026-10-20; D saved 208.192525s with complete export integrity, but failed quality due to 6 invalid INA samples; AP not accepted",
     "ten_30s_runs": "10 passed only historical 4e6d533 candidate, not inherited by A/B/C",
     "native_gui_file_mutations": "not tested",
     "actual_network_switching": "not tested",

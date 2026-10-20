@@ -82,3 +82,21 @@ verify当前1191936字节及当轮NVS，只写app0；失败只恢复保留的C�
 D专属AP观察脚本已独立使用queue_high<32，历史C脚本不改。新D具体试烧确认尚未
 取得，未烧录。原始构建日志network-headroom-build-D.txt和prepare清单
 network-headroom-D-prepare.json保存在local-data/validation/release-v010。
+
+## D实际结果与当前阻断（2026-10-20）
+
+上述准备后的用户明确试烧确认已取得，D仅写app0并完成两份3秒完整校验。
+AP四页原请求300秒，在约199秒遇到电脑WLAN驱动自动恢复而断连；主控随后安全
+保存208.192525秒、5548074样本，无UART panic/reset。用户明确接受AP约200秒，
+仅修改时长目标，原请求、电脑中断证据及INA无效为零门槛均保留。
+
+完整记录39581242字节已导出，SHA-256
+d624c1c1667e7bf482b367607475267926537c057357f7adc5c52105e7860105
+与设备一致，结构、逐块CRC和尾部计数通过。但INA参考2082份中6份无效，
+属于记录质量失败，不能按计量精度暂缓豁免，故D的AP验收未通过。errors及
+saturation均零；FIFO高水位224、队列14，max_write/max_sync为154732/182052µs，
+min_heap7660字节，sensor/INA栈余量2076/2744字节。这些计数尚未证明无效根因。
+
+离线证据为`local-data/hardware/release-v010/D-diagnostic-export-20261020T053048Z/offline-decoded-not-accepted.json`；
+原始完整`.partial`及失败结果保留。设备仍运行D，未刷后续文件路径修复；main合并和
+正式发布门槛未满足。下一步先定位这6份无效样本，不重复采集来替代失败证据。
