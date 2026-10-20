@@ -16,7 +16,7 @@ static Reply waitFile(const char* action,cJSON* args) {
   if(accepted.code!=202)return accepted;
   int64_t deadline=esp_timer_get_time()+6000000;
   while(esp_timer_get_time()<deadline) {
-    vTaskDelay(pdMS_TO_TICKS(10));auto state=filesRequest("GET","state",nullptr);auto parsed=cJSON_Parse(state.body.c_str());
+    vTaskDelay(pdMS_TO_TICKS(5));auto state=filesRequest("GET","state",nullptr);auto parsed=cJSON_Parse(state.body.c_str());
     if(strcmp(text(parsed,"job"),job)) {cJSON_Delete(parsed);return error(409,"文件任务已变化，未自动重发");}
     auto running=cJSON_GetObjectItem(parsed,"running");
     if(cJSON_IsFalse(running)) {

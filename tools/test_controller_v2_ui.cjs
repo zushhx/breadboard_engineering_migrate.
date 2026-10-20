@@ -80,6 +80,25 @@ async function main(){
   await p.screenshot({path:path.join(out,'web-tf-simulated.png'),fullPage:true});
   await p.setViewportSize({width:390,height:844});await p.screenshot({path:path.join(out,'web-mobile-simulated.png'),fullPage:true});
   await check('query entry loads network after control socket opens',async()=>{const n=await context.newPage();await n.goto(base+'/?panel=network');await n.waitForFunction(()=>document.getElementById('wifiSsid').value==='测试网络');await n.close();});
+  await check('file polling observes completion before transfer waits and yields while busy',async()=>{
+   const results=await p.evaluate(async()=>{
+    const originalApi=v2Api,originalTimeout=window.setTimeout;const results=[];
+    try{
+     for(const action of ['chunk','read','copy'])for(const busyCount of [0,2]){
+      const events=[];let job,busy=busyCount;
+      v2Api=async(path,args)=>{if(args){events.push('post');job=args.job;return {job};}events.push('get');return {job,running:busy-->0,bytes:0,code:200,result:{ok:true}};};
+      window.setTimeout=(fn,ms,...args)=>{if(ms===20||ms===180){events.push('wait:'+ms);return originalTimeout(fn,0,...args);}return originalTimeout(fn,ms,...args);};
+      await v2FileOp(action);results.push({action,busyCount,events});
+     }
+     const events=[];v2Api=async(path,args)=>{events.push(args?'post':'get');return args?{job:args.job}:{job:'changed',running:true};};
+     window.setTimeout=(fn,ms,...args)=>{if(ms===20||ms===180)events.push('wait:'+ms);return originalTimeout(fn,0,...args);};
+     let rejected=false;try{await v2FileOp('read');}catch{rejected=true;}results.push({wrongJob:true,rejected,events});return results;
+    }finally{v2Api=originalApi;window.setTimeout=originalTimeout;}
+   });
+   for(const r of results){if(r.wrongJob){assert(r.rejected);assert.deepEqual(r.events,['post','get']);continue;}
+    const expected=['post'];if(r.action==='copy')expected.push('wait:180');expected.push('get');for(let i=0;i<r.busyCount;i++)expected.push(r.action==='copy'?'wait:180':'wait:20','get');assert.deepEqual(r.events,expected);
+   }
+  });
   await check('manual file cancel retains explicit global primitive',async()=>{
    await p.locator('#cancelFile').click();await p.waitForFunction(()=>document.getElementById('fileMessage').textContent.includes('已请求取消'));
    const a=posts.findLast(x=>x.path==='/api/v2/files/cancel').a;assert(!Object.hasOwn(a,'expected_job'));assert.equal(a.transfer,'');

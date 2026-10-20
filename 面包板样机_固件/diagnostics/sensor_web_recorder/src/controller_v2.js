@@ -77,7 +77,9 @@ v2Id('saveNetwork').onclick=async()=>{try{await v2Api('network/save',{sta_enable
 async function v2FileOp(action,args={}){
   const job=v2Uuid();v2LastFileJob=job;await v2Api('files/'+action,{...args,job});
   const start=Date.now();
-  for(;;){await new Promise(r=>setTimeout(r,180));const s=await v2Api('files/state');if(s.job!==job)throw Error('文件任务状态已变化，结果未确认，请刷新，勿重复删除或重命名');v2Message('fileMessage',(s.running?'正在处理，':'处理完成，')+'已处理 '+Number(s.bytes||0).toLocaleString()+' 字节');if(!s.running){if(s.code>=400)throw Error(s.result.error||'文件任务失败');return s.result;}if(Date.now()-start>1800000)throw Error('文件任务仍未完成，请检查设备状态');}
+  const blockTransfer=action==='chunk'||action==='read';
+  if(!blockTransfer)await new Promise(r=>setTimeout(r,180));
+  for(;;){const s=await v2Api('files/state');if(s.job!==job)throw Error('文件任务状态已变化，结果未确认，请刷新，勿重复删除或重命名');v2Message('fileMessage',(s.running?'正在处理，':'处理完成，')+'已处理 '+Number(s.bytes||0).toLocaleString()+' 字节');if(!s.running){if(s.code>=400)throw Error(s.result.error||'文件任务失败');return s.result;}if(Date.now()-start>1800000)throw Error('文件任务仍未完成，请检查设备状态');await new Promise(r=>setTimeout(r,blockTransfer?20:180));}
 }
 async function v2FileAction(fn){if(v2FileBusy)return;v2FileBusy=true;if(snapshot)v2Render(snapshot);try{await fn();}catch(e){v2Message('fileMessage',e.message);}finally{v2FileBusy=false;if(snapshot)v2Render(snapshot);}}
 function v2Join(parent,name){return(parent==='/'?'':parent)+'/'+name;}

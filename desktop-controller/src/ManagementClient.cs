@@ -20,6 +20,7 @@ namespace BreadboardController
         private string boot, transfer = "", activeJob = "", lastJob = "";
         private bool atomicFileCancel, lastJobAccepted;
         private int responseCode;
+        internal Action<int> FilePollWait = Thread.Sleep;
         public string Boot { get { return boot; } }
         public ManagementClient(IDeviceBackend backend, CancellationToken cancellation, Action<string> progress)
         { this.backend = backend; this.cancellation = cancellation; this.progress = progress; }
@@ -90,10 +91,11 @@ namespace BreadboardController
                 throw new IOException("文件任务接收结果未确认；不会重发或自动取消，请查看设备状态。");
             lastJobAccepted = true;
             var watch = Stopwatch.StartNew();
+            bool blockTransfer = action == "chunk" || action == "read";
+            if (!blockTransfer) FilePollWait(100);
             while (watch.Elapsed < TimeSpan.FromMinutes(30))
             {
                 cancellation.ThrowIfCancellationRequested();
-                Thread.Sleep(100);
                 var state = Get("/api/v2/files/state");
                 if (Str(state, "job") != job) throw new IOException("文件任务已变化，结果未确认。请刷新，勿重复变更请求。");
                 if (progress != null) progress("主控文件任务：" + Number(state, "bytes").ToString("N0") + " 字节");
@@ -104,6 +106,8 @@ namespace BreadboardController
                     if (Number(state, "code") >= 400) throw new IOException(Str(result, "error"));
                     return result;
                 }
+                cancellation.ThrowIfCancellationRequested();
+                FilePollWait(blockTransfer ? 20 : 100);
             }
             throw new TimeoutException("文件任务仍未完成，请查看设备状态；不会自动重发。");
         }

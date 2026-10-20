@@ -57,6 +57,7 @@ public static class ManagementTests
     public static void Run(Action<bool, string> check, string folder)
     {
         ManagementCancelRaceTests.Run();
+        ManagementFilePollTests.Run();
         string root = Path.Combine(folder, "management"); Directory.CreateDirectory(root);
         var fake = new Fake(); var client = new ManagementClient(fake, CancellationToken.None, null); client.Begin();
         var scan = client.Scan(); check(((Dictionary<string, object>)scan[0])["ssid"].ToString() == "测试网络" && fake.LastKey == Boot, "native scan uses current boot and parses Unicode networks");
@@ -111,6 +112,47 @@ public static class ManagementTests
     }
 }
 
+public static class ManagementFilePollTests
+{
+    private sealed class Fake : IDeviceBackend
+    {
+        public string Description {get{return "poll sequence mock";}}
+        public readonly List<string> Events=new List<string>();
+        public int Busy,Posts,Gets;public bool WrongJob;private string job;
+        private BridgeResponse Reply(object value,int code=200){return new BridgeResponse {Code=code,Type="application/json",Body=Encoding.UTF8.GetBytes(new JavaScriptSerializer().Serialize(value))};}
+        public BridgeResponse Request(string method,string path,string body,string key)
+        {
+            if(path=="/api/status")return Reply(ManagementClient.Args("boot",new string('a',32)));
+            if(path=="/api/v2/capabilities")return Reply(ManagementClient.Args("atomic_file_cancel",true));
+            if(method=="POST"){++Posts;Events.Add("post");job=(string)new JavaScriptSerializer().Deserialize<Dictionary<string,object>>(body)["job"];return Reply(ManagementClient.Args("job",job),202);}
+            ++Gets;Events.Add("get");return Reply(ManagementClient.Args("job",WrongJob?new string('b',32):job,"running",Busy-->0,"bytes",0,"code",200,"result",ManagementClient.Args("ok",true)));
+        }
+        public void Dispose(){}
+    }
+    public static void Run()
+    {
+        int checks=0;
+        foreach(string action in new[]{"chunk","read","copy"})foreach(int busy in new[]{0,2}){
+            var fake=new Fake {Busy=busy};var client=new ManagementClient(fake,CancellationToken.None,null);client.Begin();
+            client.FilePollWait=ms=>fake.Events.Add("wait:"+ms);
+            client.FileAction(action,ManagementClient.Args());
+            var expected=new List<string>{"post"};if(action=="copy")expected.Add("wait:100");expected.Add("get");
+            for(int i=0;i<busy;i++){expected.Add(action=="copy"?"wait:100":"wait:20");expected.Add("get");}
+            if(!fake.Events.SequenceEqual(expected)||fake.Posts!=1)throw new Exception("actual client poll sequence or no-replay contract failed: "+action);++checks;
+        }
+        {
+            var fake=new Fake {WrongJob=true};var client=new ManagementClient(fake,CancellationToken.None,null);client.Begin();client.FilePollWait=ms=>fake.Events.Add("wait:"+ms);
+            try{client.FileAction("read",ManagementClient.Args());throw new Exception("wrong job accepted");}catch(IOException){}
+            if(fake.Posts!=1||fake.Gets!=1||fake.Events.Any(e=>e.StartsWith("wait:")))throw new Exception("wrong job was replayed or unnecessarily waited");++checks;
+        }
+        using(var stop=new CancellationTokenSource()){
+            var fake=new Fake {Busy=5};var client=new ManagementClient(fake,stop.Token,null);client.Begin();client.FilePollWait=ms=>{fake.Events.Add("wait:"+ms);stop.Cancel();};
+            try{client.FileAction("chunk",ManagementClient.Args());throw new Exception("cancellation ignored");}catch(OperationCanceledException){}
+            if(fake.Posts!=1||fake.Gets!=1||!fake.Events.SequenceEqual(new[]{"post","get","wait:20"}))throw new Exception("cancelled busy poll continued or replayed");++checks;
+        }
+        Console.WriteLine("PASS actual ManagementClient file poll event order: "+checks+" checks; no wall-clock thresholds");
+    }
+}
 public static class ManagementCancelRaceTests
 {
     private const string Boot="abcdefabcdefabcdefabcdefabcdefab";
