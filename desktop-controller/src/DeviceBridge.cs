@@ -224,10 +224,13 @@ namespace BreadboardController
         private readonly Dictionary<string,string> sessions=new Dictionary<string,string>();
         private volatile bool closed;
         private int connections;
+        private readonly Action<string> downloadDiagnostic;
+        private static readonly object diagnosticLock=new object();
         public readonly Uri Address;
-        public DeviceBridge(IDeviceBackend backend)
+        public DeviceBridge(IDeviceBackend backend) : this(backend,WriteDownloadDiagnostic) {}
+        public DeviceBridge(IDeviceBackend backend,Action<string> downloadDiagnostic)
         {
-            this.backend=backend;listener=new TcpListener(IPAddress.Loopback,0);listener.Start(12);
+            this.backend=backend;this.downloadDiagnostic=downloadDiagnostic;listener=new TcpListener(IPAddress.Loopback,0);listener.Start(12);
             Address=new Uri("http://127.0.0.1:"+((IPEndPoint)listener.LocalEndpoint).Port+"/");
             Task.Run((Func<Task>)Accept);
         }
@@ -287,7 +290,7 @@ namespace BreadboardController
                         {Reply(stream,403,"text/plain",Encoding.UTF8.GetBytes("只接受本机同源请求"));return;}
                         var target=new Uri(Address,first[1]);
                         if(first[0]=="GET"&&target.AbsolutePath=="/api/v2/live"){Live(stream,headers,Query(target.Query));return;}
-                        if(first[0]=="GET"&&target.AbsolutePath=="/api/v2/download"){try { Download(stream,Query(target.Query)); } catch(Exception) { } return;}
+                        if(first[0]=="GET"&&target.AbsolutePath=="/api/v2/download"){Download(stream,Query(target.Query));return;}
                         if((first[0]!="GET"&&first[0]!="POST")||
                            !(target.AbsolutePath=="/"||target.AbsolutePath=="/api/status"||target.AbsolutePath=="/api/trend"||
                              System.Text.RegularExpressions.Regex.IsMatch(target.AbsolutePath,@"\A/api/v2/[a-z/_]+\z")))
@@ -355,63 +358,154 @@ namespace BreadboardController
                 try{Api("session/release",new Dictionary<string,object>{{"client",id},{"boot",boot}});}catch(Exception){}
             }
         }
-        private Dictionary<string,object> FileAction(string action,Dictionary<string,object> args,string boot)
+        private sealed class DownloadState
         {
-            string job=Guid.NewGuid().ToString("N");args["job"]=job;
-            args["boot"]=boot;Api("files/"+action,args);
+            public string Stage="request",Job="",Transfer="",Boot="";
+            public bool HeadersSent,Accepted,AtomicCancellation;
+            public long Expected,Received;
+        }
+        private sealed class DownloadFailure : IOException
+        {
+            public readonly int Code;
+            public DownloadFailure(int code) : base("Download failed") {Code=code;}
+        }
+        private static void WriteDownloadDiagnostic(string line)
+        {
+            lock(diagnosticLock)
+            {
+                string directory=Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),"BreadboardController");
+                Directory.CreateDirectory(directory);
+                string file=Path.Combine(directory,"download-bridge.log");
+                if(File.Exists(file)&&new FileInfo(file).Length>1048576)
+                {
+                    string previous=file+".previous";if(File.Exists(previous))File.Delete(previous);File.Move(file,previous);
+                }
+                File.AppendAllText(file,line+Environment.NewLine,new UTF8Encoding(false));
+            }
+        }
+        private void LogDownload(DownloadState state,Exception error,int code,string kind)
+        {
+            // Only controlled stage/job/code/type/count fields. Never log backend
+            // error text, boot keys, transfer secrets, filenames or file contents.
+            string line=DateTimeOffset.UtcNow.ToString("o",CultureInfo.InvariantCulture)+" event="+kind+
+                " stage="+state.Stage+" job="+state.Job+" code="+code+" headers_sent="+state.HeadersSent+
+                " expected="+state.Expected+" received="+state.Received+" exception="+error.GetType().Name;
+            try {if(downloadDiagnostic!=null)downloadDiagnostic(line);}catch(Exception){}
+        }
+        private Dictionary<string,object> DownloadApi(string path,Dictionary<string,object> data,bool requireAccepted=false)
+        {
+            var serializer=new JavaScriptSerializer();
+            var response=backend.Request(data==null?"GET":"POST",path,data==null?"":serializer.Serialize(data),"");
+            if(response.Code<200||response.Code>=300)throw new DownloadFailure(response.Code>=400&&response.Code<=599?response.Code:502);
+            if(requireAccepted&&response.Code!=202)throw new InvalidDataException("Download job not accepted");
+            var result=serializer.Deserialize<Dictionary<string,object>>(response.Text);
+            if(result==null)throw new InvalidDataException("Invalid download response");
+            return result;
+        }
+        private Dictionary<string,object> DownloadJob(string action,Dictionary<string,object> args,DownloadState state)
+        {
+            state.Accepted=false;state.Job=Guid.NewGuid().ToString("N");args["job"]=state.Job;args["boot"]=state.Boot;state.Stage=action+".submit";
+            var accepted=DownloadApi("/api/v2/files/"+action,args,true);
+            if(!accepted.ContainsKey("job")||Convert.ToString(accepted["job"],CultureInfo.InvariantCulture)!=state.Job)throw new InvalidDataException("Accepted job identity mismatch");
+            state.Accepted=true;
+            // Preserve the existing 7s per-job bound; the complete file has no
+            // total timeout. A real slow job must be diagnosed before changing it.
             var timer=Stopwatch.StartNew();
             while(timer.ElapsedMilliseconds<7000)
             {
-                Thread.Sleep(20);var state=Api("files/state",null);
-                if(Convert.ToString(state["job"])!=job)throw new IOException("文件任务状态已变化");
-                if(!(bool)state["running"])
+                Thread.Sleep(20);state.Stage=action+".poll";
+                var value=DownloadApi("/api/v2/files/state",null);
+                if(Convert.ToString(value["job"],CultureInfo.InvariantCulture)!=state.Job)throw new DownloadFailure(409);
+                if(!(bool)value["running"])
                 {
-                    var result=(Dictionary<string,object>)state["result"];
-                    if(Convert.ToInt32(state["code"],CultureInfo.InvariantCulture)>=400)throw new IOException(Convert.ToString(result["error"]));
-                    return result;
+                    int code=Convert.ToInt32(value["code"],CultureInfo.InvariantCulture);
+                    if(code<200||code>=300)throw new DownloadFailure(code>=400&&code<=599?code:502);
+                    return (Dictionary<string,object>)value["result"];
                 }
             }
-            throw new TimeoutException("文件任务尚未完成");
+            throw new TimeoutException("Download job timeout");
+        }
+        private static long DownloadNumber(Dictionary<string,object> value,string key)
+        {return Convert.ToInt64(value[key],CultureInfo.InvariantCulture);}
+        private void DownloadHeader(NetworkStream stream,string path,DownloadState state)
+        {
+            string name=path.Substring(path.LastIndexOf('/')+1);
+            byte[] header=Encoding.ASCII.GetBytes("HTTP/1.1 200 OK\r\nContent-Type: application/octet-stream\r\nContent-Disposition: attachment; filename*=UTF-8''"+Uri.EscapeDataString(name)+"\r\nContent-Length: "+state.Expected+"\r\nCache-Control: no-store\r\nConnection: close\r\n\r\n");
+            state.Stage="response.header";state.HeadersSent=true;stream.Write(header,0,header.Length);
         }
         private void Download(NetworkStream stream,Dictionary<string,string> query)
         {
-            string path;if(!query.TryGetValue("path",out path))throw new ArgumentException("缺少文件路径");
-            var status=new JavaScriptSerializer().Deserialize<Dictionary<string,object>>(backend.Request("GET","/api/status","","").Text);
-            string boot=Convert.ToString(status["boot"]);
-            var begin=FileAction("begin_read",new Dictionary<string,object>{{"path",path}},boot);
-            string transfer=Convert.ToString(begin["transfer"]);
-            long total=Convert.ToInt64(begin["bytes"],CultureInfo.InvariantCulture),received=0;
+            var state=new DownloadState();
             try
             {
-                string name=path.Substring(path.LastIndexOf('/')+1);
-                byte[] header=Encoding.ASCII.GetBytes("HTTP/1.1 200 OK\r\nContent-Type: application/octet-stream\r\nContent-Disposition: attachment; filename*=UTF-8''"+Uri.EscapeDataString(name)+"\r\nContent-Length: "+total+"\r\nCache-Control: no-store\r\nConnection: close\r\n\r\n");
-                stream.Write(header,0,header.Length);
+                string path;if(!query.TryGetValue("path",out path))throw new DownloadFailure(400);
+                state.Stage="status";var status=DownloadApi("/api/status",null);state.Boot=Convert.ToString(status["boot"],CultureInfo.InvariantCulture);
+                if(!System.Text.RegularExpressions.Regex.IsMatch(state.Boot,@"\A[0-9a-fA-F]{32}\z"))throw new InvalidDataException("Invalid device boot");
+                state.Stage="capabilities";
+                try
+                {
+                    var capabilities=DownloadApi("/api/v2/capabilities",null);object atomic;
+                    state.AtomicCancellation=capabilities.TryGetValue("atomic_file_cancel",out atomic)&&atomic is bool&&(bool)atomic;
+                }
+                catch(Exception capabilityError){LogDownload(state,capabilityError,capabilityError is DownloadFailure?((DownloadFailure)capabilityError).Code:502,"cancel_capability_unknown");}
+                var begin=DownloadJob("begin_read",new Dictionary<string,object>{{"path",path}},state);
+                state.Transfer=Convert.ToString(begin["transfer"],CultureInfo.InvariantCulture);state.Expected=DownloadNumber(begin,"bytes");
+                if(String.IsNullOrEmpty(state.Transfer)||state.Expected<0||state.Expected>UInt32.MaxValue)throw new InvalidDataException("Invalid download metadata");
                 byte[] held=new byte[0];
                 using(var hash=SHA256.Create())
                 {
                     for(;;)
                     {
-                        var chunk=FileAction("read",new Dictionary<string,object>{{"transfer",transfer}},boot);
+                        var chunk=DownloadJob("read",new Dictionary<string,object>{{"transfer",state.Transfer}},state);
+                        state.Stage="read.validate";
                         if((bool)chunk["done"])
                         {
                             hash.TransformFinalBlock(new byte[0],0,0);
                             var verified=(Dictionary<string,object>)chunk["verified"];
                             string digest=BitConverter.ToString(hash.Hash).Replace("-","").ToLowerInvariant();
-                            if(received!=total||digest!=Convert.ToString(verified["sha256"]))throw new InvalidDataException("下载摘要不一致");
-                            stream.Write(held,0,held.Length);break;
+                            if(state.Received!=state.Expected||DownloadNumber(chunk,"offset")!=state.Received||DownloadNumber(verified,"bytes")!=state.Received||digest!=Convert.ToString(verified["sha256"],CultureInfo.InvariantCulture))
+                                throw new InvalidDataException("Download verification failed");
+                            state.Transfer="";
+                            if(!state.HeadersSent)DownloadHeader(stream,path,state);
+                            state.Stage="response.final";stream.Write(held,0,held.Length);break;
                         }
-                        byte[] data=Convert.FromBase64String(Convert.ToString(chunk["data"]));
-                        if(data.Length>2048||received+data.Length>total)throw new InvalidDataException("文件长度无效");
+                        byte[] data=Convert.FromBase64String(Convert.ToString(chunk["data"],CultureInfo.InvariantCulture));
+                        if(data.Length==0||data.Length>2048||state.Received+data.Length>state.Expected||DownloadNumber(chunk,"offset")!=state.Received+data.Length)
+                            throw new InvalidDataException("Invalid download chunk");
                         hash.TransformBlock(data,0,data.Length,data,0);
+                        // Validate the first read before committing HTTP 200. Keep
+                        // the last block withheld until the final digest is valid.
+                        if(!state.HeadersSent)DownloadHeader(stream,path,state);
+                        state.Stage="response.body";
                         if(held.Length>0)stream.Write(held,0,held.Length);
-                        held=data;received+=data.Length;
+                        held=data;state.Received+=data.Length;
                     }
                 }
             }
-            catch
+            catch(Exception error)
             {
-                try{FileAction("cancel",new Dictionary<string,object>{{"transfer",transfer}},boot);}catch(Exception){}
-                throw;
+                var failure=error as DownloadFailure;
+                int code=failure!=null?failure.Code:error is TimeoutException?504:502;
+                LogDownload(state,error,code,"download_failed");
+                // Once headers/body started, leave the Content-Length incomplete;
+                // never append a JSON error to a partial binary or publish success.
+                if(!state.HeadersSent)
+                {
+                    try {Reply(stream,code,"application/json",Encoding.UTF8.GetBytes(new JavaScriptSerializer().Serialize(
+                        new Dictionary<string,object>{{"error","下载未完成；请查看本机下载日志，变更不会自动重发"},{"stage",state.Stage},{"job",state.Job},{"code",code}})));}catch(Exception){}
+                }
+                // Old v2 devices ignore expected_job. Without explicit capability
+                // support, leave abandoned transfers to their device timeout.
+                if(state.AtomicCancellation&&state.Accepted&&!String.IsNullOrEmpty(state.Job)&&!String.IsNullOrEmpty(state.Boot))
+                {
+                    try
+                    {
+                        // The device checks expected_job and a nonempty transfer
+                        // atomically. A replacement task must never be cancelled.
+                        DownloadApi("/api/v2/files/cancel",new Dictionary<string,object>{{"boot",state.Boot},{"job",Guid.NewGuid().ToString("N")},{"expected_job",state.Job},{"transfer",state.Transfer}});
+                    }
+                    catch(Exception cleanup){LogDownload(state,cleanup,cleanup is DownloadFailure?((DownloadFailure)cleanup).Code:502,"cancel_unconfirmed");}
+                }
             }
         }
         public void Dispose()

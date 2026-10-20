@@ -27,6 +27,7 @@ public static class ManagementTests
         {
             Calls.Add(method + " " + path); LastKey = key; LastBody = body;
             if (path == "/api/status") return Reply(ManagementClient.Args("boot", Boot));
+            if (path == "/api/v2/capabilities") return Reply(ManagementClient.Args("version", 2, "atomic_file_cancel", true));
             if (path == "/api/v2/network/scan") return Reply(new[] { ManagementClient.Args("ssid", "测试网络", "rssi", -30) });
             if (path == "/api/v2/network/save") return Reply(ManagementClient.Args("accepted", true));
             if (path == "/api/v2/files/state") return Reply(ManagementClient.Args("job", WrongJob ? "other-job" : Job, "running", false, "bytes", Position, "code", Reject ? 409 : 200, "result", Reject ? ManagementClient.Args("error", "正在采集中") : result));
@@ -49,12 +50,13 @@ public static class ManagementTests
                 case "list": result = ManagementClient.Args("entries", new[] { ManagementClient.Args("name", "中文目录", "directory", true, "bytes", 0) }, "more", true, "next", 16); break;
                 default: result = ManagementClient.Args("ok", true); break;
             }
-            return Reply(ManagementClient.Args("accepted", true), 202);
+            return Reply(ManagementClient.Args("accepted", true, "job", Job), 202);
         }
         public void Dispose() { upload.Dispose(); }
     }
     public static void Run(Action<bool, string> check, string folder)
     {
+        ManagementCancelRaceTests.Run();
         string root = Path.Combine(folder, "management"); Directory.CreateDirectory(root);
         var fake = new Fake(); var client = new ManagementClient(fake, CancellationToken.None, null); client.Begin();
         var scan = client.Scan(); check(((Dictionary<string, object>)scan[0])["ssid"].ToString() == "测试网络" && fake.LastKey == Boot, "native scan uses current boot and parses Unicode networks");
@@ -106,5 +108,91 @@ public static class ManagementTests
             try { cancelled.Upload(source, "/cancelled.bin"); } catch (OperationCanceledException) { rejected = true; }
             check(rejected && fake.Calls.Count(p => p == "POST /api/v2/files/cancel") == cancels + 1, "cancel during upload releases only this transfer without finishing it");
         }
+    }
+}
+
+public static class ManagementCancelRaceTests
+{
+    private const string Boot="abcdefabcdefabcdefabcdefabcdefab";
+    private sealed class Fake : IDeviceBackend
+    {
+        public string Description { get { return "cancel race mock; no hardware"; } }
+        public string Current="", Owned="";
+        public int Cancels;
+        public bool Interrupt=true, SwapAfterGet, AlreadyChanged, Cancelled;
+        public bool RejectSubmit;
+        public bool WrongAcceptedJob;
+        public int SubmitCode=202;
+        public int Capability;
+        public Dictionary<string,object> CancelArgs;
+        private BridgeResponse Reply(object value,int code=200)
+        {return new BridgeResponse {Code=code,Type="application/json",Body=Encoding.UTF8.GetBytes(new JavaScriptSerializer().Serialize(value))};}
+        public BridgeResponse Request(string method,string path,string body,string key)
+        {
+            if(path=="/api/status")return Reply(ManagementClient.Args("boot",Boot));
+            if(path=="/api/v2/capabilities") {
+                if(Capability==3)throw new IOException("capabilities unavailable");
+                if(Capability==1)return Reply(ManagementClient.Args("version",2));
+                return Reply(ManagementClient.Args("atomic_file_cancel",Capability==4?(object)"true":(object)(Capability==0)));
+            }
+            if(path=="/api/v2/files/state")
+            {
+                if(Interrupt){Interrupt=false;throw new IOException("simulated result-read interruption");}
+                if(AlreadyChanged)Current=new string('b',32);
+                var reply=Reply(ManagementClient.Args("job",Current,"running",true));
+                if(SwapAfterGet)Current=new string('c',32);
+                return reply;
+            }
+            var args=new JavaScriptSerializer().Deserialize<Dictionary<string,object>>(body);
+            if(path=="/api/v2/files/cancel")
+            {
+                ++Cancels;CancelArgs=args;
+                // This mock evaluates the request contract, not production
+                // firmware correctness; the C++ source regression covers that.
+                if(!args.ContainsKey("expected_job")||(string)args["expected_job"]!=Current)
+                    return Reply(ManagementClient.Args("error","changed job"),409);
+                Cancelled=true;return Reply(ManagementClient.Args("accepted",true),202);
+            }
+            if(RejectSubmit)return Reply(ManagementClient.Args("error","another task"),409);
+            Current=Owned=(string)args["job"];
+            return Reply(ManagementClient.Args("accepted",true,"job",WrongAcceptedJob?new string('d',32):Current),SubmitCode);
+        }
+        public void Dispose(){}
+    }
+    public static void Run()
+    {
+        int checks=0;
+        foreach(int mode in new[]{0,1,2})
+        {
+            var fake=new Fake();var client=new ManagementClient(fake,CancellationToken.None,null);client.Begin();
+            try{client.FileAction("copy",ManagementClient.Args("path","/source","destination","/target"));throw new Exception("missing interruption");}
+            catch(IOException){}
+            fake.SwapAfterGet=mode==1;fake.AlreadyChanged=mode==2;
+            client.CancelOwnedTask();
+            if(mode==2){if(fake.Cancels!=0)throw new Exception("pre-observed replacement was cancelled");++checks;continue;}
+            if(fake.Cancels!=1||fake.CancelArgs==null||(string)fake.CancelArgs["expected_job"]!=fake.Owned)
+                throw new Exception("cleanup must send owned expected_job exactly once");++checks;
+            if((string)fake.CancelArgs["transfer"]!="")throw new Exception("transfer contract changed");++checks;
+            if(mode==1&&(fake.Cancelled||fake.Current==fake.Owned))throw new Exception("replacement job affected");
+            if(mode==0&&!fake.Cancelled)throw new Exception("matching job was not cancelled");++checks;
+        }
+        foreach(int capability in new[]{1,2,3,4}) {
+            var fake=new Fake {Capability=capability};var client=new ManagementClient(fake,CancellationToken.None,null);client.Begin();
+            try{client.FileAction("copy",ManagementClient.Args("path","/source","destination","/target"));}catch(IOException){}
+            client.CancelOwnedTask();client.CancelOwnedTask();
+            if(fake.Cancels!=0)throw new Exception("missing/false/failed/nonboolean capability must not send automatic cancel");++checks;
+        }
+        {
+            var fake=new Fake {RejectSubmit=true};var client=new ManagementClient(fake,CancellationToken.None,null);client.Begin();
+            try{client.FileAction("copy",ManagementClient.Args("path","/source","destination","/target"));}catch(IOException){}
+            client.CancelOwnedTask();if(fake.Cancels!=0)throw new Exception("rejected submit must not send cleanup cancel");++checks;
+        }
+        foreach(bool wrongJob in new[]{false,true}) {
+            var fake=new Fake {WrongAcceptedJob=wrongJob,SubmitCode=wrongJob?202:200};var client=new ManagementClient(fake,CancellationToken.None,null);client.Begin();
+            try{client.FileAction("copy",ManagementClient.Args("path","/source","destination","/target"));}catch(IOException){}
+            client.CancelOwnedTask();if(fake.Cancels!=0)throw new Exception("unconfirmed acceptance must not send cleanup cancel");++checks;
+        }
+        Console.WriteLine("PASS actual ManagementClient cancellation race/capability contract: "+checks+" checks; no hardware");
+        return;
     }
 }

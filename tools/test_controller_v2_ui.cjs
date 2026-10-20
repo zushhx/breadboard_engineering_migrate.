@@ -80,6 +80,23 @@ async function main(){
   await p.screenshot({path:path.join(out,'web-tf-simulated.png'),fullPage:true});
   await p.setViewportSize({width:390,height:844});await p.screenshot({path:path.join(out,'web-mobile-simulated.png'),fullPage:true});
   await check('query entry loads network after control socket opens',async()=>{const n=await context.newPage();await n.goto(base+'/?panel=network');await n.waitForFunction(()=>document.getElementById('wifiSsid').value==='测试网络');await n.close();});
+  await check('manual file cancel retains explicit global primitive',async()=>{
+   await p.locator('#cancelFile').click();await p.waitForFunction(()=>document.getElementById('fileMessage').textContent.includes('已请求取消'));
+   const a=posts.findLast(x=>x.path==='/api/v2/files/cancel').a;assert(!Object.hasOwn(a,'expected_job'));assert.equal(a.transfer,'');
+  });
+  for(const uncertain of [false,true])await check('pagehide binds last file job and transfer'+(uncertain?' after uncertain POST':''),async()=>{
+   const n=await context.newPage();await n.goto(base);await n.waitForFunction(()=>v2Ready);
+   const beginJob=await n.evaluate(async()=>{const begin=await v2FileOp('begin_upload',{path:'/beacon.bin',bytes:1});v2Transfer=begin.transfer;return v2LastFileJob;});
+   if(uncertain){
+    await n.route('**/api/v2/files/chunk',route=>route.abort());
+    await n.evaluate(async()=>{try{await v2FileOp('chunk',{transfer:v2Transfer,offset:0,data:'YQ=='});}catch{}});
+   }
+   const owned=await n.evaluate(()=>({job:v2LastFileJob,transfer:v2Transfer}));assert.match(owned.job,/^[0-9a-f]{32}$/);if(uncertain)assert.notEqual(owned.job,beginJob);
+   const before=posts.filter(x=>x.path==='/api/v2/files/cancel').length;
+   await n.evaluate(()=>window.dispatchEvent(new Event('pagehide')));
+   for(let i=0;i<40&&posts.filter(x=>x.path==='/api/v2/files/cancel').length===before;i++)await new Promise(r=>setTimeout(r,25));
+   const a=posts.findLast(x=>x.path==='/api/v2/files/cancel').a;assert.equal(a.expected_job,owned.job);assert.equal(a.transfer,owned.transfer);assert.notEqual(a.job,owned.job);await n.close();
+  });
   assert.deepEqual(errors,[]);console.log('RESULT '+count+' checks; local mocks only');
  }finally{await context.close();await browser.close();server.close();}
 }

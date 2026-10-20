@@ -20,8 +20,8 @@ using Microsoft.Win32;
 [assembly: AssemblyTitle("主控控制台")]
 [assembly: AssemblyDescription("直插式面包板样机桌面连接助手")]
 [assembly: AssemblyProduct("主控控制台")]
-[assembly: AssemblyVersion("0.3.0.0")]
-[assembly: AssemblyFileVersion("0.3.0.0")]
+[assembly: AssemblyVersion("0.3.1.0")]
+[assembly: AssemblyFileVersion("0.3.1.0")]
 
 namespace BreadboardController
 {
@@ -137,7 +137,7 @@ namespace BreadboardController
             };
             RefreshNetworks();
             RefreshUsb();
-            Text("AboutText", "版本：0.3.0 · Windows 本机便携版\n快捷键：Ctrl + O 打开检测页面；F5 检测连接。\n设置与连接日志：" +
+            Text("AboutText", "版本：0.3.1 · Windows 本机便携版\n快捷键：Ctrl + O 打开检测页面；F5 检测连接。\n设置与连接日志：" +
                 storage + "\n主控 Wi-Fi、热点和 TF 文件可以在本控制台直接管理。密码不写入设置或日志。关闭本程序会断开本程序打开页面的控制会话。");
             AddLog(preview ? "界面预览：离线模拟，不访问实机、不打开外部程序。" : "程序启动。等待用户操作，未查询设备。");
             if (preview) { Window.Title += " · 离线界面预览"; Text("FooterText", "离线界面预览 · 没有实机数据"); }
@@ -444,7 +444,7 @@ namespace BreadboardController
         {
             Uri uri;
             string target = TryAddress(out uri) ? AddressPolicy.Display(uri) : "无效地址";
-            return "主控控制台 0.3.0\n生成时间：" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss zzz") + "\n主控地址：" + target +
+            return "主控控制台 0.3.1\n生成时间：" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss zzz") + "\n主控地址：" + target +
                 "\n最近检查：" + Find<TextBlock>("DeviceSummary").Text + "\n电脑网络：" + Find<TextBlock>("NetworkInfo").Text +
                 "\n说明：程序只做按需连接检查，采集与图表在原检测页面。\n\n本次记录：\n" + String.Join("\n", log);
         }

@@ -1,4 +1,4 @@
-let v2UploadAbort=false;
+let v2UploadAbort=false,v2LastFileJob='';
 let v2Ready=false,v2Leaving=false,v2Socket=null,v2OwnedRun='',v2FileBusy=false,v2Transfer='',v2Clipboard='',v2Selected=null,v2Path='/',v2FolderOffset=0;
 const v2Client=Array.from(crypto.getRandomValues(new Uint8Array(16)),n=>n.toString(16).padStart(2,'0')).join('');
 const v2Style=document.createElement('style');v2Style.textContent='[hidden]{display:none!important}.v2nav{max-width:1400px;margin:16px auto 0;display:flex;gap:10px;padding:0 32px;flex-wrap:wrap}.v2nav button[aria-pressed=true]{background:#245dd6;color:white}.v2panel{max-width:1050px;margin:auto}.v2grid{display:grid;grid-template-columns:1fr 1fr;gap:20px}.v2panel label{display:block;margin:14px 0 7px}.v2panel input:not([type=checkbox]){box-sizing:border-box;width:100%;padding:11px;border:1px solid #95a4b5;border-radius:5px;font:inherit}.v2toolbar{display:flex;gap:9px;flex-wrap:wrap;margin:16px 0}.v2panel table{width:100%;border-collapse:collapse}.v2panel td,.v2panel th{padding:12px 8px;text-align:left;border-bottom:1px solid #e1e7ed;overflow-wrap:anywhere}.v2panel tr.selected{background:#eaf2ff}.v2panel tr{cursor:pointer}.v2notice{padding:12px;background:#eff5ff;color:#264873;border-radius:6px;margin:12px 0;white-space:pre-wrap}.v2panel dialog,dialog.v2dialog{border:1px solid #cbd5e1;border-radius:12px;padding:26px;max-width:440px;color:#17243b}dialog::backdrop{background:#17243b66}.v2panel .v2result{white-space:pre-wrap;font-size:13px;line-height:1.7}.v2panel a{color:#194fb9}@media(max-width:760px){.v2grid{grid-template-columns:1fr}.v2nav{padding:0 16px}}';
@@ -63,7 +63,7 @@ function v2LocalTime(date){
   return two(year%100)+'-'+two(date.getMonth()+1)+'-'+two(date.getDate())+'-'+two(date.getHours())+'.'+two(date.getMinutes())+'.'+two(date.getSeconds());
 }
 async function v2Stop(){try{await v2Api('session/stop',{client:v2Client});text('message','已请求安全停止，请等待文件保存和校验完成。');}catch(e){text('message',e.message);}}
-window.addEventListener('pagehide',()=>{v2Leaving=true;v2Ready=false;navigator.sendBeacon('/api/v2/session/release',JSON.stringify({boot:sessionKey,client:v2Client}));if(v2Socket)v2Socket.close();if(v2Transfer)navigator.sendBeacon('/api/v2/files/cancel',JSON.stringify({boot:sessionKey,job:v2Uuid(),transfer:v2Transfer}));});
+window.addEventListener('pagehide',()=>{v2Leaving=true;v2Ready=false;navigator.sendBeacon('/api/v2/session/release',JSON.stringify({boot:sessionKey,client:v2Client}));if(v2Socket)v2Socket.close();if(v2Transfer)navigator.sendBeacon('/api/v2/files/cancel',JSON.stringify({boot:sessionKey,job:v2Uuid(),expected_job:v2LastFileJob,transfer:v2Transfer}));});
 function v2Uuid(){return Array.from(crypto.getRandomValues(new Uint8Array(16)),n=>n.toString(16).padStart(2,'0')).join('');}
 async function v2ReadNetwork(){
   try{const n=await v2Api('network/state');v2Id('staEnabled').checked=n.sta_enabled;v2Id('apEnabled').checked=n.ap_enabled;v2Id('wifiSsid').value=n.ssid;v2Id('wifiPassword').value='';v2Id('apSsid').value=n.ap_ssid;v2Id('apPassword').value=n.ap_password;v2Message('networkMessage',n.apply_ok===false?'网络启动失败，请通过 USB 检查或重新保存配置':n.applying?'配置正在应用，可能短暂断开':n.connected?'主控 Wi-Fi 已连接':'主控 Wi-Fi 尚未连接；USB仍可配置');v2Message('deviceUrls',(location.hostname==='127.0.0.1'?'本机 USB / 转接入口：'+location.origin+'/\n':'')+(n.sta_ip?'Wi-Fi 检测页：http://'+n.sta_ip+'/\n':'')+(n.ap_enabled?'热点检测页：http://'+n.ap_ip+'/\n':'')+'可选中并复制网址。');}
@@ -75,7 +75,7 @@ v2Id('scanWifi').onclick=async()=>{try{v2Message('networkMessage','正在扫描�
 v2Id('wifiChoices').onchange=()=>v2Id('wifiSsid').value=v2Id('wifiChoices').value;
 v2Id('saveNetwork').onclick=async()=>{try{await v2Api('network/save',{sta_enabled:v2Id('staEnabled').checked,ap_enabled:v2Id('apEnabled').checked,ssid:v2Id('wifiSsid').value,password:v2Id('wifiPassword').value,ap_ssid:v2Id('apSsid').value,ap_password:v2Id('apPassword').value});v2Message('networkMessage','已保存，正在应用。若断线，请使用 USB 或重新连接热点后打开页面。');}catch(e){v2Message('networkMessage',e.message);}};
 async function v2FileOp(action,args={}){
-  const job=v2Uuid();await v2Api('files/'+action,{...args,job});
+  const job=v2Uuid();v2LastFileJob=job;await v2Api('files/'+action,{...args,job});
   const start=Date.now();
   for(;;){await new Promise(r=>setTimeout(r,180));const s=await v2Api('files/state');if(s.job!==job)throw Error('文件任务状态已变化，结果未确认，请刷新，勿重复删除或重命名');v2Message('fileMessage',(s.running?'正在处理，':'处理完成，')+'已处理 '+Number(s.bytes||0).toLocaleString()+' 字节');if(!s.running){if(s.code>=400)throw Error(s.result.error||'文件任务失败');return s.result;}if(Date.now()-start>1800000)throw Error('文件任务仍未完成，请检查设备状态');}
 }

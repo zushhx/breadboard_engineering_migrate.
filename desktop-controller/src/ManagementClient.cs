@@ -18,6 +18,8 @@ namespace BreadboardController
         private readonly Action<string> progress;
         private readonly CancellationToken cancellation;
         private string boot, transfer = "", activeJob = "", lastJob = "";
+        private bool atomicFileCancel, lastJobAccepted;
+        private int responseCode;
         public string Boot { get { return boot; } }
         public ManagementClient(IDeviceBackend backend, CancellationToken cancellation, Action<string> progress)
         { this.backend = backend; this.cancellation = cancellation; this.progress = progress; }
@@ -42,16 +44,20 @@ namespace BreadboardController
         }
         public void Begin()
         {
+            atomicFileCancel = false; lastJobAccepted = false;
             cancellation.ThrowIfCancellationRequested();
             var status = Get("/api/status");
             boot = Str(status, "boot");
             if (!System.Text.RegularExpressions.Regex.IsMatch(boot, "\\A[0-9a-fA-F]{32}\\z")) throw new IOException("设备会话无效，请重新连接。");
+            try { atomicFileCancel = Flag(Get("/api/v2/capabilities"), "atomic_file_cancel"); }
+            catch (Exception) { /* Older/unavailable capability: do not risk global cleanup cancellation. */ }
         }
         private object Request(string method, string path, Dictionary<string, object> body)
         {
             if (body != null) body["boot"] = boot;
             var serializer = new JavaScriptSerializer();
             var response = backend.Request(method, path, body == null ? "" : serializer.Serialize(body), body == null ? "" : boot);
+            responseCode = response.Code;
             object parsed;
             try { parsed = serializer.DeserializeObject(response.Text); }
             catch (ArgumentException) { throw new IOException("主控返回了无效响应，请检查连接；变更请求不会自动重发。"); }
@@ -78,7 +84,11 @@ namespace BreadboardController
         {
             cancellation.ThrowIfCancellationRequested();
             string job = Guid.NewGuid().ToString("N"); args["job"] = job;
-            activeJob = job; lastJob = job; Post("files/" + action, args);
+            activeJob = job; lastJob = job; lastJobAccepted = false;
+            var accepted = Post("files/" + action, args);
+            if (responseCode != 202 || Str(accepted, "job") != job)
+                throw new IOException("文件任务接收结果未确认；不会重发或自动取消，请查看设备状态。");
+            lastJobAccepted = true;
             var watch = Stopwatch.StartNew();
             while (watch.Elapsed < TimeSpan.FromMinutes(30))
             {
@@ -99,6 +109,9 @@ namespace BreadboardController
         }
         public void CancelOwnedTask()
         {
+            // Older firmware ignores expected_job; let its transfer expire instead
+            // of converting automatic cleanup into a global cancellation.
+            if (!atomicFileCancel || !lastJobAccepted) return;
             if (String.IsNullOrEmpty(boot)) return;
             if (String.IsNullOrEmpty(activeJob) && String.IsNullOrEmpty(transfer)) return;
             try
@@ -107,7 +120,7 @@ namespace BreadboardController
                 var state = Get("/api/v2/files/state");
                 if (Str(state, "job") != lastJob) return;
                 if (String.IsNullOrEmpty(activeJob) && String.IsNullOrEmpty(transfer)) return;
-                Request("POST", "/api/v2/files/cancel", Args("job", Guid.NewGuid().ToString("N"), "transfer", transfer));
+                Request("POST", "/api/v2/files/cancel", Args("job", Guid.NewGuid().ToString("N"), "expected_job", lastJob, "transfer", transfer));
             }
             catch (Exception) { /* Device transfer timeout also closes abandoned transfers. */ }
         }

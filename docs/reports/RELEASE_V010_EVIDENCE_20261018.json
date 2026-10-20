@@ -1,6 +1,13 @@
 {
   "date": "2026-10-19",
-  "phase": "D_clean_build_passed_awaiting_specific_trial_approval_C_AP_still_failed",
+  "phase": "D_trial_smoke_passed_AP_200s_target_revised_PC_driver_interruption_full_export_pending",
+  "AP_duration_adjustment": {
+    "date": "2026-10-20",
+    "user_statement": "200秒可以了",
+    "target_seconds": 200,
+    "scope": "AP long recording; other matrix entries unchanged",
+    "preserve_original_request_and_interruption_evidence": true
+  },
   "D_network_headroom": {
     "source_commit": "9cc8c174f628ed0654403b248c72389a426f2ef6",
     "input_sha256": "0de0bc9e9b19dacb91a7777410cf1169edf5f467efc016ff1aa20e268306aedf",
@@ -13,9 +20,19 @@
     "capture_slots": 32,
     "pool_allocation_reduced_bytes": 25344,
     "static_RAM_bytes": 87460,
-    "specific_flash_approval_received": false,
-    "flashed": false,
-    "hardware_passed": false
+    "specific_flash_approval_received": true,
+    "flashed": true,
+    "hardware_passed": false,
+    "smoke_passed": true,
+    "smoke_local": "local-data/hardware/release-v010/network-headroom-smoke/20261020_130314/result.json",
+    "AP_original_result_passed": false,
+    "AP_result_local": "local-data/hardware/release-v010/ap-four-pages-D-20261020T050539Z/result.json",
+    "actual_elapsed_us": 208192525,
+    "samples": 5548074,
+    "errors": 0,
+    "device_sha256": "d624c1c1667e7bf482b367607475267926537c057357f7adc5c52105e7860105",
+    "PC_driver_recovery_evidence_local": "local-data/validation/release-v010/D-PC-WLAN-20261020/timeline-and-conclusion.md",
+    "complete_PC_export_passed": false
   },
   "base_commit": "8f4c48dd30c78f90b22c97a5102a9888f9d973f5",
   "network_fix_commit": "3a365412d55320f1508b3e24e8d19c8d3582bdeb",

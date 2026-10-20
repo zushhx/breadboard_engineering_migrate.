@@ -213,8 +213,11 @@ static Reply execute(const char* drive,const std::string& op,cJSON* a) {
       writeGate(false); if(f_open(&work->file,src.c_str(),FA_READ)!=FR_OK) return error(404,"文件不存在");
       transferSize=f_size(&work->file);
     }
-    snprintf(transfer,sizeof(transfer),"%08lx%08lx",(unsigned long)esp_random(),(unsigned long)esp_random());
-    transferOpen=true; transferSeen=esp_timer_get_time(); mbedtls_sha256_init(&transferHash); mbedtls_sha256_starts(&transferHash,0);
+    {MutexLock lock(mutex);
+      snprintf(transfer,sizeof(transfer),"%08lx%08lx",(unsigned long)esp_random(),(unsigned long)esp_random());
+      transferOpen=true;
+    }
+    transferSeen=esp_timer_get_time(); mbedtls_sha256_init(&transferHash); mbedtls_sha256_starts(&transferHash,0);
     auto out=cJSON_CreateObject(); cJSON_AddStringToObject(out,"transfer",transfer); cJSON_AddNumberToObject(out,"bytes",transferSize);
     Reply reply; reply.body=json(out); return reply;
   } else return error(404,"文件操作不存在");
@@ -228,12 +231,29 @@ Reply filesRequest(const char* method,const char* op,cJSON* a) {
     cJSON_AddItemToObject(out,"result",cJSON_Parse(result.c_str())); Reply r; r.body=json(out); return r;
   }
   if(strcmp(method,"POST")) return error(405,"文件操作需POST");
+  MutexLock lock(mutex);
   if(!strcmp(op,"cancel")) {
+    auto requestJob=cJSON_GetObjectItem(a,"job");
+    if(requestJob&&(!cJSON_IsString(requestJob)||!control::Sessions::valid(requestJob->valuestring)))
+      return error(400,"文件任务编号无效");
+    auto expected=cJSON_GetObjectItem(a,"expected_job");
+    if(expected) {
+      if(!cJSON_IsString(expected)||!control::Sessions::valid(expected->valuestring))
+        return error(400,"取消目标任务编号无效");
+      if(strcmp(expected->valuestring,job)) return error(409,"文件任务已变化，未取消");
+    }
+    auto transferValue=cJSON_GetObjectItem(a,"transfer");
+    if(transferValue&&!cJSON_IsString(transferValue)) return error(400,"取消传输编号无效");
+    const char* ownedTransfer=text(a,"transfer");
+    if(ownedTransfer[0]&&(!transferOpen||strcmp(ownedTransfer,transfer)))
+      return error(409,"传输会话已变化，未取消");
+    if(!running&&!queued&&!control::Sessions::valid(text(a,"job")))
+      return error(400,"文件任务编号无效");
+    // Validate ownership and set the cancellation flag in one critical section.
+    // Missing expected_job/transfer retains the explicit global cancel primitive.
     cancel.store(true);
-    MutexLock lock(mutex);
     if(running||queued) {Reply r; r.code=202; r.body="{\"accepted\":true}"; return r;}
   }
-  MutexLock lock(mutex);
   if(running||queued) return error(409,"有文件任务正在执行");
   const char* id=text(a,"job");
   if(!control::Sessions::valid(id)) return error(400,"文件任务编号无效");
@@ -241,6 +261,7 @@ Reply filesRequest(const char* method,const char* op,cJSON* a) {
     if(strcmp(op,"cancel")&&strcmp(text(a,"transfer"),transfer)) return error(409,"另一个文件传输正在进行");
     if(strcmp(op,"chunk")&&strcmp(op,"finish")&&strcmp(op,"read")&&strcmp(op,"cancel")) return error(409,"请先完成或取消当前传输");
   } else if(!control::reserveFiles()) return error(409,"正在采集、保存或交接，请稍后操作文件");
+  if(!transferOpen) transfer[0]=0; // A completed transfer cannot own a new job.
   snprintf(job,sizeof(job),"%s",id); command=json(cJSON_Duplicate(a,true)); action=op;
   cancel.store(!strcmp(op,"cancel")); queued=true; progressBytes=transferOffset; resultCode=202; result="{}";
   Reply r; r.code=202; r.body="{\"job\":\""+std::string(job)+"\"}"; return r;
