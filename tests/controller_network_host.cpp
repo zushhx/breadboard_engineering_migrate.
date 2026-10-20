@@ -5,12 +5,14 @@
 #include <stdexcept>
 #include <cassert>
 #include <cstdio>
+#include <functional>
 static int64_t clockUs=100;
 static bool busy=false,reserved=false,failCommit=false,failSet=false,failApply=false,failNvs=false;
 static unsigned writes=0,commits=0,checks=0,applies=0;
 static std::vector<uint8_t> saved,pending;
 static wifi_config_t station;
 static wifi_mode_t mode=WIFI_MODE_NULL;
+static std::function<void()> applyHook;
 static esp_netif_t staNetHost,apNetHost;
 int64_t esp_timer_get_time(){return clockUs;}
 uint32_t esp_random(){return 1234;}
@@ -30,7 +32,7 @@ esp_err_t esp_wifi_set_storage(int s){assert(s==WIFI_STORAGE_RAM);return ESP_OK;
 esp_err_t esp_event_handler_register(esp_event_base_t,int,void(*)(void*,esp_event_base_t,int32_t,void*),void*){return ESP_OK;}
 esp_err_t esp_wifi_connect(){return ESP_OK;}
 esp_err_t esp_wifi_stop(){return ESP_OK;}
-esp_err_t esp_wifi_start(){++applies;return failApply?ESP_FAIL:ESP_OK;}
+esp_err_t esp_wifi_start(){++applies;if(applyHook)applyHook();return failApply?ESP_FAIL:ESP_OK;}
 esp_err_t esp_wifi_set_mode(wifi_mode_t m){mode=m;return ESP_OK;}
 esp_err_t esp_wifi_get_mode(wifi_mode_t* p){*p=mode;return ESP_OK;}
 esp_err_t esp_wifi_set_config(int which,const wifi_config_t* p){if(which==WIFI_IF_STA)station=*p;return ESP_OK;}
@@ -65,7 +67,11 @@ static void apply(){clockUs+=600000;devicev2::pollWifi();check(!reserved,"networ
 static bool stateFlag(const char* key){auto r=devicev2::wifiRequest("GET","state",nullptr);auto j=cJSON_Parse(r.body.c_str());bool yes=cJSON_IsTrue(cJSON_GetObjectItem(j,key));cJSON_Delete(j);return yes;}
 int main(){try{
   devicev2::startWifi();check(mode==WIFI_MODE_AP,"empty credentials bootstrap recovery AP");
-  check(save("TestNet","original-password").code==202,"new credentials accepted");apply();
+  check(save("TestNet","original-password").code==202,"new credentials accepted");
+  check(stateFlag("applying")&&!stateFlag("apply_ok"),"accepted save invalidates old apply success while pending");
+  applyHook=[](){check(stateFlag("applying")&&!stateFlag("apply_ok"),"SDK start callback sees applying until SDK completes");check(save("TestNet","").code==409,"save rejects during active SDK application");};
+  apply();applyHook={};
+  check(!stateFlag("applying")&&stateFlag("apply_ok")&&stateFlag("running"),"completed apply publishes success and running together");
   check(!strcmp((char*)station.sta.password,"original-password"),"new credentials reach WiFi driver");
   check(save("TestNet","").code==202,"same SSID blank password accepted");apply();
   check(!strcmp((char*)station.sta.password,"original-password"),"same SSID blank password preserves WiFi password");
@@ -80,12 +86,20 @@ int main(){try{
   failCommit=true;auto oldCommits=commits;check(save("TestNet","must-not-commit").code==500&&!reserved&&saved==before&&commits==oldCommits+1,"NVS commit failure does not schedule reconfiguration");failCommit=false;
   check(save("TestNet","").code==202,"blank password remains usable after failed saves");apply();
   check(!strcmp((char*)station.sta.password,"replacement-password"),"failed save did not change in-memory password");
-  failApply=true;check(save("OtherNet","valid-password").code==202,"persistence accepted separately from network start");apply();
+  failApply=true;check(save("OtherNet","valid-password").code==202,"persistence accepted separately from network start");
+  check(stateFlag("applying")&&!stateFlag("apply_ok"),"failed apply begins without stale previous success");
+  applyHook=[](){check(stateFlag("applying")&&!stateFlag("apply_ok"),"failing SDK callback still reports applying");};
+  apply();applyHook={};
+  check(!stateFlag("applying")&&!stateFlag("running"),"failed apply clears applying and publishes stopped state");
   check(!stateFlag("apply_ok")&&!stateFlag("connected"),"driver failure is visible and not reported as connected");failApply=false;
   check(save("TestNet","replacement-password").code==202,"USB request can recover failed network configuration");apply();
   check(stateFlag("apply_ok"),"recovered driver start reported successful");
   auto state=devicev2::wifiRequest("GET","state",nullptr);check(state.body.find("replacement-password")==std::string::npos,"STA secret not exposed in network state");
   auto beforeApplies=applies;devicev2::startWifi();check(applies==beforeApplies+1&&mode==WIFI_MODE_APSTA&&!strcmp((char*)station.sta.ssid,"TestNet")&&!strcmp((char*)station.sta.password,"replacement-password"),"restart reloads persisted SSID, password and APSTA mode");
+  auto disabled=cJSON_Parse("{\"sta_enabled\":false,\"ap_enabled\":false,\"ssid\":\"TestNet\",\"password\":\"\",\"ap_ssid\":\"TestAP\",\"ap_password\":\"test-ap-password\"}");
+  check(devicev2::wifiRequest("POST","save",disabled).code==202,"radio disable accepted");cJSON_Delete(disabled);
+  check(stateFlag("applying")&&!stateFlag("apply_ok"),"radio disable remains pending before apply");apply();
+  check(!stateFlag("applying")&&stateFlag("apply_ok")&&!stateFlag("running"),"radio disable completes with stopped successful state");
   devicev2::nvsOk=false;oldWrites=writes;check(save("TestNet","").code==503&&writes==oldWrites,"unavailable NVS rejects save without erase");
   std::cout<<"RESULT "<<checks<<" production network checks; host SDK/NVS adapters, not radio or real NVS\n";return 0;
 }catch(const std::exception& e){std::cerr<<"FAIL "<<e.what()<<"\n";return 1;}}

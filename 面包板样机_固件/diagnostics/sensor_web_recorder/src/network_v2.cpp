@@ -16,7 +16,7 @@ namespace devicev2 {
 struct NetworkConfig { uint32_t version=2; bool sta=true,ap=false; char ssid[33]={},password[65]={},apSsid[33]={},apPassword[64]={}; };
 static NetworkConfig config;
 static SemaphoreHandle_t gate;
-static bool started=false,nvsOk=false,change=false,recovery=false,linked=false,initialized=false,applyOk=false,subnetPending=false;
+static bool started=false,nvsOk=false,change=false,applyingNow=false,recovery=false,linked=false,initialized=false,applyOk=false,subnetPending=false;
 static int64_t applyAt=0,startAt=0;
 static char staIp[16]={},apIp[16]="192.168.4.1";
 static esp_netif_t* staNet;
@@ -35,11 +35,11 @@ static void events(void*,esp_event_base_t base,int32_t id,void* data) {
   }
 }
 static bool apply() {
-  NetworkConfig copy; {MutexLock lock(gate); copy=config; linked=false; staIp[0]=0;}
+  NetworkConfig copy; {MutexLock lock(gate); copy=config; applyingNow=true; applyOk=false; linked=false; staIp[0]=0;}
   if(started) esp_wifi_stop();
   control::networkAddress(false,"");
   bool ap=copy.ap||recovery;
-  if(!copy.sta&&!ap) {MutexLock lock(gate);started=false;applyOk=true; control::networkAddress(false,""); return true;}
+  if(!copy.sta&&!ap) {MutexLock lock(gate);started=false;applyOk=true;applyingNow=false; control::networkAddress(false,""); return true;}
   wifi_mode_t mode=ap?(copy.sta&&copy.ssid[0]?WIFI_MODE_APSTA:WIFI_MODE_AP):WIFI_MODE_STA;
   esp_err_t result=esp_wifi_set_mode(mode);
   if(result==ESP_OK&&copy.sta&&copy.ssid[0]) {
@@ -52,8 +52,7 @@ static bool apply() {
     result=esp_wifi_set_config(WIFI_IF_AP,&c);
   }
   if(result==ESP_OK) result=esp_wifi_start();
-  {MutexLock lock(gate); started=result==ESP_OK; startAt=esp_timer_get_time();}
-  {MutexLock lock(gate); applyOk=result==ESP_OK;}
+  {MutexLock lock(gate); started=result==ESP_OK; startAt=esp_timer_get_time(); applyOk=result==ESP_OK; applyingNow=false;}
   return result==ESP_OK;
 }
 void startWifi() {
@@ -107,9 +106,9 @@ void pollWifi() {
   }
   bool doApply=false;
   {MutexLock lock(gate);
-    if(change&&esp_timer_get_time()>=applyAt) {change=false; recovery=false; doApply=true;}
+    if(change&&esp_timer_get_time()>=applyAt) {change=false; applyingNow=true; applyOk=false; recovery=false; doApply=true;}
     else if(started&&config.sta&&config.ssid[0]&&!linked&&!config.ap&&!recovery&&esp_timer_get_time()-startAt>30000000&&!control::busyNow()) {
-      if(control::reserveFiles()) {recovery=true; doApply=true;}
+      if(control::reserveFiles()) {recovery=true; applyingNow=true; applyOk=false; doApply=true;}
     }
   }
   if(doApply) {apply(); control::releaseFiles();}
@@ -119,7 +118,7 @@ Reply wifiRequest(const char* method,const char* action,cJSON* a) {
   if(!strcmp(action,"state")&&!strcmp(method,"GET")) {
     MutexLock lock(gate); auto j=cJSON_CreateObject(); cJSON_AddBoolToObject(j,"connected",linked);
     cJSON_AddBoolToObject(j,"sta_enabled",config.sta); cJSON_AddBoolToObject(j,"ap_enabled",config.ap||recovery);
-    cJSON_AddBoolToObject(j,"running",started); cJSON_AddBoolToObject(j,"apply_ok",applyOk); cJSON_AddBoolToObject(j,"persistent_available",nvsOk); cJSON_AddBoolToObject(j,"applying",change);
+    cJSON_AddBoolToObject(j,"running",started); cJSON_AddBoolToObject(j,"apply_ok",applyOk); cJSON_AddBoolToObject(j,"persistent_available",nvsOk); cJSON_AddBoolToObject(j,"applying",change||applyingNow);
     cJSON_AddStringToObject(j,"ssid",config.ssid); cJSON_AddStringToObject(j,"ap_ssid",config.apSsid);
     cJSON_AddStringToObject(j,"ap_password",config.apPassword); cJSON_AddStringToObject(j,"sta_ip",staIp);
     cJSON_AddStringToObject(j,"ap_ip",apIp); Reply r; r.body=json(j); return r;
@@ -143,7 +142,7 @@ Reply wifiRequest(const char* method,const char* action,cJSON* a) {
   }
   if(strcmp(action,"save")) return error(404,"网络操作不存在");
   if(!nvsOk) return error(503,"NVS不可用；未自动擦除，请保留现场");
-  NetworkConfig next; {MutexLock lock(gate); if(change) return error(409,"网络配置正在应用"); next=config;}
+  NetworkConfig next; {MutexLock lock(gate); if(change||applyingNow) return error(409,"网络配置正在应用"); next=config;}
   const char* ssid=text(a,"ssid"),*password=text(a,"password"),*apSsid=text(a,"ap_ssid"),*apPass=text(a,"ap_password");
   auto sta=cJSON_GetObjectItem(a,"sta_enabled"),ap=cJSON_GetObjectItem(a,"ap_enabled");
   if(!cJSON_IsBool(sta)||!cJSON_IsBool(ap)||strlen(ssid)>32||strlen(password)>63||!strlen(apSsid)||strlen(apSsid)>32||strlen(apPass)<8||strlen(apPass)>63)
@@ -159,7 +158,7 @@ Reply wifiRequest(const char* method,const char* action,cJSON* a) {
   nvs_handle_t handle; esp_err_t saved=nvs_open("controller_v2",NVS_READWRITE,&handle);
   if(saved==ESP_OK) {saved=nvs_set_blob(handle,"network",&next,sizeof(next)); if(saved==ESP_OK) saved=nvs_commit(handle); nvs_close(handle);}
   if(saved!=ESP_OK) {control::releaseFiles(); return error(500,"配置保存失败，未切换网络");}
-  {MutexLock lock(gate); config=next; change=true; applyAt=esp_timer_get_time()+500000;}
+  {MutexLock lock(gate); config=next; change=true; applyOk=false; applyAt=esp_timer_get_time()+500000;}
   Reply r; r.code=202; r.body="{\"accepted\":true}"; return r;
 }
 }
