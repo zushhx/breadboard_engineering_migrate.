@@ -22,11 +22,11 @@ import tf_write_batch as tf
 import sensor_recorder_batch as recorder
 import parse_sensor_record
 
-SOURCE = 'UNBOUND_E_SOURCE'
-CANDIDATE = 'UNBOUND_E_SHA256'
+SOURCE = '4aa27b2c90902d03e262c23cad5eb65f812bc524'
+CANDIDATE = '81a84cabc93c30934122c33d5a6ca6945a6da3ff05292b94cef5cb39ebceade7'
 OLD_SOURCE = '9cc8c174f628ed0654403b248c72389a426f2ef6'
 OLD_SHA = 'f2ca20ab566115f5a38d7e6dc198d57d68f1e4a1e48a1d6d84261d59b7fc1aa9'
-MANIFEST = None  # Bind clean E source, exact SHA, manifest and sector extent before preparation.
+MANIFEST = ROOT/'local-data/build/sensor-web/250563438c572116/20261020_162052_054082/build_manifest.json'
 OLD_MANIFEST = ROOT/'local-data/build/sensor-web/0de0bc9e9b19dacb/20261020_125714_001195/build_manifest.json'
 EXPECTED_NVS = '0be1ee3e301f658c5611dad6c777642e675bc79132a000043dc64afb7248946f'
 HOST = ROOT/'local-data/release-v010/device-host-E/DeviceHost.exe'
