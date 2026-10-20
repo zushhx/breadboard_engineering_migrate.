@@ -100,3 +100,17 @@ min_heap7660字节，sensor/INA栈余量2076/2744字节。这些计数尚未证�
 离线证据为`local-data/hardware/release-v010/D-diagnostic-export-20261020T053048Z/offline-decoded-not-accepted.json`；
 原始完整`.partial`及失败结果保留。设备仍运行D，未刷后续文件路径修复；main合并和
 正式发布门槛未满足。下一步先定位这6份无效样本，不重复采集来替代失败证据。
+
+## 后续E结果（2026-10-20）
+
+E源码4aa27b2c90902d03e262c23cad5eb65f812bc524已试烧，保留D的32块池，另含
+INA完成后等待100ms及文件路径修复。AP四页62F30A95的200.003721秒记录和完整
+37966410字节HTTP导出通过，SHA-256为
+113e81189e2df28b08e5ef63b37e4a653132a3d5df5af28dcb7c222424bf6d06；
+结构、逐块CRC、尾部总数及errors/INA-invalid/saturation零门槛通过。FIFO239、
+队列16、max_write147418µs、max_sync181018µs；INA1363份，实际6.814873Hz，
+比10Hz低约31.85%。尾部最小堆1440字节，重复同条件空闲泄漏仍未测，不能据此
+宣称内存预算充分或唯一根因闭环。此结果不覆盖其他候选或整套发布矩阵。
+
+证据：`local-data/hardware/release-v010/E-diagnostic-export-20261020T083951Z/result.json`。
+主控现保持E，D失败证据不改写；main合并与正式发布仍等待其余矩阵。
