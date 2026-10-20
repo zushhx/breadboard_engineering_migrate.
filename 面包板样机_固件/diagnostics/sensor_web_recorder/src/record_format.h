@@ -2,7 +2,7 @@
 #include <cstdint>
 #include <cstddef>
 namespace recorder {
-constexpr unsigned kFrames = 448, kSlots = 40, kPayload = kFrames * 7;
+constexpr unsigned kFrames = 448, kSlots = 32, kPayload = kFrames * 7;
 // All integers little endian; packed wire structures are used only on ESP32/little-endian hosts.
 #pragma pack(push, 1)
 struct Header {

@@ -20,6 +20,7 @@
 #include "esp_heap_caps.h"
 #include "cJSON.h"
 #include <cmath>
+#include <cerrno>
 #include <cstdlib>
 #include <inttypes.h>
 #if defined(CONFIG_ESP_PHY_CALIBRATION_AND_DATA_STORAGE) || defined(CONFIG_ESP32_PHY_CALIBRATION_AND_DATA_STORAGE)
@@ -159,12 +160,25 @@ std::string trendJson() {
   return size?std::string(telemetryJson,size):std::string("{}");
 }
 static esp_err_t telemetry(httpd_req_t* r,bool trend) {
-  headers(r,"application/json");TelemetryLock lock;
-  size_t size=trend?buildTrendJson():buildStatusJson();
-  if(!size) return boundedhttp::error(r,HTTPD_500_INTERNAL_SERVER_ERROR,"telemetry bound exceeded");
-  // Keep the response buffer stable until this synchronous send returns. No
-  // std::string allocation on HTTP status/trend, including low-heap operation.
-  return boundedhttp::send(r,telemetryJson,size);
+  const int64_t entered=esp_timer_get_time();
+  headers(r,"application/json");
+  const int64_t waiting=esp_timer_get_time();
+  int64_t locked=0,rendered=0,finished=0;size_t size=0;esp_err_t sent;int sendError=0;
+  {
+    TelemetryLock lock;locked=esp_timer_get_time();
+    size=trend?buildTrendJson():buildStatusJson();rendered=esp_timer_get_time();
+    // Buffer stays stable for synchronous send; diagnostics run after unlock.
+    errno=0;
+    sent=size?boundedhttp::send(r,telemetryJson,size):
+      boundedhttp::error(r,HTTPD_500_INTERNAL_SERVER_ERROR,"telemetry bound exceeded");
+    sendError=sent==ESP_OK?0:errno;finished=esp_timer_get_time();
+  }
+  if(sent!=ESP_OK||finished-entered>100000) {
+    Serial.printf("[http] telemetry=%s bytes=%u lock_ms=%" PRIi64 " render_ms=%" PRIi64 " send_close_ms=%" PRIi64 " total_ms=%" PRIi64 " result=%d errno=%d\n",
+      trend?"trend":"status",(unsigned)size,(locked-waiting)/1000,(rendered-locked)/1000,
+      (finished-rendered)/1000,(finished-entered)/1000,(int)sent,sendError);
+  }
+  return sent;
 }
 static esp_err_t status(httpd_req_t* r) {return telemetry(r,false);}
 static esp_err_t trend(httpd_req_t* r) {return telemetry(r,true);}

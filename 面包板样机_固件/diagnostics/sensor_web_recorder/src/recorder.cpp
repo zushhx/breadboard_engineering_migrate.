@@ -334,8 +334,13 @@ static void record(const Store& store, const char* run, unsigned seconds) {
       control::storageSpace(cached, available);
       control::progress(writtenSamples, now() - totals.startUs, errors.load(), uxQueueMessagesWaiting(dataQ),
           totals.maxWriteUs, totals.maxSyncUs);
-      Serial.printf("[rec] progress written_samples=%llu queue=%u errors=%lu\n", (unsigned long long)writtenSamples,
-          (unsigned)uxQueueMessagesWaiting(dataQ), (unsigned long)errors.load()); nextReport = now() + 1000000;
+      // Observe only at the existing 1Hz main-owner report, never in the FIFO task.
+      constexpr unsigned memoryCaps = MALLOC_CAP_INTERNAL | MALLOC_CAP_8BIT;
+      const size_t internalFree = heap_caps_get_free_size(memoryCaps);
+      const size_t internalLargest = heap_caps_get_largest_free_block(memoryCaps);
+      Serial.printf("[rec] progress written_samples=%llu queue=%u errors=%lu internal_free=%u internal_largest=%u\n", (unsigned long long)writtenSamples,
+          (unsigned)uxQueueMessagesWaiting(dataQ), (unsigned long)errors.load(),
+          (unsigned)internalFree, (unsigned)internalLargest); nextReport = now() + 1000000;
     }
   }
   vTaskPrioritySet(nullptr, previousPriority);

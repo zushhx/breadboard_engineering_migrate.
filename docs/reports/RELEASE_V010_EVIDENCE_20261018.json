@@ -996,6 +996,21 @@
     "result_local": "local-data/hardware/release-v010/ap-four-pages-B-20261019T084525Z/result.json",
     "uart_local": "local-data/hardware/release-v010/ap-four-pages-B-20261019T084525Z/uart/hardware.log"
   },
+  "B_export_completed_under_C": {
+    "result_local": "local-data/hardware/release-v010/B-export-under-C-20261019T093750Z/result.json",
+    "record_integrity_passed": true,
+    "capture_300s_accepted": false,
+    "bytes": 1733342,
+    "sha256": "c5084a78d164764ad6505490c35cb6093d49740c9c93ed90006e6bcb0dc43a65",
+    "elapsed_us": 9129682,
+    "samples": 242902,
+    "errors": 0,
+    "ina_invalid": 0,
+    "saturation": 0,
+    "export_seconds": 38.313,
+    "C_boot_run_and_existing_references_unchanged": true,
+    "run_binding": "Original B UART START/PASS, sample total and SHA; file header has no run-id field"
+  },
   "B_usb_abort": {
     "trigger": "USB statusJson std::string allocation -> operator new -> abort",
     "gdb_read_only_packets": [
