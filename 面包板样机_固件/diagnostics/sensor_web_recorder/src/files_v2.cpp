@@ -21,6 +21,7 @@ void updateSpace();
 static SemaphoreHandle_t mutex;
 
 static bool queued=false,running=false;
+static bool completing=false; // Protected by mutex: cancel precedes commit/completion.
 static std::string command,action,result="{\"idle\":true}";
 static int resultCode=200;
 static char job[33]={},transfer[17]={};
@@ -35,6 +36,12 @@ static mbedtls_sha256_context transferHash;
 struct Workspace { FIL file,other; FF_DIR directories[9]; FILINFO infos[9]; uint8_t block[2048],verifyBlock[2048]; };
 static_assert(sizeof(Workspace)<=32768,"File workspace must fit within the idle acquisition pool");
 static Workspace* work;
+static bool beginCompletion() {
+  MutexLock lock(mutex);
+  if(cancel.load()) return false;
+  completing=true;
+  return true;
+}
 // Resolve existing parents through FatFS so long/short-name aliases cannot bypass the descendant guard.
 static std::string canonical(const char* drive,const std::string& path) {
   std::string resolved; size_t from=1;
@@ -107,16 +114,20 @@ static Reply finishTransfer(bool commit,const char* expected) {
   bool wasWriting=writing,ok=true;
   if(wasWriting&&f_sync(&work->file)!=FR_OK) ok=false;
   if(f_close(&work->file)!=FR_OK) ok=false;
-  auto digest=hashFinish(&transferHash); mbedtls_sha256_free(&transferHash); transferOpen=false;
+  auto digest=hashFinish(&transferHash); mbedtls_sha256_free(&transferHash);
   if(commit&&wasWriting) {
     ok=ok&&transferOffset==transferSize&&strlen(expected)==64&&!strcasecmp(digest.c_str(),expected);
     if(ok) ok=hashFile(transferTemp)==digest;
     FILINFO target; if(f_stat(transferFinal.c_str(),&target)!=FR_NO_FILE) ok=false;
-    if(ok) ok=f_rename(transferTemp.c_str(),transferFinal.c_str())==FR_OK;
+    // Decide under the mutex, then do I/O outside it. Late cancel rejects once
+    // publication starts instead of acknowledging an impossible undo.
+    if(ok) ok=beginCompletion()&&f_rename(transferTemp.c_str(),transferFinal.c_str())==FR_OK;
     if(ok) ++revision;
   }
+  if(commit&&!wasWriting&&ok) ok=beginCompletion();
+  transferOpen=false;
   writeGate(false);
-  if(!commit) return error(409,"传输已取消，未完成的临时文件保留");
+  if(!commit||cancel.load()) return error(409,"传输已取消，未完成的临时文件保留");
   if(!ok) return error(422,"文件关闭或完整性校验失败，临时文件保留");
   auto out=cJSON_CreateObject(); cJSON_AddStringToObject(out,"sha256",digest.c_str()); cJSON_AddNumberToObject(out,"bytes",transferOffset);
   Reply reply; reply.body=json(out); return reply;
@@ -180,17 +191,17 @@ static Reply execute(const char* drive,const std::string& op,cJSON* a) {
   // Failed writes can still leave partial entries, so confirmations must be invalidated before attempting mutations.
   if(op!="begin_read"&&op!="delete") ++revision;
   writeGate(op!="begin_read");
-  if(op=="mkdir") {if(f_mkdir(src.c_str())!=FR_OK) return error(409,"新建失败，目录可能已存在"); ++revision;}
+  if(op=="mkdir") {if(!beginCompletion()||f_mkdir(src.c_str())!=FR_OK) return error(409,"新建失败，目录可能已存在"); ++revision;}
   else if(op=="rename"||op=="copy") {
     if(!validPath(destination)||nestedCopy(path,destination)) return error(400,"目标路径无效或在源目录内部");
     auto sourceName=canonical(drive,path); auto split=destination.find_last_of('/');
     auto parentName=canonical(drive,split?destination.substr(0,split):"/");
     if(sourceName.empty()||parentName.empty()||nestedCopy(sourceName,(parentName=="/"?"":parentName)+destination.substr(split))) return error(400,"目标父目录无效或通过别名位于源目录内部");
     std::string dst=physical(destination); if(f_stat(dst.c_str(),&info)!=FR_NO_FILE) return error(409,"目标已存在，不覆盖文件");
-    if(op=="rename") {if(f_rename(src.c_str(),dst.c_str())!=FR_OK) return error(500,"重命名失败");}
+    if(op=="rename") {if(!beginCompletion()||f_rename(src.c_str(),dst.c_str())!=FR_OK) return error(500,"重命名失败");}
     else {
       std::string temporary=dst+".copy-"+std::string(job,8)+".partial"; uint64_t bytes=0; unsigned count=0;
-      if(!tree(src,temporary,0,1,bytes,count)||f_rename(temporary.c_str(),dst.c_str())!=FR_OK) return error(500,"复制失败或已取消，未完成副本保留");
+      if(!tree(src,temporary,0,1,bytes,count)||!beginCompletion()||f_rename(temporary.c_str(),dst.c_str())!=FR_OK) return error(500,"复制失败或已取消，未完成副本保留");
     }
     ++revision;
   } else if(op=="delete") {
@@ -249,6 +260,7 @@ Reply filesRequest(const char* method,const char* op,cJSON* a) {
       return error(409,"传输会话已变化，未取消");
     if(!running&&!queued&&!control::Sessions::valid(text(a,"job")))
       return error(400,"文件任务编号无效");
+    if(running&&completing) return error(409,"文件任务已进入提交完成阶段，未取消");
     // Validate ownership and set the cancellation flag in one critical section.
     // Missing expected_job/transfer retains the explicit global cancel primitive.
     cancel.store(true);
@@ -263,7 +275,7 @@ Reply filesRequest(const char* method,const char* op,cJSON* a) {
   } else if(!control::reserveFiles()) return error(409,"正在采集、保存或交接，请稍后操作文件");
   if(!transferOpen) transfer[0]=0; // A completed transfer cannot own a new job.
   snprintf(job,sizeof(job),"%s",id); command=json(cJSON_Duplicate(a,true)); action=op;
-  cancel.store(!strcmp(op,"cancel")); queued=true; progressBytes=transferOffset; resultCode=202; result="{}";
+  cancel.store(!strcmp(op,"cancel")); completing=false; queued=true; progressBytes=transferOffset; resultCode=202; result="{}";
   Reply r; r.code=202; r.body="{\"job\":\""+std::string(job)+"\"}"; return r;
 }
 void initFiles() { static StaticSemaphore_t storage; mutex=xSemaphoreCreateMutexStatic(&storage); }
@@ -271,7 +283,7 @@ void pollStorage(const char* drive) {
   if(!mutex) return;
   std::string body,op;
   {MutexLock lock(mutex);
-    if(transferOpen&&!running&&!queued&&esp_timer_get_time()-transferSeen>60000000) {body="{}";op="cancel";running=true;}
+    if(transferOpen&&!running&&!queued&&esp_timer_get_time()-transferSeen>60000000) {body="{}";op="cancel";running=true;completing=false;}
     else if(queued) {body=command;op=action;queued=false;running=true;}
     else return;
   }
@@ -280,8 +292,16 @@ void pollStorage(const char* drive) {
   if(!memory) reply=error(503,"空闲采集池不可借用，未执行文件操作");
   else {
     if(!transferOpen) work=new(memory) Workspace{};
-    auto args=cJSON_Parse(body.c_str()); reply=execute(drive,op,args); cJSON_Delete(args);
+    auto args=cJSON_Parse(body.c_str());
+    if(cancel.load()&&op!="cancel") reply=error(409,"文件任务已取消，未执行");
+    else reply=execute(drive,op,args);
+    cJSON_Delete(args);
   }
+  // Keep running set until accepted cancellation has closed any transfer. A
+  // following chunk cannot clear cancellation by submitting a replacement job.
+  bool cancelled;
+  {MutexLock lock(mutex);cancelled=cancel.load()&&!completing;if(!cancelled)completing=true;}
+  if(cancelled) reply=transferOpen?finishTransfer(false,""):error(409,"文件任务已取消，未完成文件保留");
   if(!transferOpen) {writeGate(false); updateSpace(); control::releaseFiles();}
   {MutexLock lock(mutex); result=reply.body; resultCode=reply.code; running=false;}
 }

@@ -8,23 +8,24 @@
 #include <iostream>
 #include <sstream>
 #include <functional>
-static std::function<void()> readHook;
+static std::function<void()> readHook,openHook,writeHook,syncHook,renameHook,mkdirHook;
+static void invoke(std::function<void()>& hook){if(hook){auto fn=std::move(hook);hook={};fn();}}
 namespace fs=std::filesystem;
 int64_t hostTime=1;
 static bool reserved=false,recording=false,writable=false,failSync=false;
 static unsigned releases=0;
-int f_open(FIL* f,const char* p,unsigned flags){if(flags&FA_WRITE){assert(writable);if(fs::exists(p))return FR_ERR;}f->f=fopen(p,flags&FA_WRITE?"wb":"rb");return f->f?FR_OK:FR_ERR;}
+int f_open(FIL* f,const char* p,unsigned flags){if(flags&FA_WRITE){assert(writable);if(fs::exists(p))return FR_ERR;}f->f=fopen(p,flags&FA_WRITE?"wb":"rb");invoke(openHook);return f->f?FR_OK:FR_ERR;}
 int f_close(FIL* f){int rc=fclose(f->f);f->f=nullptr;return rc?FR_ERR:FR_OK;}
-int f_sync(FIL* f){return failSync||fflush(f->f)?FR_ERR:FR_OK;}
+int f_sync(FIL* f){invoke(syncHook);return failSync||fflush(f->f)?FR_ERR:FR_OK;}
 int f_read(FIL* f,void* b,UINT n,UINT* got){*got=fread(b,1,n,f->f);if(readHook){auto hook=std::move(readHook);readHook={};hook();}return ferror(f->f)?FR_ERR:FR_OK;}
-int f_write(FIL* f,const void* b,UINT n,UINT* got){assert(writable);*got=fwrite(b,1,n,f->f);return *got==n?FR_OK:FR_ERR;}
+int f_write(FIL* f,const void* b,UINT n,UINT* got){assert(writable);*got=fwrite(b,1,n,f->f);invoke(writeHook);return *got==n?FR_OK:FR_ERR;}
 int f_stat(const char* p,FILINFO* info){std::error_code ec;if(!fs::exists(p,ec))return FR_NO_FILE;snprintf(info->fname,sizeof(info->fname),"%s",fs::path(p).filename().c_str());info->fattrib=fs::is_directory(p)?AM_DIR:0;info->fsize=info->fattrib?0:fs::file_size(p);return FR_OK;}
 int f_opendir(FF_DIR* d,const char* p){std::error_code ec;if(!fs::is_directory(p,ec))return FR_NO_FILE;d->entries.clear();d->at=0;for(auto e:fs::directory_iterator(p))d->entries.push_back(e);return FR_OK;}
 int f_readdir(FF_DIR* d,FILINFO* info){if(d->at>=d->entries.size()){info->fname[0]=0;return FR_OK;}auto e=d->entries[d->at++];auto name=e.path().filename().string();snprintf(info->fname,sizeof(info->fname),"%s",name.c_str());return f_stat(e.path().c_str(),info);}
 int f_closedir(FF_DIR* d){d->entries.clear();return FR_OK;}
-int f_mkdir(const char* p){assert(writable);std::error_code ec;return fs::create_directory(p,ec)?FR_OK:FR_ERR;}
+int f_mkdir(const char* p){assert(writable);invoke(mkdirHook);std::error_code ec;return fs::create_directory(p,ec)?FR_OK:FR_ERR;}
 int f_unlink(const char* p){assert(writable);std::error_code ec;return fs::remove(p,ec)?FR_OK:FR_ERR;}
-int f_rename(const char* a,const char* b){assert(writable);if(fs::exists(b))return FR_ERR;std::error_code ec;fs::rename(a,b,ec);return ec?FR_ERR:FR_OK;}
+int f_rename(const char* a,const char* b){assert(writable);invoke(renameHook);if(fs::exists(b))return FR_ERR;std::error_code ec;fs::rename(a,b,ec);return ec?FR_ERR:FR_OK;}
 uint64_t f_size(FIL* f){auto at=ftell(f->f);fseek(f->f,0,SEEK_END);auto n=ftell(f->f);fseek(f->f,at,SEEK_SET);return n;}
 int f_getfree(const char*,DWORD* clusters,FATFS** fs){static FATFS card;*fs=&card;*clusters=1000000;return FR_OK;}
 namespace recorder {void* idleWorkspace(size_t n){alignas(16) static unsigned char pool[32768];assert(reserved&&!recording);return n<=sizeof(pool)?pool:nullptr;}}
@@ -158,6 +159,53 @@ int main(int argc,char** argv){
  auto idleBefore=state().body;
  auto malformed=cJSON_Parse("{\"job\":\"bad\"}");check(devicev2::filesRequest("POST","cancel",malformed).code==400&&state().body==idleBefore,"idle invalid job rejected before mutation");cJSON_Delete(malformed);
  check(job("copy",",\"path\":\"/测试/重命名.bin\",\"destination\":\"/after-invalid.bin\"").code==200,"idle invalid cancel did not poison next operation");
+
+ // Cancellation must survive real queued/running transfer operations, not only copy loops.
+ for(const char* op:{"begin_upload","begin_read"})for(bool inIo:{false,true}){
+   std::string target="/begin-cancel-"+std::to_string(seq)+".bin";
+   std::string props=std::string(op)=="begin_upload"?",\"path\":\""+target+"\",\"bytes\":3":",\"path\":\"/测试/重命名.bin\"";
+   check(request(op,props).code==202,"queue cancellable transfer begin");auto own=expected();auto count=releases;
+   auto stop=[&](){check(request("cancel",own).code==202,"matching begin cancellation accepted");};
+   if(inIo)openHook=stop;else stop();
+   check(finishCode()==409&&!openHook&&!reserved&&!writable&&releases==count+1,"cancelled begin closes transfer and releases exactly once");
+   check(!fs::exists(card+target),"cancelled begin never publishes complete upload");
+   check(job("list",",\"path\":\"/\"").code==200&&!reserved,"cancelled begin does not retain storage exclusion");
+ }
+ for(const char* op:{"chunk","read"})for(bool inIo:{false,true}){
+   bool upload=std::string(op)=="chunk";std::string target="/block-cancel-"+std::to_string(seq)+".bin";
+   begin=job(upload?"begin_upload":"begin_read",upload?",\"path\":\""+target+"\",\"bytes\":3":",\"path\":\"/测试/重命名.bin\"");
+   auto owned=",\"transfer\":\""+prop(begin,"transfer")+"\"";
+   check(request(op,owned+(upload?",\"offset\":0,\"data\":\"YWJj\"":"")).code==202,"queue cancellable transfer block");auto own=expected()+owned;auto count=releases;
+   auto stop=[&](){check(request("cancel",own).code==202,"matching block cancellation accepted");};
+   if(inIo){if(upload)writeHook=stop;else readHook=stop;}else stop();
+   check(finishCode()==409&&!readHook&&!writeHook&&!reserved&&!writable&&releases==count+1,"cancelled block closes and releases exactly once");
+   check(job(op,owned+(upload?",\"offset\":0,\"data\":\"YWJj\"":"")).code==409&&!reserved,"next block cannot clear accepted cancellation and resume");
+   if(upload)check(job("finish",owned+",\"sha256\":\"ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad\"").code==409&&!fs::exists(card+target),"cancelled upload cannot later finish as complete");
+ }
+ for(unsigned point=0;point<4;++point){
+   std::string target="/finish-cancel-"+std::to_string(seq)+".bin";
+   begin=job("begin_upload",",\"path\":\""+target+"\",\"bytes\":3");auto owned=",\"transfer\":\""+prop(begin,"transfer")+"\"";
+   check(job("chunk",owned+",\"offset\":0,\"data\":\"YWJj\"").code==200,"populate upload before finish cancellation");
+   check(request("finish",owned+",\"sha256\":\"ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad\"").code==202,"queue upload finish");auto own=expected()+owned;auto count=releases;
+   auto stop=[&](){check(request("cancel",own).code==(point==3?409:202),"finish cancellation obeys publication boundary");};
+   if(point==0)stop();else if(point==1)syncHook=stop;else if(point==2)readHook=stop;else renameHook=stop;
+   int code=finishCode();
+   check(!syncHook&&!readHook&&!renameHook&&!reserved&&!writable&&releases==count+1,"finish cancellation closes and releases exactly once");
+   check(point==3?code==200&&contents(card+target)=="abc":code==409&&!fs::exists(card+target),"accepted finish cancel never publishes; late rejected cancel does not poison commit");
+ }
+ check(request("copy",",\"path\":\"/测试/重命名.bin\",\"destination\":\"/copy-commit-boundary.bin\"").code==202,"queue copy commit boundary");
+ auto committingCopy=expected();
+ renameHook=[&](){check(request("cancel",committingCopy).code==409,"late copy cancellation rejects at final rename boundary");};
+ check(finishCode()==200&&!renameHook&&!reserved&&contents(card+"/copy-commit-boundary.bin")=="abc","rejected late cancellation does not poison verified copy commit");
+ // Single-step mutations must reject cancellation once their irreversible I/O starts.
+ check(request("mkdir",",\"path\":\"/mkdir-commit-boundary\"").code==202,"queue mkdir commit boundary");
+ auto committingMkdir=expected();
+ mkdirHook=[&](){check(request("cancel",committingMkdir).code==409,"mkdir rejects late cancellation before irreversible I/O");};
+ check(finishCode()==200&&!mkdirHook&&!reserved&&fs::is_directory(card+"/mkdir-commit-boundary"),"late rejected mkdir cancellation preserves truthful successful result");
+ check(request("rename",",\"path\":\"/after-invalid.bin\",\"destination\":\"/rename-commit-boundary.bin\"").code==202,"queue rename commit boundary");
+ auto committingRename=expected();
+ renameHook=[&](){check(request("cancel",committingRename).code==409,"rename rejects late cancellation before irreversible I/O");};
+ check(finishCode()==200&&!renameHook&&!reserved&&!fs::exists(card+"/after-invalid.bin")&&contents(card+"/rename-commit-boundary.bin")=="abc","late rejected rename cancellation preserves truthful successful result");
  std::cout<<"PRODUCTION_SOURCE_CANCEL_CHECKS="<<checks<<"; host filesystem, not hardware acceptance\n";
 
  std::cout<<"RESULT "<<checks<<" file/router checks; temporary host filesystem, not actual FatFS or card\n";
