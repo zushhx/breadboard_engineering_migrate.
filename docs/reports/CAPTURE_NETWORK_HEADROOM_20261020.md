@@ -60,3 +60,25 @@ SDK依赖，最终干净冻结固件构建仍须执行；上述通过不能替�
 D专属四页验收脚本须使用`queue_high<32`并绑定新产物，不能仍沿用<40；历史40块
 脚本及历史结果不改写。长时AP/USB/STA、全部导出、网络与桌面路径和真断电门槛
 尚须由最终候选完成，未满足时不合main、不发布。
+
+## 冻结候选与操作准备
+
+源码9cc8c174f628ed0654403b248c72389a426f2ef6，输入SHA-256
+0de0bc9e9b19dacb91a7777410cf1169edf5f467efc016ff1aa20e268306aedf。
+local-data/build/sensor-web/0de0bc9e9b19dacb/20261020_125714_001195/build_manifest.json
+记录干净输入构建成功、无嵌入凭据、hardware_tested=false。应用1124352字节，
+SHA-256 f2ca20ab566115f5a38d7e6dc198d57d68f1e4a1e48a1d6d84261d59b7fc1aa9。
+SDK配置c8b9163660bf87d2f38639536994c92b721a8efaf266a2c2986696ebbf2678d5、
+分区1d9cca96de0fe07ad7fc0648b9878ddecd9ce565e38b589ad20fea698ed4c80c与C一致。
+静态RAM仍87460字节；运行时pool减少与静态段大小不同，不混写。
+
+另一agent对实际最终diff交叉审查未发现阻断，主agent集成复核；非外部Code Review
+服务源码批准。新门槛tools/release_v010_network_headroom_trial.py绑定本候选，
+prepare-only通过且hardware_accessed=false，13项定向fake-session回归通过。
+真实操作必须先确认当前C健康空闲/AP配置/源码、boot/run未变及旧参考，再备份并
+verify当前1191936字节及当轮NVS，只写app0；失败只恢复保留的C原应用，NVS仅
+变化且同轮备份摘要符合条件时恢复。C只具备历史短录通过范围，有无线长录缺陷。
+
+D专属AP观察脚本已独立使用queue_high<32，历史C脚本不改。新D具体试烧确认尚未
+取得，未烧录。原始构建日志network-headroom-build-D.txt和prepare清单
+network-headroom-D-prepare.json保存在local-data/validation/release-v010。

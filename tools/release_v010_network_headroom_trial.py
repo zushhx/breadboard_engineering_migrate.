@@ -19,11 +19,11 @@ import tf_write_batch as tf
 import sensor_recorder_batch as recorder
 import parse_sensor_record
 
-SOURCE = 'UNBOUND_D_SOURCE'
-CANDIDATE = 'UNBOUND_D_SHA256'
+SOURCE = '9cc8c174f628ed0654403b248c72389a426f2ef6'
+CANDIDATE = 'f2ca20ab566115f5a38d7e6dc198d57d68f1e4a1e48a1d6d84261d59b7fc1aa9'
 OLD_SOURCE = '9ce3f4e1d317bb23c5dcd55fa78cb1687b969b9b'
 OLD_SHA = '4e064e96ca3c1d18dec283dcaa9de22e9c2938137487ce64bda31dffb3ac1656'
-MANIFEST = None  # Freeze exact D source/image/manifest before prepare or run.
+MANIFEST = ROOT/'local-data/build/sensor-web/0de0bc9e9b19dacb/20261020_125714_001195/build_manifest.json'
 OLD_MANIFEST = ROOT/'local-data/build/sensor-web/c838aec0f4fe1402/20261019_172016_557726/build_manifest.json'
 EXPECTED_NVS = '0be1ee3e301f658c5611dad6c777642e675bc79132a000043dc64afb7248946f'
 HOST = ROOT/'local-data/release-v010/device-host/DeviceHost.exe'

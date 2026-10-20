@@ -1,6 +1,22 @@
 {
   "date": "2026-10-19",
-  "phase": "C_smoke_passed_AP_300s_failed_memory_headroom_followup",
+  "phase": "D_clean_build_passed_awaiting_specific_trial_approval_C_AP_still_failed",
+  "D_network_headroom": {
+    "source_commit": "9cc8c174f628ed0654403b248c72389a426f2ef6",
+    "input_sha256": "0de0bc9e9b19dacb91a7777410cf1169edf5f467efc016ff1aa20e268306aedf",
+    "manifest_local": "local-data/build/sensor-web/0de0bc9e9b19dacb/20261020_125714_001195/build_manifest.json",
+    "firmware_bytes": 1124352,
+    "firmware_sha256": "f2ca20ab566115f5a38d7e6dc198d57d68f1e4a1e48a1d6d84261d59b7fc1aa9",
+    "build_passed": true,
+    "sdkconfig_unchanged_from_C": true,
+    "partitions_unchanged_from_C": true,
+    "capture_slots": 32,
+    "pool_allocation_reduced_bytes": 25344,
+    "static_RAM_bytes": 87460,
+    "specific_flash_approval_received": false,
+    "flashed": false,
+    "hardware_passed": false
+  },
   "base_commit": "8f4c48dd30c78f90b22c97a5102a9888f9d973f5",
   "network_fix_commit": "3a365412d55320f1508b3e24e8d19c8d3582bdeb",
   "candidate": {
