@@ -130,7 +130,7 @@
         </StackPanel>
         <StackPanel Grid.Row="3" Margin="12,0,8,0">
           <TextBlock Text="直接连接你的主控" FontSize="13" Foreground="#526179"/>
-          <TextBlock Text="本机便携版  0.3.0" FontSize="12" Foreground="#64748B" Margin="0,6,0,0"/>
+          <TextBlock Text="本机便携版  0.3.1" FontSize="12" Foreground="#64748B" Margin="0,6,0,0"/>
         </StackPanel>
       </Grid>
     </Border>
