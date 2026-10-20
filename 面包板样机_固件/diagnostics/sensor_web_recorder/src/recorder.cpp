@@ -87,7 +87,6 @@ static void acquire(void*) {
 }
 static void monitor(void*) {
   ulTaskNotifyTake(pdTRUE, portMAX_DELAY);
-  TickType_t wake = xTaskGetTickCount();
   while (!sensorDone.load() && !stopRequested.load()) {
     modules::InaRegisters r = {}; bool valid = false;
     uint64_t stamp = now();
@@ -96,7 +95,11 @@ static void monitor(void*) {
                    static_cast<uint16_t>(ok && valid)};
     if (xQueueSend(inaQ, &item, 0) != pdTRUE) fail(Queue);
     if (!ok) fail(Monitor);
-    vTaskDelayUntil(&wake, pdMS_TO_TICKS(100));
+    // Reading Mask/Enable clears CVRF (INA226 datasheet, Mask/Enable register).
+    // Wait after the completed read, including any preemption within it. Never
+    // catch up overdue slots before another averaged conversion is available.
+    // Actual timestamps are retained; reference sampling is slightly below 10Hz.
+    vTaskDelay(pdMS_TO_TICKS(100));
   }
   totals.inaStack = uxTaskGetStackHighWaterMark(nullptr);
   monitorDone.store(true);
