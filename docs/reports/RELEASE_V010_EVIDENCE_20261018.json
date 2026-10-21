@@ -1381,5 +1381,17 @@
     "confirmed_new_P1_P2": 0,
     "runtime_diff_360522d_to_6eb4c805": "empty for firmware and desktop runtime",
     "limits": "Scoped source/build/lock review; not all files line-by-line or external source review; CI does not build Windows desktop"
+  },
+  "final_CI_dependency_fix": {
+    "first_run": "39556997192",
+    "head": "9b1147a5981e144f381e9993f358cc62b4e60adb",
+    "five_firmware_builds_passed": true,
+    "files_and_guards_project_check_passed": true,
+    "unit_test_errors": 2,
+    "cause": "Clean CI lacked pyserial needed by mocked serial discovery tests; local environment already had it",
+    "fix": "Install pinned pyserial==3.5 in files-and-guards before unittest; no production source or assertions changed",
+    "isolated_related_15_tests_passed": true,
+    "failure_log_local": "local-data/validation/release-v010/final-PR23-files-and-guards-failed.txt",
+    "final_remote_revalidation_required": true
   }
 }
