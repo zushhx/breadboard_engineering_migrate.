@@ -1,6 +1,6 @@
 {
   "date": "2026-10-21",
-  "phase": "F_startup_recovery_native_TF_checks_passed_STA_and_network_closeout_pending",
+  "phase": "F_AP_file_scan_web_TF_startup_checks_passed_STA_network_and_final_PR_pending",
   "E_AP_acceptance": {
     "source_commit": "4aa27b2c90902d03e262c23cad5eb65f812bc524",
     "input_sha256": "250563438c5721166ef754fc6d4d38a54208fa586616fe46d01d4875dfc1a3c7",
@@ -1287,5 +1287,51 @@
     "one_post_cold_3s_record_complete_export_passed": true,
     "record_errors_INA_invalid_saturation_zero": true,
     "write_time_power_loss_tested": false
-  }
+  },
+  "F_AP_file_spot_check": {
+    "evidence_local": "local-data/hardware/release-v010/F-ap-transfer-20261021T025554Z/result.json",
+    "passed": true,
+    "bytes_each": 1048576,
+    "upload": {
+      "bytes": 1048576,
+      "sha256": "391526ed7dcaff0efe0dcb9474b4aa24ed000d18aed658fab6a06d5315f07a23",
+      "seconds": 36.143118,
+      "bytes_per_second": 29011.77480039215
+    },
+    "download": {
+      "bytes": 1048576,
+      "sha256": "391526ed7dcaff0efe0dcb9474b4aa24ed000d18aed658fab6a06d5315f07a23",
+      "seconds": 8.855141900000003,
+      "bytes_per_second": 118414.36442706804
+    },
+    "AP_connected_seconds": 47.75,
+    "PC_prior_profile_restored": true,
+    "boot_run_and_old_references_unchanged": true,
+    "only_new_directory_written": true,
+    "directory": "/F无线验收_20261021025608_2d01633d",
+    "maximum_throughput_proven": false,
+    "long_wireless_file_stability_proven": false
+  },
+  "F_network_scan": {
+    "evidence_local": "local-data/hardware/release-v010/F-network-scan-20261021T025912Z/result.json",
+    "passed": true,
+    "scan_count": 16,
+    "network_config_and_AP_state_unchanged": true,
+    "SSID_values_not_logged": true
+  },
+  "F_web_file_spot_check": {
+    "evidence_local": "local-data/hardware/release-v010/F-web-file-check-owned-20261021T054838Z/verified-result.json",
+    "passed": true,
+    "real_web_UI_navigation_and_download": true,
+    "bytes": 5001,
+    "sha256": "0ae2dabfa63828133b982875c497408500e686bde2faf8ad41f3a9617393e893",
+    "boot_run_and_old_references_unchanged": true,
+    "prior_closed_GUI_bridge_attempt_retained": true
+  },
+  "remaining_release_gates": [
+    "Final F STA direct four-page 300s and complete record export",
+    "Actual STA/AP coexistence and STA connectivity/password-preservation checks",
+    "Actual erroneous applied network configuration followed by USB recovery with original configuration restoration",
+    "Final main integration PR CI/service-side protection/freshness/discussion gates"
+  ]
 }

@@ -14,7 +14,7 @@ F仅改文件/网络路径，采集调度、会话及桌面退出逻辑未变，
 
 AP批量导出失败ap-export-E-20261021T004705Z/result.json及35782656字节partial保留；同目录windows-network-chronology-sanitized.json记录电脑主动建立新连接先于错误日志，发起进程及TCP10054根因尚未证实。USB成功不抹除该失败。测试入口仅重命名提交6703393，定向1条及总discover126条通过，原两轮加载失败日志保留；日志local-data/validation/release-v010/F-telemetry-test-rename-final-20261021.txt，未重建F。
 
-卡保持供电的MCU复位及两次真断电启动已由用户执行并确认，F源身份/卡容量/旧参考/网络配置均通过只读核验；真实供电条件为用户报告，未用电气仪器测量。第二次启动后仅补一份3秒记录，完整PC导出/结构/CRC/SHA及错误/INA无效/饱和零通过；证据见JSON的F_startup_recovery_acceptance。STA/混合网络等剩余矩阵、最终CI及main/正式发布仍未闭环；用户本日表示手机热点暂不方便，STA保留未测。最新远端main已核对仍为09479ff0；关键集成差异经另一agent审查未发现新的P1/P2，范围及限制见本地local-data/release-v010/integration-critical-review-F.md，不称外部审查服务批准。
+卡保持供电的MCU复位及两次真断电启动已由用户执行并确认，F源身份/卡容量/旧参考/网络配置均通过只读核验；真实供电条件为用户报告，未用电气仪器测量。第二次启动后仅补一份3秒记录，完整PC导出/结构/CRC/SHA及错误/INA无效/饱和零通过；证据见JSON的F_startup_recovery_acceptance。F经AP直连1MiB上传/下载实测约29.0/118.4kB/s，完整摘要通过，AP占用47.75秒且电脑原网络恢复；主控扫描返回16项后配置/AP状态不变，真实网页文件页导航及5001字节下载也通过。上述是一次抽查，不是最大吞吐或长文件稳定性保证。证据见JSON的F_AP_file_spot_check、F_network_scan及F_web_file_spot_check。STA300秒/STA与AP并存、真实错误网络配置后USB恢复等网络矩阵、最终CI及main/正式发布仍未闭环；用户本日表示手机热点暂不方便，STA保留未测。最新远端main已核对仍为09479ff0；关键集成差异经另一agent审查未发现新的P1/P2，范围及限制见本地local-data/release-v010/integration-critical-review-F.md，不称外部审查服务批准。
 
 ## 2026-10-20 E已试烧，AP四页200秒及完整HTTP导出通过
 
