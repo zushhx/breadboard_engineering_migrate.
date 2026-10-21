@@ -1,6 +1,6 @@
 {
-  "date": "2026-10-20",
-  "phase": "E_AP_four_pages_200s_complete_HTTP_export_passed_remaining_matrix_pending",
+  "date": "2026-10-21",
+  "phase": "F_smoke_targeted_API_passed_E_complete_exports_remaining_matrix_pending",
   "E_AP_acceptance": {
     "source_commit": "4aa27b2c90902d03e262c23cad5eb65f812bc524",
     "input_sha256": "250563438c5721166ef754fc6d4d38a54208fa586616fe46d01d4875dfc1a3c7",
@@ -41,7 +41,8 @@
     "INA_stack_bytes": 2744,
     "boot_run_and_existing_references_unchanged": true,
     "repeated_equivalent_idle_memory_leak_test": "not tested",
-    "full_release_passed": false
+    "full_release_passed": false,
+    "min_heap_semantics": "Boot-cumulative low-water mark; not per-record reset"
   },
   "AP_duration_adjustment": {
     "date": "2026-10-20",
@@ -94,7 +95,8 @@
     "INA_stack_bytes": 2744,
     "offline_decode_local": "local-data/hardware/release-v010/D-diagnostic-export-20261020T053048Z/offline-decoded-not-accepted.json",
     "original_partial_and_failed_result_preserved": true,
-    "failure_reason": "6 invalid INA reference samples violate the zero-invalid acceptance criterion; metrology exclusion does not waive this quality failure"
+    "failure_reason": "6 invalid INA reference samples violate the zero-invalid acceptance criterion; metrology exclusion does not waive this quality failure",
+    "min_heap_semantics": "Boot-cumulative low-water mark; not per-record reset"
   },
   "base_commit": "8f4c48dd30c78f90b22c97a5102a9888f9d973f5",
   "network_fix_commit": "3a365412d55320f1508b3e24e8d19c8d3582bdeb",
@@ -144,21 +146,22 @@
     "target": "existing installed firmware only"
   },
   "acceptance": {
-    "candidate_smoke": "passed two complete 3-second PC verified records",
-    "usb_300s": "passed only historical 4e6d533 candidate, not inherited by A/B/C",
+    "candidate_smoke": "F: two complete 3s records passed",
+    "usb_300s": "E complete capture and PC export passed; reuse for unchanged acquisition paths with F smoke",
     "sta_four_pages_300s": "failed: abort at about 5.23s; 300s not completed",
     "ap_four_pages_300s": "historical request retained; user revised AP target to approximately 200s on 2026-10-20; E four-page 200.003721s capture plus complete PC export passed, errors/INA-invalid/saturation zero; D failure remains recorded separately",
     "ten_30s_runs": "10 passed only historical 4e6d533 candidate, not inherited by A/B/C",
-    "native_gui_file_mutations": "not tested",
+    "native_gui_file_mutations": "incomplete; root read passed, pagination incomplete; user controls computer",
     "actual_network_switching": "not tested",
-    "actual_wpf_exit": "not tested",
+    "actual_wpf_exit": "E real WPF 0.3.1 exit and complete record passed; unchanged path reused",
     "mcu_reset": "not tested",
     "two_true_cold_starts": "not tested",
     "write_power_loss": "excluded by user",
     "metrology_and_machining": "excluded by user",
     "full_release_passed": false,
     "file_task_network_change_rejection": "passed HTTP409",
-    "fifth_session_rejection": "passed HTTP429"
+    "fifth_session_rejection": "passed HTTP429",
+    "three_30s_runs": "E: three complete records passed; equal idle free_heap 68780; basic regression only"
   },
   "review": {
     "network_fix": "self reviewed",
@@ -1145,5 +1148,101 @@
     "panic_or_reset_observed": false,
     "post_failure_USB_status_passed": true,
     "pc_network_restored": true
+  },
+  "F_runtime_acceptance": {
+    "source_commit": "360522d53544cdafdf5e0a33da9dd1e7d2e7543f",
+    "firmware_sha256": "7fa116e326f59c194172607ee52305078729bcc9b409d56f6949874e780d25fe",
+    "firmware_bytes": 1125632,
+    "flashed": true,
+    "smoke_local": "local-data/hardware/release-v010/transfer-cancel-smoke/20261021_091956/result.json",
+    "two_complete_3s_records_passed": true,
+    "targeted_local": "local-data/hardware/release-v010/F-targeted-20261021T012916Z/result.json",
+    "targeted_operation_commit": "6703393b8ba602663e1e19c7f6bd60d9d39eadc5",
+    "active_cancel_cases_observed": [
+      "begin_upload",
+      "chunk",
+      "begin_read",
+      "read"
+    ],
+    "network_transition_coverage_complete": true,
+    "Chinese_fixture_bytes_verified": [
+      0,
+      5001
+    ],
+    "native_WPF_TF_acceptance": false,
+    "STA_join_tested": false,
+    "persistence_across_reboot_tested": false,
+    "full_release_passed": false
+  },
+  "E_USB_acceptance": {
+    "complete_export_local": "local-data/hardware/release-v010/usb-export-E-20261021T005609Z/result.json",
+    "requested_seconds": [
+      300,
+      30,
+      30,
+      30
+    ],
+    "total_bytes": 74120832,
+    "records": [
+      {
+        "run": "49B0E943",
+        "bytes": 57012266,
+        "sha256": "c7cb64ab46559158b24ebbb13d70f4d1e71e75a7fbc2217bc8403d7de490b814"
+      },
+      {
+        "run": "43353CAB",
+        "bytes": 5702622,
+        "sha256": "b3998503a7d728ccc1fbdc1039e6d8260470d1fb7496c486add608dd16878ffc"
+      },
+      {
+        "run": "FB77893C",
+        "bytes": 5702931,
+        "sha256": "be63ead44ccbb894d74327c2e4d1a18c168a4a1ff5f19c9f88fc4485182f9027"
+      },
+      {
+        "run": "7CF73606",
+        "bytes": 5703013,
+        "sha256": "63f2b472742ebba631a9075c737b01ceaf1d57ecda18e5c61213b1466f04f1dd"
+      }
+    ],
+    "complete_export_quality_and_integrity_passed": true,
+    "old_references_unchanged": true,
+    "pre_export_reboot_observed": true,
+    "cold_start_acceptance": false
+  },
+  "E_sessions_and_WPF_acceptance": {
+    "session_local": "local-data/hardware/release-v010/session-E-20261020T085505Z/result.json",
+    "complete_export_local": "local-data/hardware/release-v010/session-export-E-20261020T090012Z/result.json",
+    "seven_session_cases_passed": true,
+    "five_complete_records_passed": true,
+    "WPF_exit_local": "local-data/hardware/release-v010/wpf-exit-E-20261020T090459Z/result.json",
+    "actual_WPF_exit_and_record_integrity_passed": true,
+    "native_WPF_TF_management_tested": false
+  },
+  "F_cross_version_evidence_reuse": {
+    "rationale": "Only files/network paths changed; acquisition scheduling, sessions and desktop exit unchanged. Reuse unaffected E evidence with F smoke and targeted regressions.",
+    "old_E_image_not_mislabeled_as_F_hardware": true,
+    "F_long_capture_repeated": false,
+    "full_release_passed": false
+  },
+  "final_software_validation": {
+    "raw_log_local": "local-data/validation/release-v010/F-telemetry-test-rename-final-20261021.txt",
+    "targeted_test_count": 1,
+    "aggregate_discover_test_count": 126,
+    "aggregate_discover_passed": true,
+    "test_entry_rename_commit": "6703393b8ba602663e1e19c7f6bd60d9d39eadc5",
+    "prior_discovery_failures_preserved": true,
+    "production_file_router_checks": 178,
+    "firmware_rebuilt_for_test_rename": false,
+    "final_external_CI_passed": false
+  },
+  "AP_batch_export_failure": {
+    "local": "local-data/hardware/release-v010/ap-export-E-20261021T004705Z/result.json",
+    "partial_bytes": 35782656,
+    "Windows_chronology_local": "local-data/hardware/release-v010/ap-export-E-20261021T004705Z/windows-network-chronology-sanitized.json",
+    "prior_profile_restored": true,
+    "PC_new_connection_preceded_error_log": true,
+    "initiating_process_known": false,
+    "TCP_failure_root_cause_confirmed": false
   }
 }

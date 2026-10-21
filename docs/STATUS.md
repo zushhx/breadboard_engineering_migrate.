@@ -2,21 +2,25 @@
 
 更新日期：2026-10-21。当前事实唯一入口。历史测试结果保留其适用条件，不自动延伸至其他固件或接法。
 
-## 2026-10-21 F已构建未烧；E批量记录导出未完成
+## 2026-10-21 F已试烧并完成定向回归；E既有记录完整导出通过
 
-F源码360522d，应用1125632字节，SHA-256 7fa116e326f59c194172607ee52305078729bcc9b409d56f6949874e780d25fe；清单为`local-data/build/sensor-web/f90de84d6ec276bb/20261020_222729_256699/build_manifest.json`。F门槛91a2f5f已修复snapshot wrapper/hash绑定，14项检查通过。F尚未烧入，软件检查及旧E证据不能写成F实机通过。
+当前运行F源码360522d，应用1125632字节，SHA-256 7fa116e326f59c194172607ee52305078729bcc9b409d56f6949874e780d25fe。两份3秒记录完整导出、结构/CRC/尾部/SHA、零错误/INA无效检查通过；刷前应用前缀及独立NVS与芯片核验，备份仅本地保留。证据：local-data/hardware/release-v010/transfer-cancel-smoke/20261021_091956/result.json。
 
-E网络逻辑配置及旧参考文件经`local-data/hardware/release-v010/E-network-readonly-20261020T145202Z/result.json`只读核验通过。设备仍E，但已是新boot（7b0d…）、idle；该观察不是物理断电证据，不计冷启动验收。原恢复脚本过早判定的失败结果保留。
+F定向USB API实测begin_upload/chunk/begin_read/read四类活动取消均命中，传输关闭、文件锁释放，取消上传的最终目标未发布；网络applying=true且apply_ok=false、同时第二次save被409拒绝实际命中，同AP配置重读、中文0/5001字节完整回读通过。证据：local-data/hardware/release-v010/F-targeted-20261021T012916Z/result.json。不等同原生WPF文件管理、STA接入或重启持久化验收。桌面0.3.1原生窗口已连接F、根目录读取成功，分页及变更操作未完成；按用户要求由用户操作电脑，自动点击停止。
 
-四份既有USB记录的AP批量导出`local-data/hardware/release-v010/ap-export-E-20261021T004705Z/result.json`因TCP10054失败，保留35782656字节`.partial`；电脑恢复HQU成功，根因未知，该文件未通过。它与下方E单份AP记录完整导出通过是不同操作，不互相覆盖。截至本次更新，同四记录改走USB只读导出仍在执行，尚未完成，不能提前记摘要/结构/CRC通过。
+E的USB300秒及三轮30秒四份记录全部完整导出，共74120832字节；结构、逐块CRC、尾部总数及SHA通过，错误/INA无效/饱和均零，旧参考不变。证据：local-data/hardware/release-v010/usb-export-E-20261021T005609Z/result.json。E七类会话操作及五份记录完整导出通过：同级session-E-20261020T085505Z/result.json、session-export-E-20261020T090012Z/result.json。真实WPF0.3.1退出及19.987679秒记录完整校验通过：同级wpf-exit-E-20261020T090459Z/result.json。
 
-用户指出重复验收成本，后续按影响分析复用未受影响证据：F聚焦文件取消、网络状态及必要采集回归；保留源码/产物/条件与复用依据。原计划真正未测或失败项目仍须闭环，不重跑整套已覆盖路径，也不把E原镜像实测扩大为F原字节通过。main合并与正式发布门槛仍未满足。
+F仅改文件/网络路径，采集调度、会话及桌面退出逻辑未变，按影响分析复用E上述证据及AP200秒证据，补充F短录和定向回归；不把E原镜像标为F长录实测。minHeap是自当前boot累计低水位，不是每轮重置值，不能单独归因于某轮AP。E三轮同条件空闲free_heap均68780，仅支持基本资源释放回归，不证明长期无泄漏。导出前观察到新boot，不计真实冷启动验收。
+
+AP批量导出失败ap-export-E-20261021T004705Z/result.json及35782656字节partial保留；同目录windows-network-chronology-sanitized.json记录电脑主动建立新连接先于错误日志，发起进程及TCP10054根因尚未证实。USB成功不抹除该失败。测试入口仅重命名提交6703393，定向1条及总discover126条通过，原两轮加载失败日志保留；日志local-data/validation/release-v010/F-telemetry-test-rename-final-20261021.txt，未重建F。
+
+原生TF完整路径、真实冷启动、STA/混合网络等剩余矩阵、最终CI及main/正式发布仍未闭环。最新远端main已核对仍为09479ff0；关键集成差异经另一agent审查未发现新的P1/P2，范围及限制见本地local-data/release-v010/integration-critical-review-F.md，不称外部审查服务批准。
 
 ## 2026-10-20 E已试烧，AP四页200秒及完整HTTP导出通过
 
 用户确认E后已仅写app0并完成两份3秒完整初检，设备现运行源码4aa27b2c90902d03e262c23cad5eb65f812bc524，应用1125008字节、SHA-256 81a84cabc93c30934122c33d5a6ca6945a6da3ff05292b94cef5cb39ebceade7。E包含INA读取完成后等待100ms、文件自动取消隔离及传输轮询调整；生成SDK配置、分区及空凭据与D一致。AP四页62F30A95录制200.003721秒、5328146样本，错误/INA无效/饱和均零；完整37966410字节经新USB桥HTTP下载，SHA-256 113e81189e2df28b08e5ef63b37e4a653132a3d5df5af28dcb7c222424bf6d06、结构、逐块CRC及尾部总数通过，boot/run及旧参考不变。证据：`local-data/hardware/release-v010/E-diagnostic-export-20261020T083951Z/result.json`；本次通过限E的该AP记录及导出路径，不覆盖其余矩阵。
 
-INA参考1363份/200.003721秒，实际平均6.814873Hz，比10Hz低约31.85%，不能称仅略低；不承诺10Hz节拍或计量精度。FIFO高水位239、队列16，最大写入/同步147418/181018µs；尾部最小堆1440字节，不能用低频瞬时内存观测掩盖该低水位。重复同条件空闲内存泄漏仍未测。设备保持E，原安装桌面程序未替换；USB/STA最终候选长录、其余会话/网络/TF/原生桌面及启动恢复等矩阵未全部闭环，main与正式发布门槛未满足。D失败证据保留如下。
+INA参考1363份/200.003721秒，实际平均6.814873Hz，比10Hz低约31.85%，不能称仅略低；不承诺10Hz节拍或计量精度。FIFO高水位239、队列16，最大写入/同步147418/181018µs；尾部minHeap1440字节为自当前boot累计低水位，不能归因于该轮AP，也不能以低频瞬时内存观测替代它。重复同条件空闲内存泄漏仍未测。设备保持E，原安装桌面程序未替换；USB/STA最终候选长录、其余会话/网络/TF/原生桌面及启动恢复等矩阵未全部闭环，main与正式发布门槛未满足。D失败证据保留如下。
 
 ## 2026-10-20 D记录完整导出，INA无效6次，AP验收未通过
 
