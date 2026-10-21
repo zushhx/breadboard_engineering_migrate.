@@ -6,7 +6,7 @@
 
 当前运行F源码360522d，应用1125632字节，SHA-256 7fa116e326f59c194172607ee52305078729bcc9b409d56f6949874e780d25fe。两份3秒记录完整导出、结构/CRC/尾部/SHA、零错误/INA无效检查通过；刷前应用前缀及独立NVS与芯片核验，备份仅本地保留。证据：local-data/hardware/release-v010/transfer-cancel-smoke/20261021_091956/result.json。
 
-F定向USB API实测begin_upload/chunk/begin_read/read四类活动取消均命中，传输关闭、文件锁释放，取消上传的最终目标未发布；网络applying=true且apply_ok=false、同时第二次save被409拒绝实际命中，同AP配置重读、中文0/5001字节完整回读通过。证据：local-data/hardware/release-v010/F-targeted-20261021T012916Z/result.json。不等同原生WPF文件管理、STA接入或重启持久化验收。桌面0.3.1原生窗口已连接F、根目录读取成功，分页及变更操作未完成；按用户要求由用户操作电脑，自动点击停止。
+F定向USB API实测begin_upload/chunk/begin_read/read四类活动取消均命中，传输关闭、文件锁释放，取消上传的最终目标未发布；网络applying=true且apply_ok=false、同时第二次save被409拒绝实际命中，同AP配置重读、中文0/5001字节完整回读通过。证据：local-data/hardware/release-v010/F-targeted-20261021T012916Z/result.json。不等同原生WPF文件管理、STA接入或重启持久化验收。桌面0.3.1由用户实际操作；1MiB上传下载、中文改名/文件复制、目录复制、空文件及5001字节下载、上传取消、拒绝覆盖和仅删除新建副本已核验。删除确认框取消的中间状态依据用户报告；小文件上传电脑源路径未单独捕获，实际5001字节内容与已封存TF样本0ae2dabf…e893一致，同名另一份电脑样本不同的诊断保留。桌面下载取消待完成，不能称完整TF矩阵通过。原始证据见本报告JSON的native_WPF_TF_acceptance。用户继续操作电脑，自动点击停止。
 
 E的USB300秒及三轮30秒四份记录全部完整导出，共74120832字节；结构、逐块CRC、尾部总数及SHA通过，错误/INA无效/饱和均零，旧参考不变。证据：local-data/hardware/release-v010/usb-export-E-20261021T005609Z/result.json。E七类会话操作及五份记录完整导出通过：同级session-E-20261020T085505Z/result.json、session-export-E-20261020T090012Z/result.json。真实WPF0.3.1退出及19.987679秒记录完整校验通过：同级wpf-exit-E-20261020T090459Z/result.json。
 
@@ -14,7 +14,7 @@ F仅改文件/网络路径，采集调度、会话及桌面退出逻辑未变，
 
 AP批量导出失败ap-export-E-20261021T004705Z/result.json及35782656字节partial保留；同目录windows-network-chronology-sanitized.json记录电脑主动建立新连接先于错误日志，发起进程及TCP10054根因尚未证实。USB成功不抹除该失败。测试入口仅重命名提交6703393，定向1条及总discover126条通过，原两轮加载失败日志保留；日志local-data/validation/release-v010/F-telemetry-test-rename-final-20261021.txt，未重建F。
 
-原生TF完整路径、真实冷启动、STA/混合网络等剩余矩阵、最终CI及main/正式发布仍未闭环。最新远端main已核对仍为09479ff0；关键集成差异经另一agent审查未发现新的P1/P2，范围及限制见本地local-data/release-v010/integration-critical-review-F.md，不称外部审查服务批准。
+卡保持供电的MCU复位及两次真断电启动已由用户执行并确认，F源身份/卡容量/旧参考/网络配置均通过只读核验；真实供电条件为用户报告，未用电气仪器测量。第二次启动后仅补一份3秒记录，完整PC导出/结构/CRC/SHA及错误/INA无效/饱和零通过；证据见JSON的F_startup_recovery_acceptance。桌面下载取消、STA/混合网络等剩余矩阵、最终CI及main/正式发布仍未闭环；用户本日表示手机热点暂不方便，STA保留未测。最新远端main已核对仍为09479ff0；关键集成差异经另一agent审查未发现新的P1/P2，范围及限制见本地local-data/release-v010/integration-critical-review-F.md，不称外部审查服务批准。
 
 ## 2026-10-20 E已试烧，AP四页200秒及完整HTTP导出通过
 
