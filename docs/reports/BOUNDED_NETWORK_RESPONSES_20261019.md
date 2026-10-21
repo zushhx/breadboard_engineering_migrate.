@@ -1,0 +1,46 @@
+# USB遥测内存与HTTP资源修复
+
+2026-10-19，从6f58b540的A/B证据状态建立codex/fix-release-bounded-network-responses。用户要求继续原整套验收计划，并明确授权立即采用子agent协作；USB、HTTP及证据整理划分修改范围，主agent负责集成和最终验收。
+
+## 已证实与待验证
+
+B匹配ELF的只读GDB回溯已证实USB statusJson构造大std::string副本时分配失败；现场及A/B实际结果见[AP报告](AP_FIFO_OVERFLOW_20261019.md)。历史HTTP connection ID不证明同时存活数量，普通连接占用及心跳排队压力是待实机验证的资源假设，不能称无线失联唯一根因。
+
+## 修复及审查
+
+实际USB GET状态和趋势用现有互斥保护的有界缓冲直接发送metadata/body/end，保留协议、2048字节协议块及128字节驱动写入上限。兼容dispatch接口保留，小请求及cJSON仍可分配内存，不称全路径无堆分配。格式化超界发送500，传输失败不发成功结束帧。
+
+另一agent审查指出：原每次写入成功重置stall计数，间歇慢USB可长期持有共享缓冲锁并阻塞HTTP任务。修复对整份USB遥测响应设置1秒绝对发送期限，覆盖metadata/body/end且不随部分进展续期；正常9k字节按已有USB应用路径约0.18秒估算，余量尚需实机确认。HTTP和USB并发及慢读退出纳入候选定向验收。
+
+普通HTTP响应声明Connection: close，在完整body或最终空chunk发送后shutdown，由SDK随后EOF清理socket；合法WS升级和帧不走此路径。没有扩大socket预算或启用LRU。交叉审查发现固定SDK的queue_work走本地UDP，满mailbox可在发送返回成功后丢弃，所以没有为每份普通响应排队关闭；心跳使用generation及12秒queued租约，旧callback无效且不清新token，running工作不被替换。最多一份有效心跳工作，不称底层绝无过期消息。
+
+有效API请求先读完body，正常shutdown的FIN可发送已排队TCP数据；未消费的大错误请求或HTTP管线仍可能触发RST，不能把宿主检查称TCP交付保证。候选必须实际验证网页/JSON/下载完整性和摘要。SDK、引脚、时钟、PSRAM、分区、采样和写卡调度不在本轮变更范围。代码由实现者自查、另一agent交叉审查和主agent集成审查；这不等于外部Code Review源码审查通过。
+
+## 已执行检查与边界
+
+- 实际USB源及路由宿主：9000字节状态、8192字节趋势，禁止C++分配、metadata/CRC/id/end/分块、格式化及发送失败；间歇进展仍受总期限限制，下一正常请求恢复。控制模型、锁和23项文件/路由检查通过。
+- 实际遥测格式器：2024检查及1000轮禁止C++分配通过。USB宿主的streamTelemetry使用替身，生产格式器单独测；完整web_control编译/链接由固件构建验证，锁与实际SDK时序仍须实机。
+- 工程checkout检查通过，未访问设备。检查期间主控B仍停GDB，无复位、写寄存器或烧录。
+- 实际HTTP策略头宿主检查通过：完整发送后关闭、发送/关闭失败、chunk末块、generation/过期/旧callback/运行中/排队失败/并发callback及32位时间回绕。WS检查是源码结构guard，未执行真实SDK连接负载。
+
+本报告不记新候选实机通过。最终源码、镜像摘要、恢复条件及试烧入口准备后，仍须取得该具体候选试烧确认。main和Release门槛保留。
+
+## C冻结构建
+
+源码9ce3f4e1d317bb23c5dcd55fa78cb1687b969b9b，输入c838aec0f4fe14028a603665803aeb86ccfb5bcf1045d7919c3ea7e5b7b320b2；local-data/build/sensor-web/c838aec0f4fe1402/20261019_172016_557726/build_manifest.json记录干净输入构建成功、无嵌入凭据、hardware_tested=false。应用1123856字节，SHA-256 4e064e96ca3c1d18dec283dcaa9de22e9c2938137487ce64bda31dffb3ac1656；SDK配置c8b9163660bf87d2f38639536994c92b721a8efaf266a2c2986696ebbf2678d5，分区1d9cca96de0fe07ad7fc0648b9878ddecd9ce565e38b589ad20fea698ed4c80c与B一致。静态RAM87460字节，较B增加8字节；未改采集/写卡任务参数。构建日志local-data/validation/release-v010/bounded-network-build-C.txt。
+
+具体试烧将先保存核验最新1191936字节前缀及NVS，核实B原字节、MAC/boot/分区，再仅写app0；不写本次重建bootloader。回退使用保留B原应用，NVS仅按同轮条件必要时恢复。B已有的缩短采样和USB缺陷不因作为回退镜像而消失；未来C实机通过不追溯覆盖A/B失败。
+
+试烧入口tools/release_v010_bounded_network_trial.py已绑定上述原字节产物；prepare-only核实全部源码输入、SDK/分区/空凭据、B回退镜像及GDB证据，hardware_accessed=false。15项定向门槛回归通过，含缺少批准先拒绝、GDB只读查询、错备份拒绝、同轮NVS恢复条件及清理异常不跳过恢复。另一agent审查发现并修复了browser清理异常可能跳过回退、host启动失败可能遗留USB占用的路径。具体新C确认尚未取得，未执行该入口的硬件路径。
+
+## C实际试烧及AP失败证据
+
+用户随后明确选择“确认试烧候选C”。local-data/hardware/release-v010/bounded-network-smoke/20261019_172806/result.json记录passed=true、source9ce3f4e/镜像4e064e96…1656，operation_commit3244d2f，cold_starts=0。当轮1191936字节备份cda8aa6d29985a44ef6196b019722d380f9dbca811b3658c104d2d3ad0c78845、NVS0be1ee3e…946f与芯片verify，应用区写入及芯片校验成功。E7891FF8和806E7CD0各3秒，完整电脑导出571066/571514字节，SHA分别192ffff0aeab444c8fc9b631e314fd25862b32c378cc79467a13c8616f2d6720及8a2b2ede9ed82ce11b76e722fca0d4b3febc776adedb04bdee997c6f7a380503，电脑结构/CRC/尾部及旧参考核验通过。
+
+local-data/hardware/release-v010/ap-four-pages-C-20261019T093107Z/result.json记录passed=false。8ADF1412请求300秒，实际8.797651秒/234426样本后因会话失联提前停止，errors0、INA无效0、FIFO214、queue10；网页在启动后未及时观察recording、status请求超时，后段恢复。设备回读通过但长时不通过；后置USB状态成功、UART未观察panic/reset，电脑原Wi-Fi恢复核实。完整缩短记录在comparison-export-20261019T093341Z，1672810字节/SHA-256 62ba9b8f8a14da5cfe9e1e9babea899163fb5dbadc7c29f6133f5787e50d37fc，电脑结构/CRC/尾部/摘要通过，capture_300s_accepted=false。
+
+录前日志内部free31264/largest14848，随后创建录制任务栈和队列；录制任务清理后HTTP恢复。源码与UART显示HTTP曾尝试发送并报EAGAIN，不能称完全未调度。低内存网络预算是下一单变量假设；没有把连接关闭改动称根因修复。下一分支拟40→32块池，回收25344字节，原始缓冲约672→537.6毫秒，实际TF延迟及网络改善须重新实测。
+
+## B遗留文件补充导出
+
+2026-10-19的local-data/hardware/release-v010/B-export-under-C-20261019T093750Z/result.json记录实际已完成，2026-10-20恢复工作时重新核实。B文件15B7477A在C9ce3f4e/run8ADF1412运行期间通过USB完整只读导出1733342字节，电脑SHA-256 c5084a78d164764ad6505490c35cb6093d49740c9c93ed90006e6bcb0dc43a65与原B设备回读一致，结构/逐块CRC/完整尾部通过；样本242902，start_us380916427/stop_us390046109，即9.129682秒，errors/ina_invalid/saturation均0。尾部min_heap1656，仍属缩短失败现场资源压力证据，不作长期泄漏结论。耗时38.313秒，C boot/run、卡身份及两份旧参考前后保持。I3REC001头无run字段，run身份由原B UART START/PASS、样本及SHA共同绑定，未伪造头字段检查。

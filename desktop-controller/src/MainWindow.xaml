@@ -1,0 +1,387 @@
+﻿<Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="主控控制台" Width="1160" Height="820" MinWidth="1000" MinHeight="700"
+        WindowStartupLocation="CenterScreen" Background="#F5F7FB" FontFamily="Microsoft YaHei UI"
+        FontSize="14" Foreground="#17243B" UseLayoutRounding="True" SnapsToDevicePixels="True">
+  <Window.Resources>
+    <SolidColorBrush x:Key="Ink" Color="#17243B"/>
+    <SolidColorBrush x:Key="Muted" Color="#526179"/>
+    <SolidColorBrush x:Key="Blue" Color="#245DD6"/>
+    <Style TargetType="TextBlock">
+      <Setter Property="TextWrapping" Value="Wrap"/>
+    </Style>
+    <Style x:Key="MutedText" TargetType="TextBlock">
+      <Setter Property="Foreground" Value="{StaticResource Muted}"/>
+      <Setter Property="TextWrapping" Value="Wrap"/>
+      <Setter Property="LineHeight" Value="24"/>
+    </Style>
+    <Style TargetType="Button">
+      <Setter Property="Background" Value="White"/>
+      <Setter Property="Foreground" Value="{StaticResource Ink}"/>
+      <Setter Property="BorderBrush" Value="#CBD5E1"/>
+      <Setter Property="BorderThickness" Value="1"/>
+      <Setter Property="Padding" Value="16,10"/>
+      <Setter Property="MinHeight" Value="42"/>
+      <Setter Property="FontSize" Value="14"/>
+      <Setter Property="Cursor" Value="Hand"/>
+      <Setter Property="HorizontalContentAlignment" Value="Center"/>
+      <Setter Property="VerticalContentAlignment" Value="Center"/>
+      <Setter Property="Template">
+        <Setter.Value>
+          <ControlTemplate TargetType="Button">
+            <Border x:Name="ButtonBorder" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}"
+                    BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="7" Padding="{TemplateBinding Padding}">
+              <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" VerticalAlignment="Center"/>
+            </Border>
+            <ControlTemplate.Triggers>
+              <Trigger Property="IsMouseOver" Value="True"><Setter TargetName="ButtonBorder" Property="Background" Value="#EDF3FF"/></Trigger>
+              <Trigger Property="IsPressed" Value="True"><Setter TargetName="ButtonBorder" Property="Background" Value="#DBE8FF"/></Trigger>
+              <Trigger Property="IsKeyboardFocused" Value="True"><Setter TargetName="ButtonBorder" Property="BorderBrush" Value="#245DD6"/><Setter TargetName="ButtonBorder" Property="BorderThickness" Value="2"/></Trigger>
+              <Trigger Property="IsEnabled" Value="False"><Setter Property="Foreground" Value="#64748B"/><Setter TargetName="ButtonBorder" Property="Background" Value="#EDF0F5"/><Setter Property="Cursor" Value="Arrow"/></Trigger>
+            </ControlTemplate.Triggers>
+          </ControlTemplate>
+        </Setter.Value>
+      </Setter>
+    </Style>
+    <Style x:Key="PrimaryButton" TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
+      <Setter Property="Background" Value="#245DD6"/>
+      <Setter Property="BorderBrush" Value="#245DD6"/>
+      <Setter Property="Foreground" Value="White"/>
+      <Setter Property="FontWeight" Value="SemiBold"/>
+      <Setter Property="Template">
+        <Setter.Value>
+          <ControlTemplate TargetType="Button">
+            <Border x:Name="PrimaryBorder" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}"
+                    BorderThickness="1" CornerRadius="7" Padding="{TemplateBinding Padding}">
+              <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+            </Border>
+            <ControlTemplate.Triggers>
+              <Trigger Property="IsMouseOver" Value="True"><Setter TargetName="PrimaryBorder" Property="Background" Value="#194CB9"/></Trigger>
+              <Trigger Property="IsPressed" Value="True"><Setter TargetName="PrimaryBorder" Property="Background" Value="#163E94"/></Trigger>
+              <Trigger Property="IsKeyboardFocused" Value="True"><Setter TargetName="PrimaryBorder" Property="BorderBrush" Value="#0F2552"/><Setter TargetName="PrimaryBorder" Property="BorderThickness" Value="2"/></Trigger>
+              <Trigger Property="IsEnabled" Value="False"><Setter TargetName="PrimaryBorder" Property="Background" Value="#E2E8F0"/><Setter TargetName="PrimaryBorder" Property="BorderBrush" Value="#CBD5E1"/><Setter Property="Foreground" Value="#526179"/></Trigger>
+            </ControlTemplate.Triggers>
+          </ControlTemplate>
+        </Setter.Value>
+      </Setter>
+    </Style>
+    <Style TargetType="TextBox">
+      <Setter Property="Background" Value="White"/>
+      <Setter Property="BorderBrush" Value="#94A3B8"/>
+      <Setter Property="BorderThickness" Value="1"/>
+      <Setter Property="Padding" Value="12,10"/>
+      <Setter Property="FontSize" Value="15"/>
+      <Setter Property="VerticalContentAlignment" Value="Center"/>
+      <Setter Property="MinHeight" Value="44"/>
+      <Style.Triggers>
+        <Trigger Property="IsKeyboardFocused" Value="True"><Setter Property="BorderBrush" Value="#245DD6"/></Trigger>
+      </Style.Triggers>
+    </Style>
+    <Style x:Key="NavButton" TargetType="RadioButton">
+      <Setter Property="Foreground" Value="#526179"/>
+      <Setter Property="Margin" Value="0,3"/>
+      <Setter Property="Cursor" Value="Hand"/>
+      <Setter Property="Template">
+        <Setter.Value>
+          <ControlTemplate TargetType="RadioButton">
+            <Border x:Name="NavBorder" Background="Transparent" Padding="16,14" CornerRadius="8" BorderBrush="Transparent" BorderThickness="1">
+              <ContentPresenter VerticalAlignment="Center"/>
+            </Border>
+            <ControlTemplate.Triggers>
+              <Trigger Property="IsMouseOver" Value="True"><Setter TargetName="NavBorder" Property="Background" Value="#F1F5FB"/></Trigger>
+              <Trigger Property="IsChecked" Value="True"><Setter TargetName="NavBorder" Property="Background" Value="#EAF1FF"/><Setter Property="Foreground" Value="#194FB9"/><Setter Property="FontWeight" Value="SemiBold"/></Trigger>
+              <Trigger Property="IsKeyboardFocused" Value="True"><Setter TargetName="NavBorder" Property="BorderBrush" Value="#245DD6"/></Trigger>
+            </ControlTemplate.Triggers>
+          </ControlTemplate>
+        </Setter.Value>
+      </Setter>
+    </Style>
+    <Style x:Key="Card" TargetType="Border">
+      <Setter Property="Background" Value="White"/>
+      <Setter Property="BorderBrush" Value="#DFE5EF"/>
+      <Setter Property="BorderThickness" Value="1"/>
+      <Setter Property="CornerRadius" Value="12"/>
+      <Setter Property="Padding" Value="24"/>
+    </Style>
+    <Style x:Key="SectionTitle" TargetType="TextBlock">
+      <Setter Property="FontSize" Value="18"/>
+      <Setter Property="FontWeight" Value="SemiBold"/>
+      <Setter Property="Margin" Value="0,0,0,12"/>
+    </Style>
+  </Window.Resources>
+  <Grid Background="#F5F7FB">
+    <Grid.ColumnDefinitions><ColumnDefinition Width="202"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
+    <Border Background="White" BorderBrush="#E0E6EF" BorderThickness="0,0,1,0">
+      <Grid Margin="16,28,16,20">
+        <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/><RowDefinition Height="*"/><RowDefinition Height="Auto"/></Grid.RowDefinitions>
+        <StackPanel Margin="10,0,0,30">
+          <Border Width="44" Height="44" CornerRadius="11" Background="#245DD6" HorizontalAlignment="Left" Margin="0,0,0,14">
+            <Path Data="M 8,23 L 14,23 L 18,13 L 24,32 L 29,19 L 33,23 L 37,23" Stroke="White" StrokeThickness="2.3" StrokeLineJoin="Round" Stretch="None"/>
+          </Border>
+          <TextBlock Text="主控控制台" FontSize="21" FontWeight="Bold"/>
+          <TextBlock Text="桌面连接助手" Foreground="#526179" Margin="0,5,0,0" FontSize="13"/>
+        </StackPanel>
+        <StackPanel Grid.Row="1">
+          <RadioButton x:Name="NavDevice" Content="设备连接" GroupName="Navigation" Style="{StaticResource NavButton}" IsChecked="True"/>
+          <RadioButton x:Name="NavNetwork" Content="Wi-Fi 与热点" GroupName="Navigation" Style="{StaticResource NavButton}"/>
+          <RadioButton x:Name="NavFiles" Content="TF 文件" GroupName="Navigation" Style="{StaticResource NavButton}"/>
+          <RadioButton x:Name="NavLogs" Content="连接记录" GroupName="Navigation" Style="{StaticResource NavButton}"/>
+          <RadioButton x:Name="NavHelp" Content="使用说明" GroupName="Navigation" Style="{StaticResource NavButton}"/>
+        </StackPanel>
+        <StackPanel Grid.Row="3" Margin="12,0,8,0">
+          <TextBlock Text="直接连接你的主控" FontSize="13" Foreground="#526179"/>
+          <TextBlock Text="本机便携版  0.3.1" FontSize="12" Foreground="#64748B" Margin="0,6,0,0"/>
+        </StackPanel>
+      </Grid>
+    </Border>
+    <Grid Grid.Column="1" Margin="32,26,32,16">
+      <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="*"/><RowDefinition Height="Auto"/></Grid.RowDefinitions>
+      <Grid Margin="0,0,0,22">
+        <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+        <StackPanel>
+          <TextBlock x:Name="PageTitle" Text="设备连接" FontSize="26" FontWeight="Bold"/>
+          <TextBlock x:Name="PageSubtitle" Text="连接主控，打开熟悉的检测页面。" Style="{StaticResource MutedText}" Margin="0,5,20,0"/>
+        </StackPanel>
+        <Border x:Name="StatusBadge" Grid.Column="1" Background="#E9EDF4" CornerRadius="16" Padding="14,8" VerticalAlignment="Top" Margin="0,4,0,0">
+          <TextBlock x:Name="StatusText" Text="尚未检测" Foreground="#526179" FontSize="13"/>
+        </Border>
+      </Grid>
+      <Grid Grid.Row="1">
+        <ScrollViewer x:Name="DevicePage" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Padding="0,0,5,0">
+          <StackPanel>
+            <Border Style="{StaticResource Card}" Margin="0,0,0,18">
+              <StackPanel>
+                <TextBlock Text="USB 直连主控" Style="{StaticResource SectionTitle}"/>
+                <TextBlock Text="用数据线连接 ESP32 原生 USB，选中端口后连接。无需先配置 Wi-Fi。" Style="{StaticResource MutedText}" Margin="0,0,0,12"/>
+                <WrapPanel>
+                  <ComboBox x:Name="UsbPorts" Width="180" MinHeight="42" Margin="0,0,10,8" AutomationProperties.Name="ESP32 原生 USB 端口"/>
+                  <Button x:Name="RefreshUsb" Content="刷新端口" Margin="0,0,10,8"/>
+                  <Button x:Name="ConnectUsb" Content="连接 USB" Style="{StaticResource PrimaryButton}" Margin="0,0,0,8"/>
+                </WrapPanel>
+                <TextBlock x:Name="UsbHint" Style="{StaticResource MutedText}" FontSize="12"/>
+              </StackPanel>
+            </Border>
+            <Border Style="{StaticResource Card}">
+              <StackPanel>
+                <TextBlock Text="检测页面，一键打开" FontSize="23" FontWeight="SemiBold" Margin="0,0,0,8"/>
+                <TextBlock Text="开始 / 停止采集、三轴曲线、电压电流、TF 空间和故障提示，&#10;继续使用主控原来的检测页面。" Style="{StaticResource MutedText}" Margin="0,0,0,24"/>
+                <Label Content="Wi-Fi 连接地址" Target="{Binding ElementName=AddressBox}" Padding="0" FontWeight="SemiBold" Margin="0,0,0,8"/>
+                <Grid>
+                  <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+                  <TextBox x:Name="AddressBox" MaxLength="256" ToolTip="输入 IP 或 http:// 开头的局域网地址；可以粘贴原来的页面链接。" AutomationProperties.Name="主控地址"/>
+                  <Button x:Name="SaveAddress" Grid.Column="1" Content="使用此地址" Margin="10,0,0,0"/>
+                </Grid>
+                <TextBlock x:Name="AddressHint" Text="填写主控 IP；地址会保存在本机，下次直接使用。" FontSize="12" Foreground="#526179" Margin="0,8,0,20"/>
+                <WrapPanel>
+                  <Button x:Name="OpenDetection" Content="打开检测页面" Style="{StaticResource PrimaryButton}" MinWidth="202" MinHeight="50" FontSize="16" Margin="0,0,12,8"/>
+                  <Button x:Name="CheckConnection" Content="检测连接" MinHeight="50" MinWidth="120" Margin="0,0,0,8"/>
+                </WrapPanel>
+                <Border x:Name="NoticeBorder" Background="#F0F4FA" CornerRadius="6" Padding="13,11" Margin="0,12,0,0">
+                  <TextBlock x:Name="Notice" Text="先连接 USB，或填写同一网络下的主控地址，再打开检测页面。" Style="{StaticResource MutedText}" FontSize="13"/>
+                </Border>
+                <TextBlock x:Name="DeviceSummary" Text="连接检查尚未进行。程序启动不会自动开始采集。" Foreground="#526179" FontSize="13" Margin="0,14,0,0" LineHeight="23"/>
+              </StackPanel>
+            </Border>
+            <Border Style="{StaticResource Card}" Margin="0,18,0,0">
+              <StackPanel>
+                <Grid>
+                  <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+                  <StackPanel Margin="0,0,16,0">
+                    <TextBlock Text="不知道主控 IP？" Style="{StaticResource SectionTitle}" Margin="0,0,0,6"/>
+                    <TextBlock Text="在当前局域网查找兼容主控，找到后选择地址。" Style="{StaticResource MutedText}" FontSize="13"/>
+                  </StackPanel>
+                  <Button x:Name="ToggleDiscovery" Grid.Column="1" Content="查找主控" VerticalAlignment="Center"/>
+                </Grid>
+                <StackPanel x:Name="DiscoveryPanel" Visibility="Collapsed" Margin="0,18,0,0">
+                  <TextBlock Text="选择电脑正在使用的网络" FontSize="13" Margin="0,0,0,8"/>
+                  <Grid>
+                    <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+                    <ComboBox x:Name="Networks" MinHeight="42" Padding="8" VerticalContentAlignment="Center" AutomationProperties.Name="查找所用网络"/>
+                    <Button x:Name="RefreshNetworks" Grid.Column="1" Content="刷新" Margin="8,0,0,0"/>
+                    <Button x:Name="SearchDevices" Grid.Column="2" Content="开始查找" Margin="8,0,0,0"/>
+                  </Grid>
+                  <TextBlock x:Name="SearchScope" Foreground="#526179" FontSize="12" Margin="0,9,0,0"/>
+                  <Grid Margin="0,12,0,0">
+                    <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+                    <StackPanel>
+                      <ProgressBar x:Name="SearchBar" Height="5" Maximum="100" Value="0" Foreground="#245DD6" Background="#E2E8F0" BorderThickness="0"/>
+                      <TextBlock x:Name="SearchStatus" Text="查找只检查连接，不发送采集命令。" FontSize="13" Foreground="#526179" Margin="0,8,0,0"/>
+                    </StackPanel>
+                    <Button x:Name="CancelSearch" Grid.Column="1" Content="取消" Margin="12,0,0,0" Visibility="Collapsed" VerticalAlignment="Top"/>
+                  </Grid>
+                  <ListBox x:Name="FoundDevices" MaxHeight="150" MinHeight="48" DisplayMemberPath="DisplayName" Visibility="Collapsed" Margin="0,14,0,0" Padding="8" AutomationProperties.Name="找到的主控"/>
+                  <Button x:Name="UseDevice" Content="使用选中地址" HorizontalAlignment="Left" Visibility="Collapsed" Margin="0,12,0,0"/>
+                  <TextBlock Text="未找到时：可从热点的已连接设备列表查看 IP，再手动填写。较大的局域网只查找本机所在的 /24 范围。" FontSize="12" Foreground="#526179" LineHeight="21" Margin="0,12,0,0"/>
+                </StackPanel>
+              </StackPanel>
+            </Border>
+            <TextBlock Text="连接记录表示检查时的状态。关闭所属检测页或本程序会请求安全停止相关采集，请等待保存完成。" FontSize="12" Foreground="#526179" LineHeight="22" Margin="2,16,2,8"/>
+          </StackPanel>
+        </ScrollViewer>
+        <ScrollViewer x:Name="NetworkPage" Visibility="Collapsed" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Padding="0,0,5,0">
+          <StackPanel>
+            <Border Style="{StaticResource Card}" Margin="0,0,0,18">
+              <StackPanel>
+                <TextBlock Text="主控网络设置" Style="{StaticResource SectionTitle}"/>
+                <TextBlock Text="先连接 USB 或填写主控 IP，再读取设置。这里直接控制主控的 Wi-Fi 与热点。" Style="{StaticResource MutedText}"/>
+                <WrapPanel Margin="0,12,0,8">
+                  <Button x:Name="ReadDeviceNetwork" Content="读取主控设置" Margin="0,0,10,8"/>
+                  <Button x:Name="ScanDeviceWifi" Content="扫描附近 Wi-Fi" Margin="0,0,0,8"/>
+                </WrapPanel>
+                <Border Background="#EFF5FF" Padding="12" CornerRadius="6" Margin="0,0,0,16">
+                  <TextBlock x:Name="DeviceNetworkMessage" Text="点击「读取主控设置」加载当前配置。采集和文件任务期间不能修改网络。" Style="{StaticResource MutedText}"/>
+                </Border>
+                <Grid x:Name="DeviceNetworkForm">
+                  <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="24"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
+                  <StackPanel>
+                    <TextBlock Text="主控连接 Wi-Fi" FontWeight="SemiBold" FontSize="17" Margin="0,0,0,12"/>
+                    <CheckBox x:Name="DeviceStaEnabled" Content="启用 Wi-Fi 连接" MinHeight="32"/>
+                    <Label Content="附近网络（2.4 GHz）" Target="{Binding ElementName=DeviceWifiChoices}" Padding="0,8,0,6"/>
+                    <ComboBox x:Name="DeviceWifiChoices" MinHeight="38" AutomationProperties.Name="附近 Wi-Fi 网络"/>
+                    <Label Content="Wi-Fi 名称" Target="{Binding ElementName=DeviceSsid}" Padding="0,10,0,6"/>
+                    <TextBox x:Name="DeviceSsid" MaxLength="32" AutomationProperties.Name="主控接入的 Wi-Fi 名称"/>
+                    <Label Content="Wi-Fi 密码" Target="{Binding ElementName=DeviceWifiPassword}" Padding="0,10,0,6"/>
+                    <PasswordBox x:Name="DeviceWifiPassword" MaxLength="63" Padding="12,10" MinHeight="44" AutomationProperties.Name="Wi-Fi 密码"/>
+                    <TextBlock Text="名称不变时密码留空可保留。取消勾选后保存即可断开。密码不会保存到电脑。" Style="{StaticResource MutedText}" FontSize="12" Margin="0,8,0,0"/>
+                  </StackPanel>
+                  <StackPanel Grid.Column="2">
+                    <TextBlock Text="主控自身热点" FontWeight="SemiBold" FontSize="17" Margin="0,0,0,12"/>
+                    <CheckBox x:Name="DeviceApEnabled" Content="开启主控热点" MinHeight="32"/>
+                    <TextBlock Text="让电脑或手机连接此热点后访问主控；此热点不提供互联网。" Style="{StaticResource MutedText}" FontSize="12" Margin="0,8,0,0"/>
+                    <Label Content="热点名称" Target="{Binding ElementName=DeviceApSsid}" Padding="0,10,0,6"/>
+                    <TextBox x:Name="DeviceApSsid" MaxLength="32" AutomationProperties.Name="主控热点名称"/>
+                    <Label Content="热点密码（8–63字节）" Target="{Binding ElementName=DeviceApPassword}" Padding="0,10,0,6"/>
+                    <PasswordBox x:Name="DeviceApPassword" MaxLength="63" Padding="12,10" MinHeight="44" AutomationProperties.Name="主控热点密码"/>
+                    <Button x:Name="ViewApPassword" Content="查看热点密码" HorizontalAlignment="Left" Margin="0,8,0,0"/>
+                    <TextBlock Text="取消勾选后保存即可关闭热点。更改网络可能导致当前 Wi-Fi 连接断开，建议通过 USB 设置。" Style="{StaticResource MutedText}" FontSize="12" Margin="0,8,0,0"/>
+                  </StackPanel>
+                </Grid>
+                <Button x:Name="SaveDeviceNetwork" Content="保存并应用到主控" Style="{StaticResource PrimaryButton}" HorizontalAlignment="Left" Margin="0,18,0,0"/>
+              </StackPanel>
+            </Border>
+            <Border Style="{StaticResource Card}" Margin="0,0,0,18">
+              <StackPanel>
+                <TextBlock Text="检测页面网址" Style="{StaticResource SectionTitle}"/>
+                <TextBox x:Name="DeviceUrls" IsReadOnly="True" Text="读取主控设置后显示实际网址。" TextWrapping="Wrap" MinHeight="85" AutomationProperties.Name="主控检测页面网址"/>
+                <TextBlock Text="其他设备请使用 Wi-Fi 或主控热点网址；127.0.0.1 本机入口只在这台电脑上有效。" Style="{StaticResource MutedText}" FontSize="12" Margin="0,8,0,10"/>
+                <Button x:Name="CopyDeviceUrls" Content="复制网址" HorizontalAlignment="Left"/>
+              </StackPanel>
+            </Border>
+            <Border Style="{StaticResource Card}" Margin="0,0,0,18">
+              <StackPanel>
+                <TextBlock Text="其他连接入口" Style="{StaticResource SectionTitle}"/>
+                <TextBlock Text="也可以通过统一网页设置主控网络；下方 Windows 设置仅用于电脑自身。" Style="{StaticResource MutedText}" Margin="0,0,0,16"/>
+                <Button x:Name="OpenDeviceNetwork" Content="在浏览器中打开网络设置" HorizontalAlignment="Left"/>
+              </StackPanel>
+            </Border>
+            <Border Style="{StaticResource Card}">
+              <StackPanel>
+                <TextBlock Text="方式一：电脑和主控连接同一热点" Style="{StaticResource SectionTitle}"/>
+                <TextBlock Text="1   打开主控之前使用的手机热点，并选择 2.4 GHz。&#10;2   让电脑连接这个热点，主控上电后会尝试连接已保存的网络。&#10;3   返回「设备连接」，检测地址或查找主控，再打开检测页面。" Style="{StaticResource MutedText}" LineHeight="29" Margin="0,0,0,18"/>
+                <Button x:Name="OpenWifi" Content="打开 Windows Wi-Fi 设置" Style="{StaticResource PrimaryButton}" HorizontalAlignment="Left"/>
+              </StackPanel>
+            </Border>
+            <Border Style="{StaticResource Card}" Margin="0,18,0,0">
+              <StackPanel>
+                <TextBlock Text="方式二：用电脑提供 Wi-Fi 热点" Style="{StaticResource SectionTitle}"/>
+                <TextBlock Text="在 Windows「移动热点」中设置网络名称、密码和 2.4 GHz 频段，再手动开启。然后通过「打开主控网络设置」让主控加入该网络。" Style="{StaticResource MutedText}" Margin="0,0,0,16"/>
+                <Button x:Name="OpenHotspot" Content="打开 Windows 移动热点设置" HorizontalAlignment="Left"/>
+                <Border Background="#FFF7E8" CornerRadius="6" Padding="13" Margin="0,18,0,0">
+                  <TextBlock Text="上面的入口用于设置主控自身的 Wi-Fi 与热点。Windows 系统设置用于电脑连接网络或共享电脑网络。" Foreground="#80561B" LineHeight="24" FontSize="13"/>
+                </Border>
+              </StackPanel>
+            </Border>
+            <Border Style="{StaticResource Card}" Margin="0,18,0,0">
+              <StackPanel>
+                <Grid>
+                  <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+                  <TextBlock Text="本机网络地址" Style="{StaticResource SectionTitle}" VerticalAlignment="Center" Margin="0"/>
+                  <Button x:Name="RefreshNetworkInfo" Grid.Column="1" Content="刷新网络信息"/>
+                </Grid>
+                <TextBlock x:Name="NetworkInfo" Style="{StaticResource MutedText}" FontFamily="Microsoft YaHei UI" Margin="0,14,0,0"/>
+              </StackPanel>
+            </Border>
+          </StackPanel>
+        </ScrollViewer>
+        <Grid x:Name="FilesPage" Visibility="Collapsed">
+          <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/><RowDefinition Height="*"/><RowDefinition Height="Auto"/></Grid.RowDefinitions>
+          <Border Style="{StaticResource Card}" Padding="18" Margin="0,0,0,12">
+            <StackPanel>
+              <Label Content="TF 当前目录" Target="{Binding ElementName=TfPath}" Padding="0,0,0,6"/>
+              <TextBox x:Name="TfPath" Text="/" MaxLength="240" AutomationProperties.Name="TF 当前目录"/>
+              <WrapPanel Margin="0,12,0,0">
+                <Button x:Name="RefreshTf" Content="读取 / 刷新" Margin="0,0,8,8"/>
+                <Button x:Name="ParentTf" Content="上一级" Margin="0,0,8,8"/>
+                <Button x:Name="NewTfFolder" Content="新建文件夹" Margin="0,0,8,8"/>
+                <Button x:Name="UploadTf" Content="从电脑上传" Margin="0,0,8,8"/>
+              </WrapPanel>
+              <WrapPanel>
+                <Button x:Name="RenameTf" Content="重命名" Margin="0,0,8,8"/>
+                <Button x:Name="CopyTf" Content="复制" Margin="0,0,8,8"/>
+                <Button x:Name="PasteTf" Content="粘贴" Margin="0,0,8,8"/>
+                <Button x:Name="DownloadTf" Content="下载到电脑" Margin="0,0,8,8"/>
+                <Button x:Name="DeleteTf" Content="永久删除" Foreground="#B42318" Margin="0,0,8,8"/>
+              </WrapPanel>
+            </StackPanel>
+          </Border>
+          <Border Grid.Row="1" Background="#EFF5FF" Padding="12" CornerRadius="6" Margin="0,0,0,12">
+            <TextBlock x:Name="TfMessage" Text="先连接主控，再读取目录。文件操作只在采集、保存和交接结束后执行。" Style="{StaticResource MutedText}"/>
+          </Border>
+          <DataGrid x:Name="TfGrid" Grid.Row="2" AutoGenerateColumns="False" IsReadOnly="True" CanUserAddRows="False" CanUserDeleteRows="False" SelectionMode="Single" SelectionUnit="FullRow" RowHeight="38" HeadersVisibility="Column" GridLinesVisibility="Horizontal" BorderBrush="#DFE5EF" Background="White" AutomationProperties.Name="TF 文件列表">
+            <DataGrid.Columns>
+              <DataGridTextColumn Header="名称（双击文件夹进入）" Binding="{Binding Name}" Width="*"/>
+              <DataGridTextColumn Header="类型" Binding="{Binding Kind}" Width="85"/>
+              <DataGridTextColumn Header="大小" Binding="{Binding Size}" Width="150"/>
+            </DataGrid.Columns>
+          </DataGrid>
+          <StackPanel Grid.Row="3" Margin="0,12,0,0">
+            <WrapPanel>
+              <Button x:Name="NextTf" Content="下一页" Margin="0,0,10,8"/>
+              <Button x:Name="CancelTf" Content="取消当前文件任务" Margin="0,0,0,8"/>
+            </WrapPanel>
+            <TextBlock Text="复制支持 TF 卡内文件和文件夹；粘贴也可上传电脑剪贴板中的文件。不会覆盖同名 TF 项目；删除前会确认路径、数量和大小。" Style="{StaticResource MutedText}" FontSize="12"/>
+          </StackPanel>
+        </Grid>
+        <Grid x:Name="LogsPage" Visibility="Collapsed">
+          <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="*"/><RowDefinition Height="Auto"/></Grid.RowDefinitions>
+          <WrapPanel Margin="0,0,0,16">
+            <Button x:Name="ExportLog" Content="导出本次连接记录" Margin="0,0,10,8"/>
+            <Button x:Name="CopyDiagnostic" Content="复制连接诊断" Margin="0,0,10,8"/>
+            <Button x:Name="OpenLogFolder" Content="打开日志文件夹" Margin="0,0,0,8"/>
+          </WrapPanel>
+          <TextBox x:Name="LogText" Grid.Row="1" IsReadOnly="True" TextWrapping="Wrap" AcceptsReturn="True" VerticalContentAlignment="Top" VerticalScrollBarVisibility="Auto" FontSize="13" Padding="16" BorderBrush="#CBD5E1" AutomationProperties.Name="本次连接记录"/>
+          <TextBlock Grid.Row="2" Text="这里保存连接、查找和页面打开记录。主控的采集文件仍在 TF 卡，检测结果在原检测页面查看。" Style="{StaticResource MutedText}" FontSize="12" Margin="0,12,0,0"/>
+        </Grid>
+        <ScrollViewer x:Name="HelpPage" Visibility="Collapsed" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Padding="0,0,5,0">
+          <StackPanel>
+            <Border Style="{StaticResource Card}">
+              <StackPanel>
+                <TextBlock Text="日常使用，只需这三步" Style="{StaticResource SectionTitle}"/>
+                <TextBlock Text="1   给主控供电，保持原接线和 TF 卡。&#10;2   连接原生 USB，或让电脑和主控连接同一网络。&#10;3   双击桌面的「主控控制台」，点击「打开检测页面」。" Style="{StaticResource MutedText}" LineHeight="30"/>
+                <Separator Margin="0,20"/>
+                <TextBlock Text="在原检测页面完成采集与查看" FontWeight="SemiBold" FontSize="16" Margin="0,0,0,10"/>
+                <TextBlock Text="采集时长、开始 / 停止、三轴曲线、电压、电流、TF 剩余空间和中文故障提示，全部沿用原页面。软件和网页不需要 Codex 在线参与。" Style="{StaticResource MutedText}"/>
+              </StackPanel>
+            </Border>
+            <Border Style="{StaticResource Card}" Margin="0,18,0,0">
+              <StackPanel>
+                <TextBlock Text="打不开时，按顺序检查" Style="{StaticResource SectionTitle}"/>
+                <TextBlock Text="• 主控是否供电；电脑是否接到同一个热点。&#10;• IP 是否变化：使用「查找主控」，或查看热点的已连接设备列表。&#10;• 热点是否开启了设备隔离：同一热点中的设备需要允许互相访问。&#10;• 多页面开始采集时，按提示选择继续接管或取消。关闭所属页面会停止该次采集。&#10;• 「检测连接」只读取一次状态，显示的是检查时的快照。" Style="{StaticResource MutedText}" LineHeight="29"/>
+              </StackPanel>
+            </Border>
+            <Border Style="{StaticResource Card}" Margin="0,18,0,0">
+              <StackPanel>
+                <TextBlock Text="本机文件与版本" Style="{StaticResource SectionTitle}"/>
+                <TextBlock x:Name="AboutText" Style="{StaticResource MutedText}" FontSize="13"/>
+              </StackPanel>
+            </Border>
+          </StackPanel>
+        </ScrollViewer>
+      </Grid>
+      <DockPanel Grid.Row="2" Margin="0,14,0,0">
+        <TextBlock Text="采集与图表沿用原检测页面" DockPanel.Dock="Right" HorizontalAlignment="Right" FontSize="12" Foreground="#64748B"/>
+        <TextBlock x:Name="FooterText" Text="就绪 · 等待操作" FontSize="12" Foreground="#526179" Margin="0,0,20,0" TextTrimming="CharacterEllipsis" TextWrapping="NoWrap"/>
+      </DockPanel>
+    </Grid>
+  </Grid>
+</Window>

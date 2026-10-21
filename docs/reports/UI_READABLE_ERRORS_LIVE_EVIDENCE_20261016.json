@@ -1,0 +1,97 @@
+{
+  "passed": true,
+  "candidate_source": "eb4aba6340ba26093cd8f1849714b8f335bf4792",
+  "candidate_sha256": "400192859ee7e4ac3723120397af1e804bec8c0baea5545bac07b46f8c65dc16",
+  "operation_commit": "a10638f058cb892d68bc40770f6621e04f7c5798",
+  "backup": {
+    "bytes": 1056768,
+    "sha256": "82dcee08e9cf745fdc4d00196c457fe5386272f9a42fae618a1980be57d8bf6b",
+    "matched_old_source": "1f6917870705b29d8697e20ad1f72c09ca4baf3a",
+    "path": "local-data/hardware/ui-live/20261016_210923/controller_prefix.bin"
+  },
+  "date": "2026-10-16",
+  "url": "http://172.28.247.119/?ui=eb4aba6",
+  "record": {
+    "run": "21F768ED",
+    "seconds": 30.006026,
+    "samples": 799578,
+    "sha256": "75745a0407b3364a29b1f20fe36a0d67e4cf631ba806507b2f0e3ffa32f093f8",
+    "terminal": "[rec] PASS run=21F768ED samples=799578 errors=0 fifo_high=298 queue_high=12 write_us=94297 sync_us=112612 sha256=75745a0407b3364a29b1f20fe36a0d67e4cf631ba806507b2f0e3ffa32f093f8 write_gate=0 precision_accepted=0"
+  },
+  "errors": 0,
+  "fifo_high": 298,
+  "queue_high": 12,
+  "write_us": 94297,
+  "sync_us": 112612,
+  "last_reported_free_heap": 72400,
+  "heap_min_not_measured": true,
+  "ina_records": 301,
+  "ina_invalid": 0,
+  "verify_terminal": "[rec] verify=1 samples=799578 blocks=2087 ina=301 invalid=0 sha256=75745a0407b3364a29b1f20fe36a0d67e4cf631ba806507b2f0e3ffa32f093f8 path=0:/REC_21F768ED/DATA.BIN",
+  "free_before": "6779662336",
+  "free_after": "6773952512",
+  "trend_windows": 149,
+  "near_full_scale_axis_values": 0,
+  "raw_preview_points": 272,
+  "browser": "155.0.4283.45",
+  "page_errors": [],
+  "real_checks": [
+    "待机中文状态",
+    "采集中及完成后未检测到采集错误",
+    "诊断原始码0x0",
+    "无异常列表",
+    "原始/RMS/INA同时更新",
+    "1/5/10ms固定刻度与浮窗",
+    "剩余容量减少",
+    "完整回读摘要一致"
+  ],
+  "error_injection_on_hardware": false,
+  "multiple_error_decode": "模拟测试覆盖，未向实机注入故障",
+  "five_minute_tested": false,
+  "accuracy_accepted": false,
+  "cold_starts": 0,
+  "multi_client_issue": "历史多页并发FIFO溢出未定位/修复",
+  "raw_local": "local-data/hardware/ui-live/20261016_210923",
+  "evidence": [
+    {
+      "path": "local-data/hardware/ui-live/20261016_210923/result.json",
+      "bytes": 251358,
+      "sha256": "1c5d7227c75984e2f9d107bad4070d75fe310737515eda4294a10a00348419d8"
+    },
+    {
+      "path": "local-data/hardware/ui-live/20261016_210923/hardware.log",
+      "bytes": 40306,
+      "sha256": "f8eb3f1ec2c22eb0a698c642ea021257c95ee187418809cf95a431557dcbe6d6"
+    },
+    {
+      "path": "local-data/hardware/ui-live/20261016_210923/controller_prefix.bin",
+      "bytes": 1056768,
+      "sha256": "82dcee08e9cf745fdc4d00196c457fe5386272f9a42fae618a1980be57d8bf6b"
+    },
+    {
+      "path": "local-data/hardware/ui-live/20261016_210923/backup.json",
+      "bytes": 254,
+      "sha256": "d53fed7d416d91629799fdc5d98b216be09c4783d042e6ba129e0ec372e53229"
+    },
+    {
+      "path": "local-data/hardware/ui-live/20261016_210923/browser/result.json",
+      "bytes": 190141,
+      "sha256": "2a50897be319227d8c9be1a7887515feb591ba0815aa20983634604ddd00645c"
+    },
+    {
+      "path": "local-data/hardware/ui-live/20261016_210923/browser/console.log",
+      "bytes": 46370,
+      "sha256": "61979895d586aecc57721a47ea0ffe10ce22c489c2bb2f99188c50a785df7de6"
+    },
+    {
+      "path": "local-data/hardware/ui-live/20261016_210923/browser/actual-recording.png",
+      "bytes": 145026,
+      "sha256": "eff972149ea8ec6b45c5c53799c8342cb3891a094d9b5ed4abb1bc632c6bf078"
+    },
+    {
+      "path": "local-data/hardware/ui-live/20261016_210923/browser/actual-passed.png",
+      "bytes": 153219,
+      "sha256": "345c8f4e314df7573a03e1be4b6427c44d1bcca03d086b2b6b817273e5201628"
+    }
+  ]
+}

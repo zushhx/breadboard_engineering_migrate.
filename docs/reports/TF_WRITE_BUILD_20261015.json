@@ -1,0 +1,61 @@
+{
+  "source_commit": "31dda6f23cab21f9a07330a829bae747211334b0",
+  "working_tree_dirty_at_start": false,
+  "input_sha256": "c2e97347d0d7558cc514c5e90f95201423b27bb57b95f1b84a63bb30c5281e0e",
+  "inputs": {
+    "面包板样机_固件/diagnostics/tf_write_probe/block_implicit_upload.py": "c42921770acde18eff80aab917d144e7b2f320e92da836b4653cb7b76bc611b9",
+    "面包板样机_固件/diagnostics/tf_write_probe/CMakeLists.txt": "a246fd0eb95806f739bf82e7bac912d53946176dba9b13faa917c507be6464bc",
+    "面包板样机_固件/diagnostics/tf_write_probe/partitions.csv": "0c4e02152e1b6911d0a9b94be67d37674052fdc5c0870a5a55cc2133e65233a1",
+    "面包板样机_固件/diagnostics/tf_write_probe/platformio.ini": "dc5d9f032a08fc0f2b7ed37be12d7c39e13b2a3e79329a9edd197cd2dfc9e29b",
+    "面包板样机_固件/diagnostics/tf_write_probe/README.md": "98a2506fd397e670fa55e184804bdfcb85827689fa88c520b69856ca3dc8115c",
+    "面包板样机_固件/diagnostics/tf_write_probe/sdkconfig.defaults": "d7610876403351cf588cacf550f21cba1c24f7fa3c859b05be3b4562790f73c8",
+    "面包板样机_固件/diagnostics/tf_write_probe/sdkconfig.tf_write_idf542_4bit_20m": "7c1175f80b103a3ea7aa7e4d5b2fc4c658dee6ba32cb4971b0073690fbf28c45",
+    "面包板样机_固件/diagnostics/tf_write_probe/src/build_identity.h": "d62ddc63024702fa0befdd176e6dac4b6d1b0420f78fe6d8e61239d0f9f2cdcf",
+    "面包板样机_固件/diagnostics/tf_write_probe/src/CMakeLists.txt": "b2ac6b28b590a4c1f8ff5ee549f77782d43b5ed648065e8a758a0820566c056b",
+    "面包板样机_固件/diagnostics/tf_write_probe/src/main.cpp": "7554422322d33c1241dd4a85cdbdc65d806a77b1dab57453d8cbaecbabe8daad",
+    "面包板样机_固件/diagnostics/tf_write_probe/src/serial_compat.cpp": "7a6e0b1f91138280f40dcd1160a1d78fb2ae74d59654891a3e732ccfde71a706",
+    "面包板样机_固件/diagnostics/tf_write_probe/src/serial_compat.h": "6822cb1d13751158c6798f5f6e2c72e6d238ac6108f0a313550fbaef910c127a",
+    "面包板样机_固件/diagnostics/tf_write_probe/src/tf_test_core.cpp": "f3d2077e5807836d49ced6e6df011ebbfb3443791fb4921f9307b33fb5bec9ed",
+    "面包板样机_固件/diagnostics/tf_write_probe/src/tf_test_core.h": "99745aee6f44a126784e37e7fb8612788759e4d576429665ea84c992aff66b05",
+    "tools/build_tf_write_probe.py": "21ebe2aed0259a5a640bd9d2489baa8b28365c235706b18869832ad83e65d2c3"
+  },
+  "staged_identity_sha256": "40c324c96094f34989b0971b45624feb4681a77b6fb1e4f88be52a1ff0b1cb4d",
+  "baseline_manifest_sha256": "785d6d1e76037737cbf4f5410208691b2ebeac4fd31f147c054db575736b5426",
+  "command": [
+    "C:\\Users\\acer\\.platformio\\penv\\Scripts\\python.exe",
+    "-m",
+    "platformio",
+    "run",
+    "--project-dir",
+    "C:\\Users\\acer\\.platformio\\breadboard_write_builds\\c2e97347d0d7558c",
+    "--environment",
+    "tf_write_idf542_4bit_20m"
+  ],
+  "sdkconfig_differences": [],
+  "sdkconfig_generated_sha256": "7c1175f80b103a3ea7aa7e4d5b2fc4c658dee6ba32cb4971b0073690fbf28c45",
+  "artifacts": [
+    {
+      "path": "local-data/build/tf-write/c2e97347d0d7558c/20261015_194524_673037/artifacts/firmware.bin",
+      "bytes": 317456,
+      "sha256": "728e50380e55a08c653142721f064dd5ef9028fe28bb7ed197ef561f10d08ec3"
+    },
+    {
+      "path": "local-data/build/tf-write/c2e97347d0d7558c/20261015_194524_673037/artifacts/bootloader.bin",
+      "bytes": 22368,
+      "sha256": "932b83ed0cebf6e71d6dc1703163564545662773436e43cce2351fdeeaea9e0b"
+    },
+    {
+      "path": "local-data/build/tf-write/c2e97347d0d7558c/20261015_194524_673037/artifacts/partitions.bin",
+      "bytes": 3072,
+      "sha256": "1d9cca96de0fe07ad7fc0648b9878ddecd9ce565e38b589ad20fea698ed4c80c"
+    },
+    {
+      "path": "local-data/build/tf-write/c2e97347d0d7558c/20261015_194524_673037/artifacts/firmware.elf",
+      "bytes": 4756816,
+      "sha256": "5957a4778174eb3b7ae27d712bca998a494c269d069133ec74d96699cb1385f5"
+    }
+  ],
+  "build_passed": true,
+  "hardware_tested": false,
+  "note": "Software candidate only; not flashed, no TF writes or durability test"
+}

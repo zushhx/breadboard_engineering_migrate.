@@ -1,0 +1,53 @@
+{
+  "source_commit": "8866c4d15bf456944a350ce244026bacdb1fcc59",
+  "working_tree_dirty_at_start": false,
+  "input_sha256": "2a7eb25c7cc7e15731a8e963eb074689762563679583438ad11d0d0850ca3a66",
+  "sdkconfig_differences": {
+    "CONFIG_ESP32_PHY_CALIBRATION_AND_DATA_STORAGE": {
+      "before": "CONFIG_ESP32_PHY_CALIBRATION_AND_DATA_STORAGE=y",
+      "after": null
+    },
+    "CONFIG_ESP_PHY_CALIBRATION_AND_DATA_STORAGE": {
+      "before": "CONFIG_ESP_PHY_CALIBRATION_AND_DATA_STORAGE=y",
+      "after": null
+    },
+    "CONFIG_ESP_WIFI_STA_DISCONNECTED_PM_ENABLE": {
+      "before": "CONFIG_ESP_WIFI_STA_DISCONNECTED_PM_ENABLE=y",
+      "after": null
+    }
+  },
+  "build_passed": true,
+  "hardware_tested": false,
+  "date": "2026-10-16",
+  "manifest_local_path": "local-data/build/sensor-web/2a7eb25c7cc7e157/20261016_142723_096899/build_manifest.json",
+  "firmware": {
+    "path": "local-data/build/sensor-web/2a7eb25c7cc7e157/20261016_142723_096899/artifacts/firmware.bin",
+    "bytes": 958304,
+    "sha256": "572f7f6e1b6e66e25cef41b2069a951e81d1fc120d53d1e7d590f45b7085a0bc"
+  },
+  "private_firmware_do_not_publish": true,
+  "credentials_present_in_private_firmware": true,
+  "previous_failed_candidate_sha256": "e1dae22f0714218c7961519be1b9f9af1c52062982e4619609b0019b37387a68",
+  "changed_effective_sdk_option_relative_to_failed_candidate": "CONFIG_ESP_WIFI_STA_DISCONNECTED_PM_ENABLE: y -> disabled",
+  "partition_matches_frozen": true,
+  "unit_tests": 44,
+  "static_ram_bytes": 63876,
+  "authorization_reference": "2026-10-16 user: 按此方案先完成软件修改、审查和新候选构建。还有后续验证一次性搞完",
+  "recovery": {
+    "path": "local-data/build/sensor-recorder/98594a067b30c8bf/20261016_085844_685383/artifacts/firmware.bin",
+    "bytes": 387616,
+    "sha256": "f84a235cdde8ca5bf89a5c1bf1c78fc218a8a98d72ecd35d7c4a1777cb81b1ba"
+  },
+  "evidence": [
+    {
+      "path": "local-data/build/sensor-web/2a7eb25c7cc7e157/20261016_142723_096899/build.log",
+      "sha256": "07600551cb8eff512b693f771c51aad1b7feae6102e35af6585efb358eba6ef4"
+    },
+    {
+      "path": "local-data/validation/wifi-pm/unit-tests.log",
+      "sha256": "0c640441429df7e2c64a24b418cf90c99fb23c010c58b4910e3a9a0f33e7f925"
+    }
+  ],
+  "independent_source_review_passed": false,
+  "note": "Build-time software snapshot; no hardware acceptance. Existing bootloader/NVS/partitions are retained at trial."
+}

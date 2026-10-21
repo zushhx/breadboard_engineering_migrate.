@@ -1,0 +1,48 @@
+{
+  "source_commit": "abfdafb912dc4a926800c1135fee0d8308d03da3",
+  "frozen_manifest_sha256": "785d6d1e76037737cbf4f5410208691b2ebeac4fd31f147c054db575736b5426",
+  "command": [
+    "C:\\Users\\acer\\.platformio\\penv\\Scripts\\python.exe",
+    "-m",
+    "platformio",
+    "run",
+    "--project-dir",
+    "C:\\Users\\acer\\.platformio\\breadboard_baseline_builds\\785d6d1e76037737",
+    "--environment",
+    "tf_idf542_4bit_20m"
+  ],
+  "artifacts": [
+    {
+      "path": "local-data/build/tf-baseline/785d6d1e76037737/artifacts/firmware.bin",
+      "bytes": 309104,
+      "sha256": "187ae13ff03982bc79cd848a75e9c53ef92ef207d646ff653d19aa9a454a7fe5"
+    },
+    {
+      "path": "local-data/build/tf-baseline/785d6d1e76037737/artifacts/bootloader.bin",
+      "bytes": 22368,
+      "sha256": "914e6bfedead5dc6af431d557f6fb59027ec2d12e6370778bd04377c5d512e7f"
+    },
+    {
+      "path": "local-data/build/tf-baseline/785d6d1e76037737/artifacts/partitions.bin",
+      "bytes": 3072,
+      "sha256": "1d9cca96de0fe07ad7fc0648b9878ddecd9ce565e38b589ad20fea698ed4c80c"
+    },
+    {
+      "path": "local-data/build/tf-baseline/785d6d1e76037737/artifacts/firmware.elf",
+      "bytes": 4697960,
+      "sha256": "73b2cc7cad1f652c82eb2ef47d2b02ac4504fea349b86eadae7cba9bfa0c8430"
+    }
+  ],
+  "build_passed": true,
+  "hardware_tested": false,
+  "note": "New build, not flashed; original tested artifacts remain unchanged",
+  "execution_environment": {
+    "date": "2026-10-15",
+    "os": "Windows",
+    "powershell": "7.6.6",
+    "platformio_core": "6.2.0",
+    "sdk": "ESP-IDF 5.4.2"
+  },
+  "raw_build_log_local": "local-data/build/tf-baseline/785d6d1e76037737/build.log",
+  "validation_scope": "Frozen source compiled in an independent directory; original tested artifacts unchanged. Not flashed or tested on hardware."
+}

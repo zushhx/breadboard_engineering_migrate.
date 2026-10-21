@@ -1,0 +1,81 @@
+# 测试与事件记录索引
+
+这些文件保存对应日期、版本及接法下的观察，当前结论统一在[状态页](../STATUS.md)汇总。报告内历史路径可按[迁移映射](../MIGRATION.json)定位。
+
+## 本次工程整理
+
+- [v0.1.0工程原型验收、候选与发布边界](RELEASE_V010_20261018.md)
+- [STA四页状态序列化内存失败现场与修复](WIFI_TELEMETRY_ABORT_20261019.md)
+- [主控控制台 v2 软件、短测及实机边界](CONTROLLER_V2_20261017.md)
+- [v2产物与短测证据摘要](CONTROLLER_V2_EVIDENCE_20261017.json)
+- [Windows 主控控制台交付、检查与边界](DESKTOP_CONTROLLER_20261017.md)
+- [桌面程序产物与软件检查证据摘要](DESKTOP_CONTROLLER_EVIDENCE_20261017.json)
+
+- [新版UI真实联机与30秒记录检查](REALTIME_UI_LIVE_20261016.md)
+- [UI联机实机证据清单](REALTIME_UI_LIVE_EVIDENCE_20261016.json)
+- [联机工具控制台编码故障与恢复](UI_LIVE_LOG_ENCODING_FIX_20261016.md)
+
+- [实时监测UI与连续RMS统计软件复核](REALTIME_UI_REVIEW_20261016.md)
+- [UI候选构建、测试与边界证据](REALTIME_UI_EVIDENCE_20261016.json)
+
+- [WiFi通知断言修复及网页录制验收](WIFI_NOTIFY_FIX_20261016.md)
+- [栈现场与5文件独立校验证据](WIFI_NOTIFY_FIX_EVIDENCE_20261016.json)
+
+- [关闭WiFi断连省电的实机对照、失败与恢复](WIFI_DISCONNECTED_PM_TRIAL_20261016.md)
+- [断连省电对照的原始证据清单](WIFI_DISCONNECTED_PM_TRIAL_EVIDENCE_20261016.json)
+- [断连省电对照的软件复核](WIFI_DISCONNECTED_PM_SOFTWARE_REVIEW_20261016.md)
+- [断连省电对照的公开构建摘要](WIFI_DISCONNECTED_PM_BUILD_20261016.json)
+
+- [手机热点网页候选首轮启动失败与恢复](SENSOR_WEB_FIRST_TRIAL_20261016.md)
+- [网页首轮失败、备份、回溯与恢复证据](SENSOR_WEB_FIRST_TRIAL_EVIDENCE_20261016.json)
+
+- [手机热点实时界面与录制控制软件复核](SENSOR_WEB_SOFTWARE_REVIEW_20261016.md)
+- [手机热点记录候选公开构建摘要（不含私人固件/凭据）](SENSOR_WEB_BUILD_20261016.json)
+
+- [真实采集到TF首轮实机验收及电脑导出](SENSOR_RECORDER_HARDWARE_20261016.md)
+- [真实采集实机与电脑完整校验证据清单](SENSOR_RECORDER_HARDWARE_EVIDENCE_20261016.json)
+
+- [真实采集与TF记录软件复核（未试烧）](SENSOR_RECORDER_SOFTWARE_REVIEW_20261016.md)
+- [真实采集候选干净构建清单（未试烧）](SENSOR_RECORDER_BUILD_20261016.json)
+
+- [INA226 电压精度初次对照：未验收](INA226_PRECISION_OBSERVATION_20261015.md)
+- [精度初次对照的原始证据清单](INA226_PRECISION_OBSERVATION_EVIDENCE_20261015.json)
+- [仪表照片确认及第二电压窗口证据](INA226_PRECISION_WINDOW2_EVIDENCE_20261015.json)
+
+- [项目上下文与旧记忆核查](PROJECT_CONTEXT_AUDIT_20261015.md)
+- [IIS3DWB 与 INA226 软件候选复核](SENSOR_MONITOR_SOFTWARE_REVIEW_20261015.md)
+- [模块候选构建清单](SENSOR_MONITOR_BUILD_20261015.json)
+- [模块首次试烧失败与受控恢复](SENSOR_MONITOR_FIRST_TRIAL_20261015.md)
+- [模块实机原始证据哈希与结果](SENSOR_MONITOR_HARDWARE_EVIDENCE_20261015.json)
+- [补接 IO13→SDO 后模块与 TF 合并验收](SENSOR_MONITOR_IO13_RETRY_20261015.md)
+- [补线后合并验收的原始证据清单](SENSOR_MONITOR_IO13_RETRY_EVIDENCE_20261015.json)
+
+- [TF 访问异常复盘](TF_ACCESS_POSTMORTEM_20261015.md)
+- [整改检查与审查记录](ENGINEERING_BASELINE_REVIEW_20261015.md)
+- [独立构建产物与来源清单](ENGINEERING_BUILD_20261015.json)
+- [GitHub 公开状态与分支保护核验](GITHUB_POLICY_20261015.json)
+
+## TF 对照证据
+
+- [单轮约五分钟文件循环与写入流程中 MCU 复位](TF_FILE_LOOP_INTERRUPTION_20261015.md)
+- [单轮文件循环与复位后的原始证据清单](TF_FILE_LOOP_EVIDENCE_20261015.json)
+
+- [基础写入、主控复位与两次完整断电实测](TF_WRITE_HARDWARE_20261015.md)
+- [实机原始记录哈希与结果清单](TF_WRITE_HARDWARE_EVIDENCE_20261015.json)
+
+- [独立 TF 写入诊断软件检查与自审（未试烧）](TF_WRITE_SOFTWARE_REVIEW_20261015.md)
+- [独立 TF 写入诊断构建原始清单](TF_WRITE_BUILD_20261015.json)
+
+- [10 月 15 日软件实板对照与选用结果](TF卡软件实测_2026-10-15.md)
+- [软件路径复核](TF卡软件复核_2026-10-15.md)
+- [15:18 重新接线后的复测](TF卡接线复测_2026-10-15_1518.md)
+- [本轮重新开始的检查时间线](TF卡重新检查_2026-10-15.md)
+- [9 月 27 日旧程序验收](TF卡验收_2026-09-27.md)
+
+## 接线、传感器与供电历史
+
+- [10 月 14 日传感器复检](传感器复检汇总_2026-10-14.md)
+- [供电地线固定与复检](供电地线固定与复检_2026-10-14.md)
+- [10 月 12 日装配记录](装配验收记录_2026-10-12.md)
+- [10 月 14 日装配记录](装配验收记录_2026-10-14.md)
+- [无线供电论文对照分析](旋转件无线供电_论文对照与可行性分析.html)

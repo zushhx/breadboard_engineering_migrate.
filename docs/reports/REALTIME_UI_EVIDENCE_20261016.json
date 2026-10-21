@@ -1,0 +1,128 @@
+{
+  "date": "2026-10-16",
+  "source_commit": "f09027903fa0f66bea3b4fb2d55db41b08433a98",
+  "base_commit": "b23394eaa0be077a502c388d74db8a1ba467f900",
+  "branch": "codex/realtime-ui-redesign",
+  "pull_request": "https://github.com/zushhx/breadboard_engineering_migrate./pull/10",
+  "build": {
+    "working_tree_dirty_at_start": false,
+    "input_sha256": "c326da7a168504374578a2f7df541773cb44bc7db449dca151c35eb7b282c7dc",
+    "build_passed": true,
+    "hardware_tested": false,
+    "credentials_present": true,
+    "private_firmware_do_not_publish": true,
+    "sdkconfig_generated_sha256": "785306885cb70c719fd5d523e47534703d2ba383ea6526d394ebe07baa27827d",
+    "sdkconfig_differences": {
+      "CONFIG_ESP32_PHY_CALIBRATION_AND_DATA_STORAGE": {
+        "before": "CONFIG_ESP32_PHY_CALIBRATION_AND_DATA_STORAGE=y",
+        "after": null
+      },
+      "CONFIG_ESP_PHY_CALIBRATION_AND_DATA_STORAGE": {
+        "before": "CONFIG_ESP_PHY_CALIBRATION_AND_DATA_STORAGE=y",
+        "after": null
+      },
+      "CONFIG_ESP_SYSTEM_PANIC_GDBSTUB": {
+        "before": null,
+        "after": "CONFIG_ESP_SYSTEM_PANIC_GDBSTUB=y"
+      },
+      "CONFIG_ESP_SYSTEM_PANIC_PRINT_REBOOT": {
+        "before": "CONFIG_ESP_SYSTEM_PANIC_PRINT_REBOOT=y",
+        "after": null
+      },
+      "CONFIG_ESP_SYSTEM_PANIC_REBOOT_DELAY_SECONDS": {
+        "before": "CONFIG_ESP_SYSTEM_PANIC_REBOOT_DELAY_SECONDS=0",
+        "after": null
+      },
+      "CONFIG_ESP_WIFI_STA_DISCONNECTED_PM_ENABLE": {
+        "before": "CONFIG_ESP_WIFI_STA_DISCONNECTED_PM_ENABLE=y",
+        "after": null
+      }
+    },
+    "artifacts": [
+      {
+        "path": "local-data/build/sensor-web/c326da7a16850437/20261016_191850_280267/artifacts/firmware.bin",
+        "bytes": 980432,
+        "sha256": "428d0933850617bfc5d8e5589db42977adbe0d843471b14a723985521b93a5ff"
+      },
+      {
+        "path": "local-data/build/sensor-web/c326da7a16850437/20261016_191850_280267/artifacts/bootloader.bin",
+        "bytes": 22368,
+        "sha256": "8e90d3be2111701540b0ac4a930317c9a8da7fdd83c0a0bca3d9c18cdd0b9c97"
+      },
+      {
+        "path": "local-data/build/sensor-web/c326da7a16850437/20261016_191850_280267/artifacts/partitions.bin",
+        "bytes": 3072,
+        "sha256": "1d9cca96de0fe07ad7fc0648b9878ddecd9ce565e38b589ad20fea698ed4c80c"
+      },
+      {
+        "path": "local-data/build/sensor-web/c326da7a16850437/20261016_191850_280267/artifacts/firmware.elf",
+        "bytes": 10213604,
+        "sha256": "396dd37b485fcc0f781995318d846eceaff3bcd1093638e1585aabdf700550d1"
+      }
+    ]
+  },
+  "build_manifest_local": "local-data/build/sensor-web/c326da7a16850437/20261016_191850_280267/build_manifest.json",
+  "build_log_local": "local-data\\build\\sensor-web\\c326da7a16850437\\20261016_191850_280267\\build.log",
+  "build_usage": {
+    "static_ram_bytes": 77852,
+    "linker_flash_bytes": 980028,
+    "app_partition_bytes": 3342336,
+    "binary_bytes": 980432
+  },
+  "code_sha256": {
+    "面包板样机_固件/diagnostics/sensor_web_recorder/src/index.html": "d55dff9040a207e9079f12d83e0858c69fffb54f9b53302a15478ad21c49cda5",
+    "面包板样机_固件/diagnostics/sensor_web_recorder/src/web_control.cpp": "5dcce1be929ac76f87bea2f9975450223f3a15e21d03550f43d82ff4a59ca08b",
+    "面包板样机_固件/diagnostics/sensor_web_recorder/src/vibration_trend.h": "4786ccf2cbe5d1f289ab6dba96471f040a00e333b299b10e51f3a509b483f9c4",
+    "tests/vibration_trend_test.cpp": "3760e78534f791495d9f5f48578e52cb266a132c59155080267dda4b5b123f1c",
+    "tests/test_web_control.py": "8e529a36dcd8cb47e3e6861d1d8db9d74d6bacea1560f599a203288aa04c158b",
+    "tools/test_sensor_web_ui.cjs": "96d2db4f87565f3915c5477cfcf74b739826c308ef16ec047da6a08e7e13dbcb"
+  },
+  "native_tests": {
+    "command": "python -m unittest discover -s tests -v",
+    "passed": 45,
+    "failed": 0,
+    "evidence": "session command output; includes compiled tests/vibration_trend_test.cpp"
+  },
+  "browser": {
+    "simulated_only": true,
+    "hardware_accessed": false,
+    "browser": "155.0.4283.45",
+    "playwright": "1.62.1",
+    "assertions": 19,
+    "posts": 3,
+    "status_requests": 43,
+    "max_parallel_status": 1,
+    "page_errors": [],
+    "screenshots": [
+      "desktop-simulated.png",
+      "mobile-simulated.png"
+    ]
+  },
+  "browser_result_sha256": "19e85b605ee5516f4ecf86f386c9d29c567c2fa46f71223e191122f28d21f238",
+  "checks": {
+    "project_check_local_passed": true,
+    "git_diff_check_passed": true,
+    "sdkconfig_gate_passed": true,
+    "frozen_partition_hash_matched": true
+  },
+  "review": {
+    "self_review": true,
+    "independent_source_review": false,
+    "code_review_tool": "pull_requests_checks used; CI diagnostics only",
+    "ci_snapshot": "source f090279: files-and-guards passed; five firmware jobs in progress at snapshot; latest PR checks authoritative"
+  },
+  "hardware_accessed": false,
+  "flashed": false,
+  "merged": false,
+  "released": false,
+  "untested": [
+    "candidate hotspot",
+    "five-minute recording throughput and queue load",
+    "power/reset and cold boots",
+    "export integrity with added statistics",
+    "amplitude/timebase accuracy",
+    "actual cutting",
+    "long-term operation"
+  ],
+  "recovery": "Software revert task commit; retained previous accepted device firmware and baselines. No recovery flash performed."
+}

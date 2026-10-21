@@ -1,0 +1,181 @@
+{
+  "date": "2026-10-17",
+  "passed": true,
+  "scope": "user-requested short USB and new-directory TF checks; not full acceptance",
+  "firmware_source": "65bb1f80722193e92464ff3363de337784b24c13",
+  "firmware_sha256": "71d54a1f1702ef75e7597db6da6d5c9661a53234bd24f52dd0b7584b2ff3faaf",
+  "firmware_bytes": 1117504,
+  "operation_commit": "05a255c22e16f0c0b46ac3d0cf0a935fc3753091",
+  "desktop_source": "4f6ff7eeed78f779c61356e56065501969debf91",
+  "desktop": {
+    "primary_shortcut": "C:\\Users\\acer\\Desktop\\主控控制台.lnk",
+    "target": "C:\\Users\\acer\\Desktop\\主控控制台 v2\\主控控制台.exe",
+    "sha256": "daaf97911e80ae207d7ff5c3115e06d294b5797b974d29d52adc5209bf0297fa",
+    "startup_passed": true,
+    "old_exe_sha256": "282cab0578823d96eb007ab6c00b506991bd54ae416c489a9b57d301bdc91f07",
+    "old_shortcut_backup": "C:\\Users\\acer\\.codex\\worktrees\\controller-usb-wifi-tf\\直插式面包板样机\\local-data\\desktop-controller\\previous-desktop-links\\主控控制台-v1.lnk",
+    "hardware_accessed_by_startup": false
+  },
+  "usb_boot_unchanged_on_bridge_close": true,
+  "usb_open_close_probe": "local-data/hardware/controller-v2/usb-open-20261017_215404",
+  "four_page_transport": "single PC USB bridge",
+  "four_page_seconds": 10,
+  "records": [
+    {
+      "run": "FF5F175A",
+      "samples": 266558,
+      "errors": 0,
+      "fifo_high": 137,
+      "queue_high": 15,
+      "write_us": 100233,
+      "sync_us": 179940,
+      "sha256": "64f23e5a6863d4c189eac48d110ad72ea7367c9ff9c6d7334584b07a02bfbf2b"
+    },
+    {
+      "run": "B750659A",
+      "samples": 266562,
+      "errors": 0,
+      "fifo_high": 137,
+      "queue_high": 4,
+      "write_us": 42114,
+      "sync_us": 18941,
+      "sha256": "f8c6bc26d0677a284eb4ed7cd975b4ed60ffec91c5387cac607d8c87f32187d7"
+    },
+    {
+      "run": "55B454A9",
+      "samples": 104875,
+      "errors": 0,
+      "fifo_high": 136,
+      "queue_high": 10,
+      "write_us": 152815,
+      "sync_us": 98605,
+      "sha256": "251af8e1e25ab8ed32dcc666cbc9b53807828c8de637a2bb022bd4b677216c05"
+    },
+    {
+      "run": "1F56E177",
+      "samples": 266899,
+      "errors": 0,
+      "fifo_high": 134,
+      "queue_high": 4,
+      "write_us": 40371,
+      "sync_us": 42564,
+      "sha256": "5089743a7efdc8542abfc9279ea5aac65d0b02dcb19ea73cca6e035f6857a6c4"
+    },
+    {
+      "run": "057049E4",
+      "samples": 95904,
+      "errors": 0,
+      "fifo_high": 136,
+      "queue_high": 3,
+      "write_us": 43958,
+      "sync_us": 9841,
+      "sha256": "4d1e09acbaf25f7c7a2d4a864b0fea75664938fbea811a0767e628b2d966fc01"
+    },
+    {
+      "run": "45AC5F96",
+      "samples": 96384,
+      "errors": 0,
+      "fifo_high": 137,
+      "queue_high": 3,
+      "write_us": 39072,
+      "sync_us": 13423,
+      "sha256": "8d0e28741100637125b4c8cd052febfa68746265f903a158870efc038b4c2605"
+    }
+  ],
+  "takeover_cancel": true,
+  "takeover_continue": true,
+  "owner_page_close": true,
+  "desktop_shared_bridge_dispose": true,
+  "full_wpf_acquire_exit_ui_tested": false,
+  "wifi_scan_count": 16,
+  "ap_config_saved": true,
+  "ap_ssid": "Breadboard-819110",
+  "ap_ip": "192.168.4.1",
+  "sta_join_tested": false,
+  "ap_station_reachability_tested": false,
+  "five_minutes_tested": false,
+  "cold_starts": 0,
+  "silent_owner_loss_10s_hardware_tested": false,
+  "silent_owner_loss_10s_model_tested": true,
+  "files_fixture": {
+    "bytes": 5001,
+    "sha256": "0ae2dabfa63828133b982875c497408500e686bde2faf8ad41f3a9617393e893",
+    "directory": "/V2_TEST_AF8CC1BF",
+    "deleted": true
+  },
+  "acquisition_directories_retained_as_evidence": [
+    "REC_FF5F175A",
+    "REC_B750659A",
+    "REC_55B454A9",
+    "REC_1F56E177",
+    "REC_057049E4",
+    "REC_45AC5F96"
+  ],
+  "old_reference_sample_hash_matches": 2,
+  "backup": {
+    "path": "local-data/hardware/controller-v2/20261017_220409/controller_prefix.bin",
+    "sha256": "48e0da0f4a735707b6fe12daf46a0859fa9796d9f40a19c68bd9aafcbe6fa4b1",
+    "bytes": 1183744,
+    "reused_double_read_baseline": true,
+    "verified_against_current_flash": true,
+    "nvs_sha256": "4611905a70ef9f75c94876814c6bba172eaf54d74dc5f012a6d9079eded9622c"
+  },
+  "independent_source_review": false,
+  "evidence": [
+    {
+      "path": "local-data/hardware/controller-v2/20261017_220409/result.json",
+      "bytes": 3570,
+      "sha256": "7b7fe430ed96c7a0634be62325bba66d28d79bb05a86df39424b45a95a02b9c0"
+    },
+    {
+      "path": "local-data/hardware/controller-v2/20261017_220409/hardware.log",
+      "bytes": 37544,
+      "sha256": "186bf41befa0ca2945e51ba80b0c4bb0ae903ffc60275fa8ebe67aa367064890"
+    },
+    {
+      "path": "local-data/hardware/controller-v2/20261017_220409/browser-result.json",
+      "bytes": 1874,
+      "sha256": "86a60399cb02fd9028d39e68f4fe9cfca2ed99b62706d2504f2aff14c892e94e"
+    },
+    {
+      "path": "local-data/hardware/controller-v2/20261017_220409/browser-console.log",
+      "bytes": 3165,
+      "sha256": "568dfee4a6ecd6d827db092734c3484488d578025a61a0b6372db040cf831d42"
+    },
+    {
+      "path": "local-data/hardware/controller-v2/20261017_220409/browser-events.json",
+      "bytes": 4038,
+      "sha256": "e725c751cf499f71da3bbe33c9ade7592034900f21a6e2aec30335c872ee094d"
+    },
+    {
+      "path": "local-data/hardware/controller-v2/20261017_220409/backup.json",
+      "bytes": 359,
+      "sha256": "51cedead9e7f47a17dfd8c13f54305eac1f5d4079b8f79f7403caad3ff509181"
+    },
+    {
+      "path": "local-data/build/sensor-web/0dd68d1806c0b923/20261017_215904_173955/build_manifest.json",
+      "bytes": 10100,
+      "sha256": "fa44244a6175e98ca088765d352822c37cd9db3040b155a357211474f86b4933"
+    },
+    {
+      "path": "local-data/desktop-controller/release-4f6ff7e/build-manifest.json",
+      "bytes": 4502,
+      "sha256": "49794e60e9f71746ab83c24648bad06415a5df9355113a81da9f78cfe3ba162e"
+    },
+    {
+      "path": "local-data/desktop-controller/release-4f6ff7e/test-results.txt",
+      "bytes": 3087,
+      "sha256": "b13bc40c50ee57a7527ad8200db8c60a146f486f55183aacee47d74893b79fae"
+    },
+    {
+      "path": "local-data/desktop-controller/release-4f6ff7e/final-desktop-entry.json",
+      "bytes": 592,
+      "sha256": "ebb9f7f9ca2d0421e5d3134a613126ccea988c80fb698c32f256167785c2d88b"
+    },
+    {
+      "path": "local-data/v2-usb-tx-test.log",
+      "bytes": 1367,
+      "sha256": "e2f600ed5c037f7dff6b2dda6ef457ac87f0f40b74a181f70348c7ea9fae1cd6"
+    }
+  ]
+}

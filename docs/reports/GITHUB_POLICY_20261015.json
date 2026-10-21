@@ -1,0 +1,38 @@
+{
+  "date": "2026-10-15T17:21:12.5709293+08:00",
+  "repository": "zushhx/breadboard_engineering_migrate.",
+  "visibility_before": "private",
+  "visibility_after": "public",
+  "user_authorized_public": true,
+  "required_status_checks": {
+    "url": "https://api.github.com/repos/zushhx/breadboard_engineering_migrate./branches/main/protection/required_status_checks",
+    "strict": true,
+    "contexts": [
+      "files-and-guards",
+      "frozen-firmware-build"
+    ],
+    "contexts_url": "https://api.github.com/repos/zushhx/breadboard_engineering_migrate./branches/main/protection/required_status_checks/contexts",
+    "checks": [
+      {
+        "context": "files-and-guards",
+        "app_id": null
+      },
+      {
+        "context": "frozen-firmware-build",
+        "app_id": null
+      }
+    ]
+  },
+  "enforce_admins": true,
+  "required_pull_request_reviews": {
+    "url": "https://api.github.com/repos/zushhx/breadboard_engineering_migrate./branches/main/protection/required_pull_request_reviews",
+    "dismiss_stale_reviews": true,
+    "require_code_owner_reviews": false,
+    "require_last_push_approval": false,
+    "required_approving_review_count": 0
+  },
+  "allow_force_pushes": false,
+  "allow_deletions": false,
+  "required_conversation_resolution": true,
+  "method": "GitHub REST API authenticated by existing Git Credential Manager; credentials kept in process memory and never written to project files"
+}

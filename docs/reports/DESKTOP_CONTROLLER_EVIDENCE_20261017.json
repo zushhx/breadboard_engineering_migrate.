@@ -1,0 +1,72 @@
+{
+  "date": "2026-10-17",
+  "scope": "Windows desktop connection launcher reusing the existing monitor page",
+  "source_commit": "2672ebd371c3e803a8da13963138d694a019188b",
+  "base_commit": "daabee24e12e18766e12ee3b0d955b9a365f6f6f",
+  "branch": "codex/desktop-controller",
+  "source_worktree_dirty_at_build": false,
+  "artifact": {
+    "name": "主控控制台.exe",
+    "bytes": 75776,
+    "sha256": "282cab0578823d96eb007ab6c00b506991bd54ae416c489a9b57d301bdc91f07",
+    "version": "0.1.0.0"
+  },
+  "toolchain": {
+    "powershell": "7.6.6",
+    "framework": ".NET Framework 4.8 (Windows system WPF)",
+    "compiler_version": "14.8.10001.0 built by: bd501acdc000004",
+    "compiler_sha256": "eca02e6b15cde93009a59a3d129d5a77fb5008f2e1cf62cf573b6737c747ecc3",
+    "pinned_framework_references": 10,
+    "implicit_compiler_configuration_and_references": false
+  },
+  "software_checks": {
+    "core_mock_checks_passed": 48,
+    "ui_smoke_checks_passed": 13,
+    "simulated_screenshots": 7,
+    "window_sizes": [[1160, 820], [1000, 700]],
+    "installed_executable_preview_passed": true,
+    "installed_executable_hash_verified": true,
+    "installed_config_hash_verified": true,
+    "shortcut_target_readback_verified": true,
+    "project_check_local_passed": true,
+    "project_check_commit_hook_passed": true,
+    "powershell_parse_passed": true,
+    "diff_whitespace_check_passed": true,
+    "independent_source_review_passed": false
+  },
+  "raw_evidence_directory": "local-data/desktop-controller/release-2672ebd",
+  "raw_evidence_files": [
+    "build-manifest.json",
+    "compile.log",
+    "test-compile.log",
+    "tests.log",
+    "preview/preview-result.txt",
+    "installed-preview/preview-result.txt",
+    "desktop-install.json",
+    "readonly-connectivity.json"
+  ],
+  "post_pr_ci_diagnostics_record": "local-data/desktop-controller/release-2672ebd/code-review-tool.json",
+  "readonly_connectivity": {
+    "checked_at": "2026-10-17T20:05:05+08:00",
+    "address": "http://172.28.247.119",
+    "result": "unreachable_from_current_network",
+    "computer_wlan_network": "10.100.*",
+    "single_get_only": true,
+    "current_device_firmware_reverified": false
+  },
+  "boundaries": {
+    "real_monitor_page_load_tested": false,
+    "real_device_discovery_tested": false,
+    "real_wifi_or_hotspot_switch_tested": false,
+    "cross_monitor_dpi_tested": false,
+    "browser_and_settings_external_actions_tested": false,
+    "new_hardware_acquisition_tested": false,
+    "hardware_writes_performed": false,
+    "serial_connected": false,
+    "device_reset": false,
+    "firmware_changed": false,
+    "windows_network_configuration_changed": false,
+    "merged_to_original_task_or_main": false,
+    "public_firmware_release": false
+  }
+}

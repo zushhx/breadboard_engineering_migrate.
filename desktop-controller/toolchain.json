@@ -1,0 +1,21 @@
+{
+  "framework": ".NET Framework 4.8 (Windows system WPF)",
+  "compiler_relative_to_windows": "Microsoft.NET/Framework64/v4.0.30319/csc.exe",
+  "compiler_version": "14.8.10001.0 built by: bd501acdc000004",
+  "compiler_sha256": "eca02e6b15cde93009a59a3d129d5a77fb5008f2e1cf62cf573b6737c747ecc3",
+  "powershell": "7.6.6",
+  "dependencies": "System framework assemblies only; exact compiler and reference hashes checked before compilation",
+  "reference_sha256": {
+    "mscorlib.dll": "94715f6991e2b9dc7481532c05aa99e74a5fff4ee147be541bca27f99e003fc7",
+    "System.dll": "09787b4f38f4f020c6b8a3894146085d4df7b8ae337577ed42d9acf1419660e8",
+    "System.Core.dll": "d1bafee1a4dd7e7bd9adf6859e7b1b654d1b4e0d031a38795e33ba040508c09d",
+    "System.Net.Http.dll": "053bf1755906de93c20fb17d5e3ca7985147c2ba0b7dc285423a40fba77b6755",
+    "System.Web.Extensions.dll": "6f2545e5ba378f6836ea0fed1067d089181e27dbd3c81e9db418c8bb32e6af51",
+    "System.Xaml.dll": "82016e8382d33bcfdb60df184196b0e4f2b6b4438cbe02dad6577f857f1c5782",
+    "System.Xml.dll": "fd5bac1dbe02bc0e91eabdbaefb102f44c1a391269b856d97c39cef9851cb983",
+    "WPF/WindowsBase.dll": "76a95e403af455d74febc5741b3e5add6fe90ff6545c76a62cfd6b5574b320e2",
+    "WPF/PresentationCore.dll": "4af5b4a4cb364e4e7dfb35b4b2acfbb0de7092aea108a993bab03c95013be9fa",
+    "WPF/PresentationFramework.dll": "9139538e0cf10413669a1edbc0aa1fe619d543056761f30133e3d05d6308040d"
+  },
+  "verified_date": "2026-10-17"
+}

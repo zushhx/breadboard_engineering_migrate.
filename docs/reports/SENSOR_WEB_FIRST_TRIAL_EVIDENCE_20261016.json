@@ -1,0 +1,78 @@
+{
+  "passed": false,
+  "source_commit": "c921bef8f14e8c18ce06cd5574c241377562e971",
+  "operation_commit": "eafa49e277cd6ddd7badf7189b9d9c6af18a73a1",
+  "candidate_sha256": "e1dae22f0714218c7961519be1b9f9af1c52062982e4619609b0019b37387a68",
+  "cold_starts_completed": 0,
+  "host_real_file_parse_passed": false,
+  "snapshot_bytes": 1024000,
+  "snapshot_sha256": "3d1166143a0b41bf464857470f59bfc3ff02f356e412a678e88c257b99519d1f",
+  "error": "RuntimeError('Recorder source/controller identity mismatch')",
+  "restored_previous": true,
+  "date": "2026-10-16",
+  "expected_previous_source": "203a60b563708ec96d1e7a883faff059af4a9a7c",
+  "expected_previous_firmware_sha256": "f84a235cdde8ca5bf89a5c1bf1c78fc218a8a98d72ecd35d7c4a1777cb81b1ba",
+  "assertion_count_observed": 3,
+  "automatic_reboot_count_observed": 3,
+  "manual_candidate_flash_attempts": 1,
+  "record_start_commands_sent": 0,
+  "new_record_files_observed": 0,
+  "http_started_observed": false,
+  "wifi_ip_observed": false,
+  "browser_trial_started": false,
+  "cold_starts_tested": 0,
+  "host_export_tested": false,
+  "root_cause_proven": false,
+  "recovery_scope": "Restored saved application sectors 0x10000..0xFA000; kept bootloader/partition/NVS; esptool hash verified and old identity/card/reference read checked",
+  "recovery_app_range_bytes": 958464,
+  "reference_file_sha256": "a8014b2c5ca28eb98c9eaee6de86c76c2256bec875f0f90860ece355b1670b86",
+  "reference_match_count_before_and_after": 12,
+  "hardware_esptool_version": "4.11.0",
+  "previous_accepted_round_esptool_version": "4.11.0",
+  "build_image_generation_esptool_version": "4.5.1",
+  "hardware_files_remain_private": true,
+  "current_hardware": "203a60b restored, powered, TF in controller, wiring unchanged; no user-confirmed full power-off in this trial",
+  "fault": "vTaskGenericNotifyGiveFromISR tasks.c:6204 xEventListItem.pxContainer must be NULL",
+  "symbolized_trigger": "esp_timer ISR notification, interrupting WiFi disconnected-sleep/PHY timer deletion path",
+  "symbolized_trigger_is_not_root_cause": true,
+  "ci_run_before_device": 38859027284,
+  "evidence": [
+    {
+      "path": "local-data/hardware/sensor-web/20261016_140658/hardware.log",
+      "bytes": 63109,
+      "sha256": "5e9e47b7002126704a6a642f849467b62a437fc4dac0d8de2e8bce29d076e67a"
+    },
+    {
+      "path": "local-data/hardware/sensor-web/20261016_140658/result.json",
+      "bytes": 545,
+      "sha256": "5391ce8875da87bdb7c4e99a991a595cb6f728c32055d59ffa73f646da2a5c1a"
+    },
+    {
+      "path": "local-data/hardware/sensor-web/20261016_140658/controller_prefix.bin",
+      "bytes": 1024000,
+      "sha256": "3d1166143a0b41bf464857470f59bfc3ff02f356e412a678e88c257b99519d1f"
+    },
+    {
+      "path": "local-data/hardware/sensor-web/20261016_140658/restore_app_range.bin",
+      "bytes": 958464,
+      "sha256": "09ca453a4da21a515427f4f2cb400a28ddc8cc165560f75490c72ec643d3692c"
+    },
+    {
+      "path": "local-data/hardware/sensor-web/20261016_140658/assert-symbols.txt",
+      "bytes": 2405,
+      "sha256": "6554bd3049d81d5c4d7d450f4ed1eb61d12262a84cf67aa10404b41c6b259c84"
+    }
+  ],
+  "backup_app0_matches_recovery": true,
+  "backup_bootloader_matches_frozen": true,
+  "backup_partitions_matches_frozen": true,
+  "restore_payload_matches_snapshot_slice": true,
+  "reference_matches_after_restore": 4,
+  "sdk_source_hashes": {
+    "components/freertos/FreeRTOS-Kernel/tasks.c": "526ccb9073d355bc174dc44262ed9a640f8c28b2b41b3f00751439d6b6690b3e",
+    "components/esp_timer/src/esp_timer.c": "3cdc67136e58364092670ae52daf7010958bff288b35cbea801c03495dbc1202",
+    "components/esp_phy/src/phy_common.c": "247eeb6c6814963befee4f08faf629c2170ead8de9dde2021e52aa6a45c8839d",
+    "components/esp_phy/src/phy_init.c": "b7cbae57b0c633a84c950e2e756295a5227424c3781081c0771f2288ac189e49",
+    "components/esp_wifi/Kconfig": "0d8db5e9a341d06cd05838c186d7046fc43b40b198371be124cb0f2a6d42d022"
+  }
+}

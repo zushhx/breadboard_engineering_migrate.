@@ -1,0 +1,98 @@
+{
+  "date": "2026-10-16",
+  "passed": true,
+  "scope": "one explicitly approved flash and 30s live UI/recording check",
+  "candidate_source": "f09027903fa0f66bea3b4fb2d55db41b08433a98",
+  "candidate_sha256": "428d0933850617bfc5d8e5589db42977adbe0d843471b14a723985521b93a5ff",
+  "operation_commit": "d21aacdb8cb476382086c5786c0e3487b1f8b9ce",
+  "url": "http://172.28.247.119/",
+  "simulated": false,
+  "controller_mac": "44:1b:f6:81:91:10",
+  "card_serial": "10044BA5",
+  "card_bytes": "7948206080",
+  "record": {
+    "run": "70A9AAC2",
+    "seconds": 30.007906,
+    "samples": 799510,
+    "sha256": "f6bc7ce3dadbb1d188428cce7606de1dda59d7528d2fa0b5d13f8c5316989569",
+    "terminal": "[rec] PASS run=70A9AAC2 samples=799510 errors=0 fifo_high=347 queue_high=5 write_us=53389 sync_us=46955 sha256=f6bc7ce3dadbb1d188428cce7606de1dda59d7528d2fa0b5d13f8c5316989569 write_gate=0 precision_accepted=0"
+  },
+  "elapsed_us": 30007906,
+  "errors": 0,
+  "ina_valid": true,
+  "fifo_high": 347,
+  "queue_high": 5,
+  "trend": {
+    "points": 149,
+    "sample_rate": 26667,
+    "window_samples": 5333,
+    "first_end_sample": 5333,
+    "last_end_sample": 794617,
+    "near_full_scale_axis_values_in_complete_windows": 4150,
+    "nonempty_and_contiguous": true,
+    "not_accuracy_acceptance": true
+  },
+  "live_raw_rms_ina_simultaneous_verified": true,
+  "page_errors": [],
+  "browser": "155.0.4283.45",
+  "backup": {
+    "bytes": 1048576,
+    "sha256": "884173bfda31b74ea6a0427a0bf593a3da5308e65f6f17329fa10f49ad9f3f9a",
+    "matched_old_source": "9c906cc41dee6da48d407203ca008388fc60ef0f",
+    "path": "local-data/hardware/ui-live/20261016_194011/controller_prefix.bin"
+  },
+  "host_files": {
+    "local-data/hardware/ui-live/20261016_194011/result.json": {
+      "bytes": 100559,
+      "sha256": "17c6031c2d010cf27a0c3a29721615cad9d1687ab942d8a76be7696cd2e89063"
+    },
+    "local-data/hardware/ui-live/20261016_194011/hardware.log": {
+      "bytes": 34609,
+      "sha256": "610e4c2b401c3b41cdc7a4f1802a0e0917e16f13d4184c4222c3f16b55ca0da5"
+    },
+    "local-data/hardware/ui-live/20261016_194011/backup.json": {
+      "bytes": 254,
+      "sha256": "4bf2af53fa2ae20f20be695aea04b395b275f967bad4c220b8387a349b4d39b4"
+    },
+    "local-data/hardware/ui-live/20261016_194011/approval-record.json": {
+      "bytes": 3334,
+      "sha256": "a2abc1b4668520ca3a1130240bb56569f6de3bc05316cca16c2de50ff74b5e5e"
+    },
+    "local-data/hardware/ui-live/20261016_194011/browser/result.json": {
+      "bytes": 81034,
+      "sha256": "142961b7ba85d0c0e8552c549c7861aa0e074bebcb014018b0789814b1cf620e"
+    },
+    "local-data/hardware/ui-live/20261016_194011/browser/console.log": {
+      "bytes": 19725,
+      "sha256": "ffc1a462f5cfd6024203ff296e28227b8758a98a97ba48ec18aa8ffee112feda"
+    },
+    "local-data/hardware/ui-live/20261016_194011/browser/actual-recording.png": {
+      "bytes": 219240,
+      "sha256": "f011747b5274a78e476c15f2b38de796109f3b39ae3c5de7850bf85a9bc1bc05"
+    },
+    "local-data/hardware/ui-live/20261016_194011/browser/actual-passed.png": {
+      "bytes": 257990,
+      "sha256": "6c40d2dde15272c7b6019156aeb83d01405c8be5f1f23b969b75eb6a827dfdb0"
+    }
+  },
+  "host_failure_and_recovery": {
+    "folder": "local-data/hardware/ui-live/20261016_193433",
+    "restored_before_flash": true,
+    "no_rec_start_in_that_attempt": true,
+    "fix_pr": "https://github.com/zushhx/breadboard_engineering_migrate./pull/11",
+    "fix_merged_to_ui_branch": "d21aacdb8cb476382086c5786c0e3487b1f8b9ce"
+  },
+  "prewrite_gate_stop": {
+    "folder": "local-data/hardware/ui-live/20261016_193848",
+    "reason": "old firmware had a completed record, not idle; stopped before flash; preserved existing REC_1D27D8C2",
+    "record_initiator": "not established by evidence"
+  },
+  "device_final": "candidate retained, powered, TF installed, original wiring unchanged; authorized 30s record completed",
+  "cold_starts_tested": 0,
+  "five_minute_tested": false,
+  "host_reader_export_tested": false,
+  "precision_accepted": false,
+  "actual_cutting_tested": false,
+  "main_merged": false,
+  "released": false
+}
