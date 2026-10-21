@@ -130,6 +130,22 @@ class FilePathsGuards(unittest.TestCase):
             with self.assertRaisesRegex(RuntimeError,'required 0x123000'):
                 trial.validate_backup_extent(0x113000,0x112000)
 
+    def test_uart_tail_rejects_reset_abort_and_record_failure(self):
+        trial.check_trial_uart('[rec] PASS\n[tfmatrix] sample reads consistent=1\n')
+        for text in ('rst:0x1', 'abort() was called', 'Guru Meditation', 'assert failed:', 'Entering gdb stub', '[rec] FAIL'):
+            with self.subTest(text=text),self.assertRaisesRegex(RuntimeError,'UART tail'):
+                trial.check_trial_uart('legal prefix\n'+text+'\n')
+
+    def test_final_status_requires_same_browser_boot_last_run_and_passed(self):
+        browser=dict(boot='a'*32,records=[dict(run='first'),dict(run='last')])
+        trial.check_smoke_final_status(status(run='last'),browser)
+        for changes in (dict(boot='b'*32),dict(run='first'),dict(run=''),dict(phase='idle'),
+                        dict(phase='recording'),dict(errors=1),dict(files_busy=True),
+                        dict(card_serial='wrong'),dict(card_bytes='1'),dict(ready=False)):
+            with self.subTest(changes=changes),self.assertRaises(RuntimeError):
+                current=status(run='last');current.update(changes)
+                trial.check_smoke_final_status(current,browser)
+
     def test_boundaries(self):
         self.assertEqual(trial.OLD_SOURCE,'4aa27b2c90902d03e262c23cad5eb65f812bc524')
         self.assertTrue(trial.SCOPE['requires_quiescent_E']);self.assertFalse(trial.SCOPE['reset_from_saved_panic'])

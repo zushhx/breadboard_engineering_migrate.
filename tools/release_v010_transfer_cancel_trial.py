@@ -233,6 +233,27 @@ def cleanup_owned(browser,host,result):
         try:cleanup()
         except Exception as error:result.setdefault('cleanup_errors',[]).append(tag+': '+repr(error))
 
+
+def check_trial_uart(text):
+    if any(token in text for token in ('Guru Meditation','assert failed:','[rec] FAIL','rst:','abort() was called','Entering gdb stub')):
+        raise RuntimeError('Recording panic/failure/reset; preserve UART tail')
+
+
+def check_smoke_final_status(status,browser_result):
+    records=browser_result['records']
+    check_same_runtime(dict(boot=browser_result['boot'],run=records[-1]['run']),status)
+    if status.get('phase')!='passed':
+        raise RuntimeError('Final smoke record is not passed')
+
+
+def read_smoke_final_status(url,browser_result):
+    import urllib.request
+    opener=urllib.request.build_opener(urllib.request.ProxyHandler({}))
+    with opener.open(url+'api/status',timeout=15) as response:status=json.load(response)
+    check_smoke_final_status(status,browser_result)
+    return status
+
+
 def run(path):
     candidate,old,approval=validate(path)
     session=TrialSession(ROOT/'local-data/hardware/release-v010/transfer-cancel-smoke'/datetime.datetime.now().strftime('%Y%m%d_%H%M%S'))
@@ -266,9 +287,9 @@ def run(path):
                 while browser.poll() is None:
                     chunk=port.read(4096).decode('utf-8',errors='replace')
                     if chunk:session.emit(chunk.rstrip());text+=chunk
-                    if any(token in text for token in ('Guru Meditation','assert failed:','[rec] FAIL','rst:','abort() was called','Entering gdb stub')):raise RuntimeError('Recording panic/failure/reset')
+                    check_trial_uart(text)
                     if time.monotonic()>deadline:raise RuntimeError('Two-record trial timeout')
-                session.collect(port,1)
+                text+=session.collect(port,1);check_trial_uart(text)
             if browser.returncode:raise RuntimeError('Naming/readback browser trial failed; inspect browser-console.log')
             result['browser']=json.loads((session.folder/'browser-result.json').read_text(encoding='utf-8'))
             if not result['browser']['passed'] or len(result['browser']['records'])!=2:raise RuntimeError('Expected two verified recordings')
@@ -277,9 +298,12 @@ def run(path):
                 if decoded['metadata']['source']!=SOURCE or decoded['sha256']!=record['sha256']:raise RuntimeError('PC binary structure/source/hash mismatch')
                 if any(decoded['footer'][k]!=0 for k in ('errors','ina_invalid','saturation')):raise RuntimeError('Record errors/invalid/saturation')
                 (session.folder/(record['name']+'-summary.json')).write_text(json.dumps(decoded,indent=2)+'\n',encoding='utf-8')
-            final=session.query(port,'l',3)
+            final=session.query(port,'l',3);text+=final;check_trial_uart(text)
             if final.count('PC_MATCH=1')!=2 or 'sample reads consistent=1' not in final:raise RuntimeError('Existing reference files changed')
-        close_host(host);host=None;hostlog.close();hostlog=None
+            result['device_after']=read_smoke_final_status(url,result['browser'])
+            close_host(host);host=None
+            text+=session.collect(port,1);check_trial_uart(text)
+            hostlog.close();hostlog=None
         result['passed']=True;result['full_release_acceptance']=False;session.emit('RELEASE_V010_SMOKE_PASS')
     except Exception as error:
         result['error']=repr(error);session.emit('RELEASE_V010_SMOKE_FAIL='+repr(error))
