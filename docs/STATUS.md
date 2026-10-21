@@ -2,6 +2,14 @@
 
 更新日期：2026-10-21。当前事实唯一入口。历史测试结果保留其适用条件，不自动延伸至其他固件或接法。
 
+## 2026-10-21 v0.1.0工程原型版已正式发布
+
+整套实机验收按批准计划及已记录观察边界完成；集成PR [#23](https://github.com/zushhx/breadboard_engineering_migrate./pull/23)已通过最终提交f0c62c07的六项CI并合入main，合并提交02a531f75facdeb397372a51db235d5d26b7207c。合并后的Git树19bb6d3323601bb1b5874954653c4adf6f4f639d与CI候选完全一致，服务端保护和未解决讨论为零已核实。发布标签v0.1.0精确指向该合并提交。
+
+正式[Release与五项附件](https://github.com/zushhx/breadboard_engineering_migrate./releases/tag/v0.1.0)已发布：F原应用固件、桌面0.3.1便携包、SHA-256清单、源码/工具链/产物关联、使用与恢复说明。上传资产名称/长度/摘要均核对，保持实机原字节；GitHub将中文附件名改为default.md的问题已修正为usage-and-recovery.md，SHA256SUMS同步更新。公开包不含Flash/NVS原始备份、真实网络凭据或私人日志。应用固件SHA-256仍7fa116e326f59c194172607ee52305078729bcc9b409d56f6949874e780d25fe；桌面ZIP为95bf85d2896d02017cefb7f1bf318ab583e99dfcf57b55ffb15d37e55d4023b6。下载包解压后运行控制台；固件仅适用冻结硬件/分区，应用区0x10000，不能作为整片镜像。
+
+测试结束已恢复原AP-only设置和原凭据，电脑原网络也已恢复，手机热点可关闭。前版应用、桌面、当轮配置及私有备份保留在既有本地恢复位置；记录未删除。验收证据索引为本报告JSON，原始失败仍保留。版本边界包括：不验收计量精度/加工/报警安全/长期无人值守/写入中断电安全；INA约6.8–7.4Hz；部分对话框、分页及物理断电条件为用户报告；错误网络恢复覆盖误关STA/AP，不扩大为错误SSID/密码覆盖。
+
 ## 2026-10-21 整套实机验收收尾，待最终集成PR/CI及发布
 
 F的STA直连四页面300.003738秒及完整无线导出通过：56529474字节，SHA-256 7b38929d19a573978bfdb184f06befdfabc9ef248229ac046a0cdf3d41d0eaba，结构/逐块CRC/尾部总数一致，errors/INA无效/饱和均零，FIFO/队列高水位221/19。STA接入、同SSID空密码保留、AP客户端与STA并存通过。原脚本收尾因桌面GUI关闭导致旧USB桥地址拒绝连接，原失败保留；原记录不重录，完整导出后独立USB后置核验源码/boot/run/卡及旧参考通过。证据为local-data/hardware/release-v010/F-sta-20261021T062108Z与F-STA-post-verification-20261021T063737Z/result.json。

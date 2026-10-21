@@ -1,6 +1,6 @@
 {
   "date": "2026-10-21",
-  "phase": "hardware_acceptance_closed_final_integration_PR_CI_pending",
+  "phase": "v0.1.0_engineering_prototype_published",
   "E_AP_acceptance": {
     "source_commit": "4aa27b2c90902d03e262c23cad5eb65f812bc524",
     "input_sha256": "250563438c5721166ef754fc6d4d38a54208fa586616fe46d01d4875dfc1a3c7",
@@ -1332,10 +1332,7 @@
     "boot_run_and_old_references_unchanged": true,
     "prior_closed_GUI_bridge_attempt_retained": true
   },
-  "remaining_release_gates": [
-    "Final main integration PR CI/service-side protection/freshness/discussion gates",
-    "Public release asset/hash/source linkage and privacy final verification"
-  ],
+  "remaining_release_gates": [],
   "F_STA_acceptance": {
     "passed": true,
     "capture_and_export_local": "local-data/hardware/release-v010/F-sta-20261021T062108Z",
@@ -1392,6 +1389,55 @@
     "fix": "Install pinned pyserial==3.5 in files-and-guards before unittest; no production source or assertions changed",
     "isolated_related_15_tests_passed": true,
     "failure_log_local": "local-data/validation/release-v010/final-PR23-files-and-guards-failed.txt",
-    "final_remote_revalidation_required": true
+    "final_remote_revalidation_required": false
+  },
+  "publication": {
+    "release": "https://github.com/zushhx/breadboard_engineering_migrate./releases/tag/v0.1.0",
+    "PR": "https://github.com/zushhx/breadboard_engineering_migrate./pull/23",
+    "head": "f0c62c07ef728b7c6ffd251fc0818d07d0af3670",
+    "main_merge_and_tag_commit": "02a531f75facdeb397372a51db235d5d26b7207c",
+    "merged_tree_equals_CI_candidate": "19bb6d3323601bb1b5874954653c4adf6f4f639d",
+    "six_CI_checks_passed": [
+      "sensor-recorder-build",
+      "sensor-web-recorder-build",
+      "files-and-guards",
+      "frozen-firmware-build",
+      "tf-write-diagnostic-build",
+      "sensor-monitor-diagnostic-build"
+    ],
+    "required_protection_enforced": true,
+    "unresolved_review_threads": 0,
+    "assets": [
+      {
+        "name": "breadboard-desktop-0.3.1-portable.zip",
+        "id": 661643940,
+        "sha256": "95bf85d2896d02017cefb7f1bf318ab583e99dfcf57b55ffb15d37e55d4023b6"
+      },
+      {
+        "name": "breadboard-v0.1.0-app.bin",
+        "id": 661643864,
+        "sha256": "7fa116e326f59c194172607ee52305078729bcc9b409d56f6949874e780d25fe"
+      },
+      {
+        "name": "SHA256SUMS.txt",
+        "id": 661655993,
+        "sha256": "c54cc7593a6fbc30583d29a0b5a36ae32ee1f044f3811d949e82750bc112d2f8"
+      },
+      {
+        "name": "source-toolchain-artifacts.json",
+        "id": 661643996,
+        "sha256": "80dcedbb641396fc72946bb5ffaade485b9be8315b79e907072769e5b7cf11ba"
+      },
+      {
+        "name": "usage-and-recovery.md",
+        "id": 661644022,
+        "sha256": "ac527fc4a2f92dfc40d241f634be807cebb7414a177ab58cc38f1e5a90d5cece"
+      }
+    ],
+    "original_tested_runtime_bytes_published": true,
+    "public_privacy_allowlist_checked": true,
+    "status_bookkeeping_changes_runtime": false,
+    "server_unicode_asset_name_normalization_corrected": true,
+    "asset_filename_digest_list_checked_after_publication": true
   }
 }
