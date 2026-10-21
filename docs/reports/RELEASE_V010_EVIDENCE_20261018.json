@@ -1409,14 +1409,19 @@
     "unresolved_review_threads": 0,
     "assets": [
       {
+        "name": "breadboard-desktop-0.3.1-portable.zip",
+        "id": 661643940,
+        "sha256": "95bf85d2896d02017cefb7f1bf318ab583e99dfcf57b55ffb15d37e55d4023b6"
+      },
+      {
         "name": "breadboard-v0.1.0-app.bin",
         "id": 661643864,
         "sha256": "7fa116e326f59c194172607ee52305078729bcc9b409d56f6949874e780d25fe"
       },
       {
-        "name": "breadboard-desktop-0.3.1-portable.zip",
-        "id": 661643940,
-        "sha256": "95bf85d2896d02017cefb7f1bf318ab583e99dfcf57b55ffb15d37e55d4023b6"
+        "name": "SHA256SUMS.txt",
+        "id": 661655993,
+        "sha256": "c54cc7593a6fbc30583d29a0b5a36ae32ee1f044f3811d949e82750bc112d2f8"
       },
       {
         "name": "source-toolchain-artifacts.json",
@@ -1424,18 +1429,15 @@
         "sha256": "80dcedbb641396fc72946bb5ffaade485b9be8315b79e907072769e5b7cf11ba"
       },
       {
-        "name": "使用与恢复说明.md",
+        "name": "usage-and-recovery.md",
         "id": 661644022,
         "sha256": "ac527fc4a2f92dfc40d241f634be807cebb7414a177ab58cc38f1e5a90d5cece"
-      },
-      {
-        "name": "SHA256SUMS.txt",
-        "id": 661644039,
-        "sha256": "2b09bb81942fb1998b546d6d1645bd29e1b065234f4b7a1c6441fe687a8c93b5"
       }
     ],
     "original_tested_runtime_bytes_published": true,
     "public_privacy_allowlist_checked": true,
-    "status_bookkeeping_changes_runtime": false
+    "status_bookkeeping_changes_runtime": false,
+    "server_unicode_asset_name_normalization_corrected": true,
+    "asset_filename_digest_list_checked_after_publication": true
   }
 }
