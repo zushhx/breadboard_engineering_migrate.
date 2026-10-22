@@ -1,0 +1,323 @@
+{
+  "date": "2026-10-22",
+  "source_commit": "92309da117d87e7aba80db9fcc1af49aec23a164",
+  "base_commit": "daabee24e12e18766e12ee3b0d955b9a365f6f6f",
+  "branch": "codex/feat/sensor-range-selector",
+  "pull_request": "https://github.com/zushhx/breadboard_engineering_migrate./pull/25",
+  "code_review_tool": {
+    "tool": "Code Review pull_requests_checks",
+    "requested_pr": 25,
+    "result": "Connection error: Cannot connect to GitHub; no remote CI diagnostics obtained",
+    "independent_source_review": false
+  },
+  "allowed_ranges_g": [
+    2,
+    8,
+    16
+  ],
+  "default_range_g": 2,
+  "ctrl1_and_scale": {
+    "2": [
+      "0xA0",
+      61
+    ],
+    "8": [
+      "0xAC",
+      244
+    ],
+    "16": [
+      "0xA4",
+      488
+    ]
+  },
+  "software_tests": {
+    "web_control": 5,
+    "record_parser": 13,
+    "browser_scenarios": 30
+  },
+  "browser": {
+    "simulated_only": true,
+    "hardware_accessed": false,
+    "browser": "155.0.4283.62",
+    "playwright": "1.62.1",
+    "assertions": 30,
+    "posts": 7,
+    "status_requests": 128,
+    "max_parallel_status": 1,
+    "max_server_status_across_reloads": 2,
+    "page_errors": [],
+    "screenshots": [
+      "desktop-simulated.png",
+      "mobile-simulated.png"
+    ]
+  },
+  "review": [
+    {
+      "reviewer": "range_parser",
+      "scope": "Other agents firmware and UI final diff; not own parser implementation",
+      "method": "Independent static source and parameter propagation review",
+      "actionable_findings": [],
+      "reviewed_key_source_sha256": {
+        "sensor_range.h": "98fc9c5ec0fc439d8545bdebaf24921e053bb41d866d47b2e0c66356605dca86",
+        "modules.cpp": "15df80ca9184081ad96925a6b62237813625c1f4cba4d5ddf3e1950b6f4d4901",
+        "web_control.cpp": "b9a1ef881b83301f2e45040d5d073e94f8fee5baa7944b1ae3a3d881f832e1e7",
+        "web_model.h": "b25c7c28eb237dee8a412828e9b6b2821f3f669bba193a8f356180982361564d",
+        "index.html": "2b7ea574978e5c4122d9b494a74855ee28a418daeb3f6bf10b99fda8067b6f34"
+      }
+    },
+    {
+      "reviewer": "range_firmware",
+      "scope": "Other agent parser, C++ fixture and parser tests final diff",
+      "method": "Independent static source review; not own firmware implementation",
+      "actionable_findings": []
+    },
+    {
+      "reviewer": "root",
+      "scope": "Integrated actual diff, test results and simulated mobile screenshot",
+      "method": "Integrator self-review",
+      "actionable_findings": []
+    }
+  ],
+  "build": {
+    "source_commit": "92309da117d87e7aba80db9fcc1af49aec23a164",
+    "working_tree_dirty_at_start": false,
+    "input_sha256": "436ba7378776a8c7220323d7531c51711b68d6148de086dc5abb1c44991bddbe",
+    "build_passed": true,
+    "hardware_tested": false,
+    "credentials_present": true,
+    "private_firmware_do_not_publish": true,
+    "sdkconfig_differences": {
+      "CONFIG_ESP32_PHY_CALIBRATION_AND_DATA_STORAGE": {
+        "before": "CONFIG_ESP32_PHY_CALIBRATION_AND_DATA_STORAGE=y",
+        "after": null
+      },
+      "CONFIG_ESP_PHY_CALIBRATION_AND_DATA_STORAGE": {
+        "before": "CONFIG_ESP_PHY_CALIBRATION_AND_DATA_STORAGE=y",
+        "after": null
+      },
+      "CONFIG_ESP_SYSTEM_PANIC_GDBSTUB": {
+        "before": null,
+        "after": "CONFIG_ESP_SYSTEM_PANIC_GDBSTUB=y"
+      },
+      "CONFIG_ESP_SYSTEM_PANIC_PRINT_REBOOT": {
+        "before": "CONFIG_ESP_SYSTEM_PANIC_PRINT_REBOOT=y",
+        "after": null
+      },
+      "CONFIG_ESP_SYSTEM_PANIC_REBOOT_DELAY_SECONDS": {
+        "before": "CONFIG_ESP_SYSTEM_PANIC_REBOOT_DELAY_SECONDS=0",
+        "after": null
+      },
+      "CONFIG_ESP_WIFI_STA_DISCONNECTED_PM_ENABLE": {
+        "before": "CONFIG_ESP_WIFI_STA_DISCONNECTED_PM_ENABLE=y",
+        "after": null
+      }
+    },
+    "artifacts": [
+      {
+        "path": "local-data/build/sensor-web/436ba7378776a8c7/20261022_125226_285250/artifacts/firmware.bin",
+        "bytes": 991872,
+        "sha256": "a2f7a604d2864769c3a4d39acf51e468ccbdea359a6befb06232bb4405b8c943"
+      },
+      {
+        "path": "local-data/build/sensor-web/436ba7378776a8c7/20261022_125226_285250/artifacts/bootloader.bin",
+        "bytes": 22368,
+        "sha256": "d734768756ae44c56bd19ef885d238db3aaba6234648574a530277bbfe676aac"
+      },
+      {
+        "path": "local-data/build/sensor-web/436ba7378776a8c7/20261022_125226_285250/artifacts/partitions.bin",
+        "bytes": 3072,
+        "sha256": "1d9cca96de0fe07ad7fc0648b9878ddecd9ce565e38b589ad20fea698ed4c80c"
+      },
+      {
+        "path": "local-data/build/sensor-web/436ba7378776a8c7/20261022_125226_285250/artifacts/firmware.elf",
+        "bytes": 10232688,
+        "sha256": "f9ac72775fbd8a3a06e8f01f05515800d8c8ddc4f07d190d49ceb2bae56bea5d"
+      }
+    ]
+  },
+  "no_credentials_build": {
+    "source_commit": "92309da117d87e7aba80db9fcc1af49aec23a164",
+    "working_tree_dirty_at_start": false,
+    "input_sha256": "53f81cac4df744fa65256e83e9a8945f5d1ed3413daba31bec7b3e1145c2d266",
+    "build_passed": true,
+    "hardware_tested": false,
+    "credentials_present": false,
+    "artifacts": [
+      {
+        "path": "local-data/build/sensor-web/53f81cac4df744fa/20261022_124915_816535/artifacts/firmware.bin",
+        "bytes": 400784,
+        "sha256": "ca8b9af6fa68d9b3c1e75e19e608b7793425beb913e9884b136beea374c07023"
+      },
+      {
+        "path": "local-data/build/sensor-web/53f81cac4df744fa/20261022_124915_816535/artifacts/bootloader.bin",
+        "bytes": 22368,
+        "sha256": "7264f50d7d4a3a891c79b78de2336a0c4eccfb1c0f400aef686b9a8f52a1e9e7"
+      },
+      {
+        "path": "local-data/build/sensor-web/53f81cac4df744fa/20261022_124915_816535/artifacts/partitions.bin",
+        "bytes": 3072,
+        "sha256": "1d9cca96de0fe07ad7fc0648b9878ddecd9ce565e38b589ad20fea698ed4c80c"
+      },
+      {
+        "path": "local-data/build/sensor-web/53f81cac4df744fa/20261022_124915_816535/artifacts/firmware.elf",
+        "bytes": 5660948,
+        "sha256": "970ece4943d7271bc6e00803e59c285109868d5e13ed228f76a70c2c2b10c3c0"
+      }
+    ]
+  },
+  "private_build_manifest": {
+    "path": "local-data/build/sensor-web/436ba7378776a8c7/20261022_125226_285250/build_manifest.json",
+    "bytes": 7624,
+    "sha256": "bbe08c64dfd99c850741cff82a87044edfab87fe9a15003dbd39cbe83c7f5cdb"
+  },
+  "raw_evidence": [
+    {
+      "path": "local-data/validation/sensor-range-selector/web-control.log",
+      "bytes": 679,
+      "sha256": "6da61b18bcc9cf4f06c64a7c6db36c9bb2a8609c65d032c18fed86507f6b4fb5"
+    },
+    {
+      "path": "local-data/validation/sensor-range-selector/record-parser.log",
+      "bytes": 1758,
+      "sha256": "6b6474a1f9349ce9ba1af9ca65d8227d509b796c800059469ae1f2fcbd8377bf"
+    },
+    {
+      "path": "local-data/validation/sensor-range-selector/build.log",
+      "bytes": 99297,
+      "sha256": "53b81c0dff75355c68e98e2921aec001c97de8777f0b93101f46315968d44d16"
+    },
+    {
+      "path": "local-data/validation/sensor-range-selector/build-network.log",
+      "bytes": 99296,
+      "sha256": "893e3553de5fff4318586cbc9e85c8326396ead9299b7ce83df1489fffec2aad"
+    },
+    {
+      "path": "local-data/validation/sensor-range-selector/project-check-precommit.json",
+      "bytes": 390,
+      "sha256": "34230847487b3ba44c1b8f92515357cd4089c4a84e8ad42f2ae86a9b4ec30c2c"
+    },
+    {
+      "path": "local-data/validation/sensor-web-ui/result.json",
+      "bytes": 345,
+      "sha256": "77b46a95579855d5fb73bfb1dca19f8a35de3f793a94448c49e70e71bba0cc4e"
+    },
+    {
+      "path": "local-data/validation/sensor-web-ui/desktop-simulated.png",
+      "bytes": 153914,
+      "sha256": "53b86e889539c77545e854d86e08e83ee3d7355756cc022caaca816d4b9534f1"
+    },
+    {
+      "path": "local-data/validation/sensor-web-ui/mobile-simulated.png",
+      "bytes": 139322,
+      "sha256": "1dcec5bcbaf79594924365d8919ae4d4c3a2247a2578cf80d20d9e10940941af"
+    }
+  ],
+  "changed_source_files": [
+    {
+      "path": "docs/plans/SENSOR_RANGE_SELECTOR_20261021.md",
+      "bytes": 3221,
+      "sha256": "3fad3cdd7b089db28b2758abf71d0576bfb87bfbff08231a26b6b5af4dbe8313"
+    },
+    {
+      "path": "tests/record_fixture.cpp",
+      "bytes": 2699,
+      "sha256": "69cb81a7a1db5d153ff5f6afe716486593104ac55f9fd7b8d9f12e78c0592688"
+    },
+    {
+      "path": "tests/test_sensor_record.py",
+      "bytes": 7681,
+      "sha256": "e49e5f658414766d03b9e1bdababc4f034741d4d7549fcb2a33d41a6b036836c"
+    },
+    {
+      "path": "tests/vibration_trend_test.cpp",
+      "bytes": 2723,
+      "sha256": "1a6a591a52f24bfee4bc1e3ca97222c3231910d5c6beaec7a67a0bd6b097c4ef"
+    },
+    {
+      "path": "tests/web_model_test.cpp",
+      "bytes": 6342,
+      "sha256": "edbe87be3a797bb0c9fc190a4358a8f54da17b5858f9a81d41b0af2b78d0ffd4"
+    },
+    {
+      "path": "tools/parse_sensor_record.py",
+      "bytes": 9307,
+      "sha256": "baea1ffdf62b6c02d8504a752db91801b760fc902306cbb6f69afa0e99e1dc10"
+    },
+    {
+      "path": "tools/test_sensor_web_ui.cjs",
+      "bytes": 26346,
+      "sha256": "55ab563c2187a663f629afea0c68c61666e6ea0deaea04175f9fef09dd4f9417"
+    },
+    {
+      "path": "面包板样机_固件/diagnostics/sensor_web_recorder/README.md",
+      "bytes": 8003,
+      "sha256": "56a94d19b24bb384fea2fb9308a5e91abc9b6bdc85b186f824c979efa25b6995"
+    },
+    {
+      "path": "面包板样机_固件/diagnostics/sensor_web_recorder/src/index.html",
+      "bytes": 34117,
+      "sha256": "2b7ea574978e5c4122d9b494a74855ee28a418daeb3f6bf10b99fda8067b6f34"
+    },
+    {
+      "path": "面包板样机_固件/diagnostics/sensor_web_recorder/src/main.cpp",
+      "bytes": 20175,
+      "sha256": "a1965cb9abefe177335159c009d237c39a64d2598e070eef68f37826a878ae6a"
+    },
+    {
+      "path": "面包板样机_固件/diagnostics/sensor_web_recorder/src/modules.cpp",
+      "bytes": 10758,
+      "sha256": "15df80ca9184081ad96925a6b62237813625c1f4cba4d5ddf3e1950b6f4d4901"
+    },
+    {
+      "path": "面包板样机_固件/diagnostics/sensor_web_recorder/src/modules.h",
+      "bytes": 394,
+      "sha256": "540ef2005d10fa28ecafdf57ac40879f85818dc9f4e30a5c0f54c4a1c5fc686d"
+    },
+    {
+      "path": "面包板样机_固件/diagnostics/sensor_web_recorder/src/record_request.h",
+      "bytes": 1905,
+      "sha256": "c018d57ef0ecc4794304420d6d5fd8efdfc4d44413b05f2a86ccf4c9012369a8"
+    },
+    {
+      "path": "面包板样机_固件/diagnostics/sensor_web_recorder/src/recorder.cpp",
+      "bytes": 19224,
+      "sha256": "16f2d86c377b646badb084daa4be1c94ff59c388033381e88d8dff4b1058a29d"
+    },
+    {
+      "path": "面包板样机_固件/diagnostics/sensor_web_recorder/src/sensor_range.h",
+      "bytes": 635,
+      "sha256": "98fc9c5ec0fc439d8545bdebaf24921e053bb41d866d47b2e0c66356605dca86"
+    },
+    {
+      "path": "面包板样机_固件/diagnostics/sensor_web_recorder/src/vibration_trend.h",
+      "bytes": 2212,
+      "sha256": "6299b3dfc557668526be50651b399bffd9147fde0d5458e9cf688c8393b77350"
+    },
+    {
+      "path": "面包板样机_固件/diagnostics/sensor_web_recorder/src/web_control.cpp",
+      "bytes": 16175,
+      "sha256": "b9a1ef881b83301f2e45040d5d073e94f8fee5baa7944b1ae3a3d881f832e1e7"
+    },
+    {
+      "path": "面包板样机_固件/diagnostics/sensor_web_recorder/src/web_control.h",
+      "bytes": 846,
+      "sha256": "f95b3db2dc513f49aa0c615805de5d55ec87c6d39807d3fddab584e3d725b288"
+    },
+    {
+      "path": "面包板样机_固件/diagnostics/sensor_web_recorder/src/web_model.h",
+      "bytes": 3399,
+      "sha256": "b25c7c28eb237dee8a412828e9b6b2821f3f669bba193a8f356180982361564d"
+    }
+  ],
+  "hardware_accessed": false,
+  "flashed": false,
+  "main_merged": false,
+  "released": false,
+  "not_tested": [
+    "Physical register readback at all ranges",
+    "Acceleration accuracy and installed frequency response",
+    "Rotating or cutting use",
+    "Latest firmware multiclient and long duration operation"
+  ],
+  "recovery": "No device written. Source baseline daabee24 retained; revert this purpose-specific change for software rollback."
+}
