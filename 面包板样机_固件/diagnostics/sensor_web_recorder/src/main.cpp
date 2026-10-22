@@ -319,7 +319,7 @@ static void help() {
   esp_err_t macError = esp_efuse_mac_get_default(mac);
   Serial.printf("[modules] identity source=%s inputs=%s mac_status=%s mac=%02x:%02x:%02x:%02x:%02x:%02x\n",
       TF_SOURCE_COMMIT, TF_INPUT_SHA256, esp_err_to_name(macError), mac[0], mac[1], mac[2], mac[3], mac[4], mac[5]);
-  Serial.println("[rec] REC_START <serial-hex> <capacity> <run-hex> <1..300 seconds> | REC_VERIFY <run-hex>");
+  Serial.println("[rec] REC_START <serial-hex> <capacity> <run-hex> <1..300 seconds> [2|8|16 g] | REC_VERIFY <run-hex>");
   Serial.println("[modules] m (read-only snapshot, idle may be uninitialized); configuration only inside REC_START");
   Serial.println("[tfrw] i | b | l | help (read-only)");
   Serial.println("[tfrw] WRITE_TEST <8-hex-card-serial> <capacity-bytes> <8-hex-run-id>");
@@ -425,12 +425,12 @@ void setup() {
 
 void loop() {
   control::pollNetworkLog();
-  char run[9]; unsigned seconds = 0;
-  if (control::take(run, seconds)) {
+  char run[9]; unsigned seconds = 0, rangeG = 2;
+  if (control::take(run, seconds, &rangeG)) {
     if (mountReadOnly()) {
       char request[100];
-      snprintf(request, sizeof(request), "REC_START %08lX %llu %s %u", (unsigned long)card.cid.serial,
-          (unsigned long long)(static_cast<uint64_t>(card.csd.capacity) * card.csd.sector_size), run, seconds);
+      snprintf(request, sizeof(request), "REC_START %08lX %llu %s %u %u", (unsigned long)card.cid.serial,
+          (unsigned long long)(static_cast<uint64_t>(card.csd.capacity) * card.csd.sector_size), run, seconds, rangeG);
       recorder::Store store{driveName, static_cast<uint32_t>(card.cid.serial),
           static_cast<uint64_t>(card.csd.capacity) * card.csd.sector_size, [](bool enabled) { writeEnabled = enabled; }};
       recorder::command(request, store);

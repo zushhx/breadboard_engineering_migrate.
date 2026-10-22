@@ -33,6 +33,7 @@ static TrendAccumulator trendAccumulator;
 static TrendHistory trendHistory;
 static char historyOut[2048]; // Reused by serialized HTTP handlers, never acquisition.
 static char trendRun[9];
+static unsigned trendRangeG = 2;
 static bool addressLogPending;
 static esp_err_t connectLogPending = ESP_OK;
 static const char* const pageStart = webPage;
@@ -42,11 +43,11 @@ void initialize(bool ready, uint32_t serial, uint64_t capacity) {
   if (!ready) { model.s.phase = Phase::Failed; snprintf(model.s.detail, sizeof(model.s.detail), "TF或采集池不可用；禁止录制"); }
 }
 void storageSpace(bool valid, uint64_t bytes) { Guard g; model.storageSpace(valid, bytes); }
-bool take(char* run, unsigned& seconds) { Guard g; return model.take(run, seconds); }
-bool begin(const char* run, unsigned seconds) {
+bool take(char* run, unsigned& seconds, unsigned* rangeG) { Guard g; return model.take(run, seconds, rangeG); }
+bool begin(const char* run, unsigned seconds, unsigned rangeG) {
   Guard g;
-  if (!model.begin(run, seconds)) return false;
-  lastPreview = 0; trendAccumulator.reset(); trendHistory.reset();
+  if (!model.begin(run, seconds, rangeG)) return false;
+  lastPreview = 0; trendAccumulator.reset(sensor_range::scaleMicroG(rangeG)); trendHistory.reset(); trendRangeG = rangeG;
   snprintf(trendRun, sizeof(trendRun), "%s", run);
   return true;
 }
@@ -110,12 +111,14 @@ static esp_err_t status(httpd_req_t* r) {
   int n = snprintf(out, sizeof(out),
       "{\"boot\":\"%s\",\"phase\":\"%s\",\"ready\":%s,\"connected\":%s,\"ip\":\"%s\","
       "\"card_serial\":\"%08" PRIX32 "\",\"card_bytes\":\"%" PRIu64 "\",\"space_valid\":%s,\"free_bytes\":\"%" PRIu64 "\",\"run\":\"%s\",\"seconds\":%u,"
+      "\"range_g\":%u,\"scale_micro_g\":%lu,"
       "\"written\":%" PRIu64 ",\"elapsed_us\":%" PRIu64 ",\"errors\":%u,\"queue\":%u,"
       "\"fifo_high\":%u,\"queue_high\":%u,\"write_us\":%u,\"sync_us\":%u,\"free_heap\":%u,"
       "\"ina_valid\":%s,\"ina_us\":%" PRIu64 ",\"bus_mv\":%" PRId32 ",\"current_ua\":%" PRId32 ",\"power_uw\":%" PRId32 ","
       "\"detail\":\"%s\",\"sha256\":\"%s\",\"preview_seq\":%u,\"preview_us\":%" PRIu64 ",\"preview\":[",
       key, phaseName(s.phase), s.ready ? "true" : "false", s.connected ? "true" : "false", s.ip,
-      s.serial, s.capacity, s.spaceValid ? "true" : "false", s.freeBytes, s.run, (unsigned)s.seconds, s.written, s.elapsedUs, (unsigned)s.errors, (unsigned)s.queue,
+      s.serial, s.capacity, s.spaceValid ? "true" : "false", s.freeBytes, s.run, (unsigned)s.seconds,
+      s.rangeG, (unsigned long)sensor_range::scaleMicroG(s.rangeG), s.written, s.elapsedUs, (unsigned)s.errors, (unsigned)s.queue,
       (unsigned)s.fifoHigh, (unsigned)s.queueHigh, (unsigned)s.maxWriteUs, (unsigned)s.maxSyncUs, (unsigned)s.freeHeap,
       s.inaValid ? "true" : "false", s.inaUs, s.busMv, s.currentUa, s.powerUw, s.detail, s.sha, (unsigned)s.previewSeq, s.previewUs);
   for (unsigned i = 0; i < s.previewCount && n > 0 && n < static_cast<int>(sizeof(out)); ++i)
@@ -128,12 +131,13 @@ static esp_err_t trend(httpd_req_t* r) {
   // HTTP handlers share one server task. Keep the bounded copy off its stack.
   static TrendPoint points[kTrendPoints];
   auto& out = historyOut;
-  char run[9]; unsigned count;
-  { Guard g; count = trendHistory.copy(points); memcpy(run, trendRun, sizeof(run)); }
+  char run[9]; unsigned count, rangeG;
+  { Guard g; count = trendHistory.copy(points); memcpy(run, trendRun, sizeof(run)); rangeG = trendRangeG; }
   headers(r, "application/json");
   int n = snprintf(out, sizeof(out),
-      "{\"boot\":\"%s\",\"run\":\"%s\",\"sample_rate\":%lu,\"window_samples\":%lu,\"points\":[",
-      key, run, static_cast<unsigned long>(kNominalRate), static_cast<unsigned long>(kTrendWindow));
+      "{\"boot\":\"%s\",\"run\":\"%s\",\"sample_rate\":%lu,\"window_samples\":%lu,\"range_g\":%u,\"scale_micro_g\":%lu,\"points\":[",
+      key, run, static_cast<unsigned long>(kNominalRate), static_cast<unsigned long>(kTrendWindow), rangeG,
+      (unsigned long)sensor_range::scaleMicroG(rangeG));
   for (unsigned i = 0; i < count; ++i) {
     if (n > static_cast<int>(sizeof(out)) - 160) {
       const esp_err_t error = httpd_resp_send_chunk(r, out, n);
@@ -179,15 +183,19 @@ static esp_err_t start(httpd_req_t* r) {
   auto* seconds = cJSON_GetObjectItemCaseSensitive(json, "seconds");
   auto* serial = cJSON_GetObjectItemCaseSensitive(json, "card_serial");
   auto* capacity = cJSON_GetObjectItemCaseSensitive(json, "card_bytes");
+  auto* range = cJSON_GetObjectItemCaseSensitive(json, "range_g");
+  const bool validRange = !range || (cJSON_IsNumber(range) && std::isfinite(range->valuedouble) &&
+      range->valuedouble == range->valueint && sensor_range::valid(static_cast<unsigned>(range->valueint)));
+  const unsigned rangeG = range && validRange ? static_cast<unsigned>(range->valueint) : 2;
   bool accepted = false;
-  if (cJSON_IsObject(json) && cJSON_GetArraySize(json) == 4 && cJSON_IsString(run) && cJSON_IsNumber(seconds) &&
+  if (cJSON_IsObject(json) && cJSON_GetArraySize(json) == (range ? 5 : 4) && validRange && cJSON_IsString(run) && cJSON_IsNumber(seconds) &&
       std::isfinite(seconds->valuedouble) && seconds->valuedouble == seconds->valueint &&
       cJSON_IsString(serial) && cJSON_IsString(capacity)) {
     char line[100];
     int n = snprintf(line, sizeof(line), "REC_START %s %s %s %d", serial->valuestring, capacity->valuestring, run->valuestring, seconds->valueint);
     recorder::Request req = {};
     if (n > 0 && n < static_cast<int>(sizeof(line)) && recorder::parseRequest(line, req)) {
-      Guard g; accepted = model.submit(req.serial, req.capacity, req.run, req.seconds);
+      Guard g; accepted = model.submit(req.serial, req.capacity, req.run, req.seconds, rangeG);
     }
   }
   cJSON_Delete(json);

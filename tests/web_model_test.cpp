@@ -4,6 +4,46 @@
 #include <cstdio>
 #include <initializer_list>
 int main() {
+  // Exact ST FS encodings and scales, including unsupported ±4 g product policy.
+  static_assert(sensor_range::ctrl1(2) == 0xA0 && sensor_range::scaleMicroG(2) == 61, "2g mapping");
+  static_assert(sensor_range::ctrl1(8) == 0xAC && sensor_range::scaleMicroG(8) == 244, "8g mapping");
+  static_assert(sensor_range::ctrl1(16) == 0xA4 && sensor_range::scaleMicroG(16) == 488, "16g mapping");
+  assert(!sensor_range::valid(4) && !sensor_range::validScale(122));
+  assert(sensor_range::fromCtrl1(0xA8) == 0 && sensor_range::fromCtrl1(0) == 0);
+  recorder::Request request{};
+  assert(recorder::parseRequest("REC_START 10044BA5 7948206080 DEADBEEF 300", request) && request.rangeG == 2);
+  for (unsigned range : {2u, 8u, 16u}) {
+    char command[100];
+    snprintf(command, sizeof(command), "REC_START 10044BA5 7948206080 DEADBEEF 300 %u", range);
+    assert(recorder::parseRequest(command, request) && request.rangeG == range && request.seconds == 300);
+    control::Model ranged;
+    ranged.s.ready = true; ranged.s.serial = 1; ranged.s.capacity = 100;
+    assert(ranged.submit(1, 100, "AABBCCDD", 30, range));
+    assert(ranged.s.rangeG == range);
+    // Queued/preparing/finalizing requests cannot change a run's fixed scale.
+    char nextRun[9]; unsigned duration = 0, selected = 0;
+    assert(ranged.take(nextRun, duration, &selected) && selected == range && duration == 30);
+    assert(!ranged.begin("AABBCCDD", 30, range == 2 ? 8 : 2));
+    assert(!ranged.begin("AABBCCDD", 31, range));
+    ranged.requestStop();
+    assert(ranged.begin("AABBCCDD", 30, selected) && ranged.s.stop && ranged.s.rangeG == range);
+    for (auto p : {control::Phase::Queued, control::Phase::Preparing, control::Phase::Recording,
+                   control::Phase::Draining, control::Phase::Closing, control::Phase::Verifying}) {
+      ranged.s.phase = p;
+      assert(!ranged.submit(1, 100, "00000002", 30, 16));
+      assert(ranged.s.rangeG == range);
+    }
+    ranged.s.phase = control::Phase::Passed;
+    assert(!ranged.submit(1, 100, "00000002", 30, 4) && ranged.s.rangeG == range);
+    assert(ranged.submit(1, 100, "00000002", 30)); // Legacy request explicitly returns to default 2g.
+    assert(ranged.s.rangeG == 2 && !ranged.s.stop);
+  }
+  for (const char* bad : {"REC_START 10044BA5 7948206080 DEADBEEF 30 4",
+      "REC_START 10044BA5 7948206080 DEADBEEF 30 0", "REC_START 10044BA5 7948206080 DEADBEEF 30 32",
+      "REC_START 10044BA5 7948206080 DEADBEEF 30 -2", "REC_START 10044BA5 7948206080 DEADBEEF 30 8.0",
+      "REC_START 10044BA5 7948206080 DEADBEEF 30 16 trailing", "REC_START 10044BA5 7948206080 DEADBEEF 30 16000000"})
+    assert(!recorder::parseRequest(bad, request));
+  assert(recorder::parseRequest("REC_VERIFY DEADBEEF", request) && !request.write);
   control::Model m;
   assert(!m.submit(0, 0, "AABBCCDD", 10));
   m.s.ready = true; m.s.serial = 0x10044BA5; m.s.capacity = 7948206080ULL;
@@ -55,5 +95,5 @@ int main() {
   m.s.phase = control::Phase::Failed;
   assert(!m.submit(serial, capacity, "00000003", 10)); assert(!m.begin("00000003", 10));
   m.requestStop(); assert(m.s.phase == control::Phase::Failed);
-  puts("PASS: identity/range/single-slot/cancel/stop/owner/network-loss/finalization/failure lock");
+  puts("PASS: three FS mappings/legacy and ranged requests/invalid ranges/run-scale lock/identity/single-slot/cancel/stop/owner/network-loss/finalization/failure lock");
 }

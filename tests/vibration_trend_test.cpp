@@ -1,6 +1,7 @@
 #include "vibration_trend.h"
 #include <cassert>
 #include <cstdio>
+#include <initializer_list>
 int main() {
   using namespace control;
   TrendAccumulator accumulator; TrendPoint point;
@@ -37,5 +38,15 @@ int main() {
   history.reset(); assert(history.copy(copy) == 0);
   accumulator.reset();
   assert(!accumulator.add(dc, point));
-  puts("PASS: DC/known RMS/extremes/windows/ring/reset");
+  for (unsigned scale : {61u, 244u, 488u}) {
+    accumulator.reset(scale); // A new run clears the previous partial window and fixes its own scale.
+    for (unsigned i = 0; i < kTrendWindow; ++i) {
+      const int16_t sign = i % 2 ? -1000 : 1000;
+      const int16_t sample[3] = {sign, static_cast<int16_t>(sign + 10000), 32767};
+      assert(accumulator.add(sample, point) == (i + 1 == kTrendWindow));
+    }
+    assert(point.endSample == kTrendWindow && point.rmsUg[0] == scale * 1000 && point.rmsUg[1] == scale * 1000);
+    assert(point.rmsUg[2] == 0 && point.nearFullScale == kTrendWindow);
+  }
+  puts("PASS: DC/known RMS/extremes/windows/ring/reset/three run scales");
 }

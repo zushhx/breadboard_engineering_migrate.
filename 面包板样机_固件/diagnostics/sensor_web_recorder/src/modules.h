@@ -3,8 +3,8 @@
 namespace modules {
 void beginReadOnly();
 bool command(const char* line);
-bool prepareRecord();
-bool startFifo();
+bool prepareRecord(unsigned rangeG);
+bool startFifo(unsigned rangeG);
 bool stopInput();
 bool finishFifo();
 bool fifoStatus(uint16_t& count, bool& overrun);

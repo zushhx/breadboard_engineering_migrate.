@@ -13,7 +13,7 @@ let s={boot,phase:'idle',ready:true,connected:true,ip:'192.168.1.23',card_serial
   run:'',seconds:0,written:0,elapsed_us:0,errors:0,queue:0,fifo_high:0,queue_high:0,write_us:0,sync_us:0,free_heap:150000,
   ina_valid:false,ina_us:0,bus_mv:0,current_ua:0,power_uw:0,detail:'软件模拟状态；非实机数据',sha256:'',preview_seq:0,preview_us:0,preview:[]};
 let posts=[], unavailable=false, requests=0, outstanding=0,maxOutstanding=0,delayAck=false;
-let trendUnavailable=false,trendRun=null,trendBoot=null;
+let trendUnavailable=false,trendRun=null,trendBoot=null,trendRange=null,trendScale=null,trendDelay=0;
 const html=fs.readFileSync(path.join(root,'面包板样机_固件/diagnostics/sensor_web_recorder/src/index.html'),'utf8').replace('{{KEY}}',boot);
 const server=http.createServer(async(req,res)=>{
   res.setHeader('Cache-Control','no-store');
@@ -26,8 +26,11 @@ const server=http.createServer(async(req,res)=>{
   if(req.url==='/api/trend'){
     res.statusCode=trendUnavailable?503:200;res.setHeader('Content-Type','application/json');
     const run=trendRun===null?s.run:trendRun;
-    res.end(JSON.stringify({boot:trendBoot===null?s.boot:trendBoot,run,sample_rate:26667,window_samples:5333,
-      points:run?Array.from({length:150},(_,i)=>[(i+1)*5333,12000+i*10,14000+i*8,16000+i*6,i===40?2:0]):[]}));return;
+    const response={boot:trendBoot===null?s.boot:trendBoot,run,sample_rate:26667,window_samples:5333,
+      range_g:trendRange===null?s.range_g:trendRange,scale_micro_g:trendScale===null?s.scale_micro_g:trendScale,
+      points:run?Array.from({length:150},(_,i)=>[(i+1)*5333,12000+i*10,14000+i*8,16000+i*6,i===40?2:0]):[]};
+    if(trendDelay)await new Promise(r=>setTimeout(r,trendDelay));
+    res.end(JSON.stringify(response));return;
   }
   if(req.method==='POST'){
     let body='';for await(const data of req)body+=data;
@@ -36,7 +39,8 @@ const server=http.createServer(async(req,res)=>{
     if(req.url==='/api/start'){
       assert(!['queued','recording'].includes(s.phase));
       const r=JSON.parse(body);assert.equal(r.card_serial,s.card_serial);assert.equal(r.card_bytes,s.card_bytes);
-      assert.match(r.run,/^[0-9A-F]{8}$/);s={...s,run:r.run,seconds:r.seconds,phase:'queued'};
+      assert.match(r.run,/^[0-9A-F]{8}$/);assert([2,8,16].includes(r.range_g));
+      s={...s,run:r.run,seconds:r.seconds,range_g:r.range_g,scale_micro_g:({2:61,8:244,16:488})[r.range_g],phase:'queued'};
     }
     if(delayAck)await new Promise(r=>setTimeout(r,3000));
     res.setHeader('Content-Type','application/json');res.end('{"accepted":true}');return;
@@ -48,6 +52,16 @@ async function main(){
   const address='http://127.0.0.1:'+server.address().port;
   const browser=await chromium.launch({headless:true,channel:process.env.WEB_TEST_BROWSER||'msedge'});
   const context=await browser.newContext({viewport:{width:1360,height:1080}});
+  let maxPageStatus=0;
+  await context.exposeBinding('reportStatusConcurrency',(_source,count)=>{maxPageStatus=Math.max(maxPageStatus,count);});
+  await context.addInitScript(()=>{
+    const original=window.fetch;let inFlight=0;
+    window.fetch=async function(input,...args){
+      const status=String(input)==='/api/status';
+      if(status){inFlight++;window.reportStatusConcurrency(inFlight);}
+      try{return await original.call(this,input,...args);}finally{if(status)inFlight--;}
+    };
+  });
   const page=await context.newPage();const errors=[];page.on('pageerror',e=>errors.push(e.message));
   let assertions=0;const check=async(label,fn)=>{await fn();assertions++;console.log('PASS: '+label);};
   try{
@@ -55,6 +69,9 @@ async function main(){
     await check('startup only queries; no auto record; invalid INA blank',async()=>{
       await page.waitForFunction(()=>!document.getElementById('start').disabled);
       assert.equal(posts.length,0);assert.equal(await page.locator('#voltage').innerText(),'—');
+      assert.deepEqual(await page.locator('#range option').evaluateAll(options=>options.map(o=>o.value)),['2','8','16']);
+      assert.equal(await page.locator('#range').inputValue(),'2');
+      assert.equal(await page.locator('label[for="range"]').count(),1);
     });
     await check('readable errors decode every flag, combinations and unknown bits without false healthy state',async()=>{
       assert.match(await page.locator('#errors').innerText(),/待机/);
@@ -237,9 +254,89 @@ async function main(){
       await page.waitForFunction(()=>document.getElementById('pause').getAttribute('aria-pressed')==='true');
       assert.equal(posts.length,3);
     });
-    assert.equal(maxOutstanding,1);assert.deepEqual(errors,[]);
+    await check('three selectable ranges submit and scale raw/trend views and tooltips correctly',async()=>{
+      trendUnavailable=false;trendRun=null;trendBoot=null;s={...s,boot,phase:'idle',run:'',range_g:2,scale_micro_g:61,preview:[],preview_seq:0};
+      await page.emulateMedia({reducedMotion:'no-preference'});await page.reload();
+      await page.waitForFunction(()=>!$('start').disabled);
+      for(const [range,scale] of [[2,61],[8,244],[16,488]]){
+        await page.waitForFunction(()=>!$('start').disabled);
+        const before=posts.length;
+        await page.locator('#range').selectOption(String(range));await page.locator('#start').click();
+        await page.waitForFunction(()=>snapshot.phase==='queued');
+        assert.equal(posts.length,before+1);assert.equal(JSON.parse(posts.at(-1).body).range_g,range);
+        for(const phase of ['queued','preparing','recording','draining','closing','verifying']){
+          s.phase=phase;await page.waitForFunction(p=>snapshot.phase===p,phase);
+          assert(await page.locator('#range').isDisabled());
+        }
+        s.phase='recording';s.preview_seq++;s.preview=Array.from({length:272},()=>[1000,-1000,2000]);
+        await page.waitForFunction(r=>shownRaw.length===272&&shownRange.g===r,range);
+        assert.deepEqual(await page.evaluate(()=>[views.get($('wave')).min,views.get($('wave')).max,views.get($('trend')).max]),[-range*1000,range*1000,range*1000]);
+        assert.match(await page.locator('#rangeState').innerText(),new RegExp('±'+range+' g'));
+        assert.match(await page.locator('#rawScale').innerText(),new RegExp('±'+range*1000+' mg'));
+        await page.locator('#wave').focus();await page.locator('#wave').press('Home');
+        assert.deepEqual((await page.locator('.raw-plot .chart-tip').innerText()).split('\n')[1].trim().split(/\s+/),['X',scale.toFixed(2),'mg']);
+        await page.waitForFunction(()=>shownTrend.length===150);
+        await page.locator('#trend').focus();await page.locator('#trend').press('Home');
+        assert.deepEqual((await page.locator('#plot .chart-tip').innerText()).split('\n')[1].trim().split(/\s+/),['X','12.00','mg']);
+        s.phase='passed';await page.waitForFunction(()=>!$('range').disabled);
+      }
+    });
+    await check('changing next range leaves last data, axes and paused tooltip scale unchanged',async()=>{
+      await page.locator('#pause').click();const old=await page.evaluate(()=>({range:shownRange.g,scale:shownRange.scale,first:shownRaw[0]}));
+      await page.locator('#range').selectOption('2');await page.locator('[data-span="5"]').click();
+      assert.equal(await page.evaluate(()=>shownRange.g),old.range);
+      assert.equal(await page.evaluate(()=>views.get($('wave')).max),old.range*1000);
+      await page.locator('#wave').focus();await page.locator('#wave').press('Home');
+      assert.match(await page.locator('.raw-plot .chart-tip').innerText(),/488\.00/);
+      s.preview_seq++;s.preview=Array.from({length:272},()=>[2000,-1000,2000]);
+      await page.waitForFunction(()=>latestRaw[0][0]===2000);
+      assert.equal(await page.evaluate(()=>shownRaw[0][0]),old.first[0]);
+      await page.locator('#pause').click();await page.waitForFunction(()=>shownRaw[0][0]===2000);
+      assert.equal(await page.evaluate(()=>shownRange.g),16);
+    });
+    await check('unsupported selection sends no request; malformed status freezes valid scale and locks control',async()=>{
+      const count=posts.length;
+      await page.evaluate(()=>{const o=document.createElement('option');o.value='4';$('range').append(o);$('range').value='4';$('start').click();});
+      assert.equal(posts.length,count);assert.match(await page.locator('#message').innerText(),/请选择/);
+      await page.evaluate(()=>$('range').querySelector('option[value="4"]').remove());await page.locator('#range').selectOption('2');
+      for(const [range,scale] of [[4,122],[16,61],[16,undefined],[undefined,488]]){
+        s.range_g=range;s.scale_micro_g=scale;
+        await page.waitForFunction(()=>!online);
+        assert(await page.locator('#range').isDisabled());assert.equal(await page.evaluate(()=>shownRange.g),16);
+      }
+      s.range_g=16;s.scale_micro_g=488;await page.waitForFunction(()=>online);
+      s.range_g=8;s.scale_micro_g=244;await page.waitForFunction(()=>!online);
+      assert.equal(await page.evaluate(()=>shownRange.g),16);
+      s.range_g=16;s.scale_micro_g=488;await page.waitForFunction(()=>online);
+    });
+    await check('wrong-range and old-run trends never replace current run history',async()=>{
+      const old=await page.evaluate(()=>JSON.stringify(latestTrend));trendRange=2;trendScale=61;
+      await page.waitForFunction(()=>trendError.length>0);
+      assert.equal(await page.evaluate(()=>JSON.stringify(latestTrend)),old);
+      trendRange=null;trendScale=null;await page.waitForFunction(()=>!trendError);
+      await page.locator('#pause').click();
+      trendRun=s.run;trendDelay=600;await page.evaluate(()=>{nextTrend=0;});
+      await new Promise(r=>setTimeout(r,150));
+      s={...s,run:'FACE1234',range_g:8,scale_micro_g:244,preview:[],preview_seq:0};
+      await page.waitForFunction(()=>lastIdentity.endsWith('/FACE1234'));
+      assert.equal(await page.evaluate(()=>shownRaw.length),0);
+      assert.equal(await page.evaluate(()=>shownRange.g),8);
+      trendDelay=0;trendRun='DEADBEEF';await new Promise(r=>setTimeout(r,1200));
+      assert.equal(await page.evaluate(()=>shownTrend.length),0);trendRun=null;
+      assert.equal(await page.evaluate(()=>paused),true);await page.locator('#pause').click();
+      await page.waitForFunction(()=>shownTrend.length===150);
+    });
+    await check('range locks while POST pending, disconnected and after reboot',async()=>{
+      s.phase='passed';await page.waitForFunction(()=>!$('start').disabled);await page.locator('#range').selectOption('8');
+      delayAck=true;await page.locator('#start').click();assert(await page.locator('#range').isDisabled());
+      await page.waitForFunction(()=>!pending);delayAck=false;s.phase='passed';await page.waitForFunction(()=>!$('range').disabled);
+      unavailable=true;await page.waitForFunction(()=>!online);assert(await page.locator('#range').isDisabled());
+      unavailable=false;await page.waitForFunction(()=>online);s.boot='e'.repeat(32);
+      await page.waitForFunction(()=>stale);assert(await page.locator('#range').isDisabled());
+    });
+    assert.equal(maxPageStatus,1);assert.deepEqual(errors,[]);
     const report={simulated_only:true,hardware_accessed:false,browser:await browser.version(),playwright:require('playwright/package.json').version,
-      assertions,posts:posts.length,status_requests:requests,max_parallel_status:maxOutstanding,page_errors:errors,
+      assertions,posts:posts.length,status_requests:requests,max_parallel_status:maxPageStatus,max_server_status_across_reloads:maxOutstanding,page_errors:errors,
       screenshots:['desktop-simulated.png','mobile-simulated.png']};
     fs.writeFileSync(path.join(output,'result.json'),JSON.stringify(report,null,2)+'\n');console.log(JSON.stringify(report));
   }finally{await browser.close();server.close();}

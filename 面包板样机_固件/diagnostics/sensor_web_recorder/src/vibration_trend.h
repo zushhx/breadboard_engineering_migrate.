@@ -15,9 +15,13 @@ struct TrendPoint {
 // Recording owner only. Integer accumulation covers every input sample before preview throttling.
 class TrendAccumulator {
   uint32_t total = 0, count = 0, clipped = 0;
+  uint32_t scaleMicroG = 61;
   int64_t sum[3] = {}, square[3] = {};
  public:
-  void reset() { total = count = clipped = 0; for (unsigned a = 0; a < 3; ++a) sum[a] = square[a] = 0; }
+  void reset(uint32_t scale = 61) {
+    scaleMicroG = scale;
+    total = count = clipped = 0; for (unsigned a = 0; a < 3; ++a) sum[a] = square[a] = 0;
+  }
   bool add(const int16_t (&xyz)[3], TrendPoint& point) {
     for (unsigned a = 0; a < 3; ++a) {
       const int64_t value = xyz[a];
@@ -30,7 +34,7 @@ class TrendAccumulator {
     for (unsigned a = 0; a < 3; ++a) {
       const double mean = static_cast<double>(sum[a]) / count;
       const double variance = static_cast<double>(square[a]) / count - mean * mean;
-      point.rmsUg[a] = static_cast<uint32_t>(std::sqrt(variance > 0 ? variance : 0) * 61.0 + 0.5);
+      point.rmsUg[a] = static_cast<uint32_t>(std::sqrt(variance > 0 ? variance : 0) * scaleMicroG + 0.5);
       sum[a] = square[a] = 0;
     }
     count = clipped = 0;
