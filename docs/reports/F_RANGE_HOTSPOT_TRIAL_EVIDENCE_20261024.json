@@ -1,0 +1,275 @@
+{
+  "date": "2026-10-24",
+  "trial_operation_commit": "8264978520c5ff16db02bd14b734eadb2efdea2b",
+  "firmware_source": "421da251210e54a7fcd1eea12d10104c117a0f83",
+  "firmware_sha256": "46aa94883f68c783ee2050ef54139e1e91eba035036ee5dda21e6bbfa49bc944",
+  "desktop_source": "b9e190d3f2f152a74252b7ceebf94daba085aaaa",
+  "desktop_sha256": "e845416b3b436193aefec01f224b92c898e6a58738b3f430f4ef25ea8ae792d2",
+  "human_confirmation": "User replied 嗯 after concrete candidate/backup/recovery review; user explicitly confirmed both full power-off cycles.",
+  "controller_mac": "44:1b:f6:81:91:10",
+  "card_serial": "10044BA5",
+  "card_bytes": 7948206080,
+  "scope": "bench functional acceptance",
+  "passed": true,
+  "backup": {
+    "sha256": "6d82e7bae6faf389b862cdccb38991e08a43feb38c41261dbba7da5184741f4c",
+    "nvs_sha256": "158e93627cdf930c1518ea9ffffa42e6684b1b457b2b85b9b60395580df99047",
+    "bytes": 1200128,
+    "chip_verified": true
+  },
+  "records": [
+    {
+      "run": "0443EF9A",
+      "range_g": 2,
+      "path": "/26-10-24-12.27/26-10-24-12.27.BIN",
+      "sha256": "3efbe86aa375f30d9eb963f7bab9793e3cd309602c583b917e2e7f2ddd203c28",
+      "footer": {
+        "samples": 79686,
+        "start_us": 12931419,
+        "stop_us": 15932113,
+        "ina_samples": 25,
+        "ina_invalid": 0,
+        "errors": 0,
+        "saturation": 0,
+        "fifo_high": 135,
+        "queue_high": 4,
+        "max_write_us": 31938,
+        "max_sync_us": 44021,
+        "min_heap": 53092,
+        "sensor_stack": 2076,
+        "ina_stack": 2748,
+        "observed_samples_per_second": 26555.856745139623
+      }
+    },
+    {
+      "run": "6964A509",
+      "range_g": 8,
+      "path": "/26-10-24-12.27-02/26-10-24-12.27-02.BIN",
+      "sha256": "d5749fa90bd8deef858da70fe011fa820061cbb09ec6ec87209cdc863d793b0e",
+      "footer": {
+        "samples": 79828,
+        "start_us": 28523421,
+        "stop_us": 31528130,
+        "ina_samples": 26,
+        "ina_invalid": 0,
+        "errors": 0,
+        "saturation": 0,
+        "fifo_high": 137,
+        "queue_high": 3,
+        "max_write_us": 38053,
+        "max_sync_us": 9429,
+        "min_heap": 47532,
+        "sensor_stack": 2068,
+        "ina_stack": 2776,
+        "observed_samples_per_second": 26567.63100852695
+      }
+    },
+    {
+      "run": "03F6A4D0",
+      "range_g": 16,
+      "path": "/26-10-24-12.28/26-10-24-12.28.BIN",
+      "sha256": "3d3fdf89254445f01afd3e42e4790230f1a9bb005091067b49ddbf3f39c970dc",
+      "footer": {
+        "samples": 79746,
+        "start_us": 44384421,
+        "stop_us": 47386143,
+        "ina_samples": 26,
+        "ina_invalid": 0,
+        "errors": 0,
+        "saturation": 0,
+        "fifo_high": 134,
+        "queue_high": 3,
+        "max_write_us": 33543,
+        "max_sync_us": 10155,
+        "min_heap": 47016,
+        "sensor_stack": 2072,
+        "ina_stack": 2744,
+        "observed_samples_per_second": 26566.75068510675
+      }
+    }
+  ],
+  "new_old_new_authentication": [
+    {
+      "label": "new_before",
+      "connected": true,
+      "restored": true,
+      "profile_removed": true,
+      "xml_removed": true,
+      "profiles_unchanged": true
+    },
+    {
+      "label": "old",
+      "connected": false,
+      "restored": true,
+      "profile_removed": true,
+      "xml_removed": true,
+      "profiles_unchanged": true
+    },
+    {
+      "label": "new_after",
+      "connected": true,
+      "restored": true,
+      "profile_removed": true,
+      "xml_removed": true,
+      "profiles_unchanged": true
+    }
+  ],
+  "real_cold_starts_completed": 2,
+  "cold_password_persistence_confirmed": true,
+  "warm_reset": {
+    "passed": true,
+    "mcu_only_reset": true,
+    "tf_power_retained": true,
+    "cold_start": false,
+    "new_password_persisted": true,
+    "three_saved_record_hashes_unchanged": true
+  },
+  "original_network_restored": {
+    "connected": true,
+    "restored": true,
+    "profile_removed": true,
+    "xml_removed": true,
+    "profiles_unchanged": true,
+    "error": null
+  },
+  "native_save_network": {
+    "passed": true,
+    "stage": "restored_and_verified",
+    "implementation": "installed_b9e190d_ManagementClient_SaveNetwork",
+    "port": "COM7",
+    "boot_unchanged": true,
+    "phase": "idle",
+    "errors": 0,
+    "ready": true,
+    "files_busy": false,
+    "card_serial": "10044BA5",
+    "card_bytes": 7948206080,
+    "ap_password_matches_original": true,
+    "ap_ssid_matches_original": true,
+    "ap_enabled_matches_original": true,
+    "sta_ssid_matches_original": true,
+    "sta_enabled_matches_original": true,
+    "sta_password_sent_empty_same_ssid": true,
+    "apply_ok": true,
+    "applying": false
+  },
+  "final_status": {
+    "passed": true,
+    "ready": true,
+    "phase": "idle",
+    "errors": 0,
+    "files_busy": false,
+    "original_network_restored": true,
+    "source": "421da251210e54a7fcd1eea12d10104c117a0f83",
+    "boot": "5150dcc3fde091eb3385967e3cb3d4f1"
+  },
+  "independent_evidence_review": "range_hotspot_trial_review inspected actual UART/BIN hashes/headers/cold registers/WLAN association/install artifact; no hardware actions or private reads",
+  "not_tested": [
+    "GUI click-through save interaction",
+    "long duration acquisition",
+    "rotating cutting",
+    "sensitivity accuracy and bandwidth calibration"
+  ],
+  "evidence_files": [
+    {
+      "path": "local-data/hardware/f-range-hotspot/20261024_122612/result.json",
+      "sha256": "d8e8d46a0486197f978f2c4126b82f3e193bf8921f3112aff934921cfda5bb78"
+    },
+    {
+      "path": "local-data/hardware/f-range-hotspot/20261024_122612/hardware.log",
+      "sha256": "8bf1cbbc379f714ea6f0c8d592bdded4a851c395d75d33ede237f75a1bca69f3"
+    },
+    {
+      "path": "local-data/hardware/f-range-hotspot/20261024_122612/backup.json",
+      "sha256": "a4ec55dd4daa1db88b734825413a3ed958bf0e359f0fe4e56da706a3eb9cf9a4"
+    },
+    {
+      "path": "local-data/hardware/f-range-hotspot/20261024_122612/csv-scale-checks.json",
+      "sha256": "2ae292680a2b00f333ca3a8efe1a1071795ff6f175fdff127373ca21bd492905"
+    },
+    {
+      "path": "local-data/hardware/f-range-hotspot/20261024_122612/original-network-restored.json",
+      "sha256": "66e0cb6811397968a78e461ac5a968dcbd34440dbe3b95ddaa21647c104fbd62"
+    },
+    {
+      "path": "local-data/hardware/f-range-hotspot/20261024_122612/final-check/result.json",
+      "sha256": "b3d48441b6fbf57b28a8428e860afd985fac1c385e32e74a0444cd350cfc5637"
+    },
+    {
+      "path": "local-data/hardware/f-range-hotspot/20261024_122612/check-network-122859/result.json",
+      "sha256": "9b97d7f3bbc10166ed4993ab692118311ba12cd31683c6cd42343a0205430e91"
+    },
+    {
+      "path": "local-data/hardware/f-range-hotspot/20261024_122612/check-network-122859/hardware.log",
+      "sha256": "60ef0e9f04f02218dfe8e516a17248300354ba83ef583cda329de9e5d23bc845"
+    },
+    {
+      "path": "local-data/hardware/f-range-hotspot/20261024_122612/warm-reset-123702/result.json",
+      "sha256": "49e4a0988b0793b804d5de3c86aa2d28b84eb2e651e155c21ed9e336b9ca7e5e"
+    },
+    {
+      "path": "local-data/hardware/f-range-hotspot/20261024_122612/warm-reset-123702/hardware.log",
+      "sha256": "9eecc4e264118e958d39c864ff47303e07a6c18aa1d342378f15a1ddd4eb7ef1"
+    },
+    {
+      "path": "local-data/validation/f-integration/native-network-probe/run-result.json",
+      "sha256": "3876066cfc3302db1a400f3f3b7ffd15ea2659404dc4737938e97f19b8b393ba"
+    },
+    {
+      "path": "local-data/hardware/f-range-hotspot/desktop-before-20261024-122751/install-result.json",
+      "sha256": "25932ac586cd2ebc60bdc854a5879586d4912af986ca60daf1c1757c05daf1a0"
+    },
+    {
+      "path": "local-data/hardware/f-range-hotspot/20261024_122612/check-cold-123132/result.json",
+      "sha256": "0515d1eb92eb531647f36e160adadd19ab1644746e8a4c43a612c87a9b37671f"
+    },
+    {
+      "path": "local-data/hardware/f-range-hotspot/20261024_122612/check-cold-123349/result.json",
+      "sha256": "620b5497bd184d459822075324ee5130f9c2d8ce5005d39a1321a062b7a2a523"
+    },
+    {
+      "path": "local-data/hardware/f-range-hotspot/20261024_122612/check-cold-123132/hardware.log",
+      "sha256": "5a52c32f9bfbfada1bb8c4d0163314594ef69181d1fa735a7071aba53f7aaa27"
+    },
+    {
+      "path": "local-data/hardware/f-range-hotspot/20261024_122612/check-cold-123349/hardware.log",
+      "sha256": "b4c11aa8031fe9666093b28f8c8346dc2caed5b1327bf9c0eb8985c5440dfedd"
+    },
+    {
+      "path": "local-data/hardware/f-range-hotspot/20261024_122612/0443EF9A.BIN",
+      "sha256": "3efbe86aa375f30d9eb963f7bab9793e3cd309602c583b917e2e7f2ddd203c28"
+    },
+    {
+      "path": "local-data/hardware/f-range-hotspot/20261024_122612/0443EF9A-summary.json",
+      "sha256": "048d6406aaeef26d0ae2eadd378bb243ad075cdabd859cb2b0c5555d423456e2"
+    },
+    {
+      "path": "local-data/hardware/f-range-hotspot/20261024_122612/0443EF9A.xyz.csv",
+      "sha256": "53ea833ad814433b5e61247bea295eb2c57669f1e38792ab40d9a72ad65fa7ee"
+    },
+    {
+      "path": "local-data/hardware/f-range-hotspot/20261024_122612/6964A509.BIN",
+      "sha256": "d5749fa90bd8deef858da70fe011fa820061cbb09ec6ec87209cdc863d793b0e"
+    },
+    {
+      "path": "local-data/hardware/f-range-hotspot/20261024_122612/6964A509-summary.json",
+      "sha256": "e167dde98da5e56bad3734ee65d4ef51ddfa75dc1bc050119fa970d92b28e61b"
+    },
+    {
+      "path": "local-data/hardware/f-range-hotspot/20261024_122612/6964A509.xyz.csv",
+      "sha256": "558efccfc5c02b8c58e5ac8a84f925907e99feca39c80fa1b34fe1a01f22218a"
+    },
+    {
+      "path": "local-data/hardware/f-range-hotspot/20261024_122612/03F6A4D0.BIN",
+      "sha256": "3d3fdf89254445f01afd3e42e4790230f1a9bb005091067b49ddbf3f39c970dc"
+    },
+    {
+      "path": "local-data/hardware/f-range-hotspot/20261024_122612/03F6A4D0-summary.json",
+      "sha256": "55718798da18205b9b1a185d1f586ae8baa7600cace103d2b4d7b2687a8fe293"
+    },
+    {
+      "path": "local-data/hardware/f-range-hotspot/20261024_122612/03F6A4D0.xyz.csv",
+      "sha256": "4eb056d3a06c37d9363daf7dc29756546e7ea51a372fced7eaf59ba7b7fe1db4"
+    }
+  ]
+}
