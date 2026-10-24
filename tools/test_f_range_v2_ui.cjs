@@ -36,7 +36,7 @@ const server=http.createServer(async(req,res)=>{
     posts.push({url:req.url,key:req.headers['x-record-key'],body});
     assert.equal(req.headers['x-record-key'],boot);
     if(['/api/v2/session/start','/api/v2/session/takeover'].includes(req.url)){
-      
+
       const r=JSON.parse(body);assert.equal(r.card_serial,s.card_serial);assert.equal(r.card_bytes,s.card_bytes);
       assert.match(r.run,/^[0-9A-F]{8}$/);s={...s,run:r.run,seconds:r.seconds,range_g:r.range_g,scale_micro_g:({2:61,8:244,16:488})[r.range_g],phase:'queued',owner:r.client};
     }
