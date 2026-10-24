@@ -36,6 +36,7 @@ int main(){
   for(unsigned i=0;i<control::kPreview;++i){s.xyz[i][0]=-32768;s.xyz[i][1]=32767;s.xyz[i][2]=i%2?-1:0;}
   denyAllocations=true;
   out[sizeof(out)-1]='@';
+  s.rangeG=16;
   auto n=control::renderStatusJson(out,sizeof(out)-1,key,s,owner,waiting,true);
   require(n>0&&n<sizeof(out)-1);require(strlen(out)==n);require(out[sizeof(out)-1]=='@');
   require(!deniedAllocations);
@@ -48,19 +49,19 @@ int main(){
   s.previewCount=control::kPreview+1;require(control::renderStatusJson(out,sizeof(out),key,s,owner,waiting,true)==0);s.previewCount=control::kPreview;
   control::TrendPoint points[control::kTrendPoints];
   for(auto& p:points){p.endSample=p.rmsUg[0]=p.rmsUg[1]=p.rmsUg[2]=p.nearFullScale=UINT32_MAX;}
-  auto t=control::renderTrendJson(out,sizeof(out)-1,key,s.run,points,control::kTrendPoints);
+  auto t=control::renderTrendJson(out,sizeof(out)-1,key,s.run,points,control::kTrendPoints,8);
   require(t>0&&t<sizeof(out)-1);require(strlen(out)==t);require(!deniedAllocations);
   denyAllocations=false;printf("TREND=%s\n",out);
   denyAllocations=true;
-  require(control::renderTrendJson(out,t+1,key,s.run,points,control::kTrendPoints)==t);
-  out[t]='@';require(control::renderTrendJson(out,t,key,s.run,points,control::kTrendPoints)==0);require(out[t]=='@');
+  require(control::renderTrendJson(out,t+1,key,s.run,points,control::kTrendPoints,8)==t);
+  out[t]='@';require(control::renderTrendJson(out,t,key,s.run,points,control::kTrendPoints,8)==0);require(out[t]=='@');
   require(control::renderTrendJson(out,sizeof(out),key,s.run,points,control::kTrendPoints+1)==0);
   require(control::renderTrendJson(out,sizeof(out),key,s.run,nullptr,1)==0);
   require(control::renderTrendJson(nullptr,0,key,s.run,points,0)==0);
   require(control::renderTrendJson(out,sizeof(out),key,s.run,nullptr,0)>0);
   for(unsigned i=0;i<1000;++i){
     require(control::renderStatusJson(out,sizeof(out)-1,key,s,owner,waiting,true)==n);
-    require(control::renderTrendJson(out,sizeof(out)-1,key,s.run,points,control::kTrendPoints)==t);
+    require(control::renderTrendJson(out,sizeof(out)-1,key,s.run,points,control::kTrendPoints,8)==t);
   }
   require(!deniedAllocations);denyAllocations=false;
   printf("CHECKS=%u DENIED_ALLOCATION_ATTEMPTS=%u\n",checks,deniedAllocations);

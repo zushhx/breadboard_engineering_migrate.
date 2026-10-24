@@ -29,13 +29,13 @@ inline size_t renderStatusJson(char* out, size_t capacity, const char* key,
   if (s.previewCount > kPreview) return 0;
   TelemetryWriter w(out,capacity);
   w.add("{\"boot\":\"%s\",\"phase\":\"%s\",\"ready\":%s,\"connected\":%s,\"ip\":\"%s\","
-      "\"card_serial\":\"%08" PRIX32 "\",\"card_bytes\":\"%" PRIu64 "\",\"space_valid\":%s,\"free_bytes\":\"%" PRIu64 "\",\"run\":\"%s\",\"seconds\":%u,"
+      "\"card_serial\":\"%08" PRIX32 "\",\"card_bytes\":\"%" PRIu64 "\",\"space_valid\":%s,\"free_bytes\":\"%" PRIu64 "\",\"run\":\"%s\",\"seconds\":%u,\"range_g\":%u,\"scale_micro_g\":%u,"
       "\"written\":%" PRIu64 ",\"elapsed_us\":%" PRIu64 ",\"errors\":%u,\"queue\":%u,"
       "\"fifo_high\":%u,\"queue_high\":%u,\"write_us\":%u,\"sync_us\":%u,\"free_heap\":%u,"
       "\"ina_valid\":%s,\"ina_us\":%" PRIu64 ",\"bus_mv\":%" PRId32 ",\"current_ua\":%" PRId32 ",\"power_uw\":%" PRId32 ","
       "\"detail\":\"%s\",\"sha256\":\"%s\",\"record_name\":\"%s\",\"record_path\":\"%s\",\"preview_seq\":%u,\"preview_us\":%" PRIu64 ",\"preview\":[",
       key,phaseName(s.phase),s.ready?"true":"false",s.connected?"true":"false",s.ip,
-      s.serial,s.capacity,s.spaceValid?"true":"false",s.freeBytes,s.run,unsigned(s.seconds),
+      s.serial,s.capacity,s.spaceValid?"true":"false",s.freeBytes,s.run,unsigned(s.seconds),s.rangeG,unsigned(sensor_range::scaleMicroG(s.rangeG)),
       s.written,s.elapsedUs,unsigned(s.errors),unsigned(s.queue),unsigned(s.fifoHigh),unsigned(s.queueHigh),
       unsigned(s.maxWriteUs),unsigned(s.maxSyncUs),unsigned(s.freeHeap),s.inaValid?"true":"false",s.inaUs,
       s.busMv,s.currentUa,s.powerUw,s.detail,s.sha,s.recordName,s.recordPath,unsigned(s.previewSeq),s.previewUs);
@@ -45,10 +45,10 @@ inline size_t renderStatusJson(char* out, size_t capacity, const char* key,
   return w.size();
 }
 inline size_t renderTrendJson(char* out, size_t capacity, const char* key,
-                             const char* run, const TrendPoint* points, unsigned count) {
+                             const char* run, const TrendPoint* points, unsigned count, unsigned rangeG = 2) {
   if (count>kTrendPoints || (count && !points)) return 0;
   TelemetryWriter w(out,capacity);
-  w.add("{\"boot\":\"%s\",\"run\":\"%s\",\"sample_rate\":26667,\"window_samples\":5333,\"points\":[",key,run);
+  w.add("{\"boot\":\"%s\",\"run\":\"%s\",\"range_g\":%u,\"scale_micro_g\":%u,\"sample_rate\":26667,\"window_samples\":5333,\"points\":[",key,run,rangeG,unsigned(sensor_range::scaleMicroG(rangeG)));
   for(unsigned i=0;i<count;++i) {
     const auto& p=points[i];
     w.add("%s[%" PRIu32 ",%" PRIu32 ",%" PRIu32 ",%" PRIu32 ",%" PRIu32 "]",i?",":"",p.endSample,

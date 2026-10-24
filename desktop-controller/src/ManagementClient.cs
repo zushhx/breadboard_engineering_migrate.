@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -72,6 +72,25 @@ namespace BreadboardController
         public Dictionary<string, object> Get(string path) { return (Dictionary<string, object>)Request("GET", path, null); }
         public Dictionary<string, object> Post(string path, Dictionary<string, object> body)
         { cancellation.ThrowIfCancellationRequested(); return (Dictionary<string, object>)Request("POST", "/api/v2/" + path, body); }
+        public void SaveNetwork(Dictionary<string, object> settings)
+        {
+            ValidateNetwork(settings);
+            Post("network/save", settings);
+            for (int attempt = 0; attempt < 20; ++attempt)
+            {
+                cancellation.ThrowIfCancellationRequested();
+                Thread.Sleep(250);
+                Dictionary<string, object> state;
+                try { state = Get("/api/v2/network/state"); }
+                catch (Exception) { throw new IOException("配置已保存，应用结果未确认，请通过 USB 重新读取。"); }
+                if (Flag(state, "applying")) continue;
+                if (!Flag(state, "apply_ok")) throw new IOException("配置已保存，但主控应用失败，请通过 USB 检查。");
+                if (Str(state, "ap_password") != Str(settings, "ap_password") || Str(state, "ap_ssid") != Str(settings, "ap_ssid") || Flag(state, "ap_enabled") != Flag(settings, "ap_enabled") || Flag(state, "sta_enabled") != Flag(settings, "sta_enabled") || Str(state, "ssid") != Str(settings, "ssid"))
+                    throw new IOException("主控读回配置与提交值不同，请重新读取确认。");
+                return;
+            }
+            throw new IOException("配置已保存，应用结果仍待确认，请通过 USB 重新读取。");
+        }
         public object[] Scan()
         { cancellation.ThrowIfCancellationRequested(); return (object[])Request("POST", "/api/v2/network/scan", Args()); }
         public static void ValidateNetwork(Dictionary<string, object> settings)

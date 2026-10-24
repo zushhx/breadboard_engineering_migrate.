@@ -153,7 +153,7 @@ static bool verify(const char* path, char* digest) {
   mbedtls_sha256_context hash; mbedtls_sha256_init(&hash); mbedtls_sha256_starts_ret(&hash, 0);
   Header head = {}; bool ok = readExact(&head, sizeof(head));
   ok = ok && memcmp(head.magic, "I3REC001", 8) == 0 && head.bytes == sizeof(head) && head.version == 1 &&
-      head.crc == crc32(&head, offsetof(Header, crc));
+      sensor_range::validScale(head.scaleMicroG) && head.crc == crc32(&head, offsetof(Header, crc));
   if (ok) mbedtls_sha256_update_ret(&hash, reinterpret_cast<uint8_t*>(&head), sizeof(head));
   uint32_t sequence = 0, inaCount = 0, invalid = 0; uint64_t samples = 0; bool ended = false;
   while (ok && !ended) {
@@ -211,9 +211,9 @@ static bool sync() {
   if (!ok) fail(Write);
   return ok;
 }
-static void record(const Store& store, const char* run, unsigned seconds) {
+static void record(const Store& store, const char* run, unsigned seconds, unsigned rangeG) {
   if (locked) { Serial.println("[rec] rejected: previous failure; preserve evidence, reboot required"); return; }
-  if (!control::begin(run, seconds)) { Serial.println("[rec] rejected busy/unavailable control state"); return; }
+  if (!control::begin(run, seconds, rangeG)) { Serial.println("[rec] rejected busy/unavailable control state"); return; }
   control::phase(control::Phase::Preparing, "检查卡、内存与模块；准备本轮录制");
   char directory[64], path[96], name[kRecordNameSize], stamp[18]; uint64_t namingElapsed=0;
   const bool named=control::recordNaming(run,stamp,namingElapsed);
@@ -249,13 +249,13 @@ static void record(const Store& store, const char* run, unsigned seconds) {
   if (control::stopping()) { control::result(false, false, "准备阶段已取消，未写卡"); return; }
   if (!resources()) { cleanup(); locked = true; Serial.println("[rec] FAIL resource allocation; no card writes");
     control::result(false, true, "任务或队列分配失败，未写卡；保留现场"); return; }
-  if (!modules::prepareRecord()) {
+  if (!modules::prepareRecord(rangeG)) {
     cleanup(); locked = true; Serial.println("[rec] FAIL module preparation; no card writes");
     control::result(false, true, "模块准备失败，未写卡；保留现场"); return;
   }
   Header h = {}; memcpy(h.magic, "I3REC001", 8); h.bytes = sizeof(h); h.version = 1;
   h.cardSerial = store.serial; h.cardBytes = store.capacity; h.seconds = seconds;
-  h.odr = 26667; h.spiHz = 8000000; h.scaleMicroG = 61; h.flags = 1; // INA precision unaccepted.
+  h.odr = 26667; h.spiHz = 8000000; h.scaleMicroG = sensor_range::scaleMicroG(rangeG); h.flags = 1; // INA precision unaccepted.
   h.shuntMicroOhm = 100000; h.currentLsbNanoA = 25000; h.powerLsbNanoW = 625000;
   h.inaAddress = modules::monitorAddressValue();
   snprintf(h.source, sizeof(h.source), "%s", TF_SOURCE_COMMIT); snprintf(h.inputs, sizeof(h.inputs), "%s", TF_INPUT_SHA256);
@@ -278,7 +278,7 @@ static void record(const Store& store, const char* run, unsigned seconds) {
   if (opened) control::recordLocation(run,name,path+strlen(store.drive));
   mbedtls_sha256_context hash; mbedtls_sha256_init(&hash); mbedtls_sha256_starts_ret(&hash, 0);
   if (ok) ok = emit(&h, sizeof(h), hash) && sync();
-  if (ok) ok = modules::startFifo();
+  if (ok) ok = modules::startFifo(rangeG);
   if (!ok) {
     modules::stopInput(); if (opened) f_close(&file);
     store.gate(false); mbedtls_sha256_free(&hash); cleanup(); locked = true;
@@ -295,7 +295,8 @@ static void record(const Store& store, const char* run, unsigned seconds) {
   totals.startUs = now(); deadline = totals.startUs + static_cast<uint64_t>(seconds) * 1000000;
   control::phase(control::Phase::Recording, "正在写入完整原始数据；页面提供限速短窗口预览");
   xTaskNotifyGive(sensorTask); xTaskNotifyGive(monitorTask);
-  Serial.printf("[rec] START run=%s seconds=%u start_us=%llu\n", run, seconds, (unsigned long long)totals.startUs);
+  Serial.printf("[rec] START run=%s seconds=%u range_g=%u scale_micro_g=%lu start_us=%llu\n", run, seconds,
+      rangeG, (unsigned long)h.scaleMicroG, (unsigned long long)totals.startUs);
   uint32_t seq = 0; uint64_t writtenSamples = 0, nextSync = now() + 1000000, nextReport = nextSync;
   tftest::LineInput input;
   while (true) {
@@ -388,7 +389,7 @@ void command(const char* line, const Store& store) {
   }
   Request request = {};
   if (parseRequest(line, request) && request.write && request.serial == store.serial && request.capacity == store.capacity) {
-    record(store, request.run, request.seconds); return;
+    record(store, request.run, request.seconds, request.rangeG); return;
   } else if (parseRequest(line, request) && !request.write) {
     char path[56], digest[65] = {}; snprintf(path, sizeof(path), "%s/REC_%s/DATA.BIN", store.drive, request.run);
     bool ok = verify(path, digest);

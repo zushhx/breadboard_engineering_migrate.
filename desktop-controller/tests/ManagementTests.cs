@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -16,7 +16,8 @@ public static class ManagementTests
         public string Description { get { return "management mock"; } }
         public readonly List<string> Calls = new List<string>();
         public byte[] Data = Enumerable.Range(0, 5001).Select(i => (byte)(i % 251)).ToArray();
-        public bool Corrupt, WrongJob, Reject, UploadFinished;
+        public bool Corrupt, WrongJob, Reject, UploadFinished, ApplyFailure, WrongAp;
+        public Dictionary<string, object> Network;
         public int Position;
         public string Job = "", LastKey, LastBody;
         private object result;
@@ -29,7 +30,8 @@ public static class ManagementTests
             if (path == "/api/status") return Reply(ManagementClient.Args("boot", Boot));
             if (path == "/api/v2/capabilities") return Reply(ManagementClient.Args("version", 2, "atomic_file_cancel", true));
             if (path == "/api/v2/network/scan") return Reply(new[] { ManagementClient.Args("ssid", "测试网络", "rssi", -30) });
-            if (path == "/api/v2/network/save") return Reply(ManagementClient.Args("accepted", true));
+            if (path == "/api/v2/network/save") { Network = new JavaScriptSerializer().Deserialize<Dictionary<string, object>>(body); return Reply(ManagementClient.Args("accepted", true), 202); }
+            if (path == "/api/v2/network/state") return Reply(ManagementClient.Args("applying", false, "apply_ok", !ApplyFailure, "sta_enabled", Network["sta_enabled"], "ssid", Network["ssid"], "ap_enabled", Network["ap_enabled"], "ap_ssid", Network["ap_ssid"], "ap_password", WrongAp ? "different-test-password" : Network["ap_password"]));
             if (path == "/api/v2/files/state") return Reply(ManagementClient.Args("job", WrongJob ? "other-job" : Job, "running", false, "bytes", Position, "code", Reject ? 409 : 200, "result", Reject ? ManagementClient.Args("error", "正在采集中") : result));
             var args = new JavaScriptSerializer().Deserialize<Dictionary<string, object>>(body);
             if (key != Boot || (string)args["boot"] != Boot) return Reply(ManagementClient.Args("error", "bad boot"), 403);
@@ -64,6 +66,14 @@ public static class ManagementTests
         var config = ManagementClient.Args("sta_enabled", true, "ap_enabled", true, "ssid", "测试WiFi", "password", "12345678", "ap_ssid", "主控热点", "ap_password", "87654321");
         ManagementClient.ValidateNetwork(config); client.Post("network/save", config);
         check(fake.LastBody.Contains("12345678") && fake.LastKey == Boot, "network save sends explicit configuration with boot guard");
+        client.SaveNetwork(config);
+        check(fake.Calls.Contains("GET /api/v2/network/state"), "network save confirms applied state");
+        fake.ApplyFailure = true; bool applyRejected = false;
+        try { client.SaveNetwork(config); } catch (IOException) { applyRejected = true; }
+        check(applyRejected, "network apply failure is surfaced"); fake.ApplyFailure = false;
+        fake.WrongAp = true; applyRejected = false;
+        try { client.SaveNetwork(config); } catch (IOException) { applyRejected = true; }
+        check(applyRejected, "AP password readback mismatch is surfaced"); fake.WrongAp = false;
         config["ssid"] = new string('测', 11); bool rejected = false;
         try { ManagementClient.ValidateNetwork(config); } catch (ArgumentException) { rejected = true; }
         check(rejected, "SSID limit is UTF-8 bytes rather than character count");

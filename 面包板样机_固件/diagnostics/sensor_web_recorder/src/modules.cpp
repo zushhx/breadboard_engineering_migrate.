@@ -1,5 +1,6 @@
 #include "modules.h"
 #include "module_values.h"
+#include "sensor_range.h"
 #include "serial_compat.h"
 #include "driver/spi_master.h"
 #include "driver/i2c_master.h"
@@ -105,10 +106,14 @@ static void snapshot() {
   uint8_t c1 = 0, c3 = 0, c6 = 0, irq = 0, status = 0, xyz[6] = {};
   bool a = spiRead(0x10, &c1, 1), b = spiRead(0x12, &c3, 1), c = spiRead(0x15, &c6, 1);
   bool d = spiRead(0x0D, &irq, 1), e = spiRead(0x1E, &status, 1), f = spiRead(0x28, xyz, 6);
-  bool valid = identity && a && b && c && d && e && f && c1 == 0xA0 && c3 == 0x44 && c6 == 0 && irq == 0 && (status & 1);
+  const unsigned rangeG = sensor_range::fromCtrl1(c1);
+  bool valid = identity && a && b && c && d && e && f && rangeG && c3 == 0x44 && c6 == 0 && irq == 0 && (status & 1);
   Serial.printf("[modules] IIS ctrl1=%02X ctrl3=%02X ctrl6=%02X int1=%02X status=%02X data_valid=%u\n", c1, c3, c6, irq, status, valid);
-  if (valid) Serial.printf("[modules] IIS snapshot_mg x=%.3f y=%.3f z=%.3f fullrate_capture=0\n",
-      leSigned16(xyz) * 0.061, leSigned16(xyz + 2) * 0.061, leSigned16(xyz + 4) * 0.061);
+  if (valid) {
+    const double scaleMg = sensor_range::scaleMicroG(rangeG) / 1000.0;
+    Serial.printf("[modules] IIS snapshot_mg x=%.3f y=%.3f z=%.3f range_g=%u fullrate_capture=0\n",
+        leSigned16(xyz) * scaleMg, leSigned16(xyz + 2) * scaleMg, leSigned16(xyz + 4) * scaleMg, rangeG);
+  }
   bool identified = monitorIdentity();
   InaRegisters r = {};
   bool ok = inaRead(0, r.config);
@@ -143,7 +148,8 @@ static bool check(uint8_t reg, uint8_t expected) {
   uint8_t value = 0;
   return spiRead(reg, &value, 1) && value == expected;
 }
-bool prepareRecord() {
+bool prepareRecord(unsigned rangeG) {
+  if (!sensor_range::valid(rangeG)) return false;
   bool a = sensorIdentity(), b = monitorIdentity();
   if (!a || !b) return false;
   // Only one INA configuration attempt per MCU boot; subsequent starts verify it.
@@ -155,6 +161,8 @@ bool prepareRecord() {
   InaRegisters r = {}; bool valid = false;
   if (!monitorRead(r, valid) || !valid) return false;
   bool ok = spiWrite(0x10, 0x00); // Axis configuration changes require power-down first.
+  const uint8_t poweredDownRange = sensor_range::ctrl1(rangeG) & 0x0C;
+  if (poweredDownRange) ok = ok && spiWrite(0x10, poweredDownRange);
   ok = ok && spiWrite(0x0D, 0x00);
   ok = ok && spiWrite(0x0E, 0x00);
   ok = ok && spiWrite(0x12, 0x44);
@@ -164,12 +172,14 @@ bool prepareRecord() {
   ok = ok && spiWrite(0x0A, 0x00); // Clear FIFO only before a new record.
   ok = ok && spiWrite(0x07, 0x80) && spiWrite(0x08, 0x00);
   ok = ok && spiWrite(0x09, 0x0A);
-  return ok && check(0x10, 0) && check(0x12, 0x44) && check(0x15, 0) &&
+  return ok && check(0x10, poweredDownRange) && check(0x12, 0x44) && check(0x15, 0) &&
       check(0x0D, 0) && check(0x0E, 0) && check(0x16, 0) && check(0x17, 0) &&
       check(0x19, 0) && check(0x07, 0x80) && check(0x08, 0) && check(0x09, 0x0A) && check(0x0A, 0);
 }
-bool startFifo() {
-  if (!spiWrite(0x10, 0xA0) || !check(0x10, 0xA0)) return false;
+bool startFifo(unsigned rangeG) {
+  if (!sensor_range::valid(rangeG)) return false;
+  const uint8_t ctrl1 = sensor_range::ctrl1(rangeG);
+  if (!spiWrite(0x10, ctrl1) || !check(0x10, ctrl1)) return false;
   delay(10); // Datasheet power-on settling before starting the recording FIFO.
   return spiWrite(0x0A, 0x06) && check(0x0A, 0x06);
 }

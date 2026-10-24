@@ -14,6 +14,7 @@ FOOTER = struct.Struct('<QQQ11I')
 FOOTER_FIELDS = ('samples start_us stop_us ina_samples ina_invalid errors saturation fifo_high '
                  'queue_high max_write_us max_sync_us min_heap sensor_stack ina_stack').split()
 MAX_PAYLOAD = 4096
+SCALE_RANGES = {61: 2, 244: 8, 488: 16}
 
 
 class RecordError(ValueError):
@@ -44,14 +45,17 @@ def validate(path, xyz_csv=None, ina_csv=None, preview_limit=2000):
         h = HEADER.unpack(raw)
         if h[0] != b'I3REC001' or h[1] != HEADER.size or h[2] != 1 or zlib.crc32(raw[:-4]) != h[-1]:
             raise RecordError('invalid header/version/CRC')
-        if h[6:10] != (26667, 8000000, 61, 1) or h[14:17] != (100000, 25000, 625000) or not 0x40 <= h[17] <= 0x4f:
+        if ((h[6], h[7], h[9]) != (26667, 8000000, 1) or h[8] not in SCALE_RANGES or
+                h[14:17] != (100000, 25000, 625000) or not 0x40 <= h[17] <= 0x4f):
             raise RecordError('unsupported rate/SPI/scale/precision flags')
         meta = dict(card_serial=f'{h[3]:08X}', card_bytes=h[4], requested_seconds=h[5],
-                    odr=h[6], spi_hz=h[7], scale_micro_g=h[8], ina_precision_accepted=False,
+                    odr=h[6], spi_hz=h[7], scale_micro_g=h[8], range_g=SCALE_RANGES[h[8]],
+                    ina_precision_accepted=False,
                     source=text(h[10]), inputs=text(h[11]), mac=text(h[12]), wiring=text(h[13]),
                     shunt_micro_ohm=h[14], current_lsb_nA=h[15], power_lsb_nW=h[16], ina_address=h[17])
         if not 1 <= h[5] <= 300 or len(meta['source']) != 40 or len(meta['inputs']) != 64:
             raise RecordError('invalid metadata')
+        scale_mg = meta['scale_micro_g'] / 1000
         digest.update(raw)
         while footer is None:
             raw = stream.read(BLOCK.size)
@@ -75,7 +79,7 @@ def validate(path, xyz_csv=None, ina_csv=None, preview_limit=2000):
                         raise RecordError('unexpected FIFO tag')
                     saturation += sum(value <= -32760 or value >= 32760 for value in (x, y, z))
                     row = (samples + index, (samples + index) / meta['odr'], x, y, z,
-                           x * .061, y * .061, z * .061)
+                           x * scale_mg, y * scale_mg, z * scale_mg)
                     if xyz_writer:
                         xyz_writer.writerow(row)
                     # Bounded preview of first samples, not an antialias-filtered downsample.

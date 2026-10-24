@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
@@ -139,10 +139,10 @@ namespace BreadboardController
             {
                 if (networkReadTarget != backendTarget || networkReadBoot != client.Boot) throw new IOException("请先读取当前主控设置，再修改并保存。");
                 // Network change may disconnect LAN. Only a deliberate user click reaches here.
-                await Task.Run(() => client.Post("network/save", values));
+                await Task.Run(() => client.SaveNetwork(values));
                 Find<PasswordBox>("DeviceWifiPassword").Password = "";
                 Find<TextBox>("DeviceUrls").Text = "网络配置已变化，请重新读取实际地址。USB 本电脑入口：" + bridge.Address.AbsoluteUri;
-                Text("DeviceNetworkMessage", "配置已保存，主控正在应用。请稍后点「读取主控设置」确认连接和网址。通过 Wi-Fi 操作时可能断开，可用 USB 恢复。密码未保存在电脑。");
+                Text("DeviceNetworkMessage", "配置已保存并已确认主控应用完成。请用新密码重新连接热点；Windows 已保存的旧密码需更新。密码未保存在电脑。");
             });
         }
         private Task ReadFilesAsync(bool append)
