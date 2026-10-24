@@ -9,11 +9,11 @@
     "bytes": 1133392,
     "sha256": "46aa94883f68c783ee2050ef54139e1e91eba035036ee5dda21e6bbfa49bc944"
   },
-  "desktop_manifest": "local-data/desktop-controller/f-range-candidate-421da25/build-manifest.json",
+  "desktop_manifest": "local-data/desktop-controller/f-range-candidate-b9e190d/build-manifest.json",
   "desktop_artifact": {
     "name": "主控控制台.exe",
     "bytes": 159744,
-    "sha256": "1667f49f39334de3d154fa2f37c08accb57f918d89f99d3417bb94c958bb5a59"
+    "sha256": "e845416b3b436193aefec01f224b92c898e6a58738b3f430f4ef25ea8ae792d2"
   },
   "logs": [
     {
@@ -29,19 +29,21 @@
       "sha256": "c4e0d0db0fffaaf66a0d09c7459c178ffb82b70952fb088f409a703ad537ee23"
     },
     {
-      "path": "local-data/desktop-controller/f-range-candidate-421da25/test-output.log",
+      "path": "local-data/desktop-controller/f-range-candidate-b9e190d/test-output.log",
       "sha256": "8b874b5bff1990d99ba419cb93edb3c432d0335e9323c50637c0dd2a0a4a3bb9"
     }
   ],
   "hardware_accessed": false,
   "review": {
     "independent": "f_integration_review: range/network static review; save-lock finding fixed and re-reviewed",
-    "self": "root: USB transplanted diff and integration checks"
+    "self": "root: USB transplanted diff and integration checks",
+    "plugin_attempt": "Code Review pull_requests_checks PR26 returned Cannot connect to GitHub; no plugin review success claimed"
   },
   "pending": [
     "real AP new-password reconnect",
     "real NVS cold-start persistence",
     "three-range physical captures and header checks",
     "desktop candidate installation"
-  ]
+  ],
+  "desktop_source_commit": "b9e190d3f2f152a74252b7ceebf94daba085aaaa"
 }

@@ -1,6 +1,6 @@
 # F 量程集成与热点保存确认候选
 
-日期：2026-10-24。软件源码 `421da251210e54a7fcd1eea12d10104c117a0f83`，F 起点 `360522d53544cdafdf5e0a33da9dd1e7d2e7543f`。证据索引见 [JSON](F_RANGE_HOTSPOT_EVIDENCE_20261024.json)。
+日期：2026-10-24。固件源码 `421da251210e54a7fcd1eea12d10104c117a0f83`，桌面源码 `b9e190d3f2f152a74252b7ceebf94daba085aaaa`，F 起点 `360522d53544cdafdf5e0a33da9dd1e7d2e7543f`。证据索引见 [JSON](F_RANGE_HOTSPOT_EVIDENCE_20261024.json)。
 
 ## 改动与结论
 
@@ -13,20 +13,20 @@
 
 固定 ESP-IDF 5.4.2 / PlatformIO 6.2.0，PowerShell 7.6.6，桌面固定 .NET Framework 编译器。两类产物均从干净提交构建通过；凭据为空，设备配置沿用已有 NVS 或恢复 AP 引导。
 
-CI 宿主检查沿用 main 已接收的固定 `pyserial==3.5` 安装步骤，补齐 F 工作流遗漏的测试依赖；测试模块亦采用 main 已接收的 telemetry host 命名以避免导入同名模块。此调整覆盖测试入口，候选固件与桌面输入保持源码 421da25 对应清单。
+CI 宿主检查沿用 main 已接收的固定 `pyserial==3.5` 安装步骤，补齐 F 工作流遗漏的测试依赖；测试模块亦采用 main 已接收的 telemetry host 命名以避免导入同名模块。此调整覆盖测试入口，候选固件保持 421da25 对应输入，桌面末次调整仅将“正在应用”提示优先于失败提示。
 
 宿主回归包含会话与接管、178 项文件/路由检查、2024 项有界遥测检查、41 项网络驱动/NVS 模拟检查、6 项控制模型及 13 项文件解析测试。浏览器验证三档开始、接管、忙状态与比例；网络保存模拟验证成功、失败、读回不符与断连；桌面 100 项检查通过。原始日志路径及 SHA 见证据索引。所有通过范围限软件环境。
 
-量程与热点由另一 agent 独立静态审查，发现保存期间可编辑输入/周期刷新重启用按钮，已修复并复查通过。USB 移植由主 agent 自行复核最终差异，保留原有下载诊断构造函数与行为。编译保留原有两项警告（关闭窗口 Dispatcher 未等待调用、模拟字段未赋值），构建通过；真实 USB 操作待验。
+量程与热点由另一 agent 独立静态审查，发现保存期间可编辑输入/周期刷新重启用按钮，已修复并复查通过。USB 移植由主 agent 自行复核最终差异，保留原有下载诊断构造函数与行为。编译保留原有两项警告（关闭窗口 Dispatcher 未等待调用、模拟字段未赋值），构建通过；真实 USB 操作待验。Code Review 插件读取 PR #26 时返回连接 GitHub 失败，插件审查未完成；上述独立 agent 审查和主 agent 自审有实际执行记录。
 
 ## 候选与恢复
 
 | 产物 | 字节 | SHA-256 |
 | --- | ---: | --- |
 | firmware.bin | 1133392 | `46aa94883f68c783ee2050ef54139e1e91eba035036ee5dda21e6bbfa49bc944` |
-| 主控控制台.exe | 159744 | `1667f49f39334de3d154fa2f37c08accb57f918d89f99d3417bb94c958bb5a59` |
+| 主控控制台.exe | 159744 | `e845416b3b436193aefec01f224b92c898e6a58738b3f430f4ef25ea8ae792d2` |
 
-固件：`local-data/build/sensor-web/5a5e2d3126851a59/20261024_114245_417538/artifacts/firmware.bin`；桌面：`local-data/desktop-controller/f-range-candidate-421da25/主控控制台.exe`。SDK/分区/凭据策略沿用 F 构建入口；静态 RAM 87476 字节，运行时余量待实机观测。
+固件：`local-data/build/sensor-web/5a5e2d3126851a59/20261024_114245_417538/artifacts/firmware.bin`；桌面：`local-data/desktop-controller/f-range-candidate-b9e190d/主控控制台.exe`。SDK/分区/凭据策略沿用 F 构建入口；静态 RAM 87476 字节，运行时余量待实机观测。
 
 现有 F 恢复镜像保存在另一 worktree：`C:/Users/acer/.codex/worktrees/wifi-tf-240-f/直插式面包板样机/local-data/build/sensor-web/f90de84d6ec276bb/20261020_222729_256699/artifacts/firmware.bin`，1125632 字节，SHA `7fa116e326f59c194172607ee52305078729bcc9b409d56f6949874e780d25fe`。桌面原安装 v4 SHA 为 `a0d8f36396d40ce0b04ccd427e6ee3bce4f1cc161de0962487e5b1fc07232a61`。历史恢复记录保留原适用条件；新试烧前另做当轮身份、应用区及 NVS 备份核验。
 

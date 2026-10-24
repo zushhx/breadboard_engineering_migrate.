@@ -115,7 +115,7 @@ namespace BreadboardController
                 Find<TextBox>("DeviceUrls").Text = "本电脑入口：" + bridge.Address.AbsoluteUri +
                     (wifiIp.Length > 0 ? "\nWi-Fi 检测页：http://" + wifiIp + "/" : "") +
                     (ManagementClient.Flag(n, "ap_enabled") ? "\n主控热点检测页：http://" + apIp + "/" : "");
-                Text("DeviceNetworkMessage", !ManagementClient.Flag(n, "apply_ok") ? "主控网络未启动成功，请检查配置。" : ManagementClient.Flag(n, "applying") ? "配置正在应用，请稍后重新读取。" :
+                Text("DeviceNetworkMessage", ManagementClient.Flag(n, "applying") ? "配置正在应用，请稍后重新读取。" : !ManagementClient.Flag(n, "apply_ok") ? "主控网络未启动成功，请检查配置。" :
                     ManagementClient.Flag(n, "connected") ? "主控 Wi-Fi 已连接：" + wifiIp : "主控 Wi-Fi 尚未连接。可通过 USB 配置。" + (ManagementClient.Flag(n, "ap_enabled") ? "主控热点已开启。" : ""));
             });
         }
