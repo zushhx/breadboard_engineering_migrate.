@@ -44,6 +44,7 @@ static TrendAccumulator trendAccumulator;
 static TrendHistory trendHistory;
 
 static char trendRun[9];
+static unsigned trendRangeG = 2;
 static bool addressLogPending;
 static esp_err_t connectLogPending = ESP_OK;
 static const char* const pageStart = webPage;
@@ -54,11 +55,11 @@ void initialize(bool ready, uint32_t serial, uint64_t capacity) {
   if (!ready) { model.s.phase = Phase::Failed; snprintf(model.s.detail, sizeof(model.s.detail), "TF或采集池不可用；禁止录制"); }
 }
 void storageSpace(bool valid, uint64_t bytes) { Guard g; model.storageSpace(valid, bytes); }
-bool take(char* run, unsigned& seconds) { Guard g; sessions.tick(model,esp_timer_get_time()); return model.take(run, seconds); }
-bool begin(const char* run, unsigned seconds) {
+bool take(char* run, unsigned& seconds, unsigned* rangeG) { Guard g; sessions.tick(model,esp_timer_get_time()); return model.take(run, seconds, rangeG); }
+bool begin(const char* run, unsigned seconds, unsigned rangeG) {
   Guard g;
-  if (!model.begin(run, seconds)) return false;
-  lastPreview = 0; trendAccumulator.reset(); trendHistory.reset();
+  if (!model.begin(run, seconds, rangeG)) return false;
+  lastPreview = 0; trendAccumulator.reset(sensor_range::scaleMicroG(rangeG)); trendHistory.reset(); trendRangeG = rangeG;
   snprintf(trendRun, sizeof(trendRun), "%s", run);
   return true;
 }
@@ -139,9 +140,9 @@ static size_t buildStatusJson() {
   return renderStatusJson(telemetryJson,sizeof(telemetryJson),key,s,owner,waiting,files);
 }
 static size_t buildTrendJson() {
-  static TrendPoint points[kTrendPoints]; char run[9]; unsigned count;
-  {Guard g;count=trendHistory.copy(points);memcpy(run,trendRun,sizeof(run));}
-  return renderTrendJson(telemetryJson,sizeof(telemetryJson),key,run,points,count);
+  static TrendPoint points[kTrendPoints]; char run[9]; unsigned count, rangeG;
+  {Guard g;count=trendHistory.copy(points);memcpy(run,trendRun,sizeof(run));rangeG=trendRangeG;}
+  return renderTrendJson(telemetryJson,sizeof(telemetryJson),key,run,points,count,rangeG);
 }
 bool streamTelemetry(bool trend,TelemetrySink sink,void* context) {
   if(!sink) return false;
@@ -226,6 +227,8 @@ devicev2::Reply sessionRequest(const char* action,cJSON* a) {
   } else if(!strcmp(action,"release")) {Guard guard;sessions.release(model,id);}
   else if(!strcmp(action,"stop")) {Guard guard;model.requestStop();}
   else {
+    int rangeG=2; auto rangeValue=cJSON_GetObjectItemCaseSensitive(a,"range_g");
+    if(rangeValue&&(!devicev2::integer(a,"range_g",2,16,rangeG)||!sensor_range::valid(rangeG)))return devicev2::error(400,"invalid range");
     int seconds=0;const char* run=devicev2::text(a,"run");const char* serial=devicev2::text(a,"card_serial");const char* capacity=devicev2::text(a,"card_bytes");
     auto stampValue=cJSON_GetObjectItem(a,"local_time");
     if(stampValue&&(!cJSON_IsString(stampValue)||!recorder::localStamp(stampValue->valuestring)))return devicev2::error(400,"采集本地时间无效，请校准电脑或手机时间并刷新页面");
@@ -234,8 +237,8 @@ devicev2::Reply sessionRequest(const char* action,cJSON* a) {
     for(const char* digit=capacity;*digit;digit++) if(*digit<'0'||*digit>'9') return devicev2::error(400,"卡容量无效");
     char* end=nullptr;uint64_t bytes=strtoull(capacity,&end,10);if(!end||*end) return devicev2::error(400,"卡容量无效");
     {Guard guard;
-      if(!strcmp(action,"start")) ok=sessions.start(model,id,now,strtoul(serial,nullptr,16),bytes,run,seconds,local);
-      else if(!strcmp(action,"takeover")) ok=sessions.takeover(model,id,now,devicev2::text(a,"expected_run"),strtoul(serial,nullptr,16),bytes,run,seconds,local);
+      if(!strcmp(action,"start")) ok=sessions.start(model,id,now,strtoul(serial,nullptr,16),bytes,run,seconds,local,rangeG);
+      else if(!strcmp(action,"takeover")) ok=sessions.takeover(model,id,now,devicev2::text(a,"expected_run"),strtoul(serial,nullptr,16),bytes,run,seconds,local,rangeG);
     }
     if(!ok) return devicev2::error(409,"状态已变化、其他页面正在采集或文件任务未完成；请刷新状态");
   }

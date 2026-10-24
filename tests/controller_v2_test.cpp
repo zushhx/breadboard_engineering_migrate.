@@ -42,6 +42,21 @@ int main(){
   // A queued start is cancelled before storage, so queued takeover may transfer immediately.
   s.touch(B,2);assert(takeover(s,m,B));assert(m.s.phase==Phase::Queued&&!strcmp(s.owner,B));
   for(auto phase:{Phase::Closing,Phase::Verifying}){m.s.phase=phase;assert(!takeover(s,m,C));}
+  // A pending takeover must retain its own range after the previous record closes.
+  for(unsigned range:{2u,8u,16u}) {
+    m=model();s={};s.touch(A,1);s.touch(B,1);
+    assert(s.start(m,A,1,7,8000000000ULL,"00000001",90,"",range));
+    assert(m.s.rangeG==range);m.s.phase=Phase::Recording;
+    unsigned next=range==16?2:16;
+    assert(s.takeover(m,B,2,"00000001",7,8000000000ULL,"00000002",60,"",next));
+    assert(m.s.rangeG==range);m.s.phase=Phase::Passed;s.finish(m,true,3);
+    assert(m.s.rangeG==next&&m.s.phase==Phase::Queued);
+  }
+  m=model();s={};s.touch(A,1);s.touch(B,1);
+  assert(!s.start(m,A,1,7,8000000000ULL,"00000001",90,"",4));
+  assert(start(s,m,A));m.s.phase=Phase::Recording;
+  assert(!s.takeover(m,B,2,"00000001",7,8000000000ULL,"00000002",60,"",4));
+  assert(!s.pendingOwner[0]&&!m.s.stop);
   assert(devicev2::validPath("/",true));assert(!devicev2::validPath("/"));
   assert(devicev2::validPath("/测试/波形.bin"));
   for(auto path:{"","relative","//bad","/../x","/a/./b","/a\\b","/a:stream","/trailing.","/trailing ","/a//b","/a/"})assert(!devicev2::validPath(path));

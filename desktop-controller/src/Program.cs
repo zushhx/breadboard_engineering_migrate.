@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
+using System.Runtime.ExceptionServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -51,7 +52,8 @@ namespace BreadboardController
         private readonly AppSettings settings;
         private readonly List<string> log = new List<string>();
         private CancellationTokenSource operation;
-        private bool working, closed, populating;
+        private Task usbConnectionWork = Task.FromResult(0);
+        private bool working, closed, closingComplete, populating;
         private DeviceInfo lastDevice;
         private DeviceBridge bridge;
         private IDeviceBackend backend;
@@ -123,17 +125,32 @@ namespace BreadboardController
             Find<ListBox>("FoundDevices").SelectionChanged += delegate { CommandManager.InvalidateRequerySuggested(); };
             Window.InputBindings.Add(new KeyBinding(Find<Button>("OpenDetection").Command, new KeyGesture(Key.O, ModifierKeys.Control)));
             Window.InputBindings.Add(new KeyBinding(Find<Button>("CheckConnection").Command, new KeyGesture(Key.F5)));
-            Window.Closing += delegate
+            Window.Closing += async delegate(object sender, System.ComponentModel.CancelEventArgs args)
             {
+                if (closingComplete) return;
+                args.Cancel = true;
+                if (closed) return;
                 closed = true;
-                if (operation != null) operation.Cancel();
-                if (!preview)
+                Window.IsEnabled = false;
+                try
                 {
-                    Uri uri;
-                    if (TryAddress(out uri)) Save(uri, false);
-                    if (bridge != null) bridge.Dispose();
-                    AddLog("程序已关闭，已释放本程序打开的页面会话；失联保护最多10秒发起安全停采。");
+                    if (operation != null) operation.Cancel();
+                    if (!preview)
+                    {
+                        Uri uri;
+                        if (TryAddress(out uri)) Save(uri, false);
+                        // The whole button operation owns pending candidates
+                        // and any previous bridge already detached for release.
+                        try { await usbConnectionWork; }
+                        catch (Exception error) { AddLog("USB 连接清理结束 [" + error.GetType().Name + "]。"); }
+                        var closingBridge = bridge; var closingBackend = backend;
+                        bridge = null; backend = null; backendTarget = null;
+                        await Task.Run(() => { if (closingBridge != null) closingBridge.Dispose(); else if (closingBackend != null) closingBackend.Dispose(); });
+                        AddLog("程序已关闭，已释放本程序打开的页面会话；失联保护最多10秒发起安全停采。");
+                    }
                 }
+                catch (Exception error) { AddLog("关闭时连接清理结束 [" + error.GetType().Name + "]；失联保护最多10秒发起安全停采。"); }
+                finally { closingComplete = true; Window.Dispatcher.BeginInvoke(new Action(() => Window.Close())); }
             };
             RefreshNetworks();
             RefreshUsb();
@@ -229,6 +246,7 @@ namespace BreadboardController
         {
             working = false;
             if (operation != null) { operation.Dispose(); operation = null; }
+            if (closed) return;
             Address.IsEnabled = true;
             Find<ComboBox>("Networks").IsEnabled = true;
             ManagementEnabled(true);
@@ -296,35 +314,81 @@ namespace BreadboardController
             if (ports.Length > 0) Find<ComboBox>("UsbPorts").SelectedIndex = 0;
             Text("UsbHint", ports.Length > 0 ? "选择 ESP32 原生 USB 端口；连接需要主控 v2 固件。" : "未找到 ESP32 原生 USB。请连接带数据功能的 USB 线，再刷新。");
         }
-        private async Task ConnectUsbAsync()
+        private Task ConnectUsbAsync()
         {
+            if (closed || working) return Task.FromResult(0);
+            usbConnectionWork = ConnectUsbCoreAsync();
+            return usbConnectionWork;
+        }
+        private async Task ConnectUsbCoreAsync()
+        {
+            if (closed || working) return;
             if (preview) { Notify("离线预览：USB 不会打开。", false); return; }
             string name = Find<ComboBox>("UsbPorts").SelectedItem as string;
             if (String.IsNullOrEmpty(name)) { Notify("请选择 ESP32 原生 USB 串口。", true); return; }
             BeginWork("正在连接 USB……");
-            IDeviceBackend candidate = null;
+            UsbConnectionResult candidate = null;
+            Exception originalError = null;
+            ExceptionDispatchInfo failure = null;
             try
             {
-                candidate = await Task.Run<IDeviceBackend>(() => new UsbBackend(name));
-                await Task.Run(() => ValidateV2(candidate));
-                if (closed) return;
-                if (bridge != null) bridge.Dispose();
-                ResetManagement();
-                backend = candidate; candidate = null;
-                bridge = new DeviceBridge(backend); backendTarget = name;
-                Text("UsbHint", "已连接 " + name + "；不需要电脑连接 Wi-Fi。");
-                Text("DeviceSummary", "USB 本机检测网址：" + bridge.Address.AbsoluteUri);
-                Badge("USB 已连接", "#E7F5EF", "#176248");
-                Notify("USB 已连接。点击「打开检测页面」或进入「Wi-Fi 与热点」配置主控。", false);
+                candidate = await BackendConnection.ConnectUsbAsync(backend, bridge,
+                    backend is UsbBackend && String.Equals(backendTarget, name, StringComparison.OrdinalIgnoreCase),
+                    ReleaseBackendAsync, () => new UsbBackend(name), () => closed);
+                if (!closed)
+                {
+                    bool reused = candidate.Reused;
+                    backend = candidate.Backend; bridge = candidate.Bridge; backendTarget = name; candidate = null;
+                    Text("UsbHint", "已连接 " + name + "；不需要电脑连接 Wi-Fi。");
+                    Text("DeviceSummary", "USB 本机检测网址：" + bridge.Address.AbsoluteUri);
+                    Badge("USB 已连接", "#E7F5EF", "#176248");
+                    Notify("USB 已连接。点击「打开检测页面」或进入「Wi-Fi 与热点」配置主控。", false);
+                    AddLog(reused ? "USB 已响应，继续使用现有连接和页面会话。" : "USB 连接检查通过。");
+                }
             }
-            catch (Exception error) { Notify("USB 连接未完成：" + error.Message + "。旧固件须先完成升级。", true); }
-            finally { if (candidate != null) candidate.Dispose(); EndWork(); }
+            catch (Exception error)
+            {
+                originalError = error;
+                try
+                {
+                    if (!closed) Notify("USB 连接未完成：" + error.Message +
+                        (error is FirmwareCapabilityException ? "。" : "。请检查 USB 连接及端口占用后重试。"), true);
+                }
+                catch (Exception notificationError)
+                {
+                    failure = ExceptionDispatchInfo.Capture(error);
+                    error.Data["UsbNotificationException"] = notificationError;
+                }
+            }
+            // Await cleanup outside catch/finally for the pinned C# 5 compiler.
+            // Closing waits for this entire method, including EndWork.
+            try { if (candidate != null && !candidate.Reused) await Task.Run(() => candidate.Bridge.Dispose()); }
+            catch (Exception cleanup)
+            {
+                if (failure == null) failure = ExceptionDispatchInfo.Capture(originalError ?? cleanup);
+                if (originalError != null) originalError.Data["UsbCleanupException"] = cleanup;
+            }
+            finally
+            {
+                try { EndWork(); }
+                catch (Exception endError)
+                {
+                    if (failure == null) failure = ExceptionDispatchInfo.Capture(originalError ?? endError);
+                    if (originalError != null) originalError.Data["UsbEndWorkException"] = endError;
+                }
+            }
+            if (failure != null) failure.Throw();
+        }
+        private async Task ReleaseBackendAsync()
+        {
+            var previousBridge = bridge; var previousBackend = backend;
+            bridge = null; backend = null; backendTarget = null; lastDevice = null;
+            ResetManagement();
+            await Task.Run(() => { if (previousBridge != null) previousBridge.Dispose(); else if (previousBackend != null) previousBackend.Dispose(); });
         }
         private static void ValidateV2(IDeviceBackend candidate)
         {
-            var response = candidate.Request("GET", "/api/v2/capabilities", "", "");
-            if (response.Code != 200 || !response.Text.Contains("\"version\":2"))
-                throw new IOException("主控未提供 v2 控制接口");
+            BackendConnection.ValidateV2(candidate);
         }
         private Task OpenDetectionAsync() { return OpenPageAsync(""); }
         private async Task EnsureBackendAsync()

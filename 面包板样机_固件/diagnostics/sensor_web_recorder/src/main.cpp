@@ -428,12 +428,12 @@ void loop() {
   control::pollNetworkLog();
   devicev2::pollWifi();
   devicev2::pollStorage(driveName);
-  char run[9]; unsigned seconds = 0;
-  if (control::take(run, seconds)) {
+  char run[9]; unsigned seconds = 0, rangeG = 2;
+  if (control::take(run, seconds, &rangeG)) {
     if (mountReadOnly()) {
       char request[100];
-      snprintf(request, sizeof(request), "REC_START %08lX %llu %s %u", (unsigned long)card.cid.serial,
-          (unsigned long long)(static_cast<uint64_t>(card.csd.capacity) * card.csd.sector_size), run, seconds);
+      snprintf(request, sizeof(request), "REC_START %08lX %llu %s %u %u", (unsigned long)card.cid.serial,
+          (unsigned long long)(static_cast<uint64_t>(card.csd.capacity) * card.csd.sector_size), run, seconds, rangeG);
       recorder::Store store{driveName, static_cast<uint32_t>(card.cid.serial),
           static_cast<uint64_t>(card.csd.capacity) * card.csd.sector_size, [](bool enabled) { writeEnabled = enabled; }};
       recorder::command(request, store);

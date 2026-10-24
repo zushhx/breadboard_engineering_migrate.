@@ -9,6 +9,7 @@ using System.Net;
 using System.Net.Http;
 using System.Net.Sockets;
 using System.Security.Cryptography;
+using System.Runtime.ExceptionServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -27,6 +28,88 @@ namespace BreadboardController
     {
         BridgeResponse Request(string method,string path,string body,string key);
         string Description { get; }
+    }
+    public sealed class FirmwareCapabilityException : IOException
+    {
+        public FirmwareCapabilityException() : base("主控未提供 v2 控制接口，请升级配套固件") {}
+    }
+    // Shared by the USB button and offline tests. Reuse a healthy handle; only
+    // a failed probe of that same port requires releasing it before reopening.
+    public sealed class UsbConnectionResult
+    {
+        public IDeviceBackend Backend;
+        public DeviceBridge Bridge;
+        public bool Reused;
+    }
+    public static class BackendConnection
+    {
+        public static void ValidateV2(IDeviceBackend candidate)
+        {
+            var response=candidate.Request("GET","/api/v2/capabilities","","");
+            if(response.Code==404||response.Code==501)throw new FirmwareCapabilityException();
+            if(response.Code!=200)throw new IOException("读取主控控制接口失败（HTTP "+response.Code+")");
+            Dictionary<string,object> value;
+            try {value=new JavaScriptSerializer().Deserialize<Dictionary<string,object>>(response.Text);}
+            catch(ArgumentException error){throw new InvalidDataException("主控控制接口响应无效",error);}
+            object version;
+            if(value==null||!value.TryGetValue("version",out version)||!(version is int))
+                throw new InvalidDataException("主控控制接口响应缺少有效版本号");
+            if((int)version!=2)throw new FirmwareCapabilityException();
+        }
+        public static async Task<UsbConnectionResult> ConnectUsbAsync(IDeviceBackend current,DeviceBridge currentBridge,
+            bool samePort,Func<Task> releaseCurrent,Func<IDeviceBackend> open,Func<bool> isClosed)
+        {
+            bool released=false;
+            if(isClosed())throw new OperationCanceledException();
+            if(samePort&&current!=null&&currentBridge!=null)
+            {
+                try
+                {
+                    await Task.Run(()=>ValidateV2(current));
+                    if(isClosed())throw new OperationCanceledException();
+                    return new UsbConnectionResult {Backend=current,Bridge=currentBridge,Reused=true};
+                }
+                catch(FirmwareCapabilityException){throw;}
+                catch(Exception error)
+                {
+                    if(!(error is IOException)&&!(error is TimeoutException)&&
+                       !(error is System.ComponentModel.Win32Exception)&&!(error is ObjectDisposedException))throw;
+                    if(isClosed())throw new OperationCanceledException();
+                }
+                await releaseCurrent();released=true;
+            }
+            IDeviceBackend candidate=null;DeviceBridge next=null;
+            UsbConnectionResult result=null;ExceptionDispatchInfo failure=null;
+            try
+            {
+                if(isClosed())throw new OperationCanceledException();
+                candidate=await Task.Run(open);
+                if(isClosed())throw new OperationCanceledException();
+                await Task.Run(()=>ValidateV2(candidate));
+                if(isClosed())throw new OperationCanceledException();
+                next=new DeviceBridge(candidate);candidate=null;
+                // A different port/Wi-Fi connection remains available until
+                // both the candidate and its loopback bridge are ready.
+                if(!released)await releaseCurrent();
+                if(isClosed())throw new OperationCanceledException();
+                result=new UsbConnectionResult {Backend=next.Backend,Bridge=next};next=null;
+            }
+            catch(Exception error){failure=ExceptionDispatchInfo.Capture(error);}
+            // The pinned compiler is C# 5: async cleanup runs after the catch,
+            // through one exit path, while retaining the original stack trace.
+            try
+            {
+                if(next!=null)await Task.Run(()=>next.Dispose());
+                if(candidate!=null)await Task.Run(()=>candidate.Dispose());
+            }
+            catch(Exception cleanup)
+            {
+                if(failure==null)failure=ExceptionDispatchInfo.Capture(cleanup);
+                else failure.SourceException.Data["UsbCleanupException"]=cleanup;
+            }
+            if(failure!=null)failure.Throw();
+            return result;
+        }
     }
     public sealed class NetworkBackend : IDeviceBackend
     {
@@ -131,6 +214,7 @@ namespace BreadboardController
         private readonly UsbWire port;
         private readonly object wire=new object();
         private uint sequence;
+        private bool disposed;
         public string Description {get{return "USB "+port.PortName;}}
         public UsbBackend(string name)
         {
@@ -179,6 +263,7 @@ namespace BreadboardController
         {
             lock(wire)
             {
+                if(disposed)throw new ObjectDisposedException("UsbBackend");
                 var data=new Dictionary<string,object>{{"method",method},{"path",path},{"body",body??""},{"key",key??""}};
                 port.ReadTimeout=path=="/api/v2/network/scan"?12000:2500;
                 byte[] outgoing=UsbFrames.Encode(1,++sequence,Encoding.UTF8.GetBytes(new JavaScriptSerializer().Serialize(data)));
@@ -214,7 +299,7 @@ namespace BreadboardController
                 }
             }
         }
-        public void Dispose(){port.Dispose();}
+        public void Dispose(){lock(wire){if(disposed)return;disposed=true;port.Dispose();}}
     }
     // User-level loopback server: no URL ACL, firewall rule, service or administrator installation.
     public sealed class DeviceBridge : IDisposable
@@ -226,6 +311,8 @@ namespace BreadboardController
         private int connections;
         private readonly Action<string> downloadDiagnostic;
         private static readonly object diagnosticLock=new object();
+        private int disposeStarted;
+        internal IDeviceBackend Backend {get{return backend;}}
         public readonly Uri Address;
         public DeviceBridge(IDeviceBackend backend) : this(backend,WriteDownloadDiagnostic) {}
         public DeviceBridge(IDeviceBackend backend,Action<string> downloadDiagnostic)
@@ -510,10 +597,11 @@ namespace BreadboardController
         }
         public void Dispose()
         {
-            if(closed)return;
+            if(Interlocked.Exchange(ref disposeStarted,1)!=0)return;
+            closed=true;listener.Stop();
             KeyValuePair<string,string>[] copy;lock(sessions)copy=sessions.ToArray();
             var release=Task.Run(()=>{foreach(var pair in copy)try{Api("session/release",new Dictionary<string,object>{{"client",pair.Key},{"boot",pair.Value}});}catch(Exception){}});
-            release.Wait(1400);closed=true;listener.Stop();backend.Dispose();
+            release.Wait(1400);backend.Dispose();
         }
     }
 }

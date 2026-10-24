@@ -23,7 +23,7 @@ def run():
     assert 'INA精度未验收' in empty['detail']
     assert set(empty)==set(status)
     expected={'boot','phase','ready','connected','ip','card_serial','card_bytes','space_valid','free_bytes',
-              'run','seconds','written','elapsed_us','errors','queue','fifo_high','queue_high','write_us',
+              'run','seconds','range_g','scale_micro_g','written','elapsed_us','errors','queue','fifo_high','queue_high','write_us',
               'sync_us','free_heap','ina_valid','ina_us','bus_mv','current_ua','power_uw','detail','sha256',
               'record_name','record_path','preview_seq','preview_us','preview','owner','pending_owner','files_busy'}
     assert set(status)==expected
@@ -33,7 +33,10 @@ def run():
     assert status['bus_mv']==2147483647 and status['current_ua']==-2147483648
     assert status['owner']=='b'*32 and status['pending_owner']=='c'*32
     assert len(status['preview'])==272 and all(row[:2]==[-32768,32767] for row in status['preview'])
-    assert set(trend)=={'boot','run','sample_rate','window_samples','points'}
+    assert set(trend)=={'boot','run','range_g','scale_micro_g','sample_rate','window_samples','points'}
+    assert status['range_g']==16 and status['scale_micro_g']==488
+    assert trend['range_g']==8 and trend['scale_micro_g']==244
+    assert empty['range_g']==2 and empty['scale_micro_g']==61
     assert trend['sample_rate']==26667 and trend['window_samples']==5333
     assert len(trend['points'])==150 and all(row==[4294967295]*5 for row in trend['points'])
     assert 'DENIED_ALLOCATION_ATTEMPTS=0' in out

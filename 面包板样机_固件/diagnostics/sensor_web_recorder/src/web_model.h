@@ -15,6 +15,7 @@ inline bool busy(Phase p) { return p >= Phase::Queued && p <= Phase::Verifying; 
 struct Snapshot {
   Phase phase = Phase::Idle;
   bool ready = false, connected = false, stop = false, inaValid = false, spaceValid = false;
+  unsigned rangeG = 2;
   uint32_t serial = 0, seconds = 0, errors = 0, queue = 0, queueHigh = 0, fifoHigh = 0;
   uint32_t maxWriteUs = 0, maxSyncUs = 0, freeHeap = 0, largest = 0;
   uint64_t capacity = 0, written = 0, elapsedUs = 0, previewUs = 0, inaUs = 0, freeBytes = 0;
@@ -32,20 +33,22 @@ struct Model {
     s.spaceValid = valid && bytes <= s.capacity;
     s.freeBytes = s.spaceValid ? bytes : 0;
   }
-  bool submit(uint32_t serial, uint64_t capacity, const char* run, unsigned seconds, const char* local = "", uint64_t requestedAt = 0) {
+  bool submit(uint32_t serial, uint64_t capacity, const char* run, unsigned seconds, const char* local = "", uint64_t requestedAt = 0, unsigned rangeG = 2) {
     if (!s.ready || busy(s.phase) || s.phase == Phase::Failed || serial != s.serial || capacity != s.capacity ||
         !recorder::runId(run) || seconds < 1 || seconds > 300 || !local || (local[0] && !recorder::localStamp(local))) return false;
-    if (!begin(run, seconds)) return false;
+    if (!begin(run, seconds, rangeG)) return false;
     snprintf(s.startLocal,sizeof(s.startLocal),"%s",local); s.namedAtUs=requestedAt;
     s.phase = Phase::Queued; return true;
   }
-  bool take(char* run, unsigned& seconds) {
+  bool take(char* run, unsigned& seconds, unsigned* rangeG = nullptr) {
     if (s.phase != Phase::Queued) return false;
-    snprintf(run, 9, "%s", s.run); seconds = s.seconds; s.phase = Phase::Preparing; return true;
+    snprintf(run, 9, "%s", s.run); seconds = s.seconds;
+    if (rangeG) *rangeG = s.rangeG;
+    s.phase = Phase::Preparing; return true;
   }
-  bool begin(const char* run, unsigned seconds) {
-    if (!s.ready || s.phase == Phase::Failed) return false;
-    if (busy(s.phase) && !(s.phase == Phase::Preparing && !strcmp(s.run, run))) return false;
+  bool begin(const char* run, unsigned seconds, unsigned rangeG = 2) {
+    if (!s.ready || s.phase == Phase::Failed || !recorder::runId(run) || seconds < 1 || seconds > 300 || !sensor_range::valid(rangeG)) return false;
+    if (busy(s.phase) && !(s.phase == Phase::Preparing && !strcmp(s.run, run) && s.seconds == seconds && s.rangeG == rangeG)) return false;
     bool connected = s.connected, stop = s.phase == Phase::Preparing && s.stop;
     uint32_t serial = s.serial; uint64_t capacity = s.capacity;
     bool spaceValid = s.spaceValid; uint64_t freeBytes = s.freeBytes;
@@ -54,7 +57,7 @@ struct Model {
     char ip[16]; memcpy(ip, s.ip, sizeof(ip));
     s = {}; s.ready = true; s.connected = connected; s.serial = serial; s.capacity = capacity;
     s.spaceValid = spaceValid; s.freeBytes = freeBytes;
-    s.stop = stop; s.phase = Phase::Preparing; s.seconds = seconds;
+    s.stop = stop; s.phase = Phase::Preparing; s.seconds = seconds; s.rangeG = rangeG;
     memcpy(s.startLocal,local,sizeof(local));s.namedAtUs=requestedAt;
     memcpy(s.ip, ip, sizeof(ip)); snprintf(s.run, sizeof(s.run), "%s", run);
     return true;

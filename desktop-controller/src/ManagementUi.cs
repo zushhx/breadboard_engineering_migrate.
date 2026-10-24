@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
@@ -115,7 +115,7 @@ namespace BreadboardController
                 Find<TextBox>("DeviceUrls").Text = "本电脑入口：" + bridge.Address.AbsoluteUri +
                     (wifiIp.Length > 0 ? "\nWi-Fi 检测页：http://" + wifiIp + "/" : "") +
                     (ManagementClient.Flag(n, "ap_enabled") ? "\n主控热点检测页：http://" + apIp + "/" : "");
-                Text("DeviceNetworkMessage", !ManagementClient.Flag(n, "apply_ok") ? "主控网络未启动成功，请检查配置。" : ManagementClient.Flag(n, "applying") ? "配置正在应用，请稍后重新读取。" :
+                Text("DeviceNetworkMessage", ManagementClient.Flag(n, "applying") ? "配置正在应用，请稍后重新读取。" : !ManagementClient.Flag(n, "apply_ok") ? "主控网络未启动成功，请检查配置。" :
                     ManagementClient.Flag(n, "connected") ? "主控 Wi-Fi 已连接：" + wifiIp : "主控 Wi-Fi 尚未连接。可通过 USB 配置。" + (ManagementClient.Flag(n, "ap_enabled") ? "主控热点已开启。" : ""));
             });
         }
@@ -139,10 +139,10 @@ namespace BreadboardController
             {
                 if (networkReadTarget != backendTarget || networkReadBoot != client.Boot) throw new IOException("请先读取当前主控设置，再修改并保存。");
                 // Network change may disconnect LAN. Only a deliberate user click reaches here.
-                await Task.Run(() => client.Post("network/save", values));
+                await Task.Run(() => client.SaveNetwork(values));
                 Find<PasswordBox>("DeviceWifiPassword").Password = "";
                 Find<TextBox>("DeviceUrls").Text = "网络配置已变化，请重新读取实际地址。USB 本电脑入口：" + bridge.Address.AbsoluteUri;
-                Text("DeviceNetworkMessage", "配置已保存，主控正在应用。请稍后点「读取主控设置」确认连接和网址。通过 Wi-Fi 操作时可能断开，可用 USB 恢复。密码未保存在电脑。");
+                Text("DeviceNetworkMessage", "配置已保存并已确认主控应用完成。请用新密码重新连接热点；Windows 已保存的旧密码需更新。密码未保存在电脑。");
             });
         }
         private Task ReadFilesAsync(bool append)

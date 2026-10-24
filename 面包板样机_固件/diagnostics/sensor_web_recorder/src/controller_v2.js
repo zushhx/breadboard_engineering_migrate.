@@ -32,12 +32,18 @@ async function v2Bootstrap(){
   catch(e){text('message',e.message+'；新版控制需要升级主控固件。');}
   const panel=new URLSearchParams(location.search).get('panel');if(['network','files'].includes(panel))v2ChoosePanel(panel);poll();
 }
+function v2UpdateNetworkLocks(s){
+  if(s)v2NetworkStatus=s;
+  const state=v2NetworkStatus;
+  const blocked=v2NetworkSaving||!v2Ready||!state||active.has(state.phase)||state.files_busy;
+  v2Id('saveNetwork').disabled=blocked;v2Id('scanWifi').disabled=blocked;
+}
 function v2Render(s){
   v2RecordFile.textContent=s.record_path?'信号文件：'+s.record_path:'新记录按开始时电脑或手机的本地时间命名；请先确认控制端时间正确。';
   if(v2OwnedRun&&s.owner&&s.owner!==v2Client&&s.run!==v2OwnedRun){text('message','本页采集已被其他页面接管，当前仅查看新的采集。');v2OwnedRun='';}
   if(s.pending_owner&&s.owner===v2Client)text('message','其他页面请求接管，正在停止、保存和校验本页记录。');
   v2Files.querySelectorAll('button').forEach(b=>{if(b.id!=='cancelFile')b.disabled=!v2Ready||active.has(s.phase)||v2FileBusy;});
-  if(v2Id('networkPanel').hidden===false){v2Id('saveNetwork').disabled=!v2Ready||active.has(s.phase)||s.files_busy;v2Id('scanWifi').disabled=v2Id('saveNetwork').disabled;}
+  v2UpdateNetworkLocks(s);
 }
 function v2ConfirmTakeover(s,seconds){return new Promise(resolve=>{
   v2Id('takeoverText').textContent='页面 '+(s.owner||'未知').slice(0,6)+' 正在采集。继续将停止并保存当前记录，再按本页设置开始一份新的 '+seconds+' 秒记录。取消则不改变当前采集。';
@@ -53,7 +59,7 @@ async function v2Start(){
   try{
     if(busy&&!await v2ConfirmTakeover(observed,seconds)){text('message','已取消；原页面继续采集。');return;}
     const run=crypto.getRandomValues(new Uint32Array(1))[0].toString(16).toUpperCase().padStart(8,'0');
-    await v2Api('session/'+(busy?'takeover':'start'),{client:v2Client,run,seconds,local_time:v2LocalTime(new Date()),card_serial:observed.card_serial,card_bytes:observed.card_bytes,...(busy?{expected_run:observed.run}:{})});
+    await v2Api('session/'+(busy?'takeover':'start'),{client:v2Client,run,seconds,range_g:Number($('range').value),local_time:v2LocalTime(new Date()),card_serial:observed.card_serial,card_bytes:observed.card_bytes,...(busy?{expected_run:observed.run}:{})});
     v2OwnedRun=run;text('message',busy?'已预约接管：先保存并校验原记录，再开始本页采集。':'开始请求已接收，以设备状态为准。');
   }catch(e){text('message',e.message+'；不会自动重发，请查看当前状态。');}finally{pending=false;buttons();}
 }
@@ -66,14 +72,34 @@ async function v2Stop(){try{await v2Api('session/stop',{client:v2Client});text('
 window.addEventListener('pagehide',()=>{v2Leaving=true;v2Ready=false;navigator.sendBeacon('/api/v2/session/release',JSON.stringify({boot:sessionKey,client:v2Client}));if(v2Socket)v2Socket.close();if(v2Transfer)navigator.sendBeacon('/api/v2/files/cancel',JSON.stringify({boot:sessionKey,job:v2Uuid(),expected_job:v2LastFileJob,transfer:v2Transfer}));});
 function v2Uuid(){return Array.from(crypto.getRandomValues(new Uint8Array(16)),n=>n.toString(16).padStart(2,'0')).join('');}
 async function v2ReadNetwork(){
-  try{const n=await v2Api('network/state');v2Id('staEnabled').checked=n.sta_enabled;v2Id('apEnabled').checked=n.ap_enabled;v2Id('wifiSsid').value=n.ssid;v2Id('wifiPassword').value='';v2Id('apSsid').value=n.ap_ssid;v2Id('apPassword').value=n.ap_password;v2Message('networkMessage',n.apply_ok===false?'网络启动失败，请通过 USB 检查或重新保存配置':n.applying?'配置正在应用，可能短暂断开':n.connected?'主控 Wi-Fi 已连接':'主控 Wi-Fi 尚未连接；USB仍可配置');v2Message('deviceUrls',(location.hostname==='127.0.0.1'?'本机 USB / 转接入口：'+location.origin+'/\n':'')+(n.sta_ip?'Wi-Fi 检测页：http://'+n.sta_ip+'/\n':'')+(n.ap_enabled?'热点检测页：http://'+n.ap_ip+'/\n':'')+'可选中并复制网址。');}
+  if(v2NetworkSaving)return;
+  try{const n=await v2Api('network/state');if(v2NetworkSaving)return;v2Id('staEnabled').checked=n.sta_enabled;v2Id('apEnabled').checked=n.ap_enabled;v2Id('wifiSsid').value=n.ssid;v2Id('wifiPassword').value='';v2Id('apSsid').value=n.ap_ssid;v2Id('apPassword').value=n.ap_password;v2Message('networkMessage',n.applying?'配置正在应用，可能短暂断开':n.apply_ok===false?'网络启动失败，请通过 USB 检查或重新保存配置':n.connected?'主控 Wi-Fi 已连接':'主控 Wi-Fi 尚未连接；USB仍可配置');v2Message('deviceUrls',(location.hostname==='127.0.0.1'?'本机 USB / 转接入口：'+location.origin+'/\n':'')+(n.sta_ip?'Wi-Fi 检测页：http://'+n.sta_ip+'/\n':'')+(n.ap_enabled?'热点检测页：http://'+n.ap_ip+'/\n':'')+'可选中并复制网址。');}
   catch(e){v2Message('networkMessage',e.message);}
 }
 v2Id('showApPassword').onchange=()=>v2Id('apPassword').type=v2Id('showApPassword').checked?'text':'password';
 v2Id('reloadNetwork').onclick=v2ReadNetwork;
-v2Id('scanWifi').onclick=async()=>{try{v2Message('networkMessage','正在扫描附近的 2.4 GHz 网络…');const list=await v2Api('network/scan',{});v2Id('wifiChoices').replaceChildren(...list.map(p=>{const o=document.createElement('option');o.value=p.ssid;o.textContent=p.ssid+'  '+p.rssi+' dBm';return o;}));v2Message('networkMessage','扫描完成，请选择网络并输入密码。');}catch(e){v2Message('networkMessage',e.message);}};
+v2Id('scanWifi').onclick=async()=>{if(v2NetworkSaving)return;try{v2Message('networkMessage','正在扫描附近的 2.4 GHz 网络…');const list=await v2Api('network/scan',{});v2Id('wifiChoices').replaceChildren(...list.map(p=>{const o=document.createElement('option');o.value=p.ssid;o.textContent=p.ssid+'  '+p.rssi+' dBm';return o;}));v2Message('networkMessage','扫描完成，请选择网络并输入密码。');}catch(e){v2Message('networkMessage',e.message);}};
 v2Id('wifiChoices').onchange=()=>v2Id('wifiSsid').value=v2Id('wifiChoices').value;
-v2Id('saveNetwork').onclick=async()=>{try{await v2Api('network/save',{sta_enabled:v2Id('staEnabled').checked,ap_enabled:v2Id('apEnabled').checked,ssid:v2Id('wifiSsid').value,password:v2Id('wifiPassword').value,ap_ssid:v2Id('apSsid').value,ap_password:v2Id('apPassword').value});v2Message('networkMessage','已保存，正在应用。若断线，请使用 USB 或重新连接热点后打开页面。');}catch(e){v2Message('networkMessage',e.message);}};
+let v2NetworkSaving=false,v2NetworkStatus=null;
+v2Id('saveNetwork').onclick=async()=>{
+  if(v2NetworkSaving)return;
+  const submitted={sta_enabled:v2Id('staEnabled').checked,ap_enabled:v2Id('apEnabled').checked,ssid:v2Id('wifiSsid').value,password:v2Id('wifiPassword').value,ap_ssid:v2Id('apSsid').value,ap_password:v2Id('apPassword').value};
+  const controls=[...v2Network.querySelectorAll('input,button,select')],disabled=controls.map(c=>c.disabled);
+  v2NetworkSaving=true;controls.forEach(c=>c.disabled=true);let accepted=false;
+  try{
+    await v2Api('network/save',submitted);accepted=true;
+    v2Message('networkMessage','已保存，正在确认应用；若断线，请通过 USB 重新读取。');
+    for(let i=0;i<20;i++){
+      await new Promise(r=>setTimeout(r,250));const n=await v2Api('network/state');if(n.applying)continue;
+      if(n.apply_ok!==true)throw Error('主控应用失败，请通过 USB 检查');
+      if(n.ap_password!==submitted.ap_password||n.ap_ssid!==submitted.ap_ssid||n.ap_enabled!==submitted.ap_enabled||n.sta_enabled!==submitted.sta_enabled||n.ssid!==submitted.ssid)throw Error('主控读回配置与提交值不同，请重新读取确认');
+      v2Message('networkMessage','配置已保存并已确认应用完成，请用新密码重新连接热点，更新电脑保存的旧密码。');return;
+    }
+    throw Error('应用结果仍待确认，请通过 USB 重新读取');
+  }catch(e){v2Message('networkMessage',(accepted?'配置已保存，应用结果未确认：':'')+e.message);}
+  finally{controls.forEach((c,i)=>c.disabled=disabled[i]);v2NetworkSaving=false;v2UpdateNetworkLocks();}
+};
+
 async function v2FileOp(action,args={}){
   const job=v2Uuid();v2LastFileJob=job;await v2Api('files/'+action,{...args,job});
   const start=Date.now();

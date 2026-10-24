@@ -10,7 +10,7 @@ static int64_t clockUs=100;
 static bool busy=false,reserved=false,failCommit=false,failSet=false,failApply=false,failNvs=false;
 static unsigned writes=0,commits=0,checks=0,applies=0;
 static std::vector<uint8_t> saved,pending;
-static wifi_config_t station;
+static wifi_config_t station,accessPoint;
 static wifi_mode_t mode=WIFI_MODE_NULL;
 static std::function<void()> applyHook;
 static esp_netif_t staNetHost,apNetHost;
@@ -35,7 +35,7 @@ esp_err_t esp_wifi_stop(){return ESP_OK;}
 esp_err_t esp_wifi_start(){++applies;if(applyHook)applyHook();return failApply?ESP_FAIL:ESP_OK;}
 esp_err_t esp_wifi_set_mode(wifi_mode_t m){mode=m;return ESP_OK;}
 esp_err_t esp_wifi_get_mode(wifi_mode_t* p){*p=mode;return ESP_OK;}
-esp_err_t esp_wifi_set_config(int which,const wifi_config_t* p){if(which==WIFI_IF_STA)station=*p;return ESP_OK;}
+esp_err_t esp_wifi_set_config(int which,const wifi_config_t* p){if(which==WIFI_IF_STA)station=*p;else if(which==WIFI_IF_AP)accessPoint=*p;return ESP_OK;}
 esp_err_t esp_wifi_scan_start(const wifi_scan_config_t*,bool){return ESP_OK;}
 esp_err_t esp_wifi_scan_get_ap_records(uint16_t* n,wifi_ap_record_t* p){*n=1;strcpy((char*)p[0].ssid,"TestNet");return ESP_OK;}
 esp_err_t esp_netif_get_ip_info(esp_netif_t* n,esp_netif_ip_info_t* p){*p=n->info;return ESP_OK;}
@@ -73,9 +73,11 @@ int main(){try{
   apply();applyHook={};
   check(!stateFlag("applying")&&stateFlag("apply_ok")&&stateFlag("running"),"completed apply publishes success and running together");
   check(!strcmp((char*)station.sta.password,"original-password"),"new credentials reach WiFi driver");
+  check(!strcmp((char*)accessPoint.ap.password,"test-ap-password"),"AP password reaches actual driver configuration");
   check(save("TestNet","").code==202,"same SSID blank password accepted");apply();
   check(!strcmp((char*)station.sta.password,"original-password"),"same SSID blank password preserves WiFi password");
   auto persisted=saved;devicev2::NetworkConfig blob;assert(persisted.size()==sizeof(blob));memcpy(&blob,persisted.data(),sizeof(blob));
+  check(!strcmp(blob.apPassword,"test-ap-password"),"AP password persists in NVS blob");
   check(!strcmp(blob.password,"original-password"),"preserved password committed unchanged to NVS");
   check(save("TestNet","replacement-password").code==202,"replacement password accepted");apply();
   check(!strcmp((char*)station.sta.password,"replacement-password"),"replacement password reaches driver");
