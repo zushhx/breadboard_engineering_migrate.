@@ -21,6 +21,8 @@
 - 干净构建与准备模式核验通过：当前源码输入、候选/恢复产物、SDK、分区和生成凭据头核对一致。生成 bootloader 与旧构建字节不同；试烧仅写 app0，保留设备现有 bootloader，重建 bootloader 未列入部署。
 - Git hook 所用的便携工程检查通过。按约定额外执行 `--local`，保留 355 项失败：此独立工作树未复制历史 ignored 归档/原始整机备份，另有既存全局规则源与部署文件差异。未修改检查规则、全局规则或历史资料，也未将该检查记为通过。恢复所需的本轮旧应用镜像已另行核验。
 - 首次提交遇到 Windows Python 应用别名导致 hook 解释器退出；仅在该次命令进程的 PATH 中选择已有 Python 后，同一 hook 检查通过，未跳过或修改 hook。
+- [草稿 PR #28](https://github.com/zushhx/breadboard_engineering_migrate./pull/28) 已建立，目标为已验收量程试验任务分支。首次远端 `files-and-guards` 在 b8db774 的 233 项测试中出现 10 个错误，均为 Linux 上 WLAN GUID 结构因宿主 `unsigned long` 宽度而变成 24 字节，16 字节 UUID 读取失败。已将 GUID 字段明确为固定 32/16/16/8×8 位，保留 Windows ABI 和实际网络调用门槛，新增结构偏移及 UUID 回环测试。原始 CI 日志保留；远端各检查最终状态以 PR 检查页为准，未将失败改记为通过。
+- GUID 修复后 Windows 和 WSL 各 21 项离线回归通过，既有 pyserial 3.5 保持；Windows WLAN 相关结构尺寸仍为 16/532/68/604 字节。独立 agent 复审布局、UUID 字节序和实际调用门槛，无剩余阻断发现。固件产物保持原哈希；实际离线操作批准须绑定更新后的主机工具文件。
 
 ## 实机验证准备与恢复
 

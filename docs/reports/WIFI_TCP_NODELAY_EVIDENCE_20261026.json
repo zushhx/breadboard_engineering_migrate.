@@ -30,7 +30,19 @@
     "portable_linux_coverage": 16,
     "portable_linux_initial_passed": 15,
     "portable_linux_initial_failed": 1,
-    "portable_linux_targeted_retry_passed": 1
+    "portable_linux_targeted_retry_passed": 1,
+    "guid_windows_tests": 21,
+    "guid_linux_tests": 21
+  },
+  "pull_request": "https://github.com/zushhx/breadboard_engineering_migrate./pull/28",
+  "ci_initial_failure": {
+    "head": "b8db774b9a32a9b311c6e72dbc9a90e4e339410a",
+    "run_id": 40336825077,
+    "job_id": 121620523829,
+    "tests": 233,
+    "errors": 10,
+    "reason": "Linux host-sized DWORD made GUID 24 bytes",
+    "disposition": "Fixed-width Windows GUID fields with cross-platform layout and UUID tests; latest CI is reported by PR checks"
   },
   "review": {
     "independent_agent": "candidate_review",
@@ -67,8 +79,8 @@
       "sha256": "aa83f567c0e6c49ab0838331db619eac31bf7be4c20ff086ab1a09e0d04f052f"
     },
     "local-data/validation/wifi-tcp-nodelay/independent-review.md": {
-      "bytes": 6149,
-      "sha256": "f7f18a27539562ed62c359de4e5e67cff3f47c7c3e9f18ccad22e3bd30eb48b1"
+      "bytes": 7489,
+      "sha256": "d3134bb1c774872de325c8ceb17d9487697a79e27893301ea40ef45e119ed179"
     },
     "local-data/validation/wifi-tcp-nodelay/build-console.log": {
       "bytes": 99716,
@@ -94,6 +106,10 @@
       "bytes": 13340,
       "sha256": "f6feefd431d0f596fc43df30f4c54b195a41da7614678455ceb5a09cab2a9cd7"
     },
+    "local-data/validation/wifi-tcp-nodelay/ci-b8db774-files-and-guards.log": {
+      "bytes": 87070,
+      "sha256": "8342e64acb96945b99f55573ddd4d5f5540b7c2a8c9e145cf3af873b70966cce"
+    },
     "local-data/build/sensor-web/9b84c05c6f00b27b/20261026_164808_672696/build_manifest.json": {
       "bytes": 11620,
       "sha256": "8381544d63e0fe5d4bf6d482e59855ec1a1bce503a7b3e3cc476baf9c458f286"
@@ -101,6 +117,14 @@
     "local-data/build/sensor-web/5a5e2d3126851a59/20261024_114245_417538/build_manifest.json": {
       "bytes": 10709,
       "sha256": "2877c6f4ee992700660f3dcebd83659a6e346491d7a60b236652df128bf11c38"
+    },
+    "local-data/validation/guid-portability-windows.log": {
+      "bytes": 227,
+      "sha256": "eb2b1b1b53ab97d93915b1507e42dd204da1b52b3aa36721bafa27dba8141cac"
+    },
+    "local-data/validation/guid-portability-linux.log": {
+      "bytes": 125,
+      "sha256": "6e4145ac6da8ad1562393bcc5bfbe424c50f526a255a25ee14bf022a4c7a1646"
     }
   }
 }

@@ -2,6 +2,8 @@ import sys
 import unittest
 import tempfile
 import json
+import ctypes
+import uuid
 from contextlib import ExitStack
 from pathlib import Path
 from types import SimpleNamespace
@@ -16,6 +18,20 @@ class OfflineTests(unittest.TestCase):
     def setUp(self):
         self.profile=dict(interface_guid='f875fc68-ca14-4ca3-82c6-688c30100663',
                           profile_name='original',ssid_hex='61')
+
+    def test_guid_fixed_windows_size_and_field_offsets(self):
+        self.assertEqual(ctypes.sizeof(wlan_profile.GUID),16)
+        self.assertEqual([getattr(wlan_profile.GUID,name).offset for name in ('a','b','d','tail')],
+                         [0,4,6,8])
+
+    def test_profile_guid_uuid_roundtrip_preserves_windows_bytes(self):
+        guid,profile=wlan_profile.validate_snapshot(self.profile)
+        expected=uuid.UUID(self.profile['interface_guid'])
+        self.assertEqual(bytes(guid),expected.bytes_le)
+        self.assertEqual(uuid.UUID(bytes_le=bytes(guid)),expected)
+        self.assertEqual((guid.a,guid.b,guid.d),(0xf875fc68,0xca14,0x4ca3))
+        self.assertEqual(bytes(guid.tail),bytes.fromhex('82c6688c30100663'))
+        self.assertEqual(profile,self.profile['profile_name'])
 
     def test_missing_approval_precedes_network(self):
         with patch.object(wlan_profile,'current_connection') as query:

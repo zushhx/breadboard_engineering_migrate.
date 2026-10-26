@@ -10,7 +10,8 @@ import uuid
 
 
 class GUID(c.Structure):
-    _fields_=[('a',w.DWORD),('b',w.WORD),('d',w.WORD),('tail',c.c_ubyte*8)]
+    # GUID has a fixed Windows ABI; wintypes.DWORD follows host c_ulong on Linux.
+    _fields_=[('a',c.c_uint32),('b',c.c_uint16),('d',c.c_uint16),('tail',c.c_uint8*8)]
 
 
 class Interface(c.Structure):
