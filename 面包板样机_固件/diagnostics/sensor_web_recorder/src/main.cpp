@@ -21,6 +21,8 @@
 #include "modules.h"
 #include "recorder.h"
 #include "web_control.h"
+#include "rate240_tf.h"
+#include "rate190_stream.h"
 #include "storage_space.h"
 #include "esp_mac.h"
 #if defined(TF_ARDUINO_SPI) && TF_ARDUINO_SPI
@@ -446,6 +448,17 @@ void loop() {
     if (event < 0) Serial.println("[tfrw] rejected invalid/overlong line; no action");
     if (event > 0) {
       if(control::busyNow()) { Serial.println("[rec] v2 storage/control task active; legacy command rejected"); delay(5); return; }
+      if (!strcmp(lineInput.line(), "RATE240_ARM")) {
+        Serial.printf("[rate240] explicit service arm=%u\n", rate190::start(control::sessionKey())); delay(5); return;
+      }
+      if (strncmp(lineInput.line(), "RATE240_TF ", 11) == 0) {
+        if (mountReadOnly()) {
+          recorder::Store store{driveName, static_cast<uint32_t>(card.cid.serial),
+            static_cast<uint64_t>(card.csd.capacity)*card.csd.sector_size, [](bool enabled){writeEnabled=enabled;}};
+          rate240tf::command(lineInput.line(),store); refreshStorageSpace();
+        }
+        delay(5); return;
+      }
       if (strncmp(lineInput.line(), "REC_START", 9) == 0) { Serial.println("[rec] v2 session required; start through the controller page"); delay(5); return; }
       if (strncmp(lineInput.line(), "REC_", 4) == 0) {
         if (mountReadOnly()) {
