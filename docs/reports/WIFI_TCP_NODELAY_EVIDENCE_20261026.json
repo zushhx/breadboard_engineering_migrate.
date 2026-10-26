@@ -1,0 +1,106 @@
+{
+  "date": "2026-10-26",
+  "source_commit": "4d1cce92fe0affd476f7af827687e52647b4cf7d",
+  "input_sha256": "9b84c05c6f00b27b324007bf63be2e1656c7dee5db2147e899ea895fe9ba9be1",
+  "build_manifest": "local-data/build/sensor-web/9b84c05c6f00b27b/20261026_164808_672696/build_manifest.json",
+  "candidate": {
+    "path": "local-data/build/sensor-web/9b84c05c6f00b27b/20261026_164808_672696/artifacts/firmware.bin",
+    "bytes": 1146816,
+    "sha256": "20dee514c8b1df62347d8f5bb604e3d00ad49fd033519d195040d3e2c56f5a15"
+  },
+  "rollback": {
+    "path": "local-data/build/sensor-web/5a5e2d3126851a59/20261024_114245_417538/artifacts/firmware.bin",
+    "bytes": 1133392,
+    "sha256": "46aa94883f68c783ee2050ef54139e1e91eba035036ee5dda21e6bbfa49bc944"
+  },
+  "rollback_manifest": "local-data/build/sensor-web/5a5e2d3126851a59/20261024_114245_417538/build_manifest.json",
+  "sdk_partition_credentials_match": true,
+  "build_started_clean": true,
+  "bootloader_matches": false,
+  "bootloader_deployment": "Not deployed; explicit app0-only trial retains the existing bootloader",
+  "hardware_accessed": false,
+  "hardware_approval_created": false,
+  "hardware_tested": false,
+  "validation": {
+    "rate_integration_tests": 104,
+    "web_control_tests": 6,
+    "network_host_checks": 41,
+    "file_router_host_checks": 178,
+    "portable_windows_tests": 16,
+    "portable_linux_coverage": 16,
+    "portable_linux_initial_passed": 15,
+    "portable_linux_initial_failed": 1,
+    "portable_linux_targeted_retry_passed": 1
+  },
+  "review": {
+    "independent_agent": "candidate_review",
+    "scope": "firmware and host receiver/trial recovery",
+    "blocking_findings": 0,
+    "method": "static source and test review"
+  },
+  "local_check": {
+    "passed": false,
+    "error_count": 355,
+    "reason": "Independent worktree lacks historical ignored archives/original raw backup; existing global policy source/deployment mismatch preserved"
+  },
+  "limits": [
+    "No radio/capture/TF trial in this round",
+    "100 ms end-to-end latency untested",
+    "Comparison with 920e924 includes accepted-baseline and bounded-observation differences",
+    "PktMon status denied access in current non-admin session"
+  ],
+  "evidence": {
+    "local-data/validation/wifi-tcp-nodelay/rate-integration.log": {
+      "bytes": 16515,
+      "sha256": "cd1a7b08455b52164dadb4c1ed24f92ebc8e3759ff1f1d5dc076a859136272bf"
+    },
+    "local-data/validation/wifi-tcp-nodelay/web-control.log": {
+      "bytes": 775,
+      "sha256": "3d09d23194028f101376c8d73890ec678cf5cf214be38b1c62b5a2b51429e27c"
+    },
+    "local-data/validation/wifi-tcp-nodelay/controller-network.log": {
+      "bytes": 2165,
+      "sha256": "dc5180b5fc3bec1a24b058c40b3a6337929444e31dc6b9f2fae3588ea4e0745f"
+    },
+    "local-data/validation/wifi-tcp-nodelay/controller-v2.log": {
+      "bytes": 9351,
+      "sha256": "aa83f567c0e6c49ab0838331db619eac31bf7be4c20ff086ab1a09e0d04f052f"
+    },
+    "local-data/validation/wifi-tcp-nodelay/independent-review.md": {
+      "bytes": 6149,
+      "sha256": "f7f18a27539562ed62c359de4e5e67cff3f47c7c3e9f18ccad22e3bd30eb48b1"
+    },
+    "local-data/validation/wifi-tcp-nodelay/build-console.log": {
+      "bytes": 99716,
+      "sha256": "7d36718eea12df9dd3bb515c838741a4523cedd9f29af7dee11c3d24a67afe23"
+    },
+    "local-data/validation/wifi-tcp-nodelay/project-checkout-staged.json": {
+      "bytes": 390,
+      "sha256": "0eaf7f3e45db656e7fa3ffdd2d5f06f4e747975915d5862e5c3f6aee2399e565"
+    },
+    "local-data/validation/wifi-tcp-nodelay/project-local-initial.json": {
+      "bytes": 35351,
+      "sha256": "56ef810d4507e5b080af4168a79f8565c1933de2648142be9a0c9868265a2fd7"
+    },
+    "local-data/validation/wifi-tcp-nodelay/portable-rate-tests.log": {
+      "bytes": 4767,
+      "sha256": "42c8fd29642f340c707fb71fe094e67a31a1dc86b127371ff293e6cbfe4c8f8c"
+    },
+    "local-data/validation/wifi-tcp-nodelay/portable-windows-tests.log": {
+      "bytes": 2245,
+      "sha256": "e6274cf651bdbcbe2cef28b272248f9d2aaf452434caff5662263b235db49acd"
+    },
+    "local-data/validation/wifi-tcp-nodelay/prepare.json": {
+      "bytes": 13340,
+      "sha256": "f6feefd431d0f596fc43df30f4c54b195a41da7614678455ceb5a09cab2a9cd7"
+    },
+    "local-data/build/sensor-web/9b84c05c6f00b27b/20261026_164808_672696/build_manifest.json": {
+      "bytes": 11620,
+      "sha256": "8381544d63e0fe5d4bf6d482e59855ec1a1bce503a7b3e3cc476baf9c458f286"
+    },
+    "local-data/build/sensor-web/5a5e2d3126851a59/20261024_114245_417538/build_manifest.json": {
+      "bytes": 10709,
+      "sha256": "2877c6f4ee992700660f3dcebd83659a6e346491d7a60b236652df128bf11c38"
+    }
+  }
+}
