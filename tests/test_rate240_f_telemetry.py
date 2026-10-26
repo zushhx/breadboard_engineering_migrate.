@@ -3,6 +3,7 @@ import json
 import subprocess
 import tempfile
 import unittest
+from rate_test_compiler import binary_path, compiler_command
 
 ROOT=Path(__file__).resolve().parents[1]
 
@@ -10,7 +11,7 @@ ROOT=Path(__file__).resolve().parents[1]
 class UnifiedTelemetry(unittest.TestCase):
     def test_actual_renderers_no_heap_and_all_ranges(self):
         with tempfile.TemporaryDirectory() as directory:
-            binary=Path(directory)/'telemetry.exe'
+            binary=binary_path(directory,'telemetry')
             source=(ROOT/'tests/telemetry_json_host.cpp').read_text(encoding='utf-8')
             # Preserve the baseline host harness and extend it using the same production renderers.
             marker='  printf("CHECKS=%u DENIED_ALLOCATION_ATTEMPTS=%u\\n",checks,deniedAllocations);'
@@ -28,8 +29,8 @@ class UnifiedTelemetry(unittest.TestCase):
 '''
             unit=Path(directory)/'telemetry.cpp'
             unit.write_text(source.replace(marker,extra+marker),encoding='utf-8')
-            zig=ROOT/'local-data/tooling/ziglang-0.13.0/ziglang/zig.exe'
-            compiled=subprocess.run([str(zig),'c++','-std=c++17','-Wall','-Wextra','-Werror',
+            compiler=compiler_command(ROOT)
+            compiled=subprocess.run(compiler+['-std=c++17','-Wall','-Wextra','-Werror',
                 '-I'+str(ROOT/'面包板样机_固件/diagnostics/sensor_web_recorder/src'),
                 str(unit),'-o',str(binary)],capture_output=True,text=True,encoding='utf-8')
             self.assertEqual(compiled.returncode,0,compiled.stdout+compiled.stderr)

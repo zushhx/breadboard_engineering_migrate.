@@ -3,6 +3,7 @@ from pathlib import Path
 import subprocess
 import tempfile
 import unittest
+from rate_test_compiler import binary_path, compiler_command
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -220,10 +221,10 @@ int main(int argc,char** argv){
         cls.temporary = tempfile.TemporaryDirectory()
         folder = Path(cls.temporary.name)
         unit = folder/'listener.cpp'
-        cls.binary = folder/'listener.exe'
+        cls.binary = binary_path(folder,'listener')
         unit.write_text(stub+actual+cases, encoding='utf-8')
-        compiler = ROOT/'local-data/tooling/ziglang-0.13.0/ziglang/zig.exe'
-        built = subprocess.run([str(compiler), 'c++', '-std=c++17', str(unit), '-o', str(cls.binary)],
+        compiler = compiler_command(ROOT)
+        built = subprocess.run(compiler + ['-std=c++17', str(unit), '-o', str(cls.binary)],
                                capture_output=True, text=True, timeout=180)
         if built.returncode:
             cls.temporary.cleanup()

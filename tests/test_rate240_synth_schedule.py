@@ -8,6 +8,7 @@ from pathlib import Path
 import subprocess
 import tempfile
 import unittest
+from rate_test_compiler import binary_path, compiler_command
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -88,10 +89,10 @@ int main(){
 '''
         with tempfile.TemporaryDirectory() as directory:
             folder = Path(directory)
-            unit, binary = folder/'schedule.cpp', folder/'schedule.exe'
+            unit, binary = folder/'schedule.cpp', binary_path(folder,'schedule')
             unit.write_text(stub+actual_loop+cases, encoding='utf-8')
-            compiler = ROOT/'local-data/tooling/ziglang-0.13.0/ziglang/zig.exe'
-            built = subprocess.run([str(compiler),'c++','-std=c++17',str(unit),'-o',str(binary)],
+            compiler = compiler_command(ROOT)
+            built = subprocess.run(compiler+['-std=c++17',str(unit),'-o',str(binary)],
                                    capture_output=True,text=True,timeout=180)
             self.assertEqual(built.returncode,0,built.stdout+built.stderr)
             result = subprocess.run([str(binary)],capture_output=True,text=True,timeout=30)

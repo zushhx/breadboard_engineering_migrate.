@@ -24,7 +24,8 @@ int main() {
   }
   size_t offset=0;
   while(size_t got=fifo.pop(output,sizeof(output))) {
-    for(size_t i=0;i<got;++i)assert(output[i]==expected[offset+i]);offset+=got;
+    for(size_t i=0;i<got;++i)assert(output[i]==expected[offset+i]);
+    offset+=got;
   }
   assert(offset==expected.size());
   // Exercise wrap and producer/consumer fragmentation against a reference FIFO.

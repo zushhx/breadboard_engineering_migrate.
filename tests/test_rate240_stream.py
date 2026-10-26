@@ -3,17 +3,17 @@ from pathlib import Path
 import subprocess
 import tempfile
 import unittest
+from rate_test_compiler import binary_path, compiler_command
 
 ROOT = Path(__file__).resolve().parents[1]
 
 
 class Rate240StreamTests(unittest.TestCase):
     def test_actual_fifo_backpressure_and_session_reset(self):
-        compiler = ROOT / 'local-data/tooling/ziglang-0.13.0/ziglang/zig.exe'
-        self.assertTrue(compiler.is_file(), 'Pinned Zig 0.13.0 compiler required')
+        compiler = compiler_command(ROOT)
         with tempfile.TemporaryDirectory() as directory:
-            binary = Path(directory) / 'rate240_stream.exe'
-            compile_result = subprocess.run([str(compiler), 'c++', '-std=c++17',
+            binary = binary_path(directory,'rate240_stream')
+            compile_result = subprocess.run(compiler + ['-std=c++17',
                 '-Wall', '-Wextra', '-Werror', '-I',
                 str(ROOT / '面包板样机_固件/diagnostics/sensor_web_recorder/src'),
                 str(ROOT / 'tests/rate240_stream_test.cpp'), '-o', str(binary)],
