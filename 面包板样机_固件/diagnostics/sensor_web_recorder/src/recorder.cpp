@@ -1,4 +1,5 @@
 #include "recorder.h"
+#include "rate190_stream.h"
 #include "record_format.h"
 #include "record_request.h"
 #include "record_name.h"
@@ -196,6 +197,7 @@ static bool emit(const void* data, size_t bytes, mbedtls_sha256_context& hash) {
   uint32_t elapsed = static_cast<uint32_t>(now() - before);
   if (elapsed > totals.maxWriteUs) totals.maxWriteUs = elapsed;
   if (result != FR_OK || written != bytes) { fail(Write); return false; }
+  rate190::tee(data, bytes);
   return mbedtls_sha256_update_ret(&hash, static_cast<const uint8_t*>(data), bytes) == 0;
 }
 static bool block(uint32_t type, uint32_t seq, uint32_t count, uint64_t first, uint64_t last,
@@ -212,6 +214,7 @@ static bool sync() {
   return ok;
 }
 static void record(const Store& store, const char* run, unsigned seconds, unsigned rangeG) {
+  rate190::Recording mirror(run, seconds);
   if (locked) { Serial.println("[rec] rejected: previous failure; preserve evidence, reboot required"); return; }
   if (!control::begin(run, seconds, rangeG)) { Serial.println("[rec] rejected busy/unavailable control state"); return; }
   control::phase(control::Phase::Preparing, "检查卡、内存与模块；准备本轮录制");
@@ -293,6 +296,7 @@ static void record(const Store& store, const char* run, unsigned seconds, unsign
   Serial.printf("[rec] writer_priority before=%u active=%u core=%u\n",
       (unsigned)previousPriority, (unsigned)uxTaskPriorityGet(nullptr), (unsigned)xPortGetCoreID());
   totals.startUs = now(); deadline = totals.startUs + static_cast<uint64_t>(seconds) * 1000000;
+  mirror.start(totals.startUs);
   control::phase(control::Phase::Recording, "正在写入完整原始数据；页面提供限速短窗口预览");
   xTaskNotifyGive(sensorTask); xTaskNotifyGive(monitorTask);
   Serial.printf("[rec] START run=%s seconds=%u range_g=%u scale_micro_g=%lu start_us=%llu\n", run, seconds,
@@ -367,8 +371,10 @@ static void record(const Store& store, const char* run, unsigned seconds, unsign
   control::progress(writtenSamples, totals.stopUs > totals.startUs ? totals.stopUs - totals.startUs : 0,
       totals.errors, 0, totals.maxWriteUs, totals.maxSyncUs);
   control::phase(control::Phase::Verifying, "完整回读与摘要比对；此阶段尚未通过");
+  mirror.stop();
   bool readback = verify(path, actual);
   ok = ok && readback && strcmp(expected, actual) == 0;
+  mirror.finish(ok, actual);
   if (!ok) locked = true;
   control::result(ok, locked, ok ? "文件同步、关闭、完整回读及摘要比对通过" : "本轮失败，保留文件与日志；不自动重试", actual);
   Serial.printf("[rec] %s run=%s samples=%llu errors=%lu fifo_high=%lu queue_high=%lu write_us=%lu sync_us=%lu "
