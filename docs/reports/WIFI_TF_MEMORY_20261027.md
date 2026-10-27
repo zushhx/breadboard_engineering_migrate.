@@ -36,3 +36,7 @@
 `rate240_tf.cpp` 的合成工作区已改为在 StorageClaim 持有期间借用 `recorder::idleWorkspace`，使用 placement new 初始化、离开作用域显式析构；借用失败则在打开写入门之前拒绝。借用结束先于 StorageClaim 释放，沿用文件服务已有的池借用接口，消除独立内部堆工作区申请。网络队列、真实采集池、分帧、时钟和发送期限保持。该改动处理重复分配，实际并发改善仍待新候选试验。
 
 两位子 agent 已完成部分只读调查：分别核实池借用互斥条件以及 send 位于 FIFO 临界区之外；后续回合均因服务用量限制中断。代码由主 agent 实施并自审，最终独立代码审查待补。另一个混杂变量为 RAM 固定 2400 字节/10 ms，MIRROR 最大 3200 字节并可突发发送；`max_gap_us` 包含 READY 到源启动等待，单独该值不足以定位调度故障。
+
+后续由 `/root/trial_preflight_review` 独立复核提交 `11cfd74`，检查互斥、析构顺序、对齐、借用失败和提前返回路径，无新增阻断发现；此为静态审查。旧候选 ELF 的离线 GDB `p sizeof(rate240tf::Workspace)` 得到 **10632 字节**，新实现消除该大小的一次堆申请（分配器开销另计）。
+
+新候选干净构建与 prepare 通过，来源 `11cfd749dfbede9596a64432c3b1abe1512528a5`，1146784 字节，SHA-256 `f4bf1788e0f1da4c44273a268db2a4d8aff131594400f3a71c192b858013ae12`。manifest：`local-data/build/sensor-web/44791967cbb505a0/20261027_181006_908737/build_manifest.json`。生成 SDK 哈希与原候选一致，分区、凭据及恢复镜像经 prepare 核验；既有源节拍/背压边界宿主测试通过，工程 hook 通过。未烧录新候选。构建日志与 prepare 原始输出保留 `local-data/validation/wifi-tcp-nodelay/memory-build-console.log`、`memory-prepare.json`。
