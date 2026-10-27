@@ -6,12 +6,12 @@
 #include "tf_test_core.h"
 #include "web_control.h"
 #include "device_v2.h"
-#include "esp_heap_caps.h"
 #include "storage_space.h"
 #include "ff.h"
 #include "esp_timer.h"
 #include "mbedtls/sha256.h"
 #include <cstring>
+#include <new>
 
 namespace rate240tf {
 struct Workspace { FIL file; uint8_t data[rate240core::blockBytes], readBuffer[4096]; };
@@ -21,9 +21,13 @@ struct StorageClaim {
 };
 struct BufferClaim {
   Workspace* p=nullptr;
-  BufferClaim(){if(heap_caps_get_free_size(MALLOC_CAP_INTERNAL|MALLOC_CAP_8BIT)>sizeof(Workspace)+16384)
-    p=static_cast<Workspace*>(heap_caps_calloc(1,sizeof(Workspace),MALLOC_CAP_INTERNAL|MALLOC_CAP_8BIT));}
-  ~BufferClaim(){heap_caps_free(p);}
+  // StorageClaim must outlive this loan. The synthetic source does not use the
+  // acquisition pool; reuse it under the existing exclusive files reservation.
+  BufferClaim(){
+    void* memory=recorder::idleWorkspace(sizeof(Workspace));
+    if(memory)p=new(memory) Workspace{};
+  }
+  ~BufferClaim(){if(p)p->~Workspace();}
 };
 static uint64_t sessionWritten;
 static uint64_t now() { return esp_timer_get_time(); }
@@ -44,7 +48,7 @@ void command(const char* line, const recorder::Store& store) {
   StorageClaim claim;
   if(!claim.held){Serial.println("[rate240tf] rejected storage/session busy; no writes");return;}
   BufferClaim memory;
-  if(!memory.p){Serial.println("[rate240tf] rejected heap headroom; no writes");return;}
+  if(!memory.p){Serial.println("[rate240tf] rejected idle workspace unavailable; no writes");return;}
   FIL& file=memory.p->file; auto& data=memory.p->data; auto& readBuffer=memory.p->readBuffer;
   if(!control::begin(req.run,req.seconds)) { Serial.println("[rate240tf] rejected busy/locked"); return; }
   rate190::Recording mirror(req.run,req.seconds,"pattern");
