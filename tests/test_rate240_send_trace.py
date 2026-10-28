@@ -22,7 +22,11 @@ class SendTraceTests(unittest.TestCase):
 static std::vector<int> replies;
 static unsigned calls=0, prints=0;
 static uint64_t tick=0, step=10, sendDelay=0;
+static uint64_t freeQueryUs=3,largestQueryUs=4;
 static uint64_t now(){tick+=step;return tick;}
+constexpr unsigned MALLOC_CAP_INTERNAL=1,MALLOC_CAP_8BIT=2;
+static size_t heap_caps_get_free_size(unsigned caps){assert(caps==3);tick+=freeQueryUs;errno=EINVAL;return 12345;}
+static size_t heap_caps_get_largest_free_block(unsigned caps){assert(caps==3);tick+=largestQueryUs;errno=EINVAL;return 6789;}
 static uint64_t input=123,dropped=4;
 static unsigned high=8;
 struct Guard {};
@@ -69,6 +73,26 @@ int main(){
  assert(!frame(0,1,seq,data,4,header,0));
  assert(header.sequence==9&&seq==10&&!strcmp(header.part,"header"));
  assert(prints==0);reportSendFailure(header);assert(prints==1);
+ assert(header.traceCount==1&&header.trace[0].error==EAGAIN);
+ assert(header.trace[0].freeBefore==12345&&header.trace[0].largestAfter==6789);
+ assert(header.trace[0].sampleUs>0);
+ SendFailure ring;sendDelay=20000;
+ for(unsigned i=0;i<12;++i)assert(sendAll(0,data,4,ring,1,i,"payload",0));
+ assert(ring.traceCount==8&&ring.traceTotal==12&&ring.traceNext==4);
+ for(unsigned i=0;i<8;++i){
+   const auto& s=ring.trace[(ring.traceNext+i)%8];
+   assert(s.sequence==i+4&&s.endUs-s.beginUs>=20000);
+ }
+ assert(prints==1);reportSendSamples(ring);assert(prints==9);
+ sendDelay=0;SendFailure fast;
+ assert(sendAll(0,data,4,fast,1,0,"payload",0)&&fast.traceCount==0);
+ freeQueryUs=700;largestQueryUs=1300;sendDelay=25000;
+ SendFailure separated;replies={-1};
+ assert(!sendAll(0,data,4,separated,1,0,"payload",0));
+ assert(separated.lastSendUs==25000+step&&separated.maxSendUs==25000+step);
+ assert(separated.attemptUs==25000+step&&separated.error==EAGAIN);
+ assert(separated.trace[0].sampleUs==4000+2*step);
+ assert(separated.totalUs>separated.attemptUs+separated.trace[0].sampleUs);
  return 0;
 }
 '''

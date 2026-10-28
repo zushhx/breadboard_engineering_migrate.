@@ -60,6 +60,21 @@ void tee(const void* data,size_t bytes){
   if(fifo.size()>high)high=fifo.size();
 }
 struct SendFailure {
+  struct Sample {
+    uint64_t beginUs, endUs, sampleUs;
+    uint32_t type, sequence;
+    const char* part;
+    size_t requested, freeBefore, largestBefore, freeAfter, largestAfter;
+    int result, error;
+  };
+  static constexpr unsigned traceCapacity=8;
+  Sample trace[traceCapacity]={};
+  unsigned traceCount=0, traceNext=0, traceTotal=0;
+  void retain(const Sample& sample){
+    trace[traceNext]=sample;traceNext=(traceNext+1)%traceCapacity;
+    if(traceCount<traceCapacity)++traceCount;
+    ++traceTotal;
+  }
   bool captured=false;
   const char* reason=nullptr;
   const char* part=nullptr;
@@ -71,6 +86,15 @@ struct SendFailure {
   int lastSendResult=0;size_t lastSendRequested=0;
   uint64_t stamp=0, attemptUs=0, totalUs=0, sourceInput=0, payloadSent=0, sourceDropped=0;
 };
+static void reportSendSamples(const SendFailure& failure){
+  for(unsigned i=0;i<failure.traceCount;++i){
+    const auto& s=failure.trace[(failure.traceNext+SendFailure::traceCapacity-failure.traceCount+i)%SendFailure::traceCapacity];
+    Serial.printf("[rate240] SEND_SAMPLE total=%u retained=%u index=%u begin_us=%llu end_us=%llu sample_us=%llu type=%u seq=%u part=%s requested=%u result=%d errno=%d free_before=%u largest_before=%u free_after=%u largest_after=%u\n",
+      failure.traceTotal,failure.traceCount,i,(unsigned long long)s.beginUs,(unsigned long long)s.endUs,
+      (unsigned long long)s.sampleUs,s.type,s.sequence,s.part,unsigned(s.requested),s.result,s.error,
+      unsigned(s.freeBefore),unsigned(s.largestBefore),unsigned(s.freeAfter),unsigned(s.largestAfter));
+  }
+}
 static void captureSendFailure(SendFailure& failure,const char* reason,int error,int result,
                               uint32_t type,uint32_t sequence,const char* part,size_t requested,
                               size_t accepted,size_t attemptRequested,uint64_t attemptStart,
@@ -113,15 +137,30 @@ static bool sendAll(int fd,const void* data,size_t n,SendFailure& failure,uint32
       captureSendFailure(failure,"deadline",0,0,type,sequence,part,requested,requested-n,n,
                          attemptStart,begin,payloadSent);return false;
     }
+    // Heap walks add observation overhead. Each free/largest pair is sequential,
+    // not an atomic snapshot; retain sampling cost separately from send duration.
+    constexpr unsigned caps=MALLOC_CAP_INTERNAL|MALLOC_CAP_8BIT;
+    const uint64_t sampleStart=now();
+    const size_t freeBefore=heap_caps_get_free_size(caps);
+    const size_t largestBefore=heap_caps_get_largest_free_block(caps);
+    const uint64_t sendStart=now();
     int sent=send(fd,p,n,0);
     const int error=sent<0?errno:0; // Capture before any timing/logging/API call.
     const uint64_t returned=now();
-    ++failure.calls;failure.lastReturnUs=returned;failure.lastSendUs=returned-attemptStart;
+    const size_t freeAfter=heap_caps_get_free_size(caps);
+    const size_t largestAfter=heap_caps_get_largest_free_block(caps);
+    const uint64_t sampleEnd=now();
+    if(sent<=0 || returned-sendStart>=20000)
+      failure.retain({sendStart,returned,(sendStart-sampleStart)+(sampleEnd-returned),
+        type,sequence,part,n,freeBefore,largestBefore,freeAfter,largestAfter,sent,error});
+    ++failure.calls;failure.lastReturnUs=returned;failure.lastSendUs=returned-sendStart;
     if(failure.lastSendUs>failure.maxSendUs)failure.maxSendUs=failure.lastSendUs;
     failure.lastSendResult=sent;failure.lastSendRequested=n;
     if(sent<=0){
       captureSendFailure(failure,sent<0?"negative":"zero",error,sent,type,sequence,part,
-                         requested,requested-n,n,attemptStart,begin,payloadSent);return false;
+                         requested,requested-n,n,attemptStart,begin,payloadSent);
+      // Keep call duration separate from pre/post heap observation overhead.
+      failure.attemptUs=returned-sendStart;return false;
     }
     p+=sent;n-=sent;
   }
@@ -299,7 +338,10 @@ static void worker(void* argument){
     SendFailure failure;
     if(options.ready){reportClientState("session_start",options);session(fd,failure);}
     shutdown(fd,SHUT_RDWR);close(fd);
+    Serial.printf("[rate240] WORKER worker_stack_min_bytes=%u\n",
+      unsigned(uxTaskGetStackHighWaterMark(nullptr)));
     reportClientState("closed",options);
+    reportSendSamples(failure);
     reportSendFailure(failure);
   }}
   close(server);

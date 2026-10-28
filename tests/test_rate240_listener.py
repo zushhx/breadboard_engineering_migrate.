@@ -142,6 +142,8 @@ static int accept(int fd,void*,void*){event("accept");assert(fd==42);nodelaySet=
 static int shutdown(int fd,int how){event("shutdown");assert(fd==43&&how==SHUT_RDWR);return 0;}
 static int close(int fd){event(fd==42?"close-server":"close-client");assert(fd==42||fd==43);return 0;}
 struct SendFailure {};
+static unsigned uxTaskGetStackHighWaterMark(void*){auto events=observed();assert(std::find(events.begin(),events.end(),"close-client")!=events.end());return 2048;}
+static void reportSendSamples(const SendFailure&){auto events=observed();assert(std::find(events.begin(),events.end(),"close-client")!=events.end());}
 static void session(int fd,SendFailure&){event("session");assert(fd==43&&nodelaySet&&nodelayVerified);++sessions;}
 static void reportSendFailure(const SendFailure&){event("report");}
 '''
