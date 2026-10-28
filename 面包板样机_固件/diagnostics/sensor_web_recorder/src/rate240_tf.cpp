@@ -14,7 +14,19 @@
 #include <new>
 
 namespace rate240tf {
-struct Workspace { FIL file; uint8_t data[rate240core::blockBytes], readBuffer[4096]; };
+// Fixed storage in the exclusive idle-workspace loan; no live serial output.
+struct SlowIoTrace {
+  struct Event { uint64_t start, end, offset, backlog; char kind; };
+  Event events[8]{};
+  unsigned next=0, count=0, overwritten=0;
+  void add(char kind,uint64_t start,uint64_t end,uint64_t offset,uint64_t backlog) {
+    if(end<start || end-start<20000)return;
+    events[next]={start,end,offset,backlog,kind};next=(next+1)%8;
+    if(count<8)++count;else ++overwritten;
+  }
+  const Event& at(unsigned index)const{return events[(next+8-count+index)%8];}
+};
+struct Workspace { FIL file; uint8_t data[rate240core::blockBytes], readBuffer[4096]; SlowIoTrace trace; };
 struct StorageClaim {
   bool held=control::reserveFiles();
   ~StorageClaim(){if(held)control::releaseFiles();}
@@ -50,6 +62,7 @@ void command(const char* line, const recorder::Store& store) {
   BufferClaim memory;
   if(!memory.p){Serial.println("[rate240tf] rejected idle workspace unavailable; no writes");return;}
   FIL& file=memory.p->file; auto& data=memory.p->data; auto& readBuffer=memory.p->readBuffer;
+  auto& trace=memory.p->trace;
   if(!control::begin(req.run,req.seconds)) { Serial.println("[rate240tf] rejected busy/locked"); return; }
   rate190::Recording mirror(req.run,req.seconds,"pattern");
   control::phase(control::Phase::Preparing,"240 kB/s 合成写卡测试，非真实振动采样");
@@ -93,16 +106,21 @@ void command(const char* line, const recorder::Store& store) {
     for(unsigned i=0;i<sizeof(data);++i)data[i]=rate240core::pattern(written+i);
     UINT count=0;uint64_t before=now();
     ok=f_write(&file,data,sizeof(data),&count)==FR_OK && count==sizeof(data);
-    uint32_t took=now()-before;if(took>maxWrite)maxWrite=took;
+    uint64_t end=now();uint32_t took=end-before;if(took>maxWrite)maxWrite=took;
+    trace.add('W',before,end,written,backlog);
     if(ok)ok=mbedtls_sha256_update_ret(&hash,data,sizeof(data))==0;
     if(ok){written+=count;sessionWritten+=count;rate190::tee(data,count);}
     if(ok && now()>=nextSync){before=now();ok=f_sync(&file)==FR_OK;
-      took=now()-before;if(took>maxSync)maxSync=took;nextSync=now()+1000000;}
+      end=now();took=end-before;if(took>maxSync)maxSync=took;
+      const uint64_t due=rate240core::due(before-begin,total);
+      trace.add('S',before,end,written,due>written?due-written:0);nextSync=now()+1000000;}
     delay(1); // Service the idle task and HTTP stop control during catch-up.
   }
   control::phase(control::Phase::Closing,"同步关闭合成文件；尚未验收");
   if(opened){uint64_t before=now();bool synced=f_sync(&file)==FR_OK;
-    uint32_t took=now()-before;if(took>maxSync)maxSync=took;
+    uint64_t end=now();uint32_t took=end-before;if(took>maxSync)maxSync=took;
+    const uint64_t due=rate240core::due(before-begin,total);
+    trace.add('C',before,end,written,due>written?due-written:0);
     bool closed=f_close(&file)==FR_OK;ok=ok&&synced&&closed;}
   store.gate(false);
   const uint64_t elapsed=now()-begin;
@@ -126,6 +144,11 @@ void command(const char* line, const recorder::Store& store) {
   hex(digest,actual);mbedtls_sha256_free(&hash);
   ok=ok&&readOk&&checked==total&&!strcmp(expected,actual);
   mirror.finish(ok,actual);
+  Serial.printf("[rate240tf] IO_TRACE run=%s threshold_us=20000 count=%u overwritten=%u\n",req.run,trace.count,trace.overwritten);
+  for(unsigned i=0;i<trace.count;++i){const auto& e=trace.at(i);
+    Serial.printf("[rate240tf] IO run=%s kind=%c start_us=%llu end_us=%llu offset=%llu backlog_bytes=%llu\n",
+      req.run,e.kind,(unsigned long long)e.start,(unsigned long long)e.end,
+      (unsigned long long)e.offset,(unsigned long long)e.backlog);}
   control::result(ok,!ok,ok?"240 kB/s合成TF写入、同步关闭及完整回读通过；WiFi以电脑结果为准":"合成测试失败；保留现场，不自动重试",actual);
   Serial.printf("[rate240tf] %s run=%s bytes=%llu elapsed_us=%llu backlog_high_bytes=%llu write_us=%u sync_us=%u sha256=%s synthetic=1 write_gate=0\n",
     ok?"PASS":"FAIL",req.run,(unsigned long long)written,(unsigned long long)elapsed,
