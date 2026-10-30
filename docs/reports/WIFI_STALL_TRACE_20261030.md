@@ -47,3 +47,23 @@ PktMon2517包，未报告ETW事件丢失；解析可见TCP序号缺口59处、56
 最终证据`local-data/hardware/wifi-f-idle-20261030-retry2`：2026-10-30 07:14:54.219300–07:18:15.136385 UTC（北京时间15:14:54–15:18:15），实际200.906秒，99份状态，同一个boot，全部idle/ready、errors0、files_busy false。该精确时窗System及WLAN Operational内WLAN/Netwtw/NDIS事件查询为空。结束后返回HQU，state passed和pc_profile_restored为true。查询周期约2秒，结论覆盖低负载状态观测及保留的系统日志；未测连续240000字节/秒及TF并发。
 
 下一步保持3b0646d候选及原参数，复测RAM30/前置通过后TF30，并增加Windows无线ETW，以定位高负载失败前的状态变化。F低负载与3b高负载的固件及负载同时不同，本次对比仅证明F在该200秒窗口保持连接，尚未隔离单一原因。
+
+## 15:57同候选复测与扫描线索
+
+操作提交1c8430686d3f108aecce198249b83bbab07cb80d，候选仍为原3b0646d/SHA6c1673b3…3534f17f。证据：`local-data/hardware/rate240-f/20261030_155256`、`local-data/hardware/rate240-offline/20261030_155545`、`local-data/hardware/wifi-etw-preflight-20261030`。新增有界128MB非持久Windows WLAN-AutoConfig/NWiFi/NCSI ETW，TCP抓包保持128字节快照；记录增加属于本轮观测条件差异。
+
+RAM seq65的send399790µs、total400166µs、接受1856/2400、errno0；前后internal free31272/49876、largest22528/31744，采样325µs；栈最低1180字节、生命周期heap minimum汇总15256。RAM目标30秒未完成，TF及真实采集均未开始。
+
+精确UTC时间：07:57:02.3939831 InternalScan client0；02.3940318请求扫描/flush BSS；02.3942966 Begin Scan；03.4381727返回25个网络。NWiFi相邻记录OID0xE01017A返回0xC00000BB，具体请求含义待核实。此区间与失败重叠，但ETW未提供明确的scan-complete事件，列表返回仅为后续观测点。失败前后System/WLAN常规日志无WLAN/Netwtw/NDIS事件。
+
+PC抓包295包，解析TCP序号缺口0、客户端最小窗口64559、零窗口0。最后1856字节（1440+416）出现在07:57:02.936272/02.9362729，PC于02.9363558累计ACK；主控03.049706发送FIN，约113.35ms在ACK之后。主机接收器03.236356报truncated stream。捕获的ACK仅证明主机发送路径可见，设备接收/处理未观测。扫描增加时延有官方机制依据：[Microsoft WlanScan](https://learn.microsoft.com/en-us/windows/win32/api/wlanapi/nf-wlanapi-wlanscan)，本轮关联待单变量对照。
+
+07:57:07.430788确认同boot、idle、files_busy false，随后自动恢复F并芯片校验、旧参考复核；NVS恢复后SHA仍5d2866b7…ba54b，电脑返回HQU。两路跟踪已正常停止；原始ETL、pcapng与解码均本地保留。
+
+后续优先保持固件与参数，在连接后关闭Wi-Fi网络列表/网络设置窗口的条件下复测，继续记录扫描事件；当前记录client0不足以确认扫描发起应用。该操作只排除可见UI变量，后台扫描可能继续存在。暂未改变驱动、注册表或全局网络策略。
+
+独立子agent已只读解析原始pcapng，确认295包、序号缺口/重叠0、PC零窗口0；最大服务器数据到达空档460.863ms，位于07:57:02.473522至02.934385，落在Begin Scan与网络数量事件之间。PC接收队列高水位9600、待写0，已完成64帧153600字节。该复核支持时间相关性，仍未量出空口离信道时长，也未对齐MCU与PC时钟。下一轮关闭可见网络窗口后，以ETW实测扫描有无及频率；若仍有扫描，不能将该轮称作无扫描对照。
+
+## 用户30%余量要求
+
+用户明确要求有效传输速度至少达到数据产生速度1.3倍。只读子agent按生产格式核算：完整BIN字节为340+7*N+48*ceil(N/448)+72*INA条数，E已通过记录37966410字节/200.003721秒=189828.518B/s，1.3倍246777.074B/s；标称26667组/秒及INA10Hz预算需247320.032B/s。建议后续门槛250000B/s有效payload，TCP/IP/Wi-Fi头与重传开销另计。当前240000B/s只比E记录高26.43%，降速与保持现原始记录格式及30%余量存在约束冲突。依据为record_format.h、recorder.cpp、RELEASE_V010_EVIDENCE_20261018.json及F_RANGE_HOTSPOT_TRIAL_EVIDENCE_20261024.json。若覆盖软件允许28001组/秒上限，则预算约259645B/s；该上限属于软件容差，尚无对应硬件最大速率实测。
