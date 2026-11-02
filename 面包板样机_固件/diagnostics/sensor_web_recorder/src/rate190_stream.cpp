@@ -5,6 +5,7 @@
 #include "build_identity.h"
 #include "esp_timer.h"
 #include "esp_heap_caps.h"
+#include "esp_attr.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 #include "lwip/sockets.h"
@@ -58,6 +59,63 @@ void tee(const void* data,size_t bytes){
   if(bytes>payload || input>byteLimit){errors|=4;dropped+=bytes;return;}
   if(!fifo.push(data,bytes)){errors|=2;dropped+=bytes;return;}
   if(fifo.size()>high)high=fifo.size();
+}
+// Single SDK callback slot: this diagnostic is the sole production registrant.
+// It remains installed while idle; inactive windows retain no events. Never
+// dereference function_name here (it can reside in flash with cache disabled).
+struct AllocationTrace {
+  struct Event { uint64_t us; uint32_t bytes, caps; uintptr_t functionAddress; };
+  Event events[8];
+  uint64_t beginUs, endUs;
+  uint32_t total, count, next;
+  bool active;
+};
+static DRAM_ATTR AllocationTrace allocationTrace={};
+static DRAM_ATTR portMUX_TYPE allocationMux=portMUX_INITIALIZER_UNLOCKED;
+static bool allocationHookRegistered;
+static void IRAM_ATTR allocationFailed(size_t bytes,uint32_t caps,const char* functionName){
+  portENTER_CRITICAL_SAFE(&allocationMux);
+  if(allocationTrace.active){
+    auto& e=allocationTrace.events[allocationTrace.next];
+    e.us=esp_timer_get_time();e.bytes=uint32_t(bytes);e.caps=caps;
+    e.functionAddress=reinterpret_cast<uintptr_t>(functionName);
+    allocationTrace.next=(allocationTrace.next+1)&7;
+    if(allocationTrace.count<8)++allocationTrace.count;
+    if(allocationTrace.total!=UINT32_MAX)++allocationTrace.total;
+  }
+  portEXIT_CRITICAL_SAFE(&allocationMux);
+}
+static bool registerAllocationTrace(){
+  // start() has already acquired exclusive service ownership before this call.
+  if(allocationHookRegistered)return true;
+  if(heap_caps_register_failed_alloc_callback(allocationFailed)!=ESP_OK)return false;
+  allocationHookRegistered=true;return true;
+}
+static void beginAllocationTrace(){
+  portENTER_CRITICAL_SAFE(&allocationMux);
+  allocationTrace.total=allocationTrace.count=allocationTrace.next=0;
+  allocationTrace.beginUs=esp_timer_get_time();allocationTrace.endUs=0;
+  allocationTrace.active=true;
+  portEXIT_CRITICAL_SAFE(&allocationMux);
+}
+static void endAllocationTrace(){
+  portENTER_CRITICAL_SAFE(&allocationMux);
+  allocationTrace.active=false;allocationTrace.endUs=esp_timer_get_time();
+  portEXIT_CRITICAL_SAFE(&allocationMux);
+}
+static void reportAllocationTrace(){
+  // Called only after end, before service ownership is released. No writer can
+  // start another window, and the installed callback only reads active=false.
+  const auto& t=allocationTrace;
+  Serial.printf("[rate240] ALLOC_WINDOW begin_us=%llu end_us=%llu total=%u retained=%u overwritten=%u saturated=%u static_bytes=%u\n",
+    (unsigned long long)t.beginUs,(unsigned long long)t.endUs,unsigned(t.total),unsigned(t.count),
+    unsigned(t.total-t.count),unsigned(t.total==UINT32_MAX),
+    unsigned(sizeof(allocationTrace)+sizeof(allocationMux)+sizeof(allocationHookRegistered)));
+  for(unsigned i=0;i<t.count;++i){
+    const auto& e=t.events[(t.next+8-t.count+i)&7];
+    Serial.printf("[rate240] ALLOC_FAIL index=%u us=%llu bytes=%u caps=0x%08x function_name_addr=0x%08x\n",
+      i,(unsigned long long)e.us,unsigned(e.bytes),unsigned(e.caps),unsigned(e.functionAddress));
+  }
 }
 struct SendFailure {
   struct Sample {
@@ -336,8 +394,9 @@ static void worker(void* argument){
     timeval timeout={0,250000};setsockopt(fd,SOL_SOCKET,SO_RCVTIMEO,&timeout,sizeof(timeout));setsockopt(fd,SOL_SOCKET,SO_SNDTIMEO,&timeout,sizeof(timeout));
     const ClientOptions options=configureClient(fd);
     SendFailure failure;
-    if(options.ready){reportClientState("session_start",options);session(fd,failure);}
+    if(options.ready){reportClientState("session_start",options);beginAllocationTrace();session(fd,failure);}
     shutdown(fd,SHUT_RDWR);close(fd);
+    if(options.ready){endAllocationTrace();reportAllocationTrace();}
     Serial.printf("[rate240] WORKER worker_stack_min_bytes=%u\n",
       unsigned(uxTaskGetStackHighWaterMark(nullptr)));
     reportClientState("closed",options);
@@ -352,6 +411,7 @@ bool start(const char* key){
   unsigned generation;
   {Guard g;if(serviceStarted)return false;
     serviceStarted=true;serviceReady=false;serviceCancelled=false;generation=++serviceGeneration;}
+  if(!registerAllocationTrace()){serviceStopped(generation);return false;}
   snprintf(secret,sizeof(secret),"%s",key);
   const uint64_t deadline=now()+1000000;
   if(xTaskCreatePinnedToCore(worker,"rate240",8192,

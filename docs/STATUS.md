@@ -2,6 +2,8 @@
 
 更新日期：2026-11-02。当前事实唯一入口。历史测试结果保留其适用条件，不自动延伸至其他固件或接法。
 
+2026-11-02：分支 codex/test/wifi-allocation-trace 准备固定 8 条分配失败取证候选，84 项 rate240 宿主测试通过，构建与目标 ELF 检查待完成。全量 --local 检查仍有 355 项既有历史文件/全局规则问题，原始结果保存于 local-data/validation/wifi-tcp-nodelay/allocation-project-check-20261102.json。软件工作未访问硬件，最新实机恢复为 F；新候选试烧待具体产物批准，见[计划](plans/WIFI_ALLOCATION_TRACE_20261102.md)。
+
 2026-11-02 09:52临时媒体模式on对照：两阶段均回读false→true，RAM30通过，TF run594E20D0仍失败（seq186 send578562µs，接受2544/3200，dropped151200）。ETW在RAM/TF均仍记录InternalScan；模式未消除本轮记录到的扫描。两阶段退出均撤销并读回false，已确认TF关闭后恢复F，参考文件/NVS核验、电脑回HQU。证据local-data/hardware/rate240-f/20261102_094727及wifi-media-on-20261102。下一步优先定位并发内存/发送缓冲等待，暂不叠加网卡参数修改。
 
 2026-11-02 08:59关闭网络窗口条件复测：用户已表示可以关闭窗口，本轮主动保持媒体模式关闭以先隔离窗口条件。RAM30完整7200000字节、零丢弃通过，TF run C2B675E7约2.45秒失败。ETW在RAM及TF阶段仍有InternalScan（00:59:00.6249323及00:59:31.7897317 UTC）；关闭窗口条件未消除记录到的扫描。已确认TF关闭后恢复并核验F、NVS及参考，电脑返回HQU。证据local-data/hardware/rate240-f/20261102_085436及wifi-media-preflight-20261102；该目录沿用原计划名，test-condition.json记录实际模式off。下一步临时媒体模式对照仍待执行。

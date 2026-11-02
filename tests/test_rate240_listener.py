@@ -142,9 +142,14 @@ static int accept(int fd,void*,void*){event("accept");assert(fd==42);nodelaySet=
 static int shutdown(int fd,int how){event("shutdown");assert(fd==43&&how==SHUT_RDWR);return 0;}
 static int close(int fd){event(fd==42?"close-server":"close-client");assert(fd==42||fd==43);return 0;}
 struct SendFailure {};
+static bool traceActive=false;
+static bool registerAllocationTrace(){return failureStage!="allocation_hook";}
+static void beginAllocationTrace(){assert(!traceActive);traceActive=true;event("trace-begin");}
+static void endAllocationTrace(){assert(traceActive);const auto seen=observed();assert(std::find(seen.begin(),seen.end(),"close-client")!=seen.end());traceActive=false;event("trace-end");}
+static void reportAllocationTrace(){assert(!traceActive);event("trace-report");}
 static unsigned uxTaskGetStackHighWaterMark(void*){auto events=observed();assert(std::find(events.begin(),events.end(),"close-client")!=events.end());return 2048;}
 static void reportSendSamples(const SendFailure&){auto events=observed();assert(std::find(events.begin(),events.end(),"close-client")!=events.end());}
-static void session(int fd,SendFailure&){event("session");assert(fd==43&&nodelaySet&&nodelayVerified);++sessions;}
+static void session(int fd,SendFailure&){event("session");assert(traceActive&&fd==43&&nodelaySet&&nodelayVerified);++sessions;}
 static void reportSendFailure(const SendFailure&){event("report");}
 '''
         cases = r'''
@@ -194,7 +199,7 @@ static void clientFailure(const std::string& stage){
 static void startupFailure(const std::string& stage){
   failureStage=stage;assert(!start("failed"));finishTask();clean();
   assert(sessions==0);
-  if(stage!="task")assert(has(("LISTEN_FAIL stage="+stage).c_str()));
+  if(stage!="task"&&stage!="allocation_hook")assert(has(("LISTEN_FAIL stage="+stage).c_str()));
   if(stage=="reuse")assert(!has("bind")&&!has("listen"));
   if(stage=="bind")assert(!has("listen"));
   failureStage.clear();reuseSet=false;acceptClient=false;
@@ -257,6 +262,9 @@ int main(int argc,char** argv){
 
     def test_task_creation_failure_returns_zero(self):
         self.run_scenario('task')
+
+    def test_allocation_hook_failure_rejects_start(self):
+        self.run_scenario('allocation_hook')
 
     def test_startup_timeout_cancels_late_worker(self):
         self.run_scenario('late')
